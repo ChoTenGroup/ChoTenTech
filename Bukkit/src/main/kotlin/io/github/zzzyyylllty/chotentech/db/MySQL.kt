@@ -78,11 +78,11 @@ public open class SQLDataBase {
             }
         }
         if (!getIDExists(user.userId)) {
-            userTable.insert(dataSource, "uuid", "name", "userid") {
+            indexTable.insert(dataSource, "uuid", "name", "userid") {
                 value(user.playerUUID, user.playerName, user.userId)
             }
         } else {
-            userTable.update(dataSource) {
+            indexTable.update(dataSource) {
                 set("uuid", user.playerUUID)
                 set("userid", user.userId)
             }
