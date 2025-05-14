@@ -1,0 +1,21 @@
+NORMAL:
+level-0:
+  world: Chapter1
+  name: '教学关卡'
+  cluster: I
+  class:
+    template: 1
+  number: 0
+  author: zzzyyylll_ty
+  tips: '外观类似于一家零售店的储藏后室。这里是你开始的地方。'
+  noclips:
+    - target-level: 'level-2'
+      noclip-location: 'Chapter1 -304 2 248 -302 6 251'
+      target-location: 'Chapter1 20046 4 69'
+      time: 5.0
+      name: '通风管'
+    - target-level: 'level-1'
+      noclip-location: 'Chapter1 -105 2 148 > -98 8 158'
+      target-location: 'Chapter1 10165 3 253'
+      time: 5.0
+      name: '马尼拉房间'
