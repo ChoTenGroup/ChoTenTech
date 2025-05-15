@@ -16,8 +16,8 @@ import taboolib.module.nms.MinecraftVersion.minecraftVersion
 @CommandHeader(
     name = "chotentech",
     aliases = ["ctt"],
-    permission = "sertraline.command.main",
-    description = "Main Command of DepazItems.",
+    permission = "chotentech.command.main",
+    description = "Main Command for ChoTenTech.",
     permissionMessage = "",
     permissionDefault = PermissionDefault.OP,
     newParser = false,

@@ -4,6 +4,3 @@ database:
   user: root
   password: 123456
   database: chotentech
-
-kick-messages:
-  whitelist: '白名单'

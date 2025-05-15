@@ -30,6 +30,6 @@ object PapiHook : PlaceholderExpansion {
                 else SQLDataBase().getUserInDatabase(list[1])?.userId.toString()
         }
 
-        return "变量返回的文字"
+        return "Error"
     }
 }
