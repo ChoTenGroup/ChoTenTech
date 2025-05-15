@@ -1,8 +1,10 @@
 package io.github.zzzyyylllty.chotentech.load
 
+import com.sun.jdi.Location
 import io.github.zzzyyylllty.chotentech.ChoTenTech
 import io.github.zzzyyylllty.chotentech.data.Loot
 import io.github.zzzyyylllty.chotentech.data.LootItem
+import org.bukkit.Bukkit
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
 import taboolib.common.platform.function.getDataFolder
@@ -55,7 +57,9 @@ fun loadLoot(config: ConfigurationSection) {
         refreshTimeEnd = TODO()
     )
 
-
-    val loc = TODO()
-    ChoTenTech.lootList.put(loc, loot)
+    for (string in (config.getList("locations") as List<String>)) {
+        val str = string.split(",")
+        val world = Bukkit.getWorld(str[0]) ?: throw NullPointerException("World ${str[0]} is null")
+        ChoTenTech.lootList.put(org.bukkit.Location(world,str[1].toDouble(),str[2].toDouble(),str[3].toDouble()), loot)
+    }
 }

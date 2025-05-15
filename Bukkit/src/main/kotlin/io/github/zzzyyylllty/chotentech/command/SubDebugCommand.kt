@@ -3,6 +3,7 @@ package io.github.zzzyyylllty.chotentech.command
 import io.github.zzzyyylllty.chotentech.ChoTenTech
 import io.github.zzzyyylllty.chotentech.ChoTenTech.dataMap
 import io.github.zzzyyylllty.chotentech.db.SQLDataBase
+import io.github.zzzyyylllty.chotentech.function.id.generateUserID
 import io.github.zzzyyylllty.chotentech.function.sender.sendComponent
 import io.github.zzzyyylllty.chotentech.function.sender.sendDebug
 import kotlinx.serialization.encodeToString
@@ -20,8 +21,8 @@ import taboolib.expansion.createHelper
 @CommandHeader(
     name = "chotentech-debug",
     aliases = ["cttdebug"],
-    permission = "sertraline.command.main",
-    description = "Main Command of DepazItems.",
+    permission = "chotentech.command.debug",
+    description = "Debug Command for ChoTenTech.",
     permissionMessage = "",
     permissionDefault = PermissionDefault.OP,
     newParser = false,
@@ -70,6 +71,14 @@ object SubDebugCommand {
                 // 转化为Bukkit的Player
                 val bukkitPlayer = user.castSafely<Player>()
                 sender.sendDebug("${SQLDataBase().getUserInDatabase(bukkitPlayer)}")
+            }
+        }
+    }
+    @CommandBody
+    val randomGenerateID = subCommand {
+        execute<CommandSender> { sender, context, argument ->
+            repeat (10) {
+                sender.sendDebug(generateUserID())
             }
         }
     }
