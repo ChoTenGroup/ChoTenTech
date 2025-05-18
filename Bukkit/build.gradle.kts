@@ -76,6 +76,7 @@ dependencies {
     implementation("me.clip:placeholderapi:2.11.5")
     compileOnly("io.lumine:Mythic-Dist:5.6.1")
     implementation("net.kyori:adventure-text-serializer-legacy:4.19.0")
+    implementation("com.sk89q.worldguard:worldguard-bukkit:7.0.10-SNAPSHOT")
     implementation("net.kyori:adventure-api:4.19.0")
     implementation("net.kyori:adventure-text-minimessage:4.19.0")
     compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT") { isTransitive = false }
