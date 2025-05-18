@@ -9,6 +9,4 @@ data class PlayerData (
     var userId: String,
     val playerName: String,
     val playerUUID: String,
-) {
-
-}
+)
