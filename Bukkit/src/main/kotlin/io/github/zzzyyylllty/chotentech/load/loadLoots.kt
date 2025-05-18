@@ -1,6 +1,5 @@
 package io.github.zzzyyylllty.chotentech.load
 
-import com.sun.jdi.Location
 import io.github.zzzyyylllty.chotentech.ChoTenTech
 import io.github.zzzyyylllty.chotentech.data.Loot
 import io.github.zzzyyylllty.chotentech.data.LootItem
@@ -12,7 +11,7 @@ import taboolib.common.platform.function.releaseResourceFile
 import java.io.File
 
 
-fun loadItemFiles() {
+fun loadLootFiles() {
     if (!File(getDataFolder(), "loots").exists()) {
         releaseResourceFile("loots/test.yml")
     }
@@ -26,13 +25,13 @@ fun loadItemFiles() {
     for (file in files) {
         // If directory load file in it...
         if (file.isDirectory) file.listFiles()?.forEach {
-            loadItemFile(it)
+            loadLootFile(it)
         }
-        else loadItemFile(file)
+        else loadLootFile(file)
     }
 }
 
-fun loadItemFile(file: File) {
+fun loadLootFile(file: File) {
 
     val config = YamlConfiguration.loadConfiguration(file)
 
@@ -51,10 +50,10 @@ fun loadLoot(config: ConfigurationSection) {
 
     val loot = Loot(
         searchAmount = config.getString("amount", "1") ?: "1",
-        items = TODO(),
-        lootItems = TODO(),
-        refreshTime = TODO(),
-        refreshTimeEnd = TODO()
+        items = linkedMapOf(),
+        lootItems = items,
+        refreshTime = config.getString("refresh-time"),
+        refreshTimeEnd = null
     )
 
     for (string in (config.getList("locations") as List<String>)) {

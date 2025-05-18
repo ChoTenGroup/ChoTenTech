@@ -1,6 +1,7 @@
 test:
   locations:
     - 'world,0,100,0'
+  refresh-time: 1.0
   amount: random 1 to 5
   items:
     - item: MI:SWORD.STEEL_SWORD

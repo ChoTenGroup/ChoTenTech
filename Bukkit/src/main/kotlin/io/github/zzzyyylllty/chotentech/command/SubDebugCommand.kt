@@ -16,6 +16,7 @@ import taboolib.common.platform.command.PermissionDefault
 import taboolib.common.platform.command.mainCommand
 import taboolib.common.platform.command.player
 import taboolib.common.platform.command.subCommand
+import taboolib.common.platform.function.submitAsync
 import taboolib.expansion.createHelper
 
 @CommandHeader(
@@ -77,8 +78,10 @@ object SubDebugCommand {
     @CommandBody
     val randomGenerateID = subCommand {
         execute<CommandSender> { sender, context, argument ->
-            repeat (10) {
-                sender.sendDebug(generateUserID())
+            submitAsync {
+                repeat(10) {
+                    sender.sendDebug(generateUserID())
+                }
             }
         }
     }
