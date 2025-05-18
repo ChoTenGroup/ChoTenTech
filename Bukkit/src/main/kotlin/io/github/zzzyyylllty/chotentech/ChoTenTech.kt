@@ -2,6 +2,9 @@ package io.github.zzzyyylllty.chotentech
 
 import io.github.zzzyyylllty.chotentech.data.PlayerData
 import io.github.zzzyyylllty.chotentech.data.Loot
+import io.github.zzzyyylllty.chotentech.data.SurvivalDifficulty
+import io.github.zzzyyylllty.chotentech.load.loadLootFiles
+import io.github.zzzyyylllty.chotentech.load.loadSDClassFile
 import org.bukkit.Location
 import org.bukkit.command.CommandSender
 import taboolib.common.env.RuntimeDependencies
@@ -35,6 +38,7 @@ object ChoTenTech : Plugin() {
     val consoleSender by lazy { console.castSafely<CommandSender>()!! }
     val dataMap: LinkedHashMap<String, PlayerData> = linkedMapOf()
     val lootList: LinkedHashMap<Location, Loot> = linkedMapOf()
+    val sdClassList: LinkedHashMap<String, SurvivalDifficulty> = linkedMapOf()
 
     val config by lazy { Configuration.loadFromFile(newFile(getDataFolder(), "config.yml", create = true), Type.YAML) }
 
@@ -46,6 +50,8 @@ object ChoTenTech : Plugin() {
     }
 
     fun reloading() {
-        // loadItemFiles()
+        config.reload()
+        loadLootFiles()
+        loadSDClassFile()
     }
 }

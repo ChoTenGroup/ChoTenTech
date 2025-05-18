@@ -1,6 +1,6 @@
-database:
-  host: 127.0.0.1
-  port: 3306
-  user: root
-  password: 123456
-  database: chotentech
+1:
+  classname: Class 1
+  prefix: <#FFFF88>
+  one: 安全
+  two: 稳定
+  three: 极少量实体
