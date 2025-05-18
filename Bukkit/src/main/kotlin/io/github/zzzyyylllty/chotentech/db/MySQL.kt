@@ -89,7 +89,7 @@ public open class SQLDataBase {
         }
     }
     public fun saveInDatabase(user: Player) {
-        saveInDatabase(dataMap[user.uniqueId])
+        saveInDatabase(dataMap[user.uniqueId.toString()])
     }
 
     public fun getUserInDatabase(player: Player?): PlayerData? {

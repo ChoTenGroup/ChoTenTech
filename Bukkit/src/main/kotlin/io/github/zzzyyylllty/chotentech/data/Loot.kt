@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 data class Loot(
     val searchAmount: String,
     val lootItems: MutableList<LootItem>,
-    val refreshTime: LocalDateTime?,
+    val refreshTime: String?,
     val refreshTimeEnd: LocalDateTime?,
     val items: LinkedHashMap<Int, String>
 )

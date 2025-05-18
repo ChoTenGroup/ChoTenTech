@@ -1,20 +1,866 @@
-level-0:
-  world: Chapter1
-  name: '教学关卡'
-  cluster: I
-  class:
-    template: 1
-  number: 0
-  author: zzzyyylll_ty
-  tips: '外观类似于一家零售店的储藏后室。这里是你开始的地方。'
-  noclips:
-    - target-level: 'level-2'
-      noclip-location: 'Chapter1 -304 2 248 -302 6 251'
-      target-location: 'Chapter1 20046 4 69'
-      time: 5.0
-      name: '通风管'
-    - target-level: 'level-1'
-      noclip-location: 'Chapter1 -105 2 148 > -98 8 158'
-      target-location: 'Chapter1 10165 3 253'
-      time: 5.0
-      name: '马尼拉房间'
+NORMAL:
+  level-0:
+    world: Chapter1
+    name: '教学关卡'
+    cluster: I
+    sdclass: '1'
+    number: 0
+    loot: MEDIUM
+    authors: zzzyyylll_ty
+    tips: '外观类似于一家零售店的储藏后室。这里是你开始的地方。'
+    noclips:
+      - target: 'level-2'
+        noclipPointLoc: 'Chapter1 -304 2 248 -302 6 251'
+        targetLoc: 'Chapter1 20046 4 69'
+        successRate: 80
+        time: 5.0
+        name: '废弃通风管'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+      - target: 'level-1'
+        noclipPointLoc: 'Chapter1 -105 2 148 -98 8 158'
+        targetLoc: 'Chapter1 10165 3 253'
+        successRate: 80
+        time: 5.0
+        name: '马尼拉房间宜居地带入口'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+  level-1:
+    world: Chapter1
+    name: 宜居地带
+    cluster: I
+    sdclass: '1'
+    number: 1
+    loot: MEDIUM
+    authors: zzzyyylll_ty,zuanlan,wangyu_1023
+    tips: 一个大型混凝土仓库，冷凝的雾气与冷色的环境让这里显得有些阴森。
+    noclips:
+      - target: 'level-0'
+        noclipPointLoc: 'Chapter1 10162 8 252 10169 2 257'
+        targetLoc: 'Chapter1 -103 3 151'
+        successRate: 50
+        time: 5.0
+        name: 'Level 0铁门'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+      - target: 'level-2'
+        noclipPointLoc: 'Chapter1 10242 2 268 10261 6 266'
+        targetLoc: 'Chapter1 20095 4 70'
+        successRate: 50
+        time: 5.0
+        name: '管道走廊'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+      - target: 'level-3'
+        noclipPointLoc: 'Chapter1 10006 2 408 10010 6 412'
+        targetLoc: 'Chapter1 30029 1 3'
+        successRate: 30
+        time: 15.0
+        name: '警戒门'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 5.0
+        cooldown: 10.0
+      - target: 'level-881'
+        noclipPointLoc: 'Chapter1 10334 30 277 10336 26 281'
+        targetLoc: 'Chapter1 8810164 16 181'
+        successRate: 99
+        time: 1.0
+        name: '百窗庭入口'
+        rangeDecay: 0.0
+        hunger: 1.0
+        damage: 5.0
+        cooldown: 1.0
+  level-2:
+    world: Chapter1
+    name: 废弃公共带
+    cluster: I
+    sdclass: '3'
+    number: 2
+    loot: MEDIUM
+    authors: zzzyyylll_ty
+    tips: 已被废弃许久的管道长廊，在大停电后此处变得更加危险。
+    noclips:
+      - target: 'level-0'
+        noclipPointLoc: 'Chapter1 20045 3 71 20048 7 67'
+        targetLoc: 'Chapter1 -303 3 250'
+        successRate: 50
+        time: 5.0
+        name: 'Level 0铁门'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+      - target: 'level-3'
+        noclipPointLoc: 'Chapter1 20148 3 229 20151 6 226'
+        targetLoc: 'Chapter1 30123 2 82'
+        successRate: 100
+        time: 5.0
+        name: '拐角处发电站门'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+      - target: 'level-3'
+        noclipPointLoc: 'Chapter1 20153 6 156 20150 3 159'
+        targetLoc: 'Chapter1 30028 2 36'
+        successRate: 100
+        time: 5.0
+        name: '东侧发电站门'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+      - target: 'level-3'
+        noclipPointLoc: 'Chapter1 20023 3 162 20020 6 164'
+        targetLoc: 'Chapter1 30030 2 37'
+        successRate: 100
+        time: 5.0
+        name: '西侧发电站门'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+      - target: 'level-3'
+        noclipPointLoc: 'Chapter1 20042 6 199 20044 3 202'
+        targetLoc: 'Chapter1 30122 3 20'
+        successRate: 100
+        time: 5.0
+        name: '中侧发电站门'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+      - target: 'level-3'
+        noclipPointLoc: 'Chapter1 20015 3 208 20013 7 206'
+        targetLoc: 'Chapter1 30122 2 104'
+        successRate: 100
+        time: 5.0
+        name: '西南侧发电站门'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+      - target: 'level-1'
+        noclipPointLoc: 'Chapter1 20097 3 71 20071 7 68'
+        targetLoc: 'Chapter1 10255 4 267'
+        successRate: 100
+        time: 5.0
+        name: '宜居地带'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+  level-3:
+    world: Chapter1
+    name: 发电站
+    cluster: I
+    sdclass: '3'
+    number: 3
+    loot: MEDIUM
+    authors: zzzyyylll_ty
+    tips: 一座正在全力运转的发电站。机器的嗡鸣声让你有些恍惚。
+    noclips:
+      - target: 'level-2'
+        noclipPointLoc: 'Chapter1 30027 3 35 30029 0 37'
+        targetLoc: 'Chapter1 20072 4 32'
+        successRate: 100
+        time: 5.0
+        name: '1号西侧门'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+      - target: 'level-2'
+        noclipPointLoc: 'Chapter1 30027 3 35 30030 0 37'
+        targetLoc: 'Chapter1 20021 5 162'
+        successRate: 100
+        time: 5.0
+        name: '2号西侧门'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+      - target: 'level-2'
+        noclipPointLoc: 'Chapter1 30121 0 80 30123 5 84'
+        targetLoc: 'Chapter1 20148 5 229'
+        successRate: 100
+        time: 5.0
+        name: '1号东侧门'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+      - target: 'level-2'
+        noclipPointLoc: 'Chapter1 30124 3 19 30120 0 22'
+        targetLoc: 'Chapter1 20042 6 200'
+        successRate: 100
+        time: 5.0
+        name: '2号东侧门'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+      - target: 'level-2'
+        noclipPointLoc: 'Chapter1 30124 3 105 30121 0 103'
+        targetLoc: 'Chapter1 20013 5 206'
+        successRate: 100
+        time: 5.0
+        name: '3号东侧门'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+      - target: 'level-4'
+        noclipPointLoc: 'Chapter1 30102 5 216 30106 1 221'
+        targetLoc: 'Chapter1 40144 4 110'
+        successRate: 100
+        time: 5.0
+        name: '南部办公室电梯'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+      - target: 'level-5'
+        noclipPointLoc: 'Chapter1 30082 1 167 30087 5 163'
+        targetLoc: 'Chapter1 50145 108 306'
+        successRate: 50
+        time: 20.0
+        name: '旅馆木电梯'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+      - target: 'level-5'
+        noclipPointLoc: 'Chapter1 30028 0 4 30031 4 1'
+        targetLoc: 'Chapter1 10008 3 410'
+        successRate: 50
+        time: 10.0
+        name: '警戒门'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+  level-4:
+    world: Chapter1
+    name: 废弃办公室
+    cluster: I
+    sdclass: '1'
+    number: 4
+    loot: MEDIUM
+    authors: zzzyyylll_ty,wangyu_1023,zuanlan
+    tips: 一座安静的办公室大楼。
+    noclips:
+      - target: 'level-3'
+        noclipPointLoc: 'Chapter1 40141 3 108 40147 8 113'
+        targetLoc: 'Chapter1 30104 3 219'
+        successRate: 100
+        time: 5.0
+        name: '南部发电站电梯'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+      - target: 'level-5'
+        noclipPointLoc: 'Chapter1 40104 12 59 40101 16 53'
+        targetLoc: 'Chapter1 50140 107 306'
+        successRate: 100
+        time: 5.0
+        name: '旅馆通道'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+  level-5:
+    world: Chapter1
+    name: 恐怖旅馆
+    cluster: I
+    sdclass: '2'
+    number: 5
+    loot: MEDIUM
+    authors: zzzyyylll_ty,zuanlan,wangyu_1023
+    tips: 一座豪华的旅馆。这里的氛围不太对劲。
+    noclips:
+      - target: 'level-3'
+        noclipPointLoc: 'Chapter1 50297 106 221 50302 110 225'
+        targetLoc: 'Chapter1 30079 2 167'
+        successRate: 75
+        time: 5.0
+        name: '旅馆木电梯'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+      - target: 'level-4'
+        noclipPointLoc: 'Chapter1 50147 106 308 50143 111 304'
+        targetLoc: 'Chapter1 40102 14 56'
+        successRate: 75
+        time: 5.0
+        name: '旅馆通道'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+      - target: 'level-6'
+        noclipPointLoc: 'Chapter1 50218 110 69 50215 106 74'
+        targetLoc: 'Chapter1 60215 6 176'
+        successRate: 75
+        time: 5.0
+        name: '熄灯入口门'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+
+  level-6:
+    world: Chapter1
+    name: 熄灯
+    cluster: I
+    sdclass: 'pending'
+    number: 6
+    loot: MEDIUM
+    authors: zzzyyylll_ty,zuanlan
+    tips: '...'
+    noclips:
+      - target: 'level-7'
+        noclipPointLoc: 'Chapter1 59955 10 169 59966 5 167'
+        targetLoc: 'Chapter1 70041 -52 -3'
+        successRate: 75
+        time: 5.0
+        name: '入海口'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+
+  level-7:
+    world: Chapter1
+    name: 深海恐惧症
+    cluster: I
+    sdclass: '2'
+    number: 7
+    loot: MEDIUM
+    authors: zuanlan,wangyu_1023
+    tips: '你惧怕深海吗?'
+    noclips:
+      - target: 'level-8'
+        #noclipPointLoc: 'level7 1600 0 1600 -1600 -63 -1600'
+        noclipPointLoc: 'Chapter1 70136 -47 -168 70141 -51 -173'
+        targetLoc: 'Chapter1 80042 178 378'
+        successRate: 75
+        time: 5.0
+        name: '海底洞穴'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+      - target: 'level-76'
+        noclipPointLoc: 'Chapter1 50147 106 308 50143 111 304'
+        targetLoc: 'Chapter1 760001 6 59'
+        successRate: 75
+        time: 5.0
+        name: '下水道'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+      - target: 'level-9'
+        noclipPointLoc: 'Chapter1 70046 -27 -84 70056 -29 -73'
+        targetLoc: 'Chapter1 90404 14 91'
+        successRate: 75
+        time: 5.0
+        name: '郊区水池'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+      - target: 'level-17'
+        noclipPointLoc: 'Chapter1 70049 -23 -153 70045 -16 -158'
+        targetLoc: 'Chapter1 170136 -7 107'
+        successRate: 75
+        time: 5.0
+        name: '航空母舰'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+  level-8:
+    world: Chapter1
+    name: 岩洞系统
+    cluster: I
+    sdclass: '2'
+    number: 8
+    loot: MEDIUM
+    authors: zzzyyylll_ty,wangyu_1023
+    tips: '一个巨大的岩洞系统，被囚禁在地底的中央'
+    noclips:
+      - target: 'level-9'
+        noclipPointLoc: 'Chapter1 80482 136 288 80478 139 306'
+        targetLoc: 'Chapter1 90085 6 58'
+        successRate: 75
+        time: 5.0
+        name: '溶洞出口'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+      - target: 'level-75'
+        noclipPointLoc: 'Chapter1 80536 147 275 80534 152 273'
+        targetLoc: 'Chapter1 750128 218 128'
+        successRate: 75
+        time: 5.0
+        name: '镓洞入口'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+  level-9:
+    world: Chapter1
+    name: 郊区
+    cluster: I
+    sdclass: '2'
+    number: 9
+    loot: MEDIUM
+    authors: zuanlan,wangyu_1023
+    tips: '无穷的午夜郊区，暗藏危险。'
+    noclips:
+      - target: 'level-10'
+        noclipPointLoc: 'Chapter1 90084 5 404 90087 8 400'
+        targetLoc: 'Chapter1 100343 6 104'
+        successRate: 75
+        time: 5.0
+        name: '小麦田野'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+      - target: 'level-11'
+        noclipPointLoc: 'Chapter1 90336 6 397 90326 8 404'
+        targetLoc: 'Chapter1 110112 -37 193'
+        successRate: 75
+        time: 5.0
+        name: '围墙内的道路'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+  level-10:
+    world: Chapter1
+    name: 丰裕
+    cluster: I
+    sdclass: '2'
+    number: 10
+    loot: MEDIUM
+    authors: zuanlan,wangyu_1023
+    tips: '虚伪的温饱'
+    noclips:
+      - target: 'level-15'
+        noclipPointLoc: 'Chapter1 100176 6 88 100165 10 79'
+        targetLoc: 'Chapter1 150055 5 99'
+        successRate: 75
+        time: 5.0
+        name: '未来房间'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+      - target: 'level-11'
+        noclipPointLoc: 'Chapter1 100059 6 175 100023 10 170'
+        targetLoc: 'Chapter1 110112 -37 193'
+        successRate: 75
+        time: 5.0
+        name: '无垠边际'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+  level-11:
+    world: Chapter1
+    name: 无垠城市
+    cluster: I
+    sdclass: '2'
+    number: 11
+    loot: MEDIUM
+    authors: zuanlan,wangyu_1023
+    tips: '看起来和普通的城市也没什么两样嘛。'
+    noclips:
+      - target: 'level-13'
+        noclipPointLoc: 'Chapter1 110031 -37 61 110023 -32 72'
+        targetLoc: 'Chapter1 130009 12 138'
+        successRate: 75
+        time: 5.0
+        name: '无限公寓'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+      - target: 'level-12'
+        noclipPointLoc: 'Chapter1 110096 -37 90 110056 -28 69'
+        targetLoc: 'Chapter1 120100 1 91'
+        successRate: 75
+        time: 5.0
+        name: 'null.txt'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+
+  level-12:
+    world: Chapter1
+    name: 矩阵
+    cluster: I
+    sdclass: '2'
+    number: 12
+    loot: MEDIUM
+    authors: zzzyyylll_ty
+    tips: 'null.txt'
+    noclips:
+      - target: 'level-13'
+        noclipPointLoc: 'Chapter1 120104 0 95 120097 9 87'
+        targetLoc: 'Chapter1 130003 12 138'
+        successRate: 75
+        time: 5.0
+        name: '[Null]'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+
+  level-13:
+    world: Chapter1
+    name: 无限公寓
+    cluster: I
+    sdclass: '2'
+    number: 13
+    loot: MEDIUM
+    authors: wangyu_1023
+    tips: '???'
+    noclips:
+      - target: 'level-14'
+        noclipPointLoc: 'Chapter1 130061 77 80 130059 81 86'
+        targetLoc: 'Chapter1 140005 11 8'
+        successRate: 100
+        time: 0.5
+        name: '天堂入口'
+        rangeDecay: 0.0
+        hunger: 0.0
+        damage: 0.0
+        cooldown: 5.0
+  level-14:
+    world: Chapter1
+    name: 天堂
+    cluster: I
+    sdclass: '2'
+    number: 14
+    loot: MEDIUM
+    authors: zuanlan,wangyu_1023
+    tips: '安全,美丽,宁静'
+    noclips:
+      - target: 'level-0'
+        noclipPointLoc: 'Chapter1 140029 2 22 140024 5 17'
+        targetLoc: 'Chapter1 -100 2 148'
+        successRate: 75
+        time: 5.0
+        name: 'level0'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+  level-15:
+    world: Chapter1
+    name: 未来走廊
+    cluster: I
+    sdclass: '2'
+    number: 5
+    loot: MEDIUM
+    authors: zuanlan,wangyu_1023
+    tips: 'Lonely...'
+    noclips:
+      - target: 'level-0'
+        noclipPointLoc: 'Chapter1 150052 4 99 150057 6 94'
+        targetLoc: 'Chapter1 -100 2 148'
+        successRate: 75
+        time: 5.0
+        name: 'level0'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+  level-16:
+    world: Chapter1
+    name: 地形变换
+    cluster: I
+    sdclass: '2'
+    number: 16
+    loot: MEDIUM
+    authors: zuanlan,wangyu_1023
+    tips: '认知污染'
+    noclips:
+      - target: 'level-0'
+        noclipPointLoc: 'Chapter1 159476 8 -469 159482 12 -476'
+        targetLoc: 'Chapter1 -100 2 148'
+        successRate: 75
+        time: 5.0
+        name: 'level0'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+      - target: 'level-0'
+        noclipPointLoc: 'Chapter1 160417 -5 -494 160423 0 -499'
+        targetLoc: 'Chapter1 -100 2 148'
+        successRate: 75
+        time: 5.0
+        name: 'level0'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+  
+  level-17:
+    world: Chapter1
+    name: 航空母舰
+    cluster: I
+    sdclass: '2'
+    number: 17
+    loot: MEDIUM
+    authors: zuanlan,wangyu_1023
+    tips: '不大的建筑物，然而并不像有海的样子。'
+    noclips:
+      - target: 'level-18'
+        noclipPointLoc: 'Chapter1 170145 -7 109 170140 -3 115'
+        targetLoc: 'Chapter1 180060 2 30'
+        successRate: 75
+        time: 5.0
+        name: '童年'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+  level-18:
+    world: Chapter1
+    name: 回忆
+    cluster: I
+    sdclass: '1'
+    number: 18
+    loot: MEDIUM
+    authors: zuanlan,wangyu_1023
+    tips: '所以，还记得小时候差点撞到你的那辆车吗?'
+    noclips:
+      - target: 'level-19'
+        noclipPointLoc: 'Chapter1 180008 2 36 180001 5 33'
+        targetLoc: 'Chapter1 190040 16 83'
+        successRate: 75
+        time: 5.0
+        name: '阁楼'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+  level-19:
+    world: Chapter1
+    name: 阁楼
+    cluster: I
+    sdclass: '2'
+    number: 19
+    loot: MEDIUM
+    authors: zuanlan,wangyu_1023
+    tips: '???'
+    noclips:
+      - target: 'level-20'
+        noclipPointLoc: 'Chapter1 190117 12 35 190115 15 30'
+        targetLoc: 'Chapter1 200047 10 115'
+        successRate: 75
+        time: 5.0
+        name: '仓库'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+  level-20:
+    world: Chapter1
+    name: 仓库
+    cluster: I
+    sdclass: '2'
+    number: 20
+    loot: MEDIUM
+    authors: zuanlan,wangyu_1023
+    tips: '物资没有想象中的那么多。'
+    noclips:
+      - target: 'level-6'
+        noclipPointLoc: 'Chapter1 200115 9 113 200118 13 118'
+        targetLoc: 'Chapter1 60215 6 176'
+        successRate: 75
+        time: 5.0
+        name: '熄灯之时'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+      - target: 'level-21'
+        noclipPointLoc: 'Chapter1 200002 21 77 200026 27 60'
+        targetLoc: 'Chapter1 210004 29 7'
+        successRate: 75
+        time: 5.0
+        name: '编号门'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+      - target: 'level-19'
+        noclipPointLoc: 'Chapter1 200076 9 110 200065 16 120'
+        targetLoc: 'Chapter1 190040 16 83'
+        successRate: 75
+        time: 5.0
+        name: '阁楼'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+  
+  level-21:
+    world: Chapter1
+    name: 编号门
+    cluster: I
+    sdclass: '2'
+    number: 21
+    loot: MEDIUM
+    authors: zuanlan,wangyu_1023
+    tips: '???'
+    noclips:
+      - target: 'level-0'
+        noclipPointLoc: 'Chapter1 209907 28 207 209902 32 210'
+        targetLoc: 'Chapter1 -100 2 148'
+        successRate: 75
+        time: 5.0
+        name: '教学关卡'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+      - target: 'level-22'
+        noclipPointLoc: 'Chapter1 210103 28 205 210107 32 209'
+        targetLoc: 'Chapter1 220056 16 99'
+        successRate: 75
+        time: 5.0
+        name: '颓桓'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+  
+  level-22:
+    world: Chapter1
+    name: 颓桓
+    cluster: I
+    sdclass: '5'
+    number: 22
+    loot: MEDIUM
+    authors: zuanlan,wangyu_1023
+    tips: '???'
+    noclips:
+      - target: 'level-23'
+        noclipPointLoc: 'Chapter1 220174 120 329 220184 123 319'
+        targetLoc: 'Chapter1 230075 -45 49 '
+        successRate: 75
+        time: 5.0
+        name: '石化花园'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+  
+  level-23-cave:
+    world: Chapter1
+    name: 石化花园
+    cluster: I
+    sdclass: '4'
+    number: 23
+    loot: MEDIUM
+    authors: zuanlan,wangyu_1023
+    tips: '???'
+    noclips:
+      - target: 'level-0'
+        noclipPointLoc: 'Chapter1 230148 -53 418 230126 -44 399'
+        targetLoc: 'Chapter1 -113 3 153'
+        successRate: 75
+        time: 5.0
+        name: '石化花园'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+  
+  level-75:
+    world: Chapter1
+    name: 镓洞
+    cluster: I
+    sdclass: '5'
+    number: 75
+    loot: MEDIUM
+    authors: zuanlan,wangyu_1023
+    tips: '...in order to avoid dest.s.'
+    noclips:
+      - target: 'level-23'
+        noclipPointLoc: 'Chapter1 750123 217 123 750123 233 133'
+        targetLoc: 'Chapter1 760001 6 59'
+        successRate: 75
+        time: 5.0
+        name: '下水道'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+
+  level-76:
+    world: Chapter1
+    name: 无限下水道
+    cluster: I
+    sdclass: '4'
+    number: 76
+    loot: MEDIUM
+    authors: zuanlan,wangyu_1023
+    tips: '???'
+    noclips:
+      - target: 'level-23'
+        noclipPointLoc: 'Chapter1 750123 217 123 750123 233 133'
+        targetLoc: 'Chapter1 760001 6 59'
+        successRate: 75
+        time: 5.0
+        name: '下水道'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 1.0
+        cooldown: 5.0
+  level-881:
+    world: Chapter1
+    name: 百窗庭
+    cluster: I
+    sdclass: '5'
+    number: 881
+    loot: MEDIUM
+    authors: zuanlan,zzzyyylll_ty
+    tips: '之后我便试着离开，但他们却不依；兴许是我的脓疮让他们感到更能心安理得地待在壹起。'
+    noclips:
+      - target: 'level-1'
+        noclipPointLoc: 'Chapter1 8810862 16 180 8810162 20 185'
+        targetLoc: 'Chapter1 10331 28 279'
+        successRate: 75
+        time: 10.0
+        name: '入口窗户'
+        rangeDecay: 50.0
+        hunger: 1.0
+        damage: 10.0
+        cooldown: 1.0
+
+
+
+

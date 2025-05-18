@@ -9,7 +9,7 @@ import taboolib.common.platform.event.SubscribeEvent
 
 @SubscribeEvent(EventPriority.LOWEST)
 fun playerLoadDBEvent(e: PlayerJoinEvent) {
-    dataMap[e.player.uniqueId] = SQLDataBase().getUserInDatabase(e.player) ?: PlayerData(
+    dataMap[e.player.uniqueId.toString()] = SQLDataBase().getUserInDatabase(e.player) ?: PlayerData(
         playerName = e.player.name,
         playerUUID = e.player.uniqueId.toString(),
         userId = "1000000",

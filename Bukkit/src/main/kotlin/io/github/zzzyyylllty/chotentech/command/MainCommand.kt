@@ -2,6 +2,7 @@ package io.github.zzzyyylllty.chotentech.command
 
 import io.github.zzzyyylllty.chotentech.ChoTenTech.config
 import io.github.zzzyyylllty.chotentech.function.sender.sendComponent
+import io.github.zzzyyylllty.chotentech.load.loadLootFiles
 import org.bukkit.command.CommandSender
 import taboolib.common.platform.command.CommandBody
 import taboolib.common.platform.command.CommandHeader
@@ -39,6 +40,7 @@ object MainCommand {
             sender.sendComponent("<gradient:aqua:yellow>reloading...")
             try {
                 config.reload()
+                loadLootFiles()
                 sender.sendComponent("<gradient:aqua:yellow>reloading... Complete.")
             } catch (e: Exception) {
                 sender.sendComponent("<red>Error thrown. check console for info.</red>")

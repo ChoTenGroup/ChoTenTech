@@ -2,7 +2,6 @@ package io.github.zzzyyylllty.chotentech
 
 import io.github.zzzyyylllty.chotentech.data.PlayerData
 import io.github.zzzyyylllty.chotentech.data.Loot
-import io.github.zzzyyylllty.chotentech.load.loadItemFiles
 import org.bukkit.Location
 import org.bukkit.command.CommandSender
 import taboolib.common.env.RuntimeDependencies
@@ -13,7 +12,6 @@ import taboolib.common.platform.function.console
 import taboolib.common.platform.function.getDataFolder
 import taboolib.module.configuration.Configuration
 import taboolib.module.configuration.Type
-import java.util.UUID
 
 @RuntimeDependencies(
     RuntimeDependency(
@@ -35,7 +33,7 @@ object ChoTenTech : Plugin() {
     var dataFolder = nativeDataFolder()
     val console by lazy { console() }
     val consoleSender by lazy { console.castSafely<CommandSender>()!! }
-    val dataMap: LinkedHashMap<UUID, PlayerData> = linkedMapOf()
+    val dataMap: LinkedHashMap<String, PlayerData> = linkedMapOf()
     val lootList: LinkedHashMap<Location, Loot> = linkedMapOf()
 
     val config by lazy { Configuration.loadFromFile(newFile(getDataFolder(), "config.yml", create = true), Type.YAML) }
