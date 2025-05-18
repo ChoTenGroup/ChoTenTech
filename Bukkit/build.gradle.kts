@@ -37,6 +37,49 @@ taboolib {
 
 
 repositories {
+    mavenCentral()
+    jcenter()
+    google()
+    mavenLocal()
+    maven {
+        url = uri("https://repo.auroramc.gg/repository/maven-public/")
+    }
+
+    maven {
+        url = uri("https://repo.aikar.co/content/groups/aikar/")
+    }
+
+    maven {
+        url = uri("https://repo.papermc.io/repository/maven-public/")
+    }
+
+    maven {
+        url = uri("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
+    }
+
+    maven {
+        url = uri("https://nexus.phoenixdevt.fr/repository/maven-public/")
+    }
+
+    maven {
+        url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+    }
+
+    maven {
+        url = uri("https://oss.sonatype.org/content/groups/public/")
+    }
+
+    maven {
+        url = uri("https://maven.enginehub.org/repo/")
+    }
+
+    maven {
+        url = uri("https://jitpack.io")
+    }
+
+    maven {
+        url = uri("https://repo.maven.apache.org/maven2/")
+    }
     maven { url = uri("https://repo.pcgamingfreaks.at/repository/maven-everything") }
     maven {
         name = "papermc"

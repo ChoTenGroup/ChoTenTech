@@ -32,7 +32,7 @@ object SubDebugCommand {
 
     @CommandBody
     val main = mainCommand {
-        createHelper()
+        createModernHelper()
     }
 
     @CommandBody
@@ -46,6 +46,12 @@ object SubDebugCommand {
     val getLootMap = subCommand {
         execute<CommandSender> { sender, context, argument ->
             sender.sendComponent(Json.encodeToString(ChoTenTech.lootList.entries))
+        }
+    }
+    @CommandBody
+    val getSDClassMap = subCommand {
+        execute<CommandSender> { sender, context, argument ->
+            sender.sendComponent(Json.encodeToString(ChoTenTech.sdClassList.entries))
         }
     }
     @CommandBody
