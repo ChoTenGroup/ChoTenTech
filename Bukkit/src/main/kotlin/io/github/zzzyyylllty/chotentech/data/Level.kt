@@ -5,13 +5,13 @@ import net.kyori.adventure.text.Component
 import java.time.LocalDateTime
 
 data class Level(
-    val region: ProtectedRegion,
+    val region: ProtectedRegion? = null,
     var cluster: String = "I", // 层群，默认为 I ，为 I 则不显示。请注意，I为主层群。
     var number: Number = 0, // 不赋值则为0。该数值在ENIGMATIC/JOKE/SUBLAYER类别时无效。
-    var name: Component,
+    var name: String,
     var survivalDifficulty: SurvivalDifficulty,
-    val author: Component,
-    val loot: Component,
-    val tip: Component,
+    val author: String,
+    val loot: String,
+    val tip: String,
     val noclips: List<NoclipPoint>,
 )

@@ -45,13 +45,13 @@ object SubDebugCommand {
     @CommandBody
     val getLootMap = subCommand {
         execute<CommandSender> { sender, context, argument ->
-            sender.sendComponent(Json.encodeToString(ChoTenTech.lootList.entries))
+            sender.sendComponent(ChoTenTech.lootList.entries.toString())
         }
     }
     @CommandBody
     val getSDClassMap = subCommand {
         execute<CommandSender> { sender, context, argument ->
-            sender.sendComponent(Json.encodeToString(ChoTenTech.sdClassList.entries))
+            sender.sendComponent(ChoTenTech.sdClassList.entries.toString())
         }
     }
     @CommandBody
