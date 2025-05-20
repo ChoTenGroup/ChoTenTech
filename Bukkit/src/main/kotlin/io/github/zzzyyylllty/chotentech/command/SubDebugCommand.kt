@@ -43,12 +43,6 @@ object SubDebugCommand {
     }
 
     @CommandBody
-    val getLootMap = subCommand {
-        execute<CommandSender> { sender, context, argument ->
-            sender.sendComponent(ChoTenTech.lootList.entries.toString())
-        }
-    }
-    @CommandBody
     val getSDClassMap = subCommand {
         execute<CommandSender> { sender, context, argument ->
             sender.sendComponent(ChoTenTech.sdClassList.entries.toString())

@@ -2,18 +2,16 @@ package io.github.zzzyyylllty.chotentech.load
 
 import io.github.zzzyyylllty.chotentech.ChoTenTech
 import io.github.zzzyyylllty.chotentech.ChoTenTech.sdClassList
-import io.github.zzzyyylllty.chotentech.data.Loot
-import io.github.zzzyyylllty.chotentech.data.LootItem
 import io.github.zzzyyylllty.chotentech.data.SurvivalDifficulty
-import org.bukkit.Bukkit
-import org.bukkit.Location
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
+import taboolib.common.LifeCycle
+import taboolib.common.platform.Awake
 import taboolib.common.platform.function.getDataFolder
 import taboolib.common.platform.function.releaseResourceFile
 import java.io.File
 
-
+@Awake(LifeCycle.ENABLE)
 fun loadSDClassFile() {
 
     val config = YamlConfiguration.loadConfiguration(File(getDataFolder(), "sdclass.yml"))

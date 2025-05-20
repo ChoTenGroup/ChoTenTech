@@ -9,6 +9,20 @@ plugins {
 }
 
 taboolib {
+    description {
+        name("ChoTenTech")
+        desc("超天后室服务器管理服务.")
+        contributors {
+            // 作者名称
+            name("AkaCandyKAngel")
+        }
+        dependencies {
+            // 依赖插件名称（不要误会成写自己，会触发 self-loop 错误）
+            name("WorldGuard").optional(true)
+            // 可选依赖
+            // name("XXX").optional(true)
+        }
+    }
     env {
         // 安装模块
         install(Basic)
@@ -117,7 +131,6 @@ dependencies {
     compileOnly("net.luckperms:api:5.4")
     implementation("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT") { isTransitive = false }
     implementation("me.clip:placeholderapi:2.11.5")
-    compileOnly("io.lumine:Mythic-Dist:5.6.1")
     implementation("net.kyori:adventure-text-serializer-legacy:4.19.0")
     implementation("com.sk89q.worldguard:worldguard-bukkit:7.0.10-SNAPSHOT")
     implementation("net.kyori:adventure-api:4.19.0")

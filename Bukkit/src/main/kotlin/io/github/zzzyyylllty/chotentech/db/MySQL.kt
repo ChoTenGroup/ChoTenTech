@@ -53,6 +53,8 @@ public open class SQLDataBase {
             type(ColumnTypeSQL.VARCHAR, 36) {
                 options(
                     ColumnOptionSQL.NOTNULL, ColumnOptionSQL.KEY)
+
+
             }
         }
         add("userid") { // Player Long Id
@@ -136,7 +138,7 @@ public open class SQLDataBase {
     }
     public fun getUUIDExists(uuid: String): Boolean {
         val uid = indexTable.select(dataSource) {
-            rows("longid")
+            rows("userid")
             where("uuid" eq uuid)
             limit(1)
         }.firstOrNull {
