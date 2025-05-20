@@ -6,9 +6,7 @@ import com.sk89q.worldguard.protection.flags.StateFlag
 import com.sk89q.worldguard.protection.flags.registry.FlagConflictException
 import io.github.zzzyyylllty.chotentech.data.Level
 import io.github.zzzyyylllty.chotentech.data.PlayerData
-import io.github.zzzyyylllty.chotentech.data.Loot
 import io.github.zzzyyylllty.chotentech.data.SurvivalDifficulty
-import io.github.zzzyyylllty.chotentech.load.loadLootFiles
 import io.github.zzzyyylllty.chotentech.load.loadSDClassFile
 import org.bukkit.Location
 import org.bukkit.command.CommandSender

@@ -3,8 +3,6 @@ package io.github.zzzyyylllty.chotentech.command
 import io.github.zzzyyylllty.chotentech.ChoTenTech.config
 import io.github.zzzyyylllty.chotentech.ChoTenTech.reloading
 import io.github.zzzyyylllty.chotentech.function.sender.sendComponent
-import io.github.zzzyyylllty.chotentech.load.loadLootFiles
-import io.github.zzzyyylllty.chotentech.load.loadSDClassFile
 import org.bukkit.command.CommandSender
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.CommandBody

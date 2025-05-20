@@ -20,16 +20,16 @@ import java.io.File
 import taboolib.module.configuration.Configuration
 import taboolib.platform.BukkitAdapter
 
-val read = MutableList<Configuration>()
+val read = mutableListOf<Configuration>()
 
 @Awake(LifeCycle.ENABLE)
-fun load() {
+fun loadLevel() {
     read.clear()
-    val file = newFolder(getDataFolder(), "marks", create = false)
+    val file = newFolder(getDataFolder(), "levels", create = false)
     // 文件不存在则释放jar内的文件
     if (!file.exists()) {
         file.mkdirs()
-        releaseResourceFile("marks/test.yml")
+        releaseResourceFile("levels/cluster1.yml")
     }
     file.walk()
         .filter { it.isFile }
@@ -51,11 +51,18 @@ fun loadLevel(root: String, config: Configuration) {
 
     levelsList.put(root, Level(
         region = getRegion(com.sk89q.worldedit.bukkit.BukkitAdapter.adapt(Bukkit.getWorld(config.getString("world") ?: "world")), root),
-        name = TODO(),
-        survivalDifficulty = TODO(),
-        author = TODO(),
-        loot = TODO(),
-        tip = TODO(),
-        noclips = TODO()
+        cluster = config.getString("cluster") ?: "Unknown",
+        number = config.getString("number") ?: "Unknown",
+        name = config.getString("name") ?: "Unknown",
+        survivalDifficulty = sdClassList[config.getString("sdclass") ?: "1"] ?: SurvivalDifficulty(
+            classname = "Class 0",
+            one = "安全",
+            two = "稳定",
+            three = "实体绝迹",
+            prefix = "<#66CCFF>"
+        ),
+        author = config.getString("author") ?: "Unknown",
+        tip = config.getString("tip") ?: "Unknown",
+        noclips = emptyList() // TODO
     ))
 }

@@ -16,12 +16,15 @@ import com.sk89q.worldguard.session.handler.FlagValueChangeHandler
 import com.sk89q.worldguard.session.handler.Handler
 import io.github.zzzyyylllty.chotentech.ChoTenTech
 import io.github.zzzyyylllty.chotentech.ChoTenTech.MY_CUSTOM_FLAG
+import io.github.zzzyyylllty.chotentech.ChoTenTech.levelsList
 import io.github.zzzyyylllty.chotentech.load.getRegion
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerMoveEvent
 import taboolib.common.LifeCycle.LOAD
 import taboolib.common.platform.Awake
 import taboolib.common.platform.event.SubscribeEvent
+import taboolib.common.platform.function.submitAsync
 import java.util.UUID
 
 val playerRegions = mutableMapOf<UUID, Set<String>>()
@@ -43,7 +46,14 @@ fun onPlayerMove(event: PlayerMoveEvent) {
     // 进入新区域
     val enteredRegions = currentRegions - previousRegions
     if (enteredRegions.isNotEmpty()) {
-        player.sendMessage("进入区域：${enteredRegions.joinToString()}")
+        submitAsync {
+            player.sendMessage("进入区域：${enteredRegions.joinToString()}")
+
+            val mm = MiniMessage.miniMessage()
+            for (region in enteredRegions) {
+                if (levelsList[region] != null) player.sendMessage(mm.deserialize(levelsList[region]!!.generateLore()))
+            }
+        }
     }
 
     // 离开旧区域
