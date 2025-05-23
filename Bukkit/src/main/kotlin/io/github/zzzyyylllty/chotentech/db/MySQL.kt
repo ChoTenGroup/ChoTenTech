@@ -33,7 +33,7 @@ public open class SQLDataBase {
         add("uuid") { // Player UUID
             type(ColumnTypeSQL.VARCHAR, 36) {
                 options(
-                    ColumnOptionSQL.NOTNULL, ColumnOptionSQL.KEY)
+                    ColumnOptionSQL.NOTNULL, ColumnOptionSQL.UNIQUE_KEY)
             }
         }
         add("data") {
@@ -46,13 +46,13 @@ public open class SQLDataBase {
         add("uuid") { // Player UUID
             type(ColumnTypeSQL.VARCHAR, 36) {
                 options(
-                    ColumnOptionSQL.NOTNULL, ColumnOptionSQL.KEY)
+                    ColumnOptionSQL.NOTNULL, ColumnOptionSQL.UNIQUE_KEY)
             }
         }
         add("name") { // Player Name
             type(ColumnTypeSQL.VARCHAR, 36) {
                 options(
-                    ColumnOptionSQL.NOTNULL, ColumnOptionSQL.KEY)
+                    ColumnOptionSQL.NOTNULL, ColumnOptionSQL.UNIQUE_KEY)
 
 
             }
@@ -60,7 +60,7 @@ public open class SQLDataBase {
         add("userid") { // Player Long Id
             type(ColumnTypeSQL.VARCHAR, 36) {
                 options(
-                    ColumnOptionSQL.NOTNULL, ColumnOptionSQL.KEY)
+                    ColumnOptionSQL.NOTNULL, ColumnOptionSQL.UNIQUE_KEY)
             }
         }
     }

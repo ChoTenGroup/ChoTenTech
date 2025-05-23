@@ -16,12 +16,11 @@ data class Level(
 ) {
     fun generateLore() : String{
         return """
-            <white><b>Cluster $cluster
-            <white><b> Level $number <white><b>-> [ <gray><b>$name<white><b> ]
+            <white><b>层群 $cluster 层级 $number <white><b>-> [ <gray><b>$name<white><b> ]
             
-            <white><b> 生存难度等级 [ <gray>${survivalDifficulty.prefix}<b>${survivalDifficulty.classname}<white><b> ]
-            <white><b> 作者 $author
-            <reset><gray><i> $tip
+            <white><b>生存难度等级 [ <gray>${survivalDifficulty.prefix}<b>${survivalDifficulty.classname}<white><b> ] <gray><i>${survivalDifficulty.one},${survivalDifficulty.two},${survivalDifficulty.three}
+            <white><b>作者 <gray><i>$author
+            <reset><gray><i>$tip
         """.trimIndent()
     }
 }

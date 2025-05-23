@@ -8,8 +8,7 @@ level-0:
   authors: zzzyyylll_ty
   tips: '外观类似于一家零售店的储藏后室。这里是你开始的地方。'
   noclips:
-    - target: 'level-2'
-      noclipPointLoc: 'Chapter1 -304 2 248 -302 6 251'
+    - noclipPointLoc: 'Chapter1 -304 2 248 -302 6 251'
       targetLoc: 'Chapter1 20046 4 69'
       successRate: 80
       time: 5.0

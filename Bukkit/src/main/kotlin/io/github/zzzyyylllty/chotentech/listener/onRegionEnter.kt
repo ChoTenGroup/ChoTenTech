@@ -15,10 +15,11 @@ import com.sk89q.worldguard.session.SessionManager
 import com.sk89q.worldguard.session.handler.FlagValueChangeHandler
 import com.sk89q.worldguard.session.handler.Handler
 import io.github.zzzyyylllty.chotentech.ChoTenTech
-import io.github.zzzyyylllty.chotentech.ChoTenTech.MY_CUSTOM_FLAG
 import io.github.zzzyyylllty.chotentech.ChoTenTech.levelsList
+import io.github.zzzyyylllty.chotentech.ChoTenTech.playerRegions
 import io.github.zzzyyylllty.chotentech.load.getRegion
 import net.kyori.adventure.text.minimessage.MiniMessage
+import org.bukkit.Sound
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerMoveEvent
 import taboolib.common.LifeCycle.LOAD
@@ -27,7 +28,6 @@ import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submitAsync
 import java.util.UUID
 
-val playerRegions = mutableMapOf<UUID, Set<String>>()
 
 @SubscribeEvent
 fun onPlayerMove(event: PlayerMoveEvent) {
@@ -46,9 +46,9 @@ fun onPlayerMove(event: PlayerMoveEvent) {
     // 进入新区域
     val enteredRegions = currentRegions - previousRegions
     if (enteredRegions.isNotEmpty()) {
+        player.playSound(player.location, "minecraft:block.anvil.place", 1F ,1F)
         submitAsync {
             player.sendMessage("进入区域：${enteredRegions.joinToString()}")
-
             val mm = MiniMessage.miniMessage()
             for (region in enteredRegions) {
                 if (levelsList[region] != null) player.sendMessage(mm.deserialize(levelsList[region]!!.generateLore()))
@@ -59,7 +59,9 @@ fun onPlayerMove(event: PlayerMoveEvent) {
     // 离开旧区域
     val exitedRegions = previousRegions - currentRegions
     if (exitedRegions.isNotEmpty()) {
-        player.sendMessage("离开区域：${exitedRegions.joinToString()}")
+        submitAsync {
+            player.sendMessage("离开区域：${exitedRegions.joinToString()}")
+        }
     }
 
     playerRegions[player.uniqueId] = currentRegions
