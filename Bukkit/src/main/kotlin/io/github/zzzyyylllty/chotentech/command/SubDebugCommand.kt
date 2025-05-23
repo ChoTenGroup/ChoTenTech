@@ -2,6 +2,7 @@ package io.github.zzzyyylllty.chotentech.command
 
 import io.github.zzzyyylllty.chotentech.ChoTenTech
 import io.github.zzzyyylllty.chotentech.ChoTenTech.dataMap
+import io.github.zzzyyylllty.chotentech.ChoTenTech.levelsList
 import io.github.zzzyyylllty.chotentech.db.SQLDataBase
 import io.github.zzzyyylllty.chotentech.function.id.generateUserID
 import io.github.zzzyyylllty.chotentech.function.sender.sendComponent
@@ -38,7 +39,14 @@ object SubDebugCommand {
     @CommandBody
     val getDataMap = subCommand {
         execute<CommandSender> { sender, context, argument ->
-            sender.sendComponent(Json.encodeToString(dataMap.entries))
+            sender.sendComponent(dataMap.entries.toString())
+        }
+    }
+
+    @CommandBody
+    val getLevelMap = subCommand {
+        execute<CommandSender> { sender, context, argument ->
+            sender.sendComponent(ChoTenTech.levelsList.entries.toString())
         }
     }
 
