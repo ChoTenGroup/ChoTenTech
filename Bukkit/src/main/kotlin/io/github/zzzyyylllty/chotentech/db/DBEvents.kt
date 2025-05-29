@@ -2,6 +2,7 @@ package io.github.zzzyyylllty.chotentech.db
 
 import io.github.zzzyyylllty.chotentech.data.PlayerData
 import io.github.zzzyyylllty.chotentech.ChoTenTech.dataMap
+import io.github.zzzyyylllty.chotentech.function.id.generateUserID
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
@@ -27,7 +28,7 @@ fun emptyData(name: String, uuid: String): PlayerData {
     return PlayerData(
         playerName = name,
         playerUUID = uuid,
-        userId = "1000000",
+        userId = generateUserID(),
         noclipCooldown = 0.0,
         noclipPoint = null,
         noclipTimeLeft = 0.0,
