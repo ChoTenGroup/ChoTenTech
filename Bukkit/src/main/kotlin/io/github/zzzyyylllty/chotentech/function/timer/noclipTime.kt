@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.function.info
+import taboolib.common.platform.function.submit
 import taboolib.common.platform.function.submitAsync
 import taboolib.common.platform.function.warning
 import kotlin.time.DurationUnit
@@ -25,7 +26,9 @@ import kotlin.time.toJavaDuration
 fun noclipTime() {
     submitAsync (period = 20) {
 
-        for (k in dataMap.keys) {
+        for (player in Bukkit.getOnlinePlayers()) {
+
+            val k = player.uniqueId.toString()
 
             val data = dataMap[k] ?: run {
                 warning("$k Data is null!")
@@ -33,10 +36,8 @@ fun noclipTime() {
             }
             val cd = data?.noclipCooldown ?: 0.0
             val tl = data?.noclipTimeLeft ?: 0.0
-            val player = Bukkit.getPlayer(k)
 
             if (player != null && data != null) {
-                info("Triggered")
 
                 if (cd > 0.0) dataMap[k]?.noclipCooldown = (cd - 1)
 
@@ -44,50 +45,48 @@ fun noclipTime() {
 
                     if (tl >= 0.0) {
 
-                        submitAsync {
                             sendRefactorTitle(
                                 player,
                                 " ",
-                                "<gradient:green:#006600>在 ${tl.toInt()} 秒后切出...",
+                                "<gradient:green:#006600>在${tl.toInt()}秒后切出 <white>- <gray>${data.noclipPoint?.name}",
                                 0,
                                 10,
                                 0
                             )
                             player.playSound(player, Sound.BLOCK_NOTE_BLOCK_SNARE, 1F, 1F)
                             dataMap[k]?.noclipTimeLeft = (tl - 1)
-                        }
 
                     } else {
 
                         if ((0..100).random() <= (data.noclipPoint?.basicSuccessRate ?: 60.0)) {
 
                             // 切出成功
-                            player.teleport(dataMap[k]?.noclipPoint?.targetLocation ?: error("Null Location"))
-                            submitAsync {
-                                sendRefactorMessages("<gradient:green:yellow>切出成功...", player)
-                                player.playSound(player, Sound.BLOCK_AMETHYST_BLOCK_BREAK, 1F, 0.5F)
-                                sendRefactorTitle(player, " ", "<gradient:green:yellow>切出成功...", 0, 10, 0)
+                            submit {
+                                player.teleport(dataMap[k]?.noclipPoint?.targetLocation ?: error("Null Location"))
                             }
+                                sendRefactorMessages("<gradient:green:yellow>切出成功", player)
+                                player.playSound(player, Sound.BLOCK_AMETHYST_BLOCK_BREAK, 1F, 0.5F)
+                                sendRefactorTitle(player, " ", "<gradient:green:yellow>切出成功", 0, 10, 0)
                         } else {
                             // 切出失败
                             val damage = data.noclipPoint?.damage
-                            if (damage != null && (data.noclipPoint?.damage ?: 1.0) > 0) {
-                                // 运行主线程任务
-                                player.damage(damage)
+                            submit {
+                                if (damage != null && (data.noclipPoint?.damage ?: 0.0) > 0) {
+                                    // 运行主线程任务
+                                    player.damage(damage)
+                                }
                             }
-                            submitAsync {
                                 sendRefactorMessages(
                                     "<gradient:gold:red>切出失败，受到 ${data.noclipPoint?.damage} 伤害",
                                     player
                                 )
-                                sendRefactorTitle(player, " ", "<gradient:gold:red>切出失败!", 0, 10, 0)
+                                sendRefactorTitle(player, " ", "<gradient:gold:red>切出失败", 0, 10, 0)
                                 dataMap[player.uniqueId.toString()] = data.copy(
                                     noclipPoint = null,
                                     noclipping = false,
                                     noclipCooldown = data.noclipPoint?.cooldown ?: 10.0
                                 )
                             }
-                        }
                     }
                 }
             }

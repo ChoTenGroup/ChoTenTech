@@ -64,3 +64,4 @@ object ChoTenTech : Plugin() {
         loadSDClassFile()
     }
 }
+
