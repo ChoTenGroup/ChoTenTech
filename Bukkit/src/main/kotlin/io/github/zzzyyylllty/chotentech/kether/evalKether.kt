@@ -9,7 +9,6 @@ import taboolib.common5.Coerce
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.KetherFunction
 import taboolib.module.kether.KetherShell
-import taboolib.module.kether.ParserHolder.type
 import taboolib.module.kether.ScriptFrame
 import taboolib.module.kether.ScriptOptions
 import taboolib.module.kether.script

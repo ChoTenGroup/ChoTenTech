@@ -10,5 +10,5 @@ fun CommandSender.sendComponent(message: String) {
 
 fun CommandSender.sendDebug(message: String) {
     val mm = MiniMessage.miniMessage()
-    this.sendMessage(mm.deserialize("<gradient:aqua:light_purple:red>< ChoTenTech ></gradient><gray> > <white>$message"))
+    this.sendMessage(mm.deserialize("<gradient:aqua:light_purple:red><ChoTenTech></gradient><gray> > <white>$message"))
 }

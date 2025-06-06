@@ -10,8 +10,11 @@ import io.github.zzzyyylllty.chotentech.data.SurvivalDifficulty
 import io.github.zzzyyylllty.chotentech.function.timer.noclipTime
 import io.github.zzzyyylllty.chotentech.load.loadLevel
 import io.github.zzzyyylllty.chotentech.load.loadSDClassFile
+import io.github.zzzyyylllty.chotentech.worldgeneration.Level0Generator
+import io.github.zzzyyylllty.chotentech.worldgeneration.Level1Generator
 import org.bukkit.Location
 import org.bukkit.command.CommandSender
+import org.bukkit.generator.ChunkGenerator
 import taboolib.common.env.RuntimeDependencies
 import taboolib.common.env.RuntimeDependency
 import taboolib.common.io.newFile
@@ -21,6 +24,7 @@ import taboolib.common.platform.function.getDataFolder
 import taboolib.module.configuration.Configuration
 import taboolib.module.configuration.Type
 import taboolib.module.ui.type.Linked
+import taboolib.platform.BukkitWorldGenerator
 import java.util.UUID
 
 @RuntimeDependencies(
@@ -37,7 +41,7 @@ import java.util.UUID
         transitive = false
     ),
 )
-object ChoTenTech : Plugin() {
+object ChoTenTech : Plugin(), BukkitWorldGenerator {
 
     val plugin by lazy { this }
     var dataFolder = nativeDataFolder()
@@ -62,6 +66,14 @@ object ChoTenTech : Plugin() {
         // loadLootFiles()
         loadLevel()
         loadSDClassFile()
+    }
+
+    override fun getDefaultWorldGenerator(worldName: String?, name: String?): ChunkGenerator? {
+        return when (worldName) {
+            "level0inf" -> Level0Generator()
+            "level1inf" -> Level1Generator()
+            else -> null
+        }
     }
 }
 
