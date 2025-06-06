@@ -3,6 +3,7 @@ package io.github.zzzyyylllty.chotentech.command
 import io.github.zzzyyylllty.chotentech.ChoTenTech
 import io.github.zzzyyylllty.chotentech.ChoTenTech.dataMap
 import io.github.zzzyyylllty.chotentech.ChoTenTech.levelsList
+import io.github.zzzyyylllty.chotentech.ChoTenTech.sdClassList
 import io.github.zzzyyylllty.chotentech.db.SQLDataBase
 import io.github.zzzyyylllty.chotentech.function.id.generateUserID
 import io.github.zzzyyylllty.chotentech.function.sender.sendComponent
@@ -46,14 +47,14 @@ object SubDebugCommand {
     @CommandBody
     val getLevelMap = subCommand {
         execute<CommandSender> { sender, context, argument ->
-            sender.sendComponent(ChoTenTech.levelsList.entries.toString())
+            sender.sendComponent(levelsList.entries.toString())
         }
     }
 
     @CommandBody
     val getSDClassMap = subCommand {
         execute<CommandSender> { sender, context, argument ->
-            sender.sendComponent(ChoTenTech.sdClassList.entries.toString())
+            sender.sendComponent(sdClassList.entries.toString())
         }
     }
     @CommandBody

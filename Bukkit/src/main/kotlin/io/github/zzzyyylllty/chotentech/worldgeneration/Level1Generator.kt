@@ -19,8 +19,8 @@ class Level1Generator : ChunkGenerator() {
         // 地板
         chunkData.fixedSetRegion(0, 0, 0, 15, 0, 15, Material.GRAY_CONCRETE)
 
-        val parsedX = (abs(chunkX) + 1) % 3
-        val parsedZ = (abs(chunkZ) + 1) % 3
+        (abs(chunkX) + 1) % 3
+        (abs(chunkZ) + 1) % 3
 
         val basicy = 0
         for (x in 0..15) {

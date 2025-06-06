@@ -23,7 +23,7 @@ val jsonUtils = Json {
     allowSpecialFloatingPointValues = true
 }
 
-public open class SQLDataBase {
+open class SQLDataBase {
 
     val host by lazy { config.getHost("database") }
     val dataSource by lazy { host.createDataSource() }
@@ -66,7 +66,7 @@ public open class SQLDataBase {
     }
 
 
-    public fun saveInDatabase(user: PlayerData?) {
+    fun saveInDatabase(user: PlayerData?) {
         if (user == null) return
         val json = jsonUtils.encodeToString(user)
         if (getUserInDatabasebyUUID(user.playerUUID) == null) {
@@ -90,15 +90,15 @@ public open class SQLDataBase {
             }
         }
     }
-    public fun saveInDatabase(user: Player) {
+    fun saveInDatabase(user: Player) {
         saveInDatabase(dataMap[user.uniqueId.toString()])
     }
 
-    public fun getUserInDatabase(player: Player?): PlayerData? {
+    fun getUserInDatabase(player: Player?): PlayerData? {
         if (player == null) return null else return getUserInDatabasebyUUID(player.uniqueId.toString())
     }
 
-    public fun getUserInDatabase(name: String): PlayerData? {
+    fun getUserInDatabase(name: String): PlayerData? {
         val uuid = indexTable.select(dataSource) {
             rows("uuid")
             where("name" eq name)
@@ -112,7 +112,7 @@ public open class SQLDataBase {
         }
     }
 
-    public fun getUserInDatabaseByUserID(uid: String): PlayerData? {
+    fun getUserInDatabaseByUserID(uid: String): PlayerData? {
         val uuid = indexTable.select(dataSource) {
             rows("uuid")
             where("userid" eq uid)
@@ -125,7 +125,7 @@ public open class SQLDataBase {
             // Expansion fun import kotlinx.serialization.encodeToString required.
         }
     }
-    public fun getIDExists(uid: String): Boolean {
+    fun getIDExists(uid: String): Boolean {
         val uuid = indexTable.select(dataSource) {
             rows("uuid")
             where("userid" eq uid)
@@ -136,7 +136,7 @@ public open class SQLDataBase {
         info("UID: $uid, UUID: $uuid")
         return (uuid != null)
     }
-    public fun getUUIDExists(uuid: String): Boolean {
+    fun getUUIDExists(uuid: String): Boolean {
         val uid = indexTable.select(dataSource) {
             rows("userid")
             where("uuid" eq uuid)
@@ -148,7 +148,7 @@ public open class SQLDataBase {
         return (uid != null)
     }
 
-    public fun getUserInDatabasebyUUID(uuid: String?): PlayerData? {
+    fun getUserInDatabasebyUUID(uuid: String?): PlayerData? {
         val string = userTable.select(dataSource) {
             rows("data")
             where("uuid" eq uuid)
