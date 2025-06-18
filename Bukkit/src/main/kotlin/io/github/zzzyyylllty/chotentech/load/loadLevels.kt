@@ -18,7 +18,6 @@ import java.util.LinkedHashMap
 
 val read = mutableListOf<Configuration>()
 
-@Awake(LifeCycle.ENABLE)
 fun loadLevel() {
     read.clear()
     val file = newFolder(getDataFolder(), "levels", create = false)

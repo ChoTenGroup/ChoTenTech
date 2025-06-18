@@ -19,16 +19,16 @@ class Level0Generator : ChunkGenerator() {
 
         chunkData.fixedSetRegion(0, -1, 0, 15, -1, 15, Material.WET_SPONGE)
         chunkData.fixedSetRegion(0, -2, 0, 15, -1, 15, Material.BEDROCK)
-        chunkData.fixedSetRegion(0, 30, 0, 15, -1, 15, Material.BEDROCK)
-            for (floor in 1..3) {
-                val basicy = floor * 10
+        chunkData.fixedSetRegion(0, 59, 0, 15, -1, 15, Material.BEDROCK)
+        chunkData.fixedSetRegion(0, 60, 0, 15, -1, 15, Material.BEDROCK)
+            for (basicy in listOf(0,10,20,30,40,50)) {
                 for (x in 0..15) {
                     for (z in 0..15) {
                         val isLight = ((x % 4) + (z % 4) == 0)
                         // 天花板+玻璃 y=6
                         if (isLight) {
                             chunkData.setBlock(x, basicy + 6, z, generateGlass())
-                            if (isLight) chunkData.setBlock(x, basicy + 8, z, generateLight(chunkX + chunkZ))
+                            chunkData.setBlock(x, basicy + 8, z, generateLight(chunkX + chunkZ))
                         } else {
                             chunkData.setBlock(x, basicy + 6, z, Material.SMOOTH_STONE)
                             chunkData.setBlock(x, basicy + 8, z, Material.SMOOTH_STONE)
@@ -42,7 +42,7 @@ class Level0Generator : ChunkGenerator() {
 
                 // 墙体部分生成
                 var loopTime = 0
-                while (random(loopTime, 12) <= 12) {
+                while (random(loopTime, 13) <= 12) {
                     val keepx = (random(0, 1) == 1)
                     val staticNumber = random(0, 15)
                     val fromNumber = random(0, 14)
@@ -118,7 +118,6 @@ fun generateLight(offset: Int): Material {
 }
 
 fun ChunkData.fixedSetRegion(xMin: Int, yMin: Int, zMin: Int, xMax: Int, yMax: Int, zMax: Int, type: Material) {
-    if (xMin <= xMax && yMin <= yMax && zMin <= zMax) {
         for (y in yMin..min(yMax,15)) {
             for (x in xMin..min(xMax,15)) {
                 for (z in zMin..min(zMax, 15)) {
@@ -126,5 +125,4 @@ fun ChunkData.fixedSetRegion(xMin: Int, yMin: Int, zMin: Int, xMax: Int, yMax: I
                 }
             }
         }
-    }
 }

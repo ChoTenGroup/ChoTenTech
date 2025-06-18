@@ -1,6 +1,9 @@
 package io.github.zzzyyylllty.chotentech.hook
 
 import io.github.zzzyyylllty.chotentech.db.SQLDataBase
+import io.github.zzzyyylllty.chotentech.function.user.getData
+import io.github.zzzyyylllty.chotentech.function.user.getOfflineDataById
+import io.github.zzzyyylllty.chotentech.function.user.getOfflineDataByName
 import org.bukkit.entity.Player
 import taboolib.platform.compat.PlaceholderExpansion
 
@@ -25,9 +28,9 @@ object PapiHook : PlaceholderExpansion {
         when (list[0]) {
             "idexists" -> return SQLDataBase().getIDExists(list[1]).toString()
             "playername" -> return SQLDataBase().getUserInDatabaseByUserID(list[1])?.playerName.toString()
-            "playeruuid" -> return SQLDataBase().getUserInDatabaseByUserID(list[1])?.playerUUID.toString()
-            "uid" -> return if (list.size >= 2) SQLDataBase().getUserInDatabase(player)?.userId.toString()
-                else SQLDataBase().getUserInDatabase(list[1])?.userId.toString()
+            "playeruuid" -> return list[1].getOfflineDataById()?.userId ?: "null"
+            "uid" -> return if (list.size == 1) player?.getData()?.userId ?: "null"
+                else list[1].getOfflineDataByName()?.userId ?: "null"
         }
 
         return "Error"
