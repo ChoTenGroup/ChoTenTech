@@ -60,7 +60,7 @@ open class SQLDataBase {
         add("userid") { // Player Long Id
             type(ColumnTypeSQL.VARCHAR, 36) {
                 options(
-                    ColumnOptionSQL.NOTNULL, ColumnOptionSQL.UNIQUE_KEY)
+                    ColumnOptionSQL.NOTNULL, ColumnOptionSQL.KEY)
             }
         }
     }
@@ -142,7 +142,7 @@ open class SQLDataBase {
             where("uuid" eq uuid)
             limit(1)
         }.firstOrNull {
-            getString("uuid")
+            getString("userid")
         }
         info("UID: $uid, UUID: $uuid")
         return (uid != null)

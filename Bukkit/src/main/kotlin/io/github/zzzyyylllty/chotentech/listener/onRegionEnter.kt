@@ -17,6 +17,7 @@ import com.sk89q.worldguard.session.handler.Handler
 import io.github.zzzyyylllty.chotentech.ChoTenTech
 import io.github.zzzyyylllty.chotentech.ChoTenTech.levelsList
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerRegions
+import io.github.zzzyyylllty.chotentech.function.user.transferLevelTask
 import io.github.zzzyyylllty.chotentech.load.getRegion
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Sound
@@ -51,7 +52,10 @@ fun onPlayerMove(event: PlayerMoveEvent) {
             player.sendMessage("进入区域：${enteredRegions.joinToString()}")
             val mm = MiniMessage.miniMessage()
             for (region in enteredRegions) {
-                if (levelsList[region] != null) player.sendMessage(mm.deserialize(levelsList[region]!!.generateLore()))
+                if (levelsList[region] != null) {
+                    transferLevelTask(player, levelsList[region]!!)
+                    player.sendMessage(mm.deserialize(levelsList[region]!!.generateLore()))
+                }
             }
         }
     }
