@@ -12,6 +12,7 @@ import java.util.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import taboolib.common.platform.function.info
+import java.awt.image.ImageObserver.ERROR
 
 val jsonUtils = Json {
     prettyPrint = true
@@ -69,7 +70,7 @@ open class SQLDataBase {
     fun saveInDatabase(user: PlayerData?) {
         if (user == null) return
         val json = jsonUtils.encodeToString(user)
-        if (getUserInDatabasebyUUID(user.playerUUID) == null) {
+        if (!getUUIDExists(user.playerUUID)) {
             userTable.insert(dataSource, "uuid", "data") {
                 value(user.playerUUID,  json)
             }
@@ -79,7 +80,7 @@ open class SQLDataBase {
                 set("data", json)
             }
         }
-        if (!getIDExists(user.userId)) {
+        if (!getUUIDExists(user.playerUUID)) {
             indexTable.insert(dataSource, "uuid", "name", "userid") {
                 value(user.playerUUID, user.playerName, user.userId)
             }
@@ -125,6 +126,7 @@ open class SQLDataBase {
             // Expansion fun import kotlinx.serialization.encodeToString required.
         }
     }
+    @Deprecated("ID可变")
     fun getIDExists(uid: String): Boolean {
         val uuid = indexTable.select(dataSource) {
             rows("uuid")

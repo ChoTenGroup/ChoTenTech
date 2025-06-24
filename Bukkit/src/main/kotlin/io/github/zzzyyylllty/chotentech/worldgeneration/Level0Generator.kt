@@ -4,6 +4,7 @@ import org.bukkit.Material
 import org.bukkit.generator.ChunkGenerator
 import org.bukkit.generator.ChunkGenerator.ChunkData
 import org.bukkit.generator.WorldInfo
+import taboolib.common.platform.function.info
 import taboolib.common.util.random
 import java.util.*
 import kotlin.math.min
@@ -36,7 +37,6 @@ class Level0Generator : ChunkGenerator() {
                     }
                 }
 
-                // 地板和层板 y=0,9
                 chunkData.fixedSetRegion(0, basicy, 0, 15, basicy, 15, Material.SPONGE)
                 chunkData.fixedSetRegion(0, basicy + 9, 0, 15, basicy + 9, 15, Material.DEEPSLATE)
 
@@ -118,6 +118,7 @@ fun generateLight(offset: Int): Material {
 }
 
 fun ChunkData.fixedSetRegion(xMin: Int, yMin: Int, zMin: Int, xMax: Int, yMax: Int, zMax: Int, type: Material) {
+    info("$xMin $yMin $zMin $xMax $yMax $zMax $type")
         for (y in yMin..min(yMax,15)) {
             for (x in xMin..min(xMax,15)) {
                 for (z in zMin..min(zMax, 15)) {
