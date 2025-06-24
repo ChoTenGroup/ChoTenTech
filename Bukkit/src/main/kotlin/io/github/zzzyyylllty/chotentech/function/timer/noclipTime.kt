@@ -68,6 +68,11 @@ fun noclipTime() {
                                 sendRefactorMessages("<gradient:green:yellow>切出成功", player)
                                 player.playSound(player, Sound.BLOCK_AMETHYST_BLOCK_BREAK, 1F, 0.5F)
                                 sendRefactorTitle(player, " ", "<gradient:green:yellow>切出成功", 0, 10, 0)
+                            dataMap[player.uniqueId.toString()] = data.copy(
+                                noclipPoint = null,
+                                noclipping = false,
+                                noclipCooldown = data.noclipPoint?.cooldown ?: 10.0
+                            )
                         } else {
                             // 切出失败
                             val damage = data.noclipPoint?.damage

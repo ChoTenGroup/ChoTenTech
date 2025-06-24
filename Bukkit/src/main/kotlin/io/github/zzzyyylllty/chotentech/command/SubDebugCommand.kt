@@ -5,6 +5,7 @@ import io.github.zzzyyylllty.chotentech.ChoTenTech.dataMap
 import io.github.zzzyyylllty.chotentech.ChoTenTech.levelsList
 import io.github.zzzyyylllty.chotentech.ChoTenTech.sdClassList
 import io.github.zzzyyylllty.chotentech.db.SQLDataBase
+import io.github.zzzyyylllty.chotentech.function.id.changeUserID
 import io.github.zzzyyylllty.chotentech.function.id.generateUserID
 import io.github.zzzyyylllty.chotentech.function.sender.sendComponent
 import io.github.zzzyyylllty.chotentech.function.sender.sendDebug
@@ -81,6 +82,19 @@ object SubDebugCommand {
                 // 转化为Bukkit的Player
                 val bukkitPlayer = user.castSafely<Player>()
                 sender.sendDebug("${SQLDataBase().getUserInDatabase(bukkitPlayer)}")
+            }
+        }
+    }
+    @CommandBody
+    val changePlayerId = subCommand {
+        player("user") {
+            dynamic("id"){
+                execute<CommandSender> { sender, context, argument ->
+                    val user = context.player("user")
+                    // 转化为Bukkit的Player
+                    val bukkitPlayer = user.castSafely<Player>()
+                    bukkitPlayer?.let { changeUserID(it, context["id"]) }
+            }
             }
         }
     }

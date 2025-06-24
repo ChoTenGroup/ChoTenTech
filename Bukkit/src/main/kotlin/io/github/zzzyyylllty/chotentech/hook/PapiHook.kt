@@ -36,3 +36,17 @@ object PapiHook : PlaceholderExpansion {
         return "Error"
     }
 }
+
+fun generateLevelIcon(level: Int) {
+    val supercrown = level % 1024
+    val crown = level % 256
+    val sun = level % 64
+    val moon = level % 16
+    val star = level % 4
+    var returns = ""
+    repeat (supercrown) { returns = ("$returns♛") }
+    repeat (crown) { returns = ("$returns👑") }
+    repeat (sun) { returns = ("$returns☀") }
+    repeat (moon) { returns = ("$returns🌙") }
+    repeat (star) { returns = ("$returns⭐") }
+}
