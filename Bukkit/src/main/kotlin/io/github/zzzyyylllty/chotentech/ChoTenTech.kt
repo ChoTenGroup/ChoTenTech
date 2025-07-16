@@ -8,10 +8,12 @@ import io.github.zzzyyylllty.chotentech.data.Level
 import io.github.zzzyyylllty.chotentech.data.PlayerData
 import io.github.zzzyyylllty.chotentech.data.SurvivalDifficulty
 import io.github.zzzyyylllty.chotentech.function.timer.noclipTime
+import io.github.zzzyyylllty.chotentech.hook.PapiHookOriginal
 import io.github.zzzyyylllty.chotentech.load.loadLevel
 import io.github.zzzyyylllty.chotentech.load.loadSDClassFile
 import io.github.zzzyyylllty.chotentech.worldgeneration.Level0Generator
 import io.github.zzzyyylllty.chotentech.worldgeneration.Level1Generator
+import me.clip.placeholderapi.PlaceholderAPI
 import org.bukkit.Location
 import org.bukkit.command.CommandSender
 import org.bukkit.generator.ChunkGenerator
@@ -24,6 +26,7 @@ import taboolib.common.platform.function.getDataFolder
 import taboolib.module.configuration.Configuration
 import taboolib.module.configuration.Type
 import taboolib.module.ui.type.Linked
+import taboolib.platform.BukkitPlugin
 import taboolib.platform.BukkitWorldGenerator
 import java.util.UUID
 
@@ -58,6 +61,7 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
 
     // 项目使用TabooLib Start Jar 创建!
     override fun onEnable() {
+        PapiHookOriginal(BukkitPlugin.getInstance()).register()
         reloading()
     }
 
