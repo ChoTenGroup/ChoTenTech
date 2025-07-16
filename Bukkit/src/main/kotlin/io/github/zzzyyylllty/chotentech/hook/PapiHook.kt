@@ -1,9 +1,11 @@
 package io.github.zzzyyylllty.chotentech.hook
 
+import io.github.zzzyyylllty.chotentech.ChoTenTech.config
 import io.github.zzzyyylllty.chotentech.db.SQLDataBase
 import io.github.zzzyyylllty.chotentech.function.user.getData
 import io.github.zzzyyylllty.chotentech.function.user.getOfflineDataById
 import io.github.zzzyyylllty.chotentech.function.user.getOfflineDataByName
+import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import taboolib.platform.compat.PlaceholderExpansion
 
@@ -21,7 +23,7 @@ object PapiHook : PlaceholderExpansion {
      * %chotentech_uid%
      *
      * */
-    override fun onPlaceholderRequest(player: Player?, args: String): String {
+    override fun onPlaceholderRequest(player: OfflinePlayer?, args: String): String {
 
         var list = args.split("_")
 
@@ -29,8 +31,13 @@ object PapiHook : PlaceholderExpansion {
             "idexists" -> return SQLDataBase().getIDExists(list[1]).toString()
             "playername" -> return SQLDataBase().getUserInDatabaseByUserID(list[1])?.playerName.toString()
             "playeruuid" -> return list[1].getOfflineDataById()?.userId ?: "null"
-            "uid" -> return if (list.size == 1) player?.getData()?.userId ?: "null"
+            "uid" -> return if (list.size == 1) player?.player?.getData()?.userId ?: "null"
                 else list[1].getOfflineDataByName()?.userId ?: "null"
+            "randomname" -> {
+                val first = config.getStringList("names.first").random()
+                val last = config.getStringList("names.last").random()
+                return "$first $last"
+            }
         }
 
         return "Error"

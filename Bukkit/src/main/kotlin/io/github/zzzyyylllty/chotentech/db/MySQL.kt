@@ -76,7 +76,7 @@ open class SQLDataBase {
             }
         } else {
             userTable.update(dataSource) {
-                set("uuid", user.playerUUID)
+                where("uuid" eq user.playerUUID)
                 set("data", json)
             }
         }
@@ -86,7 +86,7 @@ open class SQLDataBase {
             }
         } else {
             indexTable.update(dataSource) {
-                set("uuid", user.playerUUID)
+                where("uuid" eq user.playerUUID)
                 set("userid", user.userId)
             }
         }

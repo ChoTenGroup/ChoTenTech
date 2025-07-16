@@ -21,6 +21,7 @@ import taboolib.common.platform.command.player
 import taboolib.common.platform.command.subCommand
 import taboolib.common.platform.function.submitAsync
 import taboolib.expansion.createHelper
+import taboolib.platform.util.sendError
 
 @CommandHeader(
     name = "chotentech-debug",
@@ -93,7 +94,8 @@ object SubDebugCommand {
                     val user = context.player("user")
                     // 转化为Bukkit的Player
                     val bukkitPlayer = user.castSafely<Player>()
-                    bukkitPlayer?.let { changeUserID(it, context["id"]) }
+                    if (SQLDataBase().getIDExists(context["id"])) sender.sendDebug("userId must be unique")
+                    else { bukkitPlayer?.let { changeUserID(it, context["id"]) } }
             }
             }
         }

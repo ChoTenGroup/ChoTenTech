@@ -19,6 +19,7 @@ taboolib {
         dependencies {
             // 依赖插件名称（不要误会成写自己，会触发 self-loop 错误）
             name("WorldGuard").optional(true)
+            name("PlaceHolderAPI").optional(true)
             // 可选依赖
             // name("XXX").optional(true)
         }
@@ -130,7 +131,7 @@ repositories {
 dependencies {
     compileOnly("net.luckperms:api:5.4")
     implementation("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT") { isTransitive = false }
-    implementation("me.clip:placeholderapi:2.11.5")
+    implementation("me.clip:placeholderapi:2.11.6")
     implementation("net.kyori:adventure-text-serializer-legacy:4.19.0")
     implementation("com.sk89q.worldguard:worldguard-bukkit:7.0.10-SNAPSHOT")
     implementation("net.kyori:adventure-api:4.19.0")
