@@ -1,6 +1,5 @@
 package io.github.zzzyyylllty.chotentech.command
 
-import io.github.zzzyyylllty.chotentech.ChoTenTech
 import io.github.zzzyyylllty.chotentech.ChoTenTech.dataMap
 import io.github.zzzyyylllty.chotentech.ChoTenTech.levelsList
 import io.github.zzzyyylllty.chotentech.ChoTenTech.sdClassList
@@ -9,8 +8,6 @@ import io.github.zzzyyylllty.chotentech.function.id.changeUserID
 import io.github.zzzyyylllty.chotentech.function.id.generateUserID
 import io.github.zzzyyylllty.chotentech.function.sender.sendComponent
 import io.github.zzzyyylllty.chotentech.function.sender.sendDebug
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import taboolib.common.platform.command.CommandBody
@@ -20,8 +17,6 @@ import taboolib.common.platform.command.mainCommand
 import taboolib.common.platform.command.player
 import taboolib.common.platform.command.subCommand
 import taboolib.common.platform.function.submitAsync
-import taboolib.expansion.createHelper
-import taboolib.platform.util.sendError
 
 @CommandHeader(
     name = "chotentech-debug",
@@ -32,7 +27,7 @@ import taboolib.platform.util.sendError
     permissionDefault = PermissionDefault.OP,
     newParser = false,
 )
-object SubDebugCommand {
+object ChoTenDebugCommand {
 
     @CommandBody
     val main = mainCommand {

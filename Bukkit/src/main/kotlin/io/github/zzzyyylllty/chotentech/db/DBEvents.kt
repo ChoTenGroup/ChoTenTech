@@ -10,21 +10,26 @@ import org.bukkit.event.player.PlayerQuitEvent
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.info
+import taboolib.common.platform.function.submitAsync
 import kotlin.toString
 
 @SubscribeEvent()
 fun playerLoadDBEvent(e: PlayerJoinEvent) {
-    info("loading data for player ${e.player.name}")
-    val data = SQLDataBase().getUserInDatabasebyUUID(e.player.uniqueId.toString())
-    if (data != null) dataMap[e.player.uniqueId.toString()] = data else {
-        wipeData(player = e.player)
-    }
-    SQLDataBase().saveInDatabase(e.player)
+    submitAsync{
+            info("loading data for player ${e.player.name}")
+            val data = SQLDataBase().getUserInDatabasebyUUID(e.player.uniqueId.toString())
+            if (data != null) dataMap[e.player.uniqueId.toString()] = data else {
+                wipeData(player = e.player)
+            }
+            SQLDataBase().saveInDatabase(e.player)
+        }
 }
 
 @SubscribeEvent()
 fun playerSaveDBEvent(e: PlayerQuitEvent) {
-    SQLDataBase().saveInDatabase(e.player)
+    submitAsync {
+        SQLDataBase().saveInDatabase(e.player)
+    }
 }
 
 fun wipeData(player: Player){
