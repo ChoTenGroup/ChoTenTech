@@ -15,4 +15,9 @@ data class PlayerData (
     var noclipPoint: @Contextual NoclipPoint?,
     var noclipTimeLeft: Double,
     var noclipping: Boolean,
+    var stress: Double = 5.0,
+    var sanity: Double = 40.0,
+    var maxSanity: Double = 100.0,
+    var darkness: Double = 15.0,
+    var maxDarkness: Double = 100.0,
 )

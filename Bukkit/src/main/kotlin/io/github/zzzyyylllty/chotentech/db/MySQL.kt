@@ -126,7 +126,7 @@ open class SQLDataBase {
             // Expansion fun import kotlinx.serialization.encodeToString required.
         }
     }
-    @Deprecated("ID可变")
+
     fun getIDExists(uid: String): Boolean {
         val uuid = indexTable.select(dataSource) {
             rows("uuid")

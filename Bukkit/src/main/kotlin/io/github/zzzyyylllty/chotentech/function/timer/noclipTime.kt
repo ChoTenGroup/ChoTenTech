@@ -54,7 +54,7 @@ fun noclipTime() {
                                 10,
                                 0
                             )
-                            player.playSound(player, Sound.BLOCK_NOTE_BLOCK_SNARE, 1F, 1F)
+                            player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BIT, 1F, 0.5F)
                             dataMap[k]?.noclipTimeLeft = (tl - 1)
 
                     } else {

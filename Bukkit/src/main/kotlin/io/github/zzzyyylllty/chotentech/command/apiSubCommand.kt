@@ -1,7 +1,6 @@
 package io.github.zzzyyylllty.chotentech.command
 
 import io.github.zzzyyylllty.chotentech.function.sender.sendComponent
-import io.github.zzzyyylllty.sertraline.function.kether.evalKether
 import io.github.zzzyyylllty.sertraline.function.kether.runKether
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.command.CommandSender
@@ -9,23 +8,21 @@ import org.bukkit.entity.Player
 import taboolib.common.platform.command.CommandBody
 import taboolib.common.platform.command.CommandHeader
 import taboolib.common.platform.command.PermissionDefault
-import taboolib.common.platform.command.component.CommandComponent
 import taboolib.common.platform.command.mainCommand
 import taboolib.common.platform.command.player
 import taboolib.common.platform.command.subCommand
 import taboolib.common.platform.function.submitAsync
-import taboolib.expansion.createHelper
 
 @CommandHeader(
-    name = "sertralineapi",
-    aliases = ["itemapi","needyitemapi","depazapi","chotenapi"],
-    permission = "sertraline.command.api",
+    name = "chotenapi",
+    aliases = ["itemapi","needyitemapi","depazapi"],
+    permission = "chotentech.command.api",
     description = "API Command of DepazItems.",
     permissionMessage = "",
     permissionDefault = PermissionDefault.OP,
     newParser = false,
 )
-object DepazApiCommand {
+object ChoTenApiCommand {
 
     @CommandBody
     val main = mainCommand {

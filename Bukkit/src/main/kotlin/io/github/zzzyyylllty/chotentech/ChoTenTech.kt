@@ -7,13 +7,16 @@ import com.sk89q.worldguard.protection.flags.registry.FlagConflictException
 import io.github.zzzyyylllty.chotentech.data.Level
 import io.github.zzzyyylllty.chotentech.data.PlayerData
 import io.github.zzzyyylllty.chotentech.data.SurvivalDifficulty
+import io.github.zzzyyylllty.chotentech.db.SQLDataBase
 import io.github.zzzyyylllty.chotentech.function.timer.noclipTime
+import io.github.zzzyyylllty.chotentech.function.timer.timeEffects
 import io.github.zzzyyylllty.chotentech.hook.PapiHookOriginal
 import io.github.zzzyyylllty.chotentech.load.loadLevel
 import io.github.zzzyyylllty.chotentech.load.loadSDClassFile
 import io.github.zzzyyylllty.chotentech.worldgeneration.Level0Generator
 import io.github.zzzyyylllty.chotentech.worldgeneration.Level1Generator
 import me.clip.placeholderapi.PlaceholderAPI
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.command.CommandSender
 import org.bukkit.generator.ChunkGenerator
@@ -60,11 +63,15 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
     val placeHolderConfig by lazy { Configuration.loadFromFile(newFile(getDataFolder(), "placeholders.yml", create = true), Type.YAML) }
 
     // 项目使用TabooLib Start Jar 创建!
-    override fun onEnable() {
+    override fun onActive() {
         PapiHookOriginal(BukkitPlugin.getInstance()).register()
         reloading()
+        timeEffects()
     }
 
+    override fun onDisable() {
+        for (player in Bukkit.getOnlinePlayers()) SQLDataBase().saveInDatabase(player)
+    }
     fun reloading() {
         config.reload()
         // loadLootFiles()

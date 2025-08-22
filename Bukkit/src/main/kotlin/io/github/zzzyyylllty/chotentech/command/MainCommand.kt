@@ -1,6 +1,5 @@
 package io.github.zzzyyylllty.chotentech.command
 
-import io.github.zzzyyylllty.chotentech.ChoTenTech.config
 import io.github.zzzyyylllty.chotentech.ChoTenTech.reloading
 import io.github.zzzyyylllty.chotentech.function.sender.sendComponent
 import org.bukkit.command.CommandSender
@@ -15,7 +14,6 @@ import taboolib.common.platform.command.mainCommand
 import taboolib.common.platform.command.subCommand
 import taboolib.common.platform.function.pluginVersion
 import taboolib.common.platform.function.runningPlatform
-import taboolib.expansion.createHelper
 import taboolib.module.lang.asLangText
 import taboolib.module.nms.MinecraftVersion.minecraftVersion
 
@@ -58,7 +56,9 @@ object MainCommand {
         createModernHelper()
     }
     @CommandBody
-    val debug = SubDebugCommand
+    val debug = ChoTenDebugCommand
+    @CommandBody
+    val Data = ChoTenDataCommand
 
 }
 

@@ -18,11 +18,11 @@ class Level0Generator : ChunkGenerator() {
         chunkData: ChunkData,
     ) {
 
-        chunkData.fixedSetRegion(0, -1, 0, 15, -1, 15, Material.WET_SPONGE)
-        chunkData.fixedSetRegion(0, -2, 0, 15, -1, 15, Material.BEDROCK)
-        chunkData.fixedSetRegion(0, 59, 0, 15, -1, 15, Material.BEDROCK)
-        chunkData.fixedSetRegion(0, 60, 0, 15, -1, 15, Material.BEDROCK)
-            for (basicy in listOf(0,10,20,30,40,50)) {
+        chunkData.fixedSetRegion(0, -51, 0, 15, -1, 15, Material.WET_SPONGE)
+        chunkData.fixedSetRegion(0, -52, 0, 15, -1, 15, Material.BEDROCK)
+        chunkData.fixedSetRegion(0, 29, 0, 15, -1, 15, Material.BEDROCK)
+        chunkData.fixedSetRegion(0, 30, 0, 15, -1, 15, Material.BEDROCK)
+            for (basicy in listOf(-50,-40,-30,-20,-10,0,10,20)) {
                 for (x in 0..15) {
                     for (z in 0..15) {
                         val isLight = ((x % 4) + (z % 4) == 0)
@@ -119,6 +119,7 @@ fun generateLight(offset: Int): Material {
 
 fun ChunkData.fixedSetRegion(xMin: Int, yMin: Int, zMin: Int, xMax: Int, yMax: Int, zMax: Int, type: Material) {
     info("$xMin $yMin $zMin $xMax $yMax $zMax $type")
+    /*
         for (y in yMin..min(yMax,15)) {
             for (x in xMin..min(xMax,15)) {
                 for (z in zMin..min(zMax, 15)) {
@@ -126,4 +127,7 @@ fun ChunkData.fixedSetRegion(xMin: Int, yMin: Int, zMin: Int, xMax: Int, yMax: I
                 }
             }
         }
+
+     */
+    this.setRegion(xMin, yMin, zMin, xMax, yMax, zMax, type)
 }
