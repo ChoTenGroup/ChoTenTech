@@ -1,7 +1,7 @@
 package io.github.zzzyyylllty.chotentech.command
 
-import io.github.zzzyyylllty.chotentech.ChoTenTech.reloading
-import io.github.zzzyyylllty.chotentech.function.sender.sendComponent
+import io.github.zzzyyylllty.chotentech.ChoTenTech.reloadCustomConfig
+import io.github.zzzyyylllty.chotentech.player.sendComponent
 import org.bukkit.command.CommandSender
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.CommandBody
@@ -42,7 +42,7 @@ object MainCommand {
         execute<CommandSender> { sender, context, argument ->
             sender.sendComponent("<gradient:aqua:yellow>reloading...")
             try {
-                reloading()
+                reloadCustomConfig()
                 sender.sendComponent("<gradient:aqua:yellow>reloading... Complete.")
             } catch (e: Exception) {
                 sender.sendComponent("<red>Error thrown. check console for info.</red>")
@@ -57,8 +57,8 @@ object MainCommand {
     }
     @CommandBody
     val debug = ChoTenDebugCommand
-    @CommandBody
-    val Data = ChoTenDataCommand
+//    @CommandBody
+//    val Data = ChoTenDataCommand
 
 }
 

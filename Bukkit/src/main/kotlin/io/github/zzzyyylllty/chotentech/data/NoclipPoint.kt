@@ -5,7 +5,7 @@ import org.bukkit.World
 import org.bukkit.util.Vector
 
 data class NoclipPoint(
-    val noclipPointWorld: World?,
+    val noclipPointWorld: String?,
     val noclipPointLocation1: Vector, // 切出点位置1 对角线构成的位置即为切出点范围
     val noclipPointLocation2: Vector, // 切出点位置2 对角线构成的位置即为切出点范围
     val targetLocation: Location, // 传送玩家到某处
@@ -16,4 +16,5 @@ data class NoclipPoint(
     val cooldown: Double = 2.0, // 执行切出操作后的冷却。
     val noclippingTime: Double = 10.0,
     val name: String?
-)
+){
+}

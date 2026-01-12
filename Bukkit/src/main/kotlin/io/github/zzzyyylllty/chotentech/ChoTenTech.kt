@@ -1,90 +1,104 @@
+
+
 package io.github.zzzyyylllty.chotentech
 
-import com.sk89q.worldguard.WorldGuard
-import com.sk89q.worldguard.protection.flags.Flag
-import com.sk89q.worldguard.protection.flags.StateFlag
-import com.sk89q.worldguard.protection.flags.registry.FlagConflictException
+import io.github.zzzyyylllty.chotentech.data.IDType
 import io.github.zzzyyylllty.chotentech.data.Level
 import io.github.zzzyyylllty.chotentech.data.PlayerData
+import io.github.zzzyyylllty.chotentech.data.PlayerHUDData
 import io.github.zzzyyylllty.chotentech.data.SurvivalDifficulty
-import io.github.zzzyyylllty.chotentech.db.SQLDataBase
-import io.github.zzzyyylllty.chotentech.function.timer.noclipTime
-import io.github.zzzyyylllty.chotentech.function.timer.timeEffects
-import io.github.zzzyyylllty.chotentech.hook.PapiHookOriginal
-import io.github.zzzyyylllty.chotentech.load.loadLevel
-import io.github.zzzyyylllty.chotentech.load.loadSDClassFile
-import io.github.zzzyyylllty.chotentech.worldgeneration.Level0Generator
-import io.github.zzzyyylllty.chotentech.worldgeneration.Level1Generator
-import me.clip.placeholderapi.PlaceholderAPI
-import org.bukkit.Bukkit
-import org.bukkit.Location
+import io.github.zzzyyylllty.chotentech.load.loadAccountTypes
+import io.github.zzzyyylllty.chotentech.load.loadLevelFiles
 import org.bukkit.command.CommandSender
-import org.bukkit.generator.ChunkGenerator
 import taboolib.common.env.RuntimeDependencies
 import taboolib.common.env.RuntimeDependency
-import taboolib.common.io.newFile
 import taboolib.common.platform.Plugin
 import taboolib.common.platform.function.console
-import taboolib.common.platform.function.getDataFolder
+import taboolib.common.platform.function.info
+import taboolib.common.platform.function.submit
+import taboolib.module.configuration.Config
 import taboolib.module.configuration.Configuration
-import taboolib.module.configuration.Type
-import taboolib.module.ui.type.Linked
+import taboolib.module.database.getHost
+import taboolib.module.lang.Language
 import taboolib.platform.BukkitPlugin
-import taboolib.platform.BukkitWorldGenerator
-import java.util.UUID
+import java.time.format.DateTimeFormatter
 
 @RuntimeDependencies(
     RuntimeDependency(
-        value = "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.6.3",
+        value = "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.8.1",
         test = "!kotlinx.serialization.Serializer",
-        relocate = ["!kotlin.", "!kotlin1922.","!kotlinx.serialization.", "!kotlinx.serialization163."],
+        relocate = [
+            "!kotlin.", "!kotlin220.",
+            "!kotlinx.serialization.", "!kotlinx.serialization181."
+        ],
         transitive = false
     ),
     RuntimeDependency(
-        value = "org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.3",
-        test = "!kotlinx.serialization.json.Json",
-        relocate = ["!kotlin.", "!kotlin1922.","!kotlinx.serialization.", "!kotlinx.serialization163."],
+        value = "org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.8.1",
+        test = "!kotlinx.serialization.Serializer",
+        relocate = [
+            "!kotlin.", "!kotlin220.",
+            "!kotlinx.serialization.", "!kotlinx.serialization181."
+        ],
         transitive = false
     ),
+    RuntimeDependency(
+        value = "!com.google.code.gson:gson:2.10.1",
+        relocate = ["!com.google.gson", "!com.example.library.gson"]
+    )
 )
-object ChoTenTech : Plugin(), BukkitWorldGenerator {
+object ChoTenTech : Plugin() {
 
-    val plugin by lazy { this }
-    var dataFolder = nativeDataFolder()
+
+    @Config("config.yml")
+    lateinit var config: Configuration
+
+    @Config("account-types.yml")
+    lateinit var accountTypes: Configuration
+
     val console by lazy { console() }
     val consoleSender by lazy { console.castSafely<CommandSender>()!! }
-    val dataMap: LinkedHashMap<String, PlayerData> = linkedMapOf()
+    val host by lazy { config.getHost("database") }
+    val dataSource by lazy { host.createDataSource() }
     val sdClassList: LinkedHashMap<String, SurvivalDifficulty> = linkedMapOf()
     val levelsList: LinkedHashMap<String, Level> = linkedMapOf()
-    val playerRegions = mutableMapOf<UUID, Set<String>>()
+    val accountTypesList: LinkedHashMap<String, IDType> = linkedMapOf()
+    val playerRegions = mutableMapOf<String, Set<String>>()
+    val playerDataMap = mutableMapOf<String, PlayerData>()
+    val playerHudMap = mutableMapOf<String, PlayerHUDData>()
 
-    val config by lazy { Configuration.loadFromFile(newFile(getDataFolder(), "config.yml", create = true), Type.YAML) }
+    val dateTimeFormatter: DateTimeFormatter by lazy { DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss") }
+    var devMode = true
 
-    val placeHolderConfig by lazy { Configuration.loadFromFile(newFile(getDataFolder(), "placeholders.yml", create = true), Type.YAML) }
+    override fun onEnable() {
 
-    // 项目使用TabooLib Start Jar 创建!
-    override fun onActive() {
-        PapiHookOriginal(BukkitPlugin.getInstance()).register()
-        reloading()
-        timeEffects()
+        info("Enable")
+        Language.enableSimpleComponent = true
+        reloadCustomConfig()
+
     }
 
     override fun onDisable() {
-        for (player in Bukkit.getOnlinePlayers()) SQLDataBase().saveInDatabase(player)
+        info("Disable")
     }
-    fun reloading() {
-        config.reload()
-        // loadLootFiles()
-        loadLevel()
-        loadSDClassFile()
-    }
+    /*
+    fun compat() {
+        if (Bukkit.getPluginManager().getPlugin("Chemdah") != null) {
+            connectChemdah()
+        }
+    }*/
 
-    override fun getDefaultWorldGenerator(worldName: String?, name: String?): ChunkGenerator? {
-        return when (worldName) {
-            "level0inf" -> Level0Generator()
-            "level1inf" -> Level1Generator()
-            else -> null
+    fun reloadCustomConfig(async: Boolean = true) {
+        submit(async) {
+
+            config.reload()
+            devMode = config.getBoolean("debug",false)
+            accountTypesList.clear()
+            levelsList.clear()
+            loadAccountTypes()
+            loadLevelFiles()
         }
     }
-}
 
+
+}

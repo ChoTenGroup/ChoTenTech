@@ -17,11 +17,13 @@ import com.sk89q.worldguard.session.handler.Handler
 import io.github.zzzyyylllty.chotentech.ChoTenTech
 import io.github.zzzyyylllty.chotentech.ChoTenTech.levelsList
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerRegions
-import io.github.zzzyyylllty.chotentech.function.user.transferLevelTask
+import io.github.zzzyyylllty.chotentech.data.ChoTenDataHelper
+import io.github.zzzyyylllty.chotentech.function.player.transferLevelTask
 import io.github.zzzyyylllty.chotentech.load.getRegion
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Sound
 import org.bukkit.event.EventHandler
+import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import taboolib.common.LifeCycle.LOAD
 import taboolib.common.platform.Awake
@@ -29,6 +31,10 @@ import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submitAsync
 import java.util.UUID
 
+@SubscribeEvent
+fun onJoin(event: PlayerJoinEvent) {
+    ChoTenDataHelper(event.player).updateLevel()
+}
 
 @SubscribeEvent
 fun onPlayerMove(event: PlayerMoveEvent) {
@@ -42,19 +48,16 @@ fun onPlayerMove(event: PlayerMoveEvent) {
     val query = regionContainer.createQuery()
     val currentRegions = query.getApplicableRegions(BukkitAdapter.adapt(to)).regions.map { it.id }.toSet()
 
-    val previousRegions = playerRegions[player.uniqueId] ?: emptySet()
+    val previousRegions = playerRegions[player.uniqueId.toString()] ?: emptySet()
 
     // 进入新区域
     val enteredRegions = currentRegions - previousRegions
     if (enteredRegions.isNotEmpty()) {
-        player.playSound(player.location, "minecraft:block.anvil.place", 1F ,1F)
         submitAsync {
-            player.sendMessage("进入区域：${enteredRegions.joinToString()}")
-            val mm = MiniMessage.miniMessage()
             for (region in enteredRegions) {
                 if (levelsList[region] != null) {
                     transferLevelTask(player, levelsList[region]!!)
-                    player.sendMessage(mm.deserialize(levelsList[region]!!.generateLore()))
+                    ChoTenDataHelper(player).updateLevel()
                 }
             }
         }
@@ -64,9 +67,10 @@ fun onPlayerMove(event: PlayerMoveEvent) {
     val exitedRegions = previousRegions - currentRegions
     if (exitedRegions.isNotEmpty()) {
         submitAsync {
-            player.sendMessage("离开区域：${exitedRegions.joinToString()}")
+            Thread.sleep(200)
+            ChoTenDataHelper(player).updateLevel()
         }
     }
 
-    playerRegions[player.uniqueId] = currentRegions
+    playerRegions[player.uniqueId.toString()] = currentRegions
 }
