@@ -1,7 +1,6 @@
 package io.github.zzzyyylllty.chotentech.listener
 
-import io.github.zzzyyylllty.chotentech.ChoTenTech.dataMap
-import io.github.zzzyyylllty.chotentech.function.timer.antiOverflow
+import io.github.zzzyyylllty.chotentech.data.ChoTenDataHelper
 import org.bukkit.GameMode
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityDamageEvent
@@ -16,7 +15,6 @@ fun onPlayerDamage(event: EntityDamageEvent) {
 
     if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) return
 
-    val data = dataMap[player.uniqueId.toString()] ?: return
     val dtype = event.cause
     var multiplier = 0.1
 
@@ -29,11 +27,7 @@ fun onPlayerDamage(event: EntityDamageEvent) {
     } else if (dtype == EntityDamageEvent.DamageCause.LAVA || dtype == EntityDamageEvent.DamageCause.DROWNING || dtype == EntityDamageEvent.DamageCause.SUFFOCATION || dtype == EntityDamageEvent.DamageCause.FALL) {
         multiplier = 1.0
     } else if (dtype == EntityDamageEvent.DamageCause.WORLD_BORDER) {
-        multiplier = 5.0
+        multiplier = 100.0
     }
-    dataMap[player.uniqueId.toString()]?.sanity = (data.sanity - multiplier)
-    if (data.sanity <= 60) {
-        dataMap[player.uniqueId.toString()]?.stress =
-            (data.stress - antiOverflow(event.finalDamage * (0.6 - data.sanity / 100), 8.0))
-    }
+    ChoTenDataHelper(player).removeSanity(multiplier)
 }

@@ -1,13 +1,13 @@
 package io.github.zzzyyylllty.chotentech.command
 
-import io.github.zzzyyylllty.chotentech.ChoTenTech.dataMap
 import io.github.zzzyyylllty.chotentech.ChoTenTech.levelsList
+import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
 import io.github.zzzyyylllty.chotentech.ChoTenTech.sdClassList
-import io.github.zzzyyylllty.chotentech.db.SQLDataBase
-import io.github.zzzyyylllty.chotentech.function.id.changeUserID
-import io.github.zzzyyylllty.chotentech.function.id.generateUserID
-import io.github.zzzyyylllty.chotentech.function.sender.sendComponent
-import io.github.zzzyyylllty.chotentech.function.sender.sendDebug
+import io.github.zzzyyylllty.chotentech.data.IDData
+import io.github.zzzyyylllty.chotentech.data.PlayerDataManager
+import io.github.zzzyyylllty.chotentech.data.PlayerDataManager.initData
+import io.github.zzzyyylllty.chotentech.data.generateID
+import io.github.zzzyyylllty.chotentech.player.sendComponent
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import taboolib.common.platform.command.CommandBody
@@ -37,7 +37,7 @@ object ChoTenDebugCommand {
     @CommandBody
     val getDataMap = subCommand {
         execute<CommandSender> { sender, context, argument ->
-            sender.sendComponent(dataMap.entries.toString())
+            sender.sendComponent(playerDataMap.entries.toString())
         }
     }
 
@@ -58,7 +58,7 @@ object ChoTenDebugCommand {
     val getIdExists = subCommand {
         dynamic("id"){
             execute<CommandSender> { sender, context, argument ->
-                sender.sendDebug("${SQLDataBase().getIDExists(context["id"])}")
+                sender.sendComponent("${PlayerDataManager.isIDExist(context["id"])}")
             }
         }
     }
@@ -66,8 +66,16 @@ object ChoTenDebugCommand {
     val getDataById = subCommand {
         dynamic("id"){
             execute<CommandSender> { sender, context, argument ->
-                sender.sendDebug("${SQLDataBase().getUserInDatabaseByUserID(context["id"])}")
+                sender.sendComponent("${PlayerDataManager.getDataByCID(context["id"])}")
             }
+        }
+    }
+    @CommandBody
+    val loadData = subCommand {
+        execute<CommandSender> { sender, context, argument ->
+            // 转化为Bukkit的Player
+            val player = sender as Player
+            player?.let { initData(it) }
         }
     }
     @CommandBody
@@ -77,7 +85,7 @@ object ChoTenDebugCommand {
                 val user = context.player("user")
                 // 转化为Bukkit的Player
                 val bukkitPlayer = user.castSafely<Player>()
-                sender.sendDebug("${SQLDataBase().getUserInDatabase(bukkitPlayer)}")
+                sender.sendComponent("${PlayerDataManager.getData(bukkitPlayer?.uniqueId.toString())}")
             }
         }
     }
@@ -89,9 +97,35 @@ object ChoTenDebugCommand {
                     val user = context.player("user")
                     // 转化为Bukkit的Player
                     val bukkitPlayer = user.castSafely<Player>()
-                    if (SQLDataBase().getIDExists(context["id"])) sender.sendDebug("userId must be unique")
-                    else { bukkitPlayer?.let { changeUserID(it, context["id"]) } }
-            }
+                    if (PlayerDataManager.isIDExist(context["id"]))
+                        sender.sendComponent("userId must be unique")
+                    else {
+                        val data = bukkitPlayer?.let { PlayerDataManager.getData(it.uniqueId.toString()) }
+                        bukkitPlayer?.let {
+                            val id = context["id"].toLong()
+                            if (data == null) sender.sendComponent("<red>未找到玩家数据")
+                            data?.let { playerData -> PlayerDataManager.modifyUserID(id, playerData) }
+                        }
+                    }
+                }
+                dynamic("type"){
+                    execute<CommandSender> { sender, context, argument ->
+                        val user = context.player("user")
+                        // 转化为Bukkit的Player
+                        val bukkitPlayer = user.castSafely<Player>()
+                        if (PlayerDataManager.isIDExist(context["id"]))
+                            sender.sendComponent("userId must be unique")
+                        else {
+                            val data = bukkitPlayer?.let { PlayerDataManager.getData(it.uniqueId.toString()) }
+                            bukkitPlayer?.let {
+                                val id = context["id"].toLong()
+                                val type = context["type"]
+                                if (data == null) sender.sendComponent("<red>未找到玩家数据")
+                                data?.let { playerData -> PlayerDataManager.modifyUserIDData(IDData(id, type), playerData) }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -100,7 +134,7 @@ object ChoTenDebugCommand {
         execute<CommandSender> { sender, context, argument ->
             submitAsync {
                 repeat(10) {
-                    sender.sendDebug(generateUserID())
+                    sender.sendComponent(generateID().toString())
                 }
             }
         }

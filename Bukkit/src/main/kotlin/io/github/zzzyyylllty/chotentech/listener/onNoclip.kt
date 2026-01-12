@@ -4,14 +4,14 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldguard.WorldGuard
 import com.sk89q.worldguard.protection.ApplicableRegionSet
-import io.github.zzzyyylllty.chotentech.ChoTenTech.dataMap
+import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
 import io.github.zzzyyylllty.chotentech.ChoTenTech.levelsList
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerRegions
+import io.github.zzzyyylllty.chotentech.data.ChoTenDataHelper
 import io.github.zzzyyylllty.chotentech.data.Level
 import io.github.zzzyyylllty.chotentech.data.NoclipPoint
 import io.github.zzzyyylllty.chotentech.data.PlayerData
-import io.github.zzzyyylllty.chotentech.db.wipeData
-import io.github.zzzyyylllty.chotentech.function.sender.sendComponent
+import io.github.zzzyyylllty.chotentech.function.player.sendComponent
 import org.bukkit.Location
 import org.bukkit.Sound
 import org.bukkit.entity.Player
@@ -20,13 +20,15 @@ import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.warning
 import kotlin.collections.get
 import kotlin.collections.set
+import kotlin.math.round
+import kotlin.math.roundToLong
 
 
 @SubscribeEvent
 fun onPlayerSneak(event: PlayerToggleSneakEvent) {
     val player = event.player
     val uuid = player.uniqueId.toString()
-    var data = dataMap[uuid]
+    var data = playerDataMap[uuid]
 
 
 // 当玩家在切出点时：noclipcooldown<0,noclippoint!=null,noclipping=true
@@ -36,7 +38,7 @@ fun onPlayerSneak(event: PlayerToggleSneakEvent) {
     // 如果玩家没有下蹲，设置切出点为null，切出中为false
     if (!event.isSneaking || player.location.pitch <= 85f) {
         if (data != null && data.noclipping) {
-            dataMap[uuid] = data.copy(noclipping = false, noclipPoint = null)
+            playerDataMap[uuid] = data.copy(noclipping = false, noclipPoint = null)
             player.playSound(player, Sound.ENTITY_ENDER_EYE_DEATH, 1F, 0.5F)
             player.sendComponent("<gradient:red:#550000>切出已取消")
             return
@@ -46,30 +48,30 @@ fun onPlayerSneak(event: PlayerToggleSneakEvent) {
 
     // 如果玩家没有数据，则为玩家重设数据
     if (data == null) {
-        warning("无法读取到玩家 $player 的数据，正在重新附加数据！")
-        wipeData(player)
-    }
-    data = dataMap[uuid] ?: return
-    // 判断冷却
-    if (data.noclipCooldown > 0.0) {
-        player.playSound(player, Sound.ENTITY_VILLAGER_NO, 1F, 0.5F)
-        player.sendComponent("<gradient:red:#666600>请等待 ${data.noclipCooldown.toInt()} 秒冷却...")
+        warning("无法读取到玩家 $player 的数据！")
         return
     }
-    data = dataMap[uuid] ?: return
+    data = playerDataMap[uuid] ?: return
+    // 判断冷却
+    if ((data.getCooldownLeftLong() ?: 0) > 0L) {
+        player.playSound(player, Sound.ENTITY_VILLAGER_NO, 1F, 0.5F)
+        player.sendComponent("<gradient:red:#666600>请等待 ${round((data.getCooldownLeftLong() ?: 0)/100.0)/10} 秒冷却...")
+        return
+    }
+    data = playerDataMap[uuid] ?: return
     if (data.noclipPoint == null) {
         player.playSound(player, Sound.ENTITY_ENDER_EYE_LAUNCH, 1F, 0.5F)
         player.sendComponent("<#66CCFF>正在尝试切出。")
         val check = checkPlayerRegion(player, data, levelsList)
         if (check != null) {
-            dataMap[uuid] = check
-            data = dataMap[uuid] ?: return
+            playerDataMap[uuid] = check
+            data = playerDataMap[uuid] ?: return
             player.sendComponent("<#66CCFF>正在尝试切出，请注意移动，松开潜行与跳跃等均会导致取消。")
         }
     }
 
-    if (dataMap[uuid]?.noclipPoint == null) {
-        dataMap[uuid] = data.copy(noclipCooldown = data.noclipPoint?.cooldown ?: 10.0)
+    if (playerDataMap[uuid]?.noclipPoint == null) {
+        data.setCooldownSec(10.0)
         player.sendComponent("<#FF6666>此处不是切出点。")
     }
 }
@@ -98,8 +100,8 @@ fun checkPlayerRegion(
                     // 如果符合条件，则将切出区设置为区域
                     return list.copy(
                         noclipPoint = noclipPoint,
-                        noclipTimeLeft = noclipPoint.noclippingTime,
-                        noclipCooldown = noclipPoint.cooldown,
+                        noclipTimeEnd = System.currentTimeMillis() + (noclipPoint.noclippingTime * 1000).roundToLong(),
+                        noclipCooldownEnd = System.currentTimeMillis() + (noclipPoint.cooldown * 1000).roundToLong(),
                         noclipping = true
                     )
                 }
