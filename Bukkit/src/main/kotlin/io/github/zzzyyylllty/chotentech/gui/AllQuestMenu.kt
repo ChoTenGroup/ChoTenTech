@@ -2,8 +2,10 @@ package io.github.zzzyyylllty.chotentech.gui
 
 import ink.ptms.chemdah.api.ChemdahAPI
 import ink.ptms.chemdah.core.quest.Quest
+import ink.ptms.chemdah.core.quest.addon.AddonTrack.Companion.trackQuest
 import ink.ptms.chemdah.core.quest.meta.Meta
 import io.github.zzzyyylllty.chotentech.chemdah.GuiItem
+import io.github.zzzyyylllty.chotentech.chemdah.addon.ChoTenUI
 import io.github.zzzyyylllty.chotentech.chemdah.addon.ChoTenUI.Companion.chotenui
 import io.github.zzzyyylllty.chotentech.chemdah.build
 import io.github.zzzyyylllty.chotentech.player.sendComponent
@@ -25,20 +27,20 @@ import kotlin.collections.toList
 class AllQuestMenu {
     fun open(player: Player) {
 
-        player.openMenu<PageableChest<Quest>>("&f进行中的任务".colored()) {
+        player.openMenu<PageableChest<Quest>>("&f<shift:-16><image:kangelicon:allquests><shift:-256>进行中的任务".colored()) {
 
             rows(6)
 
             map(
-                "#########",
-                "#########",
-                "#########",
-                "#########",
-                "#########",
+                "         ",
+                " ####### ",
+                " ####### ",
+                " ####### ",
+                "         ",
                 "---B-C---"
             )
 
-            set('-', GuiItem("background", "BLACK_STAINED_GLASS_PANE", " ").build())
+//            set('-', GuiItem("background", "BLACK_STAINED_GLASS_PANE", " ").build())
 
             val profile = ChemdahAPI.playerProfile[player.name]
 
@@ -96,7 +98,9 @@ class AllQuestMenu {
                         }
                         lore += "<!i> "
                     }
+                    lore += "<i> ${providerText(cui)}"
                     lore += "<!i> <yellow>点击 <green>打开详细菜单"
+                    lore += "<!i> <yellow>右键 <green>追踪任务"
                     lore += "<!i> "
                     meta.lore(lore.toComponent())
                     cui?.model?.let { meta.itemModel = NamespacedKey.fromString(it) }
@@ -110,7 +114,7 @@ class AllQuestMenu {
             onClick { event, element ->
                 event.isCancelled = true
                 val bukkitPlayer = event.clicker
-                QuestMenu().open(bukkitPlayer, element)
+                if (event.clickEvent().isRightClick) profile?.trackQuest = element.template else QuestMenu().open(bukkitPlayer, element)
 
             }
 
@@ -132,4 +136,23 @@ fun Double.roundTo(decimals: Int): Double {
     var multiplier = 1.0
     repeat(decimals) { multiplier *= 10 }
     return kotlin.math.round(this * multiplier) / multiplier
+}
+
+fun providerText(cui: ChoTenUI?): String {
+    val typeText = when (cui?.type) {
+        "OPTIONAL" -> "可选"
+        "CHAIN" -> "连环"
+        "CRITICAL" -> "关键"
+        "SPECIAL" -> "特殊"
+        else -> "公有"
+    }
+    return when (cui?.provider?.uppercase()) {
+        "ZERO" -> "<dark_blue>由 ZERO 提供的${typeText}任务"
+        "XINGCHEN" -> "<aqua>由 星辰闪烁 提供的${typeText}任务"
+        "FANXING" -> "<dark_aqua>由 可爱的小狗拔牙 提供的${typeText}任务"
+        "ACHU", "THEACHU" -> "<light_purple>由 TheAchu 提供的${typeText}任务"
+        "CEDRIC" -> "<gold>由 Parte 提供的${typeText}任务"
+        null -> "<gray>原生${typeText}任务"
+        else -> "<dark_blue>由 ${cui.provider} 提供的${typeText}任务"
+    }
 }

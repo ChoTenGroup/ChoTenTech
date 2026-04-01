@@ -2,6 +2,7 @@
 
 package io.github.zzzyyylllty.chotentech
 
+import io.github.zzzyyylllty.chotentech.ChoTenTech.sdClassList
 import io.github.zzzyyylllty.chotentech.data.IDType
 import io.github.zzzyyylllty.chotentech.data.Level
 import io.github.zzzyyylllty.chotentech.data.PlayerData
@@ -10,10 +11,14 @@ import io.github.zzzyyylllty.chotentech.data.SurvivalDifficulty
 import io.github.zzzyyylllty.chotentech.load.loadAccountTypes
 import io.github.zzzyyylllty.chotentech.load.loadLevelFiles
 import org.bukkit.command.CommandSender
+import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.configuration.file.YamlConfiguration
+import org.bukkit.generator.ChunkGenerator
 import taboolib.common.env.RuntimeDependencies
 import taboolib.common.env.RuntimeDependency
 import taboolib.common.platform.Plugin
 import taboolib.common.platform.function.console
+import taboolib.common.platform.function.getDataFolder
 import taboolib.common.platform.function.info
 import taboolib.common.platform.function.submit
 import taboolib.module.configuration.Config
@@ -21,9 +26,15 @@ import taboolib.module.configuration.Configuration
 import taboolib.module.database.getHost
 import taboolib.module.lang.Language
 import taboolib.platform.BukkitPlugin
+import taboolib.platform.BukkitWorldGenerator
+import java.io.File
 import java.time.format.DateTimeFormatter
 
 @RuntimeDependencies(
+    RuntimeDependency(
+        value = "!com.google.code.gson:gson:2.10.1",
+        relocate = ["!com.google.gson", "!com.example.library.gson"]
+    ),
     RuntimeDependency(
         value = "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.8.1",
         test = "!kotlinx.serialization.Serializer",
@@ -35,19 +46,15 @@ import java.time.format.DateTimeFormatter
     ),
     RuntimeDependency(
         value = "org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.8.1",
-        test = "!kotlinx.serialization.Serializer",
+        test = "!kotlinx.serialization.json.Json",
         relocate = [
             "!kotlin.", "!kotlin220.",
             "!kotlinx.serialization.", "!kotlinx.serialization181."
         ],
         transitive = false
-    ),
-    RuntimeDependency(
-        value = "!com.google.code.gson:gson:2.10.1",
-        relocate = ["!com.google.gson", "!com.example.library.gson"]
     )
 )
-object ChoTenTech : Plugin() {
+object ChoTenTech : Plugin(), BukkitWorldGenerator {
 
 
     @Config("config.yml")
@@ -95,10 +102,39 @@ object ChoTenTech : Plugin() {
             devMode = config.getBoolean("debug",false)
             accountTypesList.clear()
             levelsList.clear()
+            loadSDClassFile()
             loadAccountTypes()
             loadLevelFiles()
         }
     }
 
+    override fun getDefaultWorldGenerator(
+        p0: String?,
+        p1: String?
+    ): ChunkGenerator? {
+        TODO("Not yet implemented")
+    }
 
+
+}
+
+
+fun loadSDClassFile() {
+
+    val config = YamlConfiguration.loadConfiguration(File(getDataFolder(), "sdclass.yml"))
+
+    for (iroot in config.getKeys(false)) {
+        config.getConfigurationSection(iroot)?.let { loadSDClass(iroot,it) }
+    }
+}
+
+fun loadSDClass(root: String, config: ConfigurationSection) {
+
+    sdClassList.put(root,SurvivalDifficulty(
+        classname = config.getString("classname") ?: "Unknown",
+        one = config.getString("one") ?: "Unknown",
+        two = config.getString("two") ?: "Unknown",
+        three = config.getString("three") ?: "Unknown",
+        prefix = config.getString("prefix") ?: "Unknown",
+    ))
 }

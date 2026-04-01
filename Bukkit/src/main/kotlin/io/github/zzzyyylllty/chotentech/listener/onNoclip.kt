@@ -66,7 +66,7 @@ fun onPlayerSneak(event: PlayerToggleSneakEvent) {
         if (check != null) {
             playerDataMap[uuid] = check
             data = playerDataMap[uuid] ?: return
-            player.sendComponent("<#66CCFF>正在尝试切出，请注意移动，松开潜行与跳跃等均会导致取消。")
+            player.sendComponent("<#66CCFF>正在尝试切出，请注意松开潜行会导致取消。")
         }
     }
 
