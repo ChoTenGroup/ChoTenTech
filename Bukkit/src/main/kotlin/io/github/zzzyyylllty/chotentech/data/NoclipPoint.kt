@@ -15,6 +15,7 @@ data class NoclipPoint(
     val damage: Double = 1.0, // 切出失败血量惩罚
     val cooldown: Double = 2.0, // 执行切出操作后的冷却。
     val noclippingTime: Double = 10.0,
-    val name: String?
+    val name: String?,
+    val targetLevel: String?,
 ){
 }

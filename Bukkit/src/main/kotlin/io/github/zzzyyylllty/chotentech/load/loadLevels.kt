@@ -135,7 +135,8 @@ fun loadLevel(root: String, config: Configuration) {
             damage = (map["damage"] ?: "0.0").toDouble(),
             cooldown = (map["cooldown"] ?: "5.0").toDouble(),
             noclippingTime = (map["time"] ?: "5.0").toDouble(),
-            name = map["name"]
+            name = map["name"],
+            targetLevel = map["target"]
         ))
     }
 
@@ -159,8 +160,10 @@ fun loadLevel(root: String, config: Configuration) {
             )
         }
 
+    val world = Bukkit.getWorld(config.getString("$root.world") ?: "world") ?: Bukkit.getWorld("world")
+
     levelsList[root] = Level(
-        region = getRegion(com.sk89q.worldedit.bukkit.BukkitAdapter.adapt(Bukkit.getWorld(config.getString("$root.world") ?: "world")), root),
+        region = getRegion(com.sk89q.worldedit.bukkit.BukkitAdapter.adapt(world), root),
         cluster = config.getString("$root.cluster") ?: "Unknown",
         number = config.getString("$root.number") ?: "Unknown",
         name = config.getString("$root.name") ?: "Unknown",

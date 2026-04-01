@@ -11,4 +11,5 @@ class SubmitItemEvent(
     val player: Player,
     val quest: Quest,
     val task: Task,
+    val item: ItemStack?,
 ) : BukkitProxyEvent()

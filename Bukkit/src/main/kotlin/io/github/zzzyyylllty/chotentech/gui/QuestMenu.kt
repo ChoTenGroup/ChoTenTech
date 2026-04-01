@@ -1,6 +1,8 @@
 package io.github.zzzyyylllty.chotentech.gui
 
 import ink.ptms.chemdah.api.ChemdahAPI
+import ink.ptms.chemdah.api.ChemdahAPI.chemdahProfile
+import ink.ptms.chemdah.api.ChemdahAPI.isChemdahProfileLoaded
 import ink.ptms.chemdah.core.quest.Quest
 import ink.ptms.chemdah.core.quest.Task
 import ink.ptms.chemdah.core.quest.meta.Meta
@@ -9,6 +11,7 @@ import io.github.zzzyyylllty.chotentech.chemdah.addon.ChoTenUI.Companion.chotenu
 import io.github.zzzyyylllty.chotentech.chemdah.build
 import io.github.zzzyyylllty.chotentech.event.SubmitItemEvent
 import io.github.zzzyyylllty.chotentech.player.sendComponent
+import io.github.zzzyyylllty.chotentech.util.devLog
 import io.github.zzzyyylllty.chotentech.util.minimessage.legacyToMiniMessage
 import io.github.zzzyyylllty.chotentech.util.minimessage.toComponent
 import org.bukkit.Material
@@ -31,40 +34,49 @@ class QuestMenu {
 
         val questName = quest.template.meta<Meta<String>>("name")?.source
 
-        player.openMenu<PageableChest<Task>>("&f任务: $questName".colored()) {
+        player.openMenu<PageableChest<Task>>("<shift:-16><image:kangelicon:quests><shift:-256>&f任务: $questName".colored()) {
 
             rows(6)
 
             map(
-                "#########",
-                "#########",
-                "#########",
-                "#########",
-                "#########",
-                "<--B-C---"
+                "         ",
+                " ####### ",
+                " ####### ",
+                " ####### ",
+                "         ",
+                "<  B-C   "
             )
 
             set('-', GuiItem("background", "BLACK_STAINED_GLASS_PANE", " ").build())
 
-            val profile = ChemdahAPI.playerProfile[player.name]
+            val profile = if (player.isChemdahProfileLoaded) player.chemdahProfile else null
 
             // 设置可用槽位（通过字符）
             slotsBy('#')
 
+            handLocked(false)
+
             // 设置元素列表
             elements { quest.tasks.toList() }
 
+
             // 生成每个元素对应的物品
             onGenerate(async = true) { player, element, index, slot ->
-                val cui = quest.template.chotenui()
                 val profile = profile ?: run {
                     warning("玩家 ${player.name} 的 Chemdah 数据尚未加载完成")
                     player.sendComponent("<red>您的数据正在加载，请耐心等待...")
                     player.closeInventory()
-                    null
+                    return@onGenerate ItemStack(Material.GRAY_STAINED_GLASS_PANE)
                 }
-                val item = cui?.icon?.let { XMaterial.valueOf(it) }?.parseItem() ?: ItemStack(Material.PAPER)
-                if (profile != null) {
+                if (profile.questMap[quest.template.id] == null && index == 0) {
+                    devLog("questMap: ${profile.questMap}")
+                    player.sendComponent("<red>当前任务已不再进行,自动返回上个菜单...")
+                    player.closeInventory()
+                    AllQuestMenu().open(player)
+                    return@onGenerate ItemStack(Material.GRAY_STAINED_GLASS_PANE)
+                } else {
+                    val cui = quest.template.chotenui()
+                    val item = cui?.icon?.let { XMaterial.valueOf(it) }?.parseItem() ?: ItemStack(Material.PAPER)
                     val element = quest.getTask(element.id) ?: return@onGenerate ItemStack(Material.BARRIER)
                     val progress = element.objective.getProgress(profile, element)
                     val value = progress.value.toString().toDouble().roundTo(1).toString().removeSuffix(".0")
@@ -73,7 +85,7 @@ class QuestMenu {
                     meta.customName(("<!i><white>「<gray>" + element.meta<Meta<String>>("name")?.source?.legacyToMiniMessage() + "<reset><white><!i>」").toComponent())
                     val lore = mutableListOf<String>()
                     lore += " "
-                    lore += "<!i><gray> 进度 <#99FC65>${progress.percent.roundToInt()}%"
+                    lore += "<!i><gray> 进度 <#99FC65>${(progress.percent * 100.0).roundToInt()}%"
                     lore += " "
                     lore += "<!i><gray> 当前任务进度 <#66CCFF>$value<gray>/<#FFCC66>$target"
                     lore += " "
@@ -82,19 +94,21 @@ class QuestMenu {
                     }
                     meta.lore(lore.toComponent())
                     item.setItemMeta(meta)
+                    item
                 }
-                item
             }
 
             // 元素点击事件
             onClick { event, element ->
-                event.isCancelled = true
+//                event.isCancelled = true
                 val bukkitPlayer = event.clicker
 
                 if (element.objective.name == "choten submit") {
-                    SubmitItemEvent(player, quest, element).call()
+                    SubmitItemEvent(player, quest, element, event.cursorItem).call()
                     resetElementsCache()
                     QuestMenu().open(bukkitPlayer, quest)
+                } else {
+                    event.isCancelled = true
                 }
 
             }

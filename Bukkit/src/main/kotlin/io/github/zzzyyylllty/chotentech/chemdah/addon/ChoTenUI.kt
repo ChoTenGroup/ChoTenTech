@@ -27,6 +27,10 @@ class ChoTenUI(root: ConfigSection, template: Template) : Addon(root, template) 
 
     val descriptionReward = root["reward"]?.asList()?.flatMap { it.lines() }
 
+    val type = root.getString("type")
+
+    val provider = root.getString("provider")
+
     val npcID = root["npc"]?.asList()?.flatMap { it.lines() }
 
     companion object {

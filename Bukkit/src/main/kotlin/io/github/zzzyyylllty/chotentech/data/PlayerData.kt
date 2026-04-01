@@ -27,6 +27,10 @@ data class PlayerData (
     var maxSanity: Double = 1.0,
     var darkness: Double = 1.0,
     var maxDarkness: Double = 1.0,
+    var mainTag: String? = null,
+    var subTag: String? = null,
+    var createTime: Long = System.currentTimeMillis(),
+    var lastLoginTime: Long = System.currentTimeMillis(),
 
     @Transient
     var activeLevel: Level? = null
@@ -37,9 +41,9 @@ data class PlayerData (
     fun getTimeLeftLong(): Long? {
         return noclipTimeEnd?.minus(Instant.now().toEpochMilli())
     }
-    fun setCooldownSec(sec: Double): Long {
+    fun setCooldownSec(sec: Double) {
         val current = noclipCooldownEnd ?: Instant.now().toEpochMilli()
-        return (noclipTimeEnd ?: current) + round(sec * 1000).toLong()
+        noclipCooldownEnd =  (noclipTimeEnd ?: current) + round(sec * 1000).toLong()
     }
 }
 

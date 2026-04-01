@@ -20,6 +20,7 @@ taboolib {
             name("MythicMobs").optional(true)
             name("Chemdah").optional(true)
             name("WorldGuard").optional(true)
+            name("Sertraline").optional(true)
             // name("ProtocolLib").optional(true)
             // 可选依赖.
             // name("XXX").optional(true)
@@ -45,14 +46,19 @@ taboolib {
         install(PtcObject)
     }
     version {
-        taboolib = "6.2.3-20d868d"
+        taboolib = "6.2.4-86dd2bf"
         coroutines = "1.8.1"
+
     }
     relocate("top.maplex.arim","xxx.xxx.arim")
     relocate("kotlinx.serialization", "kotlinx.serialization181")
 }
 
 repositories {
+
+    maven {
+        url = uri("https://repo.opencollab.dev/main/")
+    }
     maven("https://repo.momirealms.net/releases/")
     maven("https://maven.enginehub.org/repo/")
     maven("https://maven.aliyun.com/repository/google")
@@ -146,6 +152,8 @@ repositories {
 }
 
 dependencies {
+    compileOnly("org.geysermc.floodgate:api:2.2.4-SNAPSHOT")
+    implementation("com.github.zzzyyylllty:Sertraline-Hydrochloride:3.8.2")
     compileOnly("de.oliver:FancyNpcs:2.7.0")
     compileOnly("ink.ptms.chemdah:api:1.1.17")
     compileOnly("net.luckperms:api:5.4")
