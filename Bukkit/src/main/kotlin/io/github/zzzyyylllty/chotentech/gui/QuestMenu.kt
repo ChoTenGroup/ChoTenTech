@@ -1,6 +1,5 @@
 package io.github.zzzyyylllty.chotentech.gui
 
-import ink.ptms.chemdah.api.ChemdahAPI
 import ink.ptms.chemdah.api.ChemdahAPI.chemdahProfile
 import ink.ptms.chemdah.api.ChemdahAPI.isChemdahProfileLoaded
 import ink.ptms.chemdah.core.quest.Quest
@@ -13,10 +12,9 @@ import io.github.zzzyyylllty.chotentech.event.SubmitItemEvent
 import io.github.zzzyyylllty.chotentech.player.sendComponent
 import io.github.zzzyyylllty.chotentech.util.devLog
 import io.github.zzzyyylllty.chotentech.util.minimessage.legacyToMiniMessage
-import io.github.zzzyyylllty.chotentech.util.minimessage.toComponent
+import io.github.zzzyyylllty.chotentech.util.toComponent
 import org.bukkit.Material
 import org.bukkit.entity.Player
-import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.ItemStack
 import taboolib.common.platform.function.warning
 import taboolib.library.xseries.XMaterial
@@ -25,8 +23,6 @@ import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.PageableChest
 
 import kotlin.collections.toList
-import kotlin.collections.toMutableList
-import kotlin.math.round
 import kotlin.math.roundToInt
 
 class QuestMenu {
@@ -99,12 +95,13 @@ class QuestMenu {
             }
 
             // 元素点击事件
-            onClick { event, element ->
+            onClick() { event, element ->
 //                event.isCancelled = true
                 val bukkitPlayer = event.clicker
 
-                if (element.objective.name == "choten submit") {
+                if (element.objective.name == "choten submit" && event.cursorItem == null) {
                     SubmitItemEvent(player, quest, element, event.cursorItem).call()
+                    event.isCancelled = true
                     resetElementsCache()
                     QuestMenu().open(bukkitPlayer, quest)
                 } else {

@@ -1,22 +1,30 @@
 package io.github.zzzyyylllty.chotentech.command
 
 import io.github.zzzyyylllty.chotentech.ChoTenTech.levelsList
+import io.github.zzzyyylllty.chotentech.ChoTenTech.loadedChunk
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
 import io.github.zzzyyylllty.chotentech.ChoTenTech.sdClassList
+import io.github.zzzyyylllty.chotentech.data.ChunkPos
 import io.github.zzzyyylllty.chotentech.data.IDData
-import io.github.zzzyyylllty.chotentech.data.PlayerDataManager
-import io.github.zzzyyylllty.chotentech.data.PlayerDataManager.initData
+import io.github.zzzyyylllty.chotentech.data.DataManager
+import io.github.zzzyyylllty.chotentech.data.DataManager.initData
+import io.github.zzzyyylllty.chotentech.data.PowerManager
 import io.github.zzzyyylllty.chotentech.data.generateID
 import io.github.zzzyyylllty.chotentech.player.sendComponent
+import org.bukkit.Bukkit
+import org.bukkit.Location
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import taboolib.common.platform.command.CommandBody
 import taboolib.common.platform.command.CommandHeader
 import taboolib.common.platform.command.PermissionDefault
+import taboolib.common.platform.command.int
 import taboolib.common.platform.command.mainCommand
 import taboolib.common.platform.command.player
 import taboolib.common.platform.command.subCommand
 import taboolib.common.platform.function.submitAsync
+import kotlin.math.max
+import kotlin.math.min
 
 @CommandHeader(
     name = "chotentech-debug",
@@ -58,7 +66,7 @@ object ChoTenDebugCommand {
     val getIdExists = subCommand {
         dynamic("id"){
             execute<CommandSender> { sender, context, argument ->
-                sender.sendComponent("${PlayerDataManager.isIDExist(context["id"])}")
+                sender.sendComponent("${DataManager.isIDExist(context["id"])}")
             }
         }
     }
@@ -66,10 +74,73 @@ object ChoTenDebugCommand {
     val getDataById = subCommand {
         dynamic("id"){
             execute<CommandSender> { sender, context, argument ->
-                sender.sendComponent("${PlayerDataManager.getDataByCID(context["id"])}")
+                sender.sendComponent("${DataManager.getDataByCID(context["id"])}")
             }
         }
     }
+
+    @CommandBody
+    val chunks = subCommand {
+        execute<CommandSender> { sender, context, argument ->
+            sender.sendMessage(loadedChunk.toString())
+        }
+    }
+
+    @CommandBody
+    val powers = subCommand {
+        execute<CommandSender> { sender, context, argument ->
+            sender.sendMessage(PowerManager.getRuntimeMap().toString())
+        }
+    }
+
+    @CommandBody
+    val chunkCurrent = subCommand {
+        execute<CommandSender> { sender, context, argument ->
+            val chunk = (sender as Player).chunk
+            sender.sendMessage(loadedChunk[ChunkPos(chunk.world.name, chunk.x, chunk.z)].toString())
+        }
+    }
+
+    @CommandBody
+    val chunkSave = subCommand {
+        int("x1") {
+            int("z1") {
+                int("x2") {
+                    int("z2") {
+                        dynamic("mode") {
+                            execute<CommandSender> { sender, context, argument ->
+                                submitAsync{
+                                    val x1 = min(context["x1"].toDouble(), context["x2"].toDouble())
+                                    val x2 = max(context["x1"].toDouble(), context["x2"].toDouble())
+                                    val z1 = min(context["z1"].toDouble(), context["z2"].toDouble())
+                                    val z2 = max(context["z1"].toDouble(), context["z2"].toDouble())
+                                    val player = (sender as? Player?)!!
+                                    val firstChunk = Location(player.world, x1, 100.0, z1).chunk
+                                    val lastChunk = Location(player.world, x2, 100.0, z2).chunk
+                                    sender.sendComponent("<aqua>开始加载区块，请稍等。")
+                                    for (chunkX in firstChunk.x..lastChunk.x) {
+                                        for (chunkZ in firstChunk.z..lastChunk.z) {
+                                            val chunk = player.world.getChunkAt(chunkX, chunkZ)
+                                            sender.sendComponent("<yellow>开始执行 $chunkX $chunkZ")
+                                            when (context["mode"]) {
+                                                "CLEAR" -> DataManager.clearChunkData(chunk)
+                                                "LOG_UNBREAK" -> DataManager.logUnbreakChunkData(chunk)
+                                            }
+                                            sender.sendComponent("<green>开始执行 $chunkX $chunkZ 完成。")
+                                        }
+                                    }
+                                }
+                            }
+                            suggestion<CommandSender> { sender, context ->
+                                listOf("CLEAR", "LOG_UNBREAK")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     @CommandBody
     val loadData = subCommand {
         execute<CommandSender> { sender, context, argument ->
@@ -85,7 +156,7 @@ object ChoTenDebugCommand {
                 val user = context.player("user")
                 // 转化为Bukkit的Player
                 val bukkitPlayer = user.castSafely<Player>()
-                sender.sendComponent("${PlayerDataManager.getData(bukkitPlayer?.uniqueId.toString())}")
+                sender.sendComponent("${DataManager.getData(bukkitPlayer?.uniqueId.toString())}")
             }
         }
     }
@@ -97,14 +168,14 @@ object ChoTenDebugCommand {
                     val user = context.player("user")
                     // 转化为Bukkit的Player
                     val bukkitPlayer = user.castSafely<Player>()
-                    if (PlayerDataManager.isIDExist(context["id"]))
+                    if (DataManager.isIDExist(context["id"]))
                         sender.sendComponent("userId must be unique")
                     else {
-                        val data = bukkitPlayer?.let { PlayerDataManager.getData(it.uniqueId.toString()) }
+                        val data = bukkitPlayer?.let { DataManager.getData(it.uniqueId.toString()) }
                         bukkitPlayer?.let {
                             val id = context["id"].toLong()
                             if (data == null) sender.sendComponent("<red>未找到玩家数据")
-                            data?.let { playerData -> PlayerDataManager.modifyUserID(id, playerData) }
+                            data?.let { playerData -> DataManager.modifyUserID(id, playerData) }
                         }
                     }
                 }
@@ -113,15 +184,15 @@ object ChoTenDebugCommand {
                         val user = context.player("user")
                         // 转化为Bukkit的Player
                         val bukkitPlayer = user.castSafely<Player>()
-                        if (PlayerDataManager.isIDExist(context["id"]))
+                        if (DataManager.isIDExist(context["id"]))
                             sender.sendComponent("userId must be unique")
                         else {
-                            val data = bukkitPlayer?.let { PlayerDataManager.getData(it.uniqueId.toString()) }
+                            val data = bukkitPlayer?.let { DataManager.getData(it.uniqueId.toString()) }
                             bukkitPlayer?.let {
                                 val id = context["id"].toLong()
                                 val type = context["type"]
                                 if (data == null) sender.sendComponent("<red>未找到玩家数据")
-                                data?.let { playerData -> PlayerDataManager.modifyUserIDData(IDData(id, type), playerData) }
+                                data?.let { playerData -> DataManager.modifyUserIDData(IDData(id, type), playerData) }
                             }
                         }
                     }

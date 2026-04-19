@@ -3,10 +3,9 @@ package io.github.zzzyyylllty.chotentech.listener
 import ink.ptms.chemdah.api.event.collect.ObjectiveEvents
 import ink.ptms.chemdah.api.event.collect.QuestEvents
 import ink.ptms.chemdah.core.quest.meta.MetaName
-import ink.ptms.chemdah.core.quest.meta.MetaName.Companion.displayName
 import io.github.zzzyyylllty.chotentech.player.sendComponent
 import io.github.zzzyyylllty.chotentech.util.minimessage.legacyToMiniMessage
-import io.github.zzzyyylllty.chotentech.util.minimessage.toComponent
+import io.github.zzzyyylllty.chotentech.util.toComponent
 import net.kyori.adventure.title.Title
 import org.bukkit.Sound
 import org.bukkit.SoundCategory

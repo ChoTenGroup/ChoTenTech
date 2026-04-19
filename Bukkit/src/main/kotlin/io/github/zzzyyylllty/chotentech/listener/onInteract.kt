@@ -2,6 +2,7 @@ package io.github.zzzyyylllty.chotentech.listener
 
 import io.github.zzzyyylllty.chotentech.data.ChoTenDataHelper
 import org.bukkit.GameMode
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.player.PlayerInteractEvent
@@ -17,6 +18,10 @@ fun onPlayerInteractWithDisabledBlocks(event: PlayerInteractEvent) {
     if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) return
 
     if (block.contains("CANDLE") || block.contains("POT") || block.contains("COPPER") || block.contains("SIGN") || block == "CHISELED_BOOKSHELF" || block == "LODESTONE") {
+        event.isCancelled = true
+    }
+
+    if (player.inventory.itemInMainHand.type.name.contains("BUCKET")) {
         event.isCancelled = true
     }
 }

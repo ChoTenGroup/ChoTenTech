@@ -172,5 +172,7 @@ fun loadLevel(root: String, config: Configuration) {
         tip = config.getString("$root.tip") ?: "Unknown",
         noclips = noclipList,
         prefix = config.getString("$root.prefix") ?: "",
+        isPlaceable = config.getBoolean("$root.isPlaceable"),
+        powers = (config.getList("$root.powers")?.toSet() as? Set<String>?) ?: emptySet(),
     )
 }

@@ -48,7 +48,7 @@ object SubmitItemObjective : ObjectiveCountableI<SubmitItemEvent>() {
             if (quest?.id == e.quest.id && task.id == e.task.id) {
                 if (e.item != null) {
 
-                    val item = task.condition["item"]!!.toInferItem()
+                    val item = task.condition["item"]!!.asList().toInferItem()
                     val amount = task.condition["amount"]?.toInt() ?: 1
                     val consume = task.condition["consume"]?.toBoolean() ?: true
                     val kether = task.condition["kether"]?.toString()

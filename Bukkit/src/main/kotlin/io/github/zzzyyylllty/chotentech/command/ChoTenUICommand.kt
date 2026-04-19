@@ -1,14 +1,6 @@
 package io.github.zzzyyylllty.chotentech.command
 
-import io.github.zzzyyylllty.chotentech.ChoTenTech.levelsList
-import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
-import io.github.zzzyyylllty.chotentech.ChoTenTech.sdClassList
-import io.github.zzzyyylllty.chotentech.data.IDData
-import io.github.zzzyyylllty.chotentech.data.PlayerDataManager
-import io.github.zzzyyylllty.chotentech.data.PlayerDataManager.initData
-import io.github.zzzyyylllty.chotentech.data.generateID
 import io.github.zzzyyylllty.chotentech.gui.AllQuestMenu
-import io.github.zzzyyylllty.chotentech.player.sendComponent
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import taboolib.common.platform.command.CommandBody
@@ -17,7 +9,6 @@ import taboolib.common.platform.command.PermissionDefault
 import taboolib.common.platform.command.mainCommand
 import taboolib.common.platform.command.player
 import taboolib.common.platform.command.subCommand
-import taboolib.common.platform.function.submitAsync
 
 @CommandHeader(
     name = "chotentech-ui",
