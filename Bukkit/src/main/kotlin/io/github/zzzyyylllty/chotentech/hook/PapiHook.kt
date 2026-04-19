@@ -1,10 +1,8 @@
 package io.github.zzzyyylllty.chotentech.hook
 import io.github.zzzyyylllty.chotentech.ChoTenTech.config
-import io.github.zzzyyylllty.chotentech.ChoTenTech.playerHudMap
-import io.github.zzzyyylllty.chotentech.data.ChoTenDataHelper
 import io.github.zzzyyylllty.chotentech.data.HUDManager
 import io.github.zzzyyylllty.chotentech.data.PlayerData
-import io.github.zzzyyylllty.chotentech.data.PlayerDataManager
+import io.github.zzzyyylllty.chotentech.data.DataManager
 import io.github.zzzyyylllty.chotentech.data.getData
 import io.github.zzzyyylllty.chotentech.util.replacePlaceholderSafety
 import org.bukkit.OfflinePlayer
@@ -25,10 +23,10 @@ object ExamplePapiHook : PlaceholderExpansion {
         var list = args.split("_")
 
         when (list[0].lowercase()) {
-            "idexists" -> return PlayerDataManager.isIDExist(list[1]).toString()
-            "playername" -> return PlayerDataManager.getDataByCID(list[1])?.playerName.toString()
-            "uuidbycid" -> return PlayerDataManager.getDataByCID(list[1])?.uuid ?: "null"
-            "uuidbyname" -> return PlayerDataManager.getDataByName(list[1])?.uuid ?: "null"
+            "idexists" -> return DataManager.isIDExist(list[1]).toString()
+            "playername" -> return DataManager.getDataByCID(list[1])?.playerName.toString()
+            "uuidbycid" -> return DataManager.getDataByCID(list[1])?.uuid ?: "null"
+            "uuidbyname" -> return DataManager.getDataByName(list[1])?.uuid ?: "null"
             "cid" -> return if (list.size == 1) player?.getData()?.cid?.id.toString()
             else requestDataByName(list[1])?.cid?.id.toString()
             "randomname" -> {
@@ -110,15 +108,15 @@ object ExamplePapiHook : PlaceholderExpansion {
     }
 
     fun requestDataByUUID(uuid: String): PlayerData? {
-        return PlayerDataManager.getData(uuid)
+        return DataManager.getData(uuid)
     }
 
     fun requestDataByName(name: String): PlayerData? {
-        return PlayerDataManager.getDataByName(name)
+        return DataManager.getDataByName(name)
     }
 
     fun requestDataByCID(cid: String): PlayerData? {
-        return PlayerDataManager.getDataByCID(cid)
+        return DataManager.getDataByCID(cid)
     }
 }
 

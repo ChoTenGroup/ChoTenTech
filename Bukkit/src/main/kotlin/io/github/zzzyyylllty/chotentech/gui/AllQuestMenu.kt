@@ -10,19 +10,16 @@ import io.github.zzzyyylllty.chotentech.chemdah.addon.ChoTenUI.Companion.chotenu
 import io.github.zzzyyylllty.chotentech.chemdah.build
 import io.github.zzzyyylllty.chotentech.player.sendComponent
 import io.github.zzzyyylllty.chotentech.util.minimessage.legacyToMiniMessage
-import io.github.zzzyyylllty.chotentech.util.minimessage.toComponent
+import io.github.zzzyyylllty.chotentech.util.toComponent
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
-import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.ItemStack
 import taboolib.common.platform.function.warning
 import taboolib.library.xseries.XMaterial
 import taboolib.module.chat.colored
 import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.PageableChest
-
-import kotlin.collections.toList
 
 class AllQuestMenu {
     fun open(player: Player) {

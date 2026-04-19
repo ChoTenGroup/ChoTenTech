@@ -31,6 +31,7 @@ data class PlayerData (
     var subTag: String? = null,
     var createTime: Long = System.currentTimeMillis(),
     var lastLoginTime: Long = System.currentTimeMillis(),
+    var editorMode: Boolean? = true,
 
     @Transient
     var activeLevel: Level? = null

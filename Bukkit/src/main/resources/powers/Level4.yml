@@ -1,0 +1,78 @@
+hotelduct:
+  name: 办公室旅馆通道
+
+  agent:
+    onPrepare: |-
+      title color "&e&l!" subtitle color "&c&l电源已激活"
+      command papi "broadcast <white>全体人员请注意，在废弃办公室<yellow>{{ &powername }}</yellow>电源的供电程序将在<green>10秒</green>后开始。" as console
+    onStart: |-
+      command papi "broadcast <white>全体人员请注意，在废弃办公室<yellow>{{ &powername }}</yellow>电源的供电程序将在<green>10秒</green>后开始。" as console
+
+  leverPos:
+    world: "Chapter1"
+    x: 39872
+    y: 7
+    z: 98
+
+  openDelaySeconds: 3
+  activeDurationSeconds: 10
+
+  openingAnimation:
+    enabled: true
+    particle: END_ROD
+    particleCount: 20
+    sound: BLOCK_LEVER_CLICK
+    volume: 1.0
+    pitch: 1.0
+    durationTicks: 20
+    intervalTicks: 2
+
+  closingAnimation:
+    enabled: true
+    particle: SMOKE_NORMAL
+    particleCount: 15
+
+  obstacles:
+    gate1:
+      id: "gate1"
+      mode: RESTORE_BLOCKS
+
+#      blocks:
+#        0:
+#          world: "world"
+#          x: 101
+#          y: 64
+#          z: 200
+#        1:
+#          world: "world"
+#          x: 102
+#          y: 64
+#          z: 200
+      cuboid:
+        pos1:
+          world: "Chapter1"
+          x: 39920
+          y: 3
+          z: 109
+        pos2:
+          world: "Chapter1"
+          x: 39913
+          y: -1
+          z: 109
+
+      sequentialConfig:
+        enabled: true
+        openDirection: LEFT_TO_RIGHT
+        reverseOnClose: true
+        blocksPerStep: 1
+        stepDelayTicks: 2
+
+        openEffect:
+          enabled: true
+          particle: WHITE_SMOKE
+          count: 8
+
+        closeEffect:
+          enabled: true
+          particle: WHITE_SMOKE
+          count: 6

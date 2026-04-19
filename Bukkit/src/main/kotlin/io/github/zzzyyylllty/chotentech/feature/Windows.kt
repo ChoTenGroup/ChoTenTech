@@ -2,6 +2,7 @@ package io.github.zzzyyylllty.chotentech.feature
 
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerRegions
+import io.github.zzzyyylllty.chotentech.data.ChoTenDataHelper
 import io.github.zzzyyylllty.chotentech.data.PlayerData
 import io.github.zzzyyylllty.chotentech.listener.checkPlayerRegion
 import io.github.zzzyyylllty.chotentech.util.serialize.toUUID
@@ -44,12 +45,14 @@ fun checkWindows() {
                 }
                 if (check) {
                     submit {
+                        ChoTenDataHelper(player).removeSanity(10.0)
                         player.playSound(player.location, Sound.BLOCK_SCULK_SHRIEKER_SHRIEK, 1f, 0.5f)
                         player.addPotionEffect(PotionEffect(PotionEffectType.INSTANT_DAMAGE, 1000, 12))
                     }
                 } else {
-                    val blockr = player.rayTraceBlocks(5.0)
+                    val blockr = player.rayTraceBlocks(7.0)
                     if (blockr?.hitBlock?.type == Material.WHITE_STAINED_GLASS) submit {
+                        ChoTenDataHelper(player).removeSanity(10.0)
                         player.playSound(player.location, Sound.BLOCK_SCULK_SHRIEKER_SHRIEK, 1f, 1f)
                         player.damage(player.health / 2)
                     }

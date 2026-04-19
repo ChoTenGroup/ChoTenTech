@@ -12,6 +12,8 @@ data class Level(
     val tip: String,
     val noclips: List<NoclipPoint>,
     val prefix: String,
+    val isPlaceable: Boolean,
+    val powers: Set<String>
 ) {
     fun generateLore() : String{
         return """

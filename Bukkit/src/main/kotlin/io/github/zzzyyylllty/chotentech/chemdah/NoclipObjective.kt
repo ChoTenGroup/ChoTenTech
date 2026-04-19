@@ -35,7 +35,7 @@ object NoclipObjective : ObjectiveCountableI<NoclipEvent>() {
         handler {
             it.player
         }
-        addFullCondition("source") { profile, task, e ->
+        addFullCondition("name") { profile, task, e ->
             val target = e.target?.let { task.condition["target"]?.toString()?.toRegex()?.matches(it) } ?: true
             val level = e.level?.let { task.condition["level"]?.toString()?.toRegex()?.matches(it) } ?: true
             val name = e.name?.let { task.condition["name"]?.toString()?.toRegex()?.matches(it) } ?: true
@@ -55,6 +55,6 @@ object NoclipObjective : ObjectiveCountableI<NoclipEvent>() {
 
 @Awake(LifeCycle.ENABLE)
 fun registerNoclipObjective(){
-    SubmitItemObjective.register()
+    NoclipObjective.register()
 }
 

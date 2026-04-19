@@ -1,12 +1,10 @@
 package io.github.zzzyyylllty.chotentech.chemdah
 
-import io.github.zzzyyylllty.chotentech.ChoTenTech.console
 import io.github.zzzyyylllty.chotentech.util.asListEnhanced
-import io.github.zzzyyylllty.chotentech.util.minimessage.toComponent
+import io.github.zzzyyylllty.chotentech.util.toComponent
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import taboolib.library.xseries.XMaterial
-import taboolib.module.lang.asLangText
 
 
 data class GuiItem(
