@@ -232,10 +232,9 @@ object PowerManager {
 
                 power.runAgent("onClose", actor)
                 // 关闭障碍物，全部关闭完后清理状态
-                closeObstaclesSequentially(runtime) {
+                closeObstaclesSequentially(runtime, actor) {
                     runtime.originalBlocks.clear()
                     runtime.obstacleTasks.clear()
-                    power.runAgent("onCloseEnd", actor)
                 }
             }
         }
@@ -290,6 +289,7 @@ object PowerManager {
             task = submit(period = config.stepDelayTicks) {
                 if (index >= sorted.size) {
                     runtime.obstacleTasks.remove(task)
+                    task.cancel()
                     return@submit
                 }
 
@@ -319,11 +319,13 @@ object PowerManager {
      */
     private fun closeObstaclesSequentially(
         runtime: PowerRuntime,
+        actor: Player?,
         onFinished: () -> Unit
     ) {
         val power = runtime.power
 
         if (power.obstacles.isEmpty()) {
+            power.runAgent("onCloseEnd", actor)
             onFinished()
             return
         }
@@ -332,7 +334,8 @@ object PowerManager {
 
         fun oneObstacleDone() {
             remaining--
-            if (remaining <= 0) {
+            if (remaining == 0) {
+                power.runAgent("onCloseEnd", actor)
                 onFinished()
             }
         }
@@ -357,6 +360,7 @@ object PowerManager {
             task = submit(period = config.stepDelayTicks) {
                 if (index >= restoreList.size) {
                     runtime.obstacleTasks.remove(task)
+                    task.cancel()
                     oneObstacleDone()
                     return@submit
                 }
