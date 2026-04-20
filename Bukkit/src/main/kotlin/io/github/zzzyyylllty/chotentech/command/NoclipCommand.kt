@@ -37,10 +37,11 @@ object NoclipsCommand {
             val sender = sender as? Player? ?: return@execute
             val data = sender.getData() ?: return@execute
             val str = StringBuilder()
-            str.append("<gray>${sender.name} - 层级 ${data.activeLevel?.name ?: "???"}")
+            str.appendLine("<white><st>                                   <reset>")
+            str.append("<green>${sender.name} - 层级 ${data.activeLevel?.name ?: "???"}")
             str.appendLine()
             var num = 1
-            str.appendLine("<white><st>                                   ")
+            str.appendLine("<white><st>                                   <reset>")
             str.appendLine()
             val noclips = data.activeLevel?.noclips ?: run {
                 str.appendLine(" <red>未找到任何可用切出点。")
@@ -48,10 +49,20 @@ object NoclipsCommand {
                 sender.sendStringAsComponent(str.toString())
                 return@execute
             }
+            val level = data.exploreredNoclips[data.activeLevelStr]
             for (noclip in noclips) {
-                str.appendLine(" <dark_gray>| <#47A036>NOCLIP$num</#47A036> <#CECACA>${noclip.name}</#CECACA> <#FFAA00>${noclip.targetLevel?.let { levelsList[it]?.name } ?: "未知"}<reset>")
-                num++
+                if (sender.gameMode.isInvulnerable) {
+                    str.appendLine(" <dark_gray>| <#47A036>NOCLIP$num</#47A036> <#CECACA>${noclip.name}</#CECACA> <#FFAA00>${noclip.targetLevel?.let { levelsList[it]?.name } ?: "未知"}<reset>")
+                } else {
+                    if (level?.contains(noclip.name) == true) {
+                        str.appendLine(" <dark_gray>| <#47A036>NOCLIP$num</#47A036> <#CECACA>${noclip.name}</#CECACA> <dark_aqua>${noclip.targetLevel?.let { levelsList[it]?.name } ?: "未知"}<reset>")
+                    } else {
+                        str.appendLine(" <dark_gray>| <#47A036>NOCLIP$num</#47A036> <#CECACA>${noclip.name}</#CECACA> <dark_gray>[没有数据]<reset>")
+                    }
+                }
             }
+            num++
+
             str.appendLine("<white><st>                                   ")
             sender.sendStringAsComponent(str.toString())
         }

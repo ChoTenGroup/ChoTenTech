@@ -1,6 +1,7 @@
 package io.github.zzzyyylllty.chotentech.data
 
 import io.github.zzzyyylllty.chotentech.ChoTenTech.config
+import io.github.zzzyyylllty.chotentech.ChoTenTech.levelsList
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerHudMap
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
@@ -32,10 +33,15 @@ data class PlayerData (
     var createTime: Long = System.currentTimeMillis(),
     var lastLoginTime: Long = System.currentTimeMillis(),
     var editorMode: Boolean? = true,
+    var exploreredLevels: HashSet<String> = hashSetOf(),
+    var exploreredNoclips: LinkedHashMap<String ,HashSet<String>> = linkedMapOf(),
 
     @Transient
-    var activeLevel: Level? = null
+    var activeLevelStr: String? = null
 ) {
+    val activeLevel: Level?
+        get() = levelsList[activeLevelStr]
+
     fun getCooldownLeftLong(): Long? {
         return noclipCooldownEnd?.minus(Instant.now().toEpochMilli())
     }

@@ -13,7 +13,8 @@ data class Level(
     val noclips: List<NoclipPoint>,
     val prefix: String,
     val isPlaceable: Boolean,
-    val powers: Set<String>
+    val powers: Set<String>,
+    val id: String,
 ) {
     fun generateLore() : String{
         return """

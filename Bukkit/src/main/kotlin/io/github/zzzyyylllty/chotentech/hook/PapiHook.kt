@@ -65,10 +65,20 @@ object ExamplePapiHook : PlaceholderExpansion {
                         "major" -> {
                             val time = data.getTimeLeftLong()?.toDouble()?.div(100)?.let { round(it)/10 }
                             val time2 = if ((time ?: 0.0) > 0.0) time else "..."
-                            if (data.noclipping) return "<#66CCFF>切出倒计时 <white>${time2 ?: "..."}"
                             if (level == null) return "???"
                             val number = level.number
                             return HUDManager(player).getHUDContent("levelname",if (number == null) "Enigmatic" else "Level $number")
+                        }
+                        "noclip" -> {
+                            val time = data.getTimeLeftLong()?.toDouble()?.div(100)?.let { round(it)/10 }
+                            val time2 = if ((time ?: 0.0) > 0.0) time else "..."
+                            if (data.noclipping) return "切出倒计时 ${time2 ?: "..."}" else ""
+                        }
+                        "noclipname" -> {
+                            if (data.noclipping) data.noclipPoint?.name ?: "..." else ""
+                        }
+                        "noclipping" -> {
+                            if (data.noclipping) 1 else 0
                         }
                         "sub" -> if (data.noclipping) "<#66DD25>${data.noclipPoint?.name ?: "..."}" else level?.name ?: "???"
                         "fullraw" -> {
