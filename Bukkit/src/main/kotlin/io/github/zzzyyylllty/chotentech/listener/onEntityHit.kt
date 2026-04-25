@@ -7,8 +7,14 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDeathEvent
 import taboolib.common.platform.event.SubscribeEvent
 
-fun entityDeathEvent(e: EntityDeathEvent) {
-    if (e.damageSource.damageType == DamageType.MAGIC) e.isCancelled = true
+@SubscribeEvent
+fun entityDeathEvent(event: EntityDeathEvent) {
+
+    val entity = event.entity.name.uppercase() ?: return
+    if (entity.contains("PAINT") || entity.contains("TEXT")) {
+        if (event.damageSource.damageType == DamageType.MAGIC)
+        event.isCancelled = true
+    }
 }
 
 
