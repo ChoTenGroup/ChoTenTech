@@ -24,6 +24,7 @@ fun checkWindows() {
         for((key, value) in playerRegions) {
             if (value.contains("level-4") || value.contains("level-881") || value.contains("level-9")) {
                 val player = Bukkit.getPlayer(key.toUUID()) ?: continue
+
                 if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) continue
                 if (player.isDead) continue
                 val location = player.location
@@ -54,7 +55,7 @@ fun checkWindows() {
                     if (blockr?.hitBlock?.type == Material.WHITE_STAINED_GLASS) submit {
                         ChoTenDataHelper(player).removeSanity(10.0)
                         player.playSound(player.location, Sound.BLOCK_SCULK_SHRIEKER_SHRIEK, 1f, 1f)
-                        player.damage(player.health / 2)
+                        if (player.health > 5) player.damage(player.health * 0.25)
                     }
                 }
             }

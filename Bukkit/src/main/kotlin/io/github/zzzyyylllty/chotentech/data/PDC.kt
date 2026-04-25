@@ -18,14 +18,19 @@ class ChunkDataPDCType : PersistentDataType<String, ChunkData> {
         complex: ChunkData,
         context: PersistentDataAdapterContext
     ): String {
-        return jsonUtils.encodeToString<ChunkData>(complex)
+        return jsonUtils.toJson(complex, ChunkData::class.java)
     }
 
     override fun fromPrimitive(
         primitive: String,
         context: PersistentDataAdapterContext
     ): ChunkData {
-        return jsonUtils.decodeFromString<ChunkData>(primitive)
+        return try {
+            jsonUtils.fromJson(primitive, ChunkData::class.java)
+        } catch (e: Exception) {
+            // Return empty ChunkData if deserialization fails
+            ChunkData()
+        }
     }
 
     companion object {

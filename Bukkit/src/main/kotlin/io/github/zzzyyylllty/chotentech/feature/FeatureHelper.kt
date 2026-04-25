@@ -1,5 +1,6 @@
 package io.github.zzzyyylllty.chotentech.feature
 
+import io.github.zzzyyylllty.chotentech.data.ChoTenDataHelper
 import io.github.zzzyyylllty.sertraline.data.defaultData
 import io.github.zzzyyylllty.sertraline.event.SertralineCustomScriptDataLoadEvent
 import org.bukkit.Material
@@ -13,6 +14,9 @@ import taboolib.common.platform.function.submit
 @Awake(LifeCycle.ACTIVE)
 fun registerFeatures() {
     defaultData["Features"] = Features
+    defaultData["ChoTenManager"] = java.util.function.Function<Player, ChoTenDataHelper> { player ->
+        ChoTenDataHelper(player)
+    }
 }
 
 

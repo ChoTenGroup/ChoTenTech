@@ -37,14 +37,14 @@ object NoclipsCommand {
             val sender = sender as? Player? ?: return@execute
             val data = sender.getData() ?: return@execute
             val str = StringBuilder()
-            str.appendLine("<white><st>                                   <reset>")
+            str.appendLine("<white><st>                                                                      <reset>")
             str.append("<green>${sender.name} - 层级 ${data.activeLevel?.name ?: "???"}")
             str.appendLine()
             var num = 1
-            str.appendLine("<white><st>                                   <reset>")
-            str.appendLine()
+            str.appendLine("<white><st>                                                                      <reset>")
             val noclips = data.activeLevel?.noclips ?: run {
                 str.appendLine(" <red>未找到任何可用切出点。")
+                str.appendLine()
                 str.appendLine()
                 sender.sendStringAsComponent(str.toString())
                 return@execute
@@ -60,10 +60,10 @@ object NoclipsCommand {
                         str.appendLine(" <dark_gray>| <#47A036>NOCLIP$num</#47A036> <#CECACA>${noclip.name}</#CECACA> <dark_gray>[没有数据]<reset>")
                     }
                 }
+                num++
             }
-            num++
 
-            str.appendLine("<white><st>                                   ")
+            str.appendLine("<white><st>                                                                      ")
             sender.sendStringAsComponent(str.toString())
         }
     }
