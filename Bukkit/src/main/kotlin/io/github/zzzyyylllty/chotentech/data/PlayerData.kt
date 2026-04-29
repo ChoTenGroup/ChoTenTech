@@ -3,9 +3,6 @@ package io.github.zzzyyylllty.chotentech.data
 import io.github.zzzyyylllty.chotentech.ChoTenTech.config
 import io.github.zzzyyylllty.chotentech.ChoTenTech.levelsList
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerHudMap
-import kotlinx.serialization.Contextual
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 import org.bukkit.entity.Player
 import java.time.Instant
 import kotlin.math.round
@@ -15,13 +12,12 @@ val defDarkness by lazy { config.getDouble("default.darkness", 15.0) }
 val defMaxSanity by lazy { config.getDouble("default.max-sanity", 100.0) }
 val defSanity by lazy { config.getDouble("default.sanity", 40.0) }
 
-@Serializable
 data class PlayerData (
     val playerName: String,
     val uuid: String,
     var cid: IDData,
     var noclipCooldownEnd: Long? = null,
-    var noclipPoint: @Contextual NoclipPoint? = null,
+    var noclipPoint: NoclipPoint? = null,
     var noclipTimeEnd: Long? = null,
     var noclipping: Boolean = false,
     var sanity: Double = 40.0,
@@ -34,10 +30,23 @@ data class PlayerData (
     var createTime: Long = System.currentTimeMillis(),
     var lastLoginTime: Long = System.currentTimeMillis(),
     var editorMode: Boolean? = true,
+    var discoveredBases: HashSet<String> = hashSetOf(),
     var exploreredLevels: HashSet<String> = hashSetOf(),
     var exploreredNoclips: LinkedHashMap<String ,HashSet<String>> = linkedMapOf(),
+    var achievements: LinkedHashMap<String, AchievementProgress> = linkedMapOf(),
+    // key: global 或 base idef (ALP/BET/...), value: slot -> serialized item
+    var warehouseContents: LinkedHashMap<String, LinkedHashMap<Int, String>> = linkedMapOf(),
+    // 安全箱 (塔科夫式)：slot -> serialized item，死亡不掉落
+    var secureContainer: LinkedHashMap<Int, String> = linkedMapOf(),
+    // 投保物品：uuid -> InsuredItem
+    var insuredItems: LinkedHashMap<String, InsuredItem> = linkedMapOf(),
+    // 死亡后返还的投保物品（序列化）
+    var returnedInsuranceItems: MutableList<String> = mutableListOf(),
+    // 死亡时保留在身上的物品（未掉落的40%）
+    var deathKeepItems: MutableList<String> = mutableListOf(),
+    var warehouseBaseSlots: Int? = null,
 
-    @Transient
+    @kotlin.jvm.Transient
     var activeLevelStr: String? = null
 ) {
     val activeLevel: Level?

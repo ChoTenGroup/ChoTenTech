@@ -8,6 +8,7 @@ import io.github.zzzyyylllty.chotentech.util.replacePlaceholderSafety
 import org.bukkit.OfflinePlayer
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
+import io.github.zzzyyylllty.chotentech.function.AchievementManager
 import taboolib.platform.compat.PlaceholderExpansion
 import taboolib.platform.compat.replacePlaceholder
 import kotlin.math.floor
@@ -107,6 +108,21 @@ object ExamplePapiHook : PlaceholderExpansion {
                 val first = split[0]
                 val last = if (split.size >= 2) split[1] else "null"
                 return player?.let { HUDManager(it) }?.getHUDContent(first, last.replace("@","%").replacePlaceholderSafety(player)) ?: last.replace("@","%").replacePlaceholderSafety(player)
+            }
+            "explored" -> {
+                when (list.getOrNull(1)?.lowercase()) {
+                    "levels" -> return (player?.getData()?.exploreredLevels?.size ?: 0).toString()
+                    else -> return "0"
+                }
+            }
+            "achievement" -> {
+                val sub = list.getOrNull(1)?.lowercase()
+                if (sub == "count") {
+                    return player?.let { AchievementManager.getCompletedCount(it).toString() } ?: "0"
+                } else {
+                    val achId = args.removePrefix("achievement_")
+                    return if (player != null && AchievementManager.isCompleted(player, achId)) "yes" else "no"
+                }
             }
         }
         return "Error"

@@ -12,10 +12,14 @@ import io.github.zzzyyylllty.chotentech.data.PlayerData
 import io.github.zzzyyylllty.chotentech.data.PlayerHUDData
 import io.github.zzzyyylllty.chotentech.data.PowerManager.onReload
 import io.github.zzzyyylllty.chotentech.data.SurvivalDifficulty
+import io.github.zzzyyylllty.chotentech.function.AchievementManager
+import io.github.zzzyyylllty.chotentech.function.BaseManager
+import io.github.zzzyyylllty.chotentech.load.loadAchievementFiles
 import io.github.zzzyyylllty.chotentech.load.loadAccountTypes
 import io.github.zzzyyylllty.chotentech.load.loadLevelFiles
 import io.github.zzzyyylllty.chotentech.load.loadPowerFiles
 import io.github.zzzyyylllty.chotentech.load.tempPowers
+import io.github.zzzyyylllty.chotentech.util.EconomyUtil
 import io.github.zzzyyylllty.chotentech.util.devLog
 import io.github.zzzyyylllty.sertraline.Sertraline
 import net.momirealms.craftengine.core.world.ChunkPos
@@ -49,24 +53,6 @@ import java.util.concurrent.ConcurrentHashMap
         value = "!com.google.code.gson:gson:2.10.1",
         relocate = ["!com.google.gson", "!com.example.library.gson"]
     ),
-    RuntimeDependency(
-        value = "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.8.1",
-        test = "!kotlinx.serialization.Serializer",
-        relocate = [
-            "!kotlin.", "!kotlin220.",
-            "!kotlinx.serialization.", "!kotlinx.serialization181."
-        ],
-        transitive = false
-    ),
-    RuntimeDependency(
-        value = "org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.8.1",
-        test = "!kotlinx.serialization.json.Json",
-        relocate = [
-            "!kotlin.", "!kotlin220.",
-            "!kotlinx.serialization.", "!kotlinx.serialization181."
-        ],
-        transitive = false
-    )
 )
 object ChoTenTech : Plugin(), BukkitWorldGenerator {
 
@@ -76,6 +62,9 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
 
     @Config("account-types.yml")
     lateinit var accountTypes: Configuration
+
+    @Config("bases.yml")
+    lateinit var baseConfig: Configuration
 
     val console by lazy { console() }
     val consoleSender by lazy { console.castSafely<CommandSender>()!! }
@@ -96,6 +85,7 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
 
         info("Enable")
         Language.enableSimpleComponent = true
+        EconomyUtil.setup()
         reloadCustomConfig()
 //        val worlds = Bukkit.getWorlds()
 //        submitAsync {
@@ -114,6 +104,7 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
     override fun onDisable() {
         info("Disable")
         onReload()
+        AchievementManager.unload()
     }
 
     override fun onActive() {
@@ -130,6 +121,7 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
         submit(async) {
 
             config.reload()
+            baseConfig.reload()
             onReload()
             devMode = config.getBoolean("debug",false)
             accountTypesList.clear()
@@ -138,7 +130,13 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
             loadSDClassFile()
             loadAccountTypes()
             loadLevelFiles()
+            BaseManager.loadBases(baseConfig)
+            reloadAchievements()
         }
+    }
+
+    fun reloadAchievements() {
+        loadAchievementFiles()
     }
 
     override fun getDefaultWorldGenerator(

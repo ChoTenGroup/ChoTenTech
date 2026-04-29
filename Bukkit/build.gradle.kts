@@ -3,9 +3,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     java
-    id("io.izzel.taboolib") version "2.0.26"
+    id("io.izzel.taboolib") version "2.0.31"
     kotlin("jvm") version "2.2.0"
-    kotlin("plugin.serialization") version "2.2.0"
 }
 
 taboolib {
@@ -21,18 +20,26 @@ taboolib {
             name("Chemdah").optional(true)
             name("WorldGuard").optional(true)
             name("Sertraline").optional(true)
+            name("Vault").optional(true)
             // name("ProtocolLib").optional(true)
             // 可选依赖.
             // name("XXX").optional(true)
         }
     }
     env {
+        repoTabooLib = "https://repo.tabooproject.org/repository/releases"
+        fileLibs = "libraries"
+        fileAssets = "assets"
+        enableIsolatedClassloader = false
         // 安装模块
         install(Basic)
         install(Bukkit)
         install(BukkitUtil)
         install(BukkitUI)
         install(BukkitHook)
+        install(BukkitNMSItemTag)
+        install(BukkitNMSDataSerializer)
+        install(BukkitNMSUtil)
         install(BukkitFakeOp)
         install(BungeeCord)
         install(MinecraftChat)
@@ -46,12 +53,11 @@ taboolib {
         install(PtcObject)
     }
     version {
-        taboolib = "6.2.4-86dd2bf"
+        taboolib = "6.3.0-0e96352"
         coroutines = "1.8.1"
 
     }
     relocate("top.maplex.arim","xxx.xxx.arim")
-    relocate("kotlinx.serialization", "kotlinx.serialization181")
 }
 
 repositories {
@@ -166,11 +172,9 @@ dependencies {
     compileOnly("com.google.code.gson:gson:2.10.1")
     implementation("me.clip:placeholderapi:2.11.6")
     implementation("com.sk89q.worldguard:worldguard-bukkit:7.0.10-SNAPSHOT")
-    compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT") { isTransitive = false }
+    compileOnly("com.github.MilkBowl:VaultAPI:1.7") { isTransitive = false }
     compileOnly(kotlin("stdlib"))
     compileOnly(fileTree("libs"))
-    compileOnly("org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.8.1") { isTransitive = false }
-    compileOnly("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.8.1") { isTransitive = false }
 }
 
 java {
