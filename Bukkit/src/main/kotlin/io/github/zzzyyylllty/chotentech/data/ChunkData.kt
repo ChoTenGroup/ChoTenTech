@@ -1,10 +1,8 @@
 package io.github.zzzyyylllty.chotentech.data
 
-import kotlinx.serialization.Serializable
 import org.bukkit.Location
 import org.bukkit.block.Block
 
-@Serializable
 data class ChunkProvince (
     val world: String,
     val x: Int,
@@ -31,14 +29,12 @@ fun fromLong(value: Long): Pair<Int, Int> {
     return x to z
 }
 
-@Serializable
 data class ChunkData (
     val breakableBlock: HashSet<BlockPos> = hashSetOf(),
     val unbreakableBlock: HashSet<BlockPos> = hashSetOf()
 ) {
 }
 
-@Serializable
 data class BlockPos(
     val x: Int,
     val y: Int,

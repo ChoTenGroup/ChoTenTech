@@ -163,6 +163,7 @@ fun loadLevel(root: String, config: Configuration) {
     val world = Bukkit.getWorld(config.getString("$root.world") ?: "world") ?: Bukkit.getWorld("world")
 
     levelsList[root] = Level(
+        world = world!!.name,
         region = getRegion(com.sk89q.worldedit.bukkit.BukkitAdapter.adapt(world), root),
         cluster = config.getString("$root.cluster") ?: "Unknown",
         number = config.getString("$root.number") ?: "Unknown",
@@ -173,6 +174,7 @@ fun loadLevel(root: String, config: Configuration) {
         noclips = noclipList,
         prefix = config.getString("$root.prefix") ?: "",
         isPlaceable = config.getBoolean("$root.isPlaceable"),
+        guiMaterial = config.getString("$root.guiMaterial"),
         powers = (config.getList("$root.powers")?.toSet() as? Set<String>?) ?: emptySet(),
         root
     )

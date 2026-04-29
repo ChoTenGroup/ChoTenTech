@@ -57,6 +57,8 @@ object MainCommand {
     }
     @CommandBody
     val debug = ChoTenDebugCommand
+    @CommandBody
+    val base = BaseCommand
 //    @CommandBody
 //    val Data = ChoTenDataCommand
 

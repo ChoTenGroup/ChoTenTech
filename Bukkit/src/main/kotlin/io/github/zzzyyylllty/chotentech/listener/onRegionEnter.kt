@@ -18,6 +18,7 @@ import io.github.zzzyyylllty.chotentech.ChoTenTech
 import io.github.zzzyyylllty.chotentech.ChoTenTech.levelsList
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerRegions
 import io.github.zzzyyylllty.chotentech.data.ChoTenDataHelper
+import io.github.zzzyyylllty.chotentech.function.BaseManager
 import io.github.zzzyyylllty.chotentech.function.player.transferLevelTask
 import io.github.zzzyyylllty.chotentech.load.getRegion
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -58,6 +59,13 @@ fun onPlayerMove(event: PlayerMoveEvent) {
                 if (levelsList[region] != null) {
                     transferLevelTask(player, levelsList[region]!!)
                     ChoTenDataHelper(player).updateLevel()
+                }
+                // 检测基地区域
+                if (region.startsWith("base-")) {
+                    val base = BaseManager.getBaseByRegion(region)
+                    if (base != null) {
+                        BaseManager.discoverBase(player, base.idef)
+                    }
                 }
             }
         }

@@ -13,6 +13,7 @@ import io.github.zzzyyylllty.chotentech.util.minimessage.legacyToMiniMessage
 import io.github.zzzyyylllty.chotentech.util.toComponent
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
+import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import taboolib.common.platform.function.warning
@@ -111,8 +112,13 @@ class AllQuestMenu {
             onClick { event, element ->
                 event.isCancelled = true
                 val bukkitPlayer = event.clicker
+                bukkitPlayer.playSound(bukkitPlayer.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
                 if (event.clickEvent().isRightClick) profile?.trackQuest = element.template else QuestMenu().open(bukkitPlayer, element)
 
+            }
+
+            onPageChange { p ->
+                p.playSound(p.location, Sound.ITEM_BOOK_PAGE_TURN, 1f, 1f)
             }
 
             // 设置上一页按钮

@@ -31,3 +31,4 @@ fun onPlayerDamage(event: EntityDamageEvent) {
     }
     ChoTenDataHelper(player).removeSanity(multiplier)
 }
+

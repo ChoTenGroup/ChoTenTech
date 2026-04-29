@@ -1,6 +1,7 @@
 package io.github.zzzyyylllty.chotentech.listener
 
 import io.github.zzzyyylllty.chotentech.data.ChoTenDataHelper
+import io.github.zzzyyylllty.chotentech.data.getData
 import io.github.zzzyyylllty.sertraline.Sertraline
 import io.github.zzzyyylllty.sertraline.logger.sendStringAsComponent
 import org.bukkit.Bukkit
@@ -13,15 +14,17 @@ import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
+import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.util.random
+import taboolib.platform.type.BukkitProxyEvent
 import java.util.Random
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.get
 
 private val waterCooldowns = ConcurrentHashMap<String, Long>()
 
-@SubscribeEvent
+@SubscribeEvent(priority = EventPriority.MONITOR)
 fun onPlayerInteractWithDisabledBlocks(event: PlayerInteractEvent) {
 
     val player: Player = event.player
@@ -45,6 +48,7 @@ fun onPlayerInteractWithWaterDispenser(event: PlayerInteractEvent) {
     if (event.hand == EquipmentSlot.OFF_HAND || event.action != Action.RIGHT_CLICK_BLOCK) return
     val player = event.player
     val block = event.clickedBlock ?: return
+    if (player.getData()?.activeLevelStr != "level-4") return
 
     if (block.type == Material.TRIPWIRE_HOOK) {
         val key = "${block.world.name}:${block.x}:${block.y}:${block.z}"
@@ -57,11 +61,15 @@ fun onPlayerInteractWithWaterDispenser(event: PlayerInteractEvent) {
 
         val s = Sertraline.api().buildItem("almond_water_gray", player)!!
         player.sendStringAsComponent("<gray>你从饮水机接了一瓶杏仁水。")
+        TakeWaterEvent(player).callEvent()
         player.playSound(player.eyeLocation, Sound.ITEM_BOTTLE_FILL, 1f, 0.7f)
         block.world.dropItemNaturally(block.location, s)
 
         if (random(1,2) == 1) waterCooldowns[key] = System.currentTimeMillis() + 600_000L
-        event.isCancelled = true
     }
 }
 
+class TakeWaterEvent(
+    val player: Player
+): BukkitProxyEvent() {
+}

@@ -20,3 +20,87 @@ default:
   max-sanity: 100.0
   darkness: 15.0
   max-darkness: 100.0
+
+warehouse:
+  # 玩家默认仓库格数
+  default-slots: 36
+  # GUI 标题
+  title: "个人仓库"
+  # 权限扩容上限
+  max-total-slots: 54
+  # 仓库扩容配置（default=全局生效, 基地缩写=基地专属）
+  expansions:
+    default:
+      vip:
+        permission: "chotentech.warehouse.vip"
+        slots: 9
+      vip-plus:
+        permission: "chotentech.warehouse.vip-plus"
+        slots: 18
+    # 基地专属扩容示例 (与全局叠加)
+    #ALP:
+    #  alphaextra:
+    #    permission: "chotentech.warehouse.alphaextra"
+    #    slots: 9
+  # 基地独立仓库配置（覆盖全局设置）
+  base:
+    ALP:
+      default-slots: 36
+      title: "Alpha基地仓库"
+      max-total-slots: 63
+
+# 安全箱配置（塔科夫式，死亡不掉落）
+secure-container:
+  # 格子数量
+  slots: 9
+  # GUI 标题
+  title: "安全箱"
+
+# 投保系统配置
+insurance:
+  # 投保有效期（天）
+  expire-days: 7
+  # 投保菜单标题
+  insurance-title: "物品投保"
+  # 取回菜单标题
+  cover-title: "取回物品"
+  # 各 tier 投保价格（读取 ItemTag sertraline_tier）
+  tiers:
+    E: 100
+    D: 100
+    C: 200
+    B: 600
+    A: 2000
+    S: 5000
+    P: 10000
+    PP: 50000
+    PPP: 100000
+
+# 压力系统配置
+stress:
+  # 检测间隔（tick，20tick = 1秒）
+  interval: 40
+  # 完全黑暗（亮度0）时每秒增加的压力
+  max-stress-gain: 2.0
+  # 最亮（亮度15）时每秒减少的压力
+  max-stress-reduce: 1.0
+  # 在基地中每秒减少的压力
+  base-stress-reduce: 2.0
+  # 压力超过此值开始掉精神
+  sanity-drain-threshold: 80.0
+  # 压力过高时每次掉精神值
+  sanity-drain-amount: 0.2
+  # 极度黑暗（亮度≤3）额外掉精神值
+  dark-sanity-drain: 0.5
+
+# 死亡掉落系统配置
+death-drop:
+  # 默认掉率 (0-100)
+  default-chance: 60
+  # 权限掉率修正（百分比加减）
+  permission-modifiers:
+    group.vip: -10
+  # 掉落盔甲架存活时间（秒）
+  timeout-seconds: 1200
+  # 掉落 UI 标题
+  drop-title: "死亡掉落"

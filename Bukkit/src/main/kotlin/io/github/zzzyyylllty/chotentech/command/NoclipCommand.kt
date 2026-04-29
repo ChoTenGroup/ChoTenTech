@@ -42,7 +42,8 @@ object NoclipsCommand {
             str.appendLine()
             var num = 1
             str.appendLine("<white><st>                                                                      <reset>")
-            val noclips = data.activeLevel?.noclips ?: run {
+            val noclips = data.activeLevel?.noclips
+            if (noclips.isNullOrEmpty()) {
                 str.appendLine(" <red>未找到任何可用切出点。")
                 str.appendLine()
                 str.appendLine()
