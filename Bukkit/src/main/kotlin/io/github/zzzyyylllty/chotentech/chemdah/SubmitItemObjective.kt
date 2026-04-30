@@ -24,7 +24,7 @@ import kotlin.collections.component2
 
 @SubscribeEvent(EventPriority.MONITOR, ignoreCancelled = true)
 fun test(e: SubmitItemEvent) {
-    devLog("SubmitItemEvent Triggered: ${e.quest.id}-${e.task.id} / ${e.player.name}")
+    devLog("SubmitItemEvent Triggered: ${e.quest?.id}-${e.task?.id} / ${e.player.name}")
     devLog("Cancelled: ${e.isCancelled}")
 }
 
@@ -45,7 +45,7 @@ object SubmitItemObjective : ObjectiveCountableI<SubmitItemEvent>() {
 
             val quest = task.getQuest(profile)
 
-            if (quest?.id == e.quest.id && task.id == e.task.id) {
+            if (quest?.id == e.quest?.id && task.id == e.task?.id) {
                 if (e.item != null) {
 
                     val item = task.condition["item"]!!.asList().toInferItem()
@@ -57,7 +57,7 @@ object SubmitItemObjective : ObjectiveCountableI<SubmitItemEvent>() {
                     // val hasItem = items.hasItem(amount) { item.isItem(it) }
                     val hasItem = item.isItem(e.item)
                     if (hasItem && kether != null) {
-                        val bool = kether.evalKetherBoolean(player, linkedMapOf("@QuestContainer" to quest.template))
+                        val bool = kether.evalKetherBoolean(player, linkedMapOf("@QuestContainer" to quest?.template))
                         if (!bool) {
                             task.condition["deny-message"]?.toString()?.let { player.sendComponent(it) }
                             return@addFullCondition false
@@ -79,6 +79,11 @@ object SubmitItemObjective : ObjectiveCountableI<SubmitItemEvent>() {
         }
         addFullCondition("position") { profile, task, _ ->
             task.condition["position"]!!.toPosition().inside(profile.player.location)
+        }
+
+        addFullCondition("npc") { _, task, e ->
+            val required = task.condition["npc"]?.toString()
+            required == null || e.npcId == required
         }
 
         addConditionVariable("amount") {

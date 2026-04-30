@@ -1,5 +1,6 @@
 package io.github.zzzyyylllty.chotentech.hook
 import io.github.zzzyyylllty.chotentech.ChoTenTech.config
+import io.github.zzzyyylllty.chotentech.ChoTenTech.playerRegions
 import io.github.zzzyyylllty.chotentech.data.HUDManager
 import io.github.zzzyyylllty.chotentech.data.PlayerData
 import io.github.zzzyyylllty.chotentech.data.DataManager
@@ -9,6 +10,7 @@ import org.bukkit.OfflinePlayer
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
 import io.github.zzzyyylllty.chotentech.function.AchievementManager
+import io.github.zzzyyylllty.chotentech.function.BaseManager
 import taboolib.platform.compat.PlaceholderExpansion
 import taboolib.platform.compat.replacePlaceholder
 import kotlin.math.floor
@@ -123,6 +125,29 @@ object ExamplePapiHook : PlaceholderExpansion {
                     val achId = args.removePrefix("achievement_")
                     return if (player != null && AchievementManager.isCompleted(player, achId)) "yes" else "no"
                 }
+            }
+            "maintag" -> {
+                return player?.getData()?.mainTag ?: "无组织"
+            }
+            "subtag" -> {
+                return player?.getData()?.subTag ?: "无基地"
+            }
+            "basename" -> {
+                return BaseManager.baseMap[player?.getData()?.subTag]?.name ?: "没有组织"
+            }
+            "currentbasemajor" -> {
+                if (player == null) return "?"
+                val regions = playerRegions[player.uniqueId.toString()] ?: return "野外"
+                val baseRegion = regions.firstOrNull { it.startsWith("base-") } ?: return "野外"
+                val base = BaseManager.getBaseByRegion(baseRegion) ?: return "?"
+                return base.faction.uppercase()
+            }
+            "currentbaseminor" -> {
+                if (player == null) return "?"
+                val regions = playerRegions[player.uniqueId.toString()] ?: return "野外"
+                val baseRegion = regions.firstOrNull { it.startsWith("base-") } ?: return "野外"
+                val base = BaseManager.getBaseByRegion(baseRegion) ?: return "?"
+                return base.idef.uppercase()
             }
         }
         return "Error"

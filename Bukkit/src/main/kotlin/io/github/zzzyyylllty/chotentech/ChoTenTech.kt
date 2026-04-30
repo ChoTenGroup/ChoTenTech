@@ -14,6 +14,7 @@ import io.github.zzzyyylllty.chotentech.data.PowerManager.onReload
 import io.github.zzzyyylllty.chotentech.data.SurvivalDifficulty
 import io.github.zzzyyylllty.chotentech.function.AchievementManager
 import io.github.zzzyyylllty.chotentech.function.BaseManager
+import io.github.zzzyyylllty.chotentech.function.DeathDropManager
 import io.github.zzzyyylllty.chotentech.load.loadAchievementFiles
 import io.github.zzzyyylllty.chotentech.load.loadAccountTypes
 import io.github.zzzyyylllty.chotentech.load.loadLevelFiles
@@ -42,6 +43,8 @@ import taboolib.module.configuration.Config
 import taboolib.module.configuration.Configuration
 import taboolib.module.database.getHost
 import taboolib.module.lang.Language
+import taboolib.module.ui.enableRawTitleInVanillaInventory
+import taboolib.module.ui.isRawTitleInVanillaInventoryEnabled
 import taboolib.platform.BukkitPlugin
 import taboolib.platform.BukkitWorldGenerator
 import java.io.File
@@ -83,6 +86,8 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
 
     override fun onEnable() {
 
+        enableRawTitleInVanillaInventory()
+
         info("Enable")
         Language.enableSimpleComponent = true
         EconomyUtil.setup()
@@ -103,6 +108,7 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
 
     override fun onDisable() {
         info("Disable")
+        DeathDropManager.removeAll()
         onReload()
         AchievementManager.unload()
     }

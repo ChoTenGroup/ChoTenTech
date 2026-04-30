@@ -167,6 +167,7 @@ dependencies {
     compileOnly("net.momirealms:craft-engine-bukkit:0.0.65") // 例如 0.0.60
     implementation("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT") { isTransitive = false }
     implementation("net.kyori:adventure-text-serializer-legacy:4.19.0")
+    implementation("net.kyori:adventure-text-serializer-gson:4.19.0")
     implementation("net.kyori:adventure-api:4.19.0")
     implementation("net.kyori:adventure-text-minimessage:4.19.0")
     compileOnly("com.google.code.gson:gson:2.10.1")

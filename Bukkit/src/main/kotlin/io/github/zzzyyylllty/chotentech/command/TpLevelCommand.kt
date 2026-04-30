@@ -22,6 +22,7 @@ import taboolib.common.platform.command.mainCommand
 import taboolib.common.platform.command.subCommand
 import taboolib.common.platform.function.pluginVersion
 import taboolib.common.platform.function.runningPlatform
+import taboolib.common.platform.function.submit
 import taboolib.module.lang.asLangText
 import taboolib.module.nms.MinecraftVersion.minecraftVersion
 
@@ -48,7 +49,7 @@ object TpLevelCommand {
                     sender.sendMessage("Teleporting to Level: ${level.name}")
                     val reg = WorldEditRegionConverter.convertToRegion(level.region)
                     val teleportLocation = Location(level.getWorld(), reg.center.x(), reg.center.y(), reg.center.z())
-                    sender.teleportAsync(teleportLocation)
+                    submit { sender.teleport(teleportLocation) }
                 }
             }
             suggestion<Player> { sender, context ->

@@ -22,10 +22,11 @@ data class Level(
     fun getWorld() = Bukkit.getWorld(world)
     fun generateLore() : String{
         return """
-            <white><b>层群 $cluster 层级 $number <white><b>-> [ <gray><b>$name<white><b> ]
+            <white>层群 $cluster 层级 $number <white>-> [ <gray>$name<white> ]
             
-            <white><b>生存难度等级 [ <gray>${survivalDifficulty.prefix}<b>${survivalDifficulty.classname}<white><b> ] <gray><i>${survivalDifficulty.one},${survivalDifficulty.two},${survivalDifficulty.three}
-            <white><b>作者 <gray><i>$author
+            <white>等级 [ <gray>${survivalDifficulty.prefix}${survivalDifficulty.classname}<white> ] <gray><i>${survivalDifficulty.one},${survivalDifficulty.two},${survivalDifficulty.three}
+            <white>作者 <gray><i>$author
+            
             <reset><gray><i>$tip
         """.trimIndent()
     }

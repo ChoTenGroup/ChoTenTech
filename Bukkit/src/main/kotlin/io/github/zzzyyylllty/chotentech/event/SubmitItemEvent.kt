@@ -9,7 +9,8 @@ import java.util.concurrent.ConcurrentHashMap
 
 class SubmitItemEvent(
     val player: Player,
-    val quest: Quest,
-    val task: Task,
+    val quest: Quest?,
+    val task: Task?,
     val item: ItemStack?,
+    val npcId: String? = null,
 ) : BukkitProxyEvent()
