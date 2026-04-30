@@ -10,7 +10,9 @@ import io.github.zzzyyylllty.chotentech.chemdah.addon.ChoTenUI.Companion.chotenu
 import io.github.zzzyyylllty.chotentech.chemdah.build
 import io.github.zzzyyylllty.chotentech.player.sendComponent
 import io.github.zzzyyylllty.chotentech.util.minimessage.legacyToMiniMessage
+import io.github.zzzyyylllty.chotentech.util.minimessage.mmJsonUtil
 import io.github.zzzyyylllty.chotentech.util.toComponent
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.Sound
@@ -21,32 +23,44 @@ import taboolib.library.xseries.XMaterial
 import taboolib.module.chat.colored
 import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.PageableChest
+import taboolib.platform.util.buildItem
 
 class AllQuestMenu {
     fun open(player: Player) {
 
-        player.openMenu<PageableChest<Quest>>("&f<shift:-16><image:kangelicon:allquests><shift:-256>进行中的任务".colored()) {
+        player.openMenu<PageableChest<Quest>>(mmJsonUtil.serialize("<white><shift:-16><image:kangelicon:list><shift:-176><aqua><font:minecraft:fusionpixel10>进行中的任务".toComponent())) {
 
             rows(6)
 
             map(
+                "CCC    <>",
                 "         ",
-                " ####### ",
-                " ####### ",
-                " ####### ",
-                "         ",
-                "---B-C---"
+                " @@@@@@@ ",
+                " @@@@@@@ ",
+                " @@@@@@@ ",
+                "         "
             )
 
-//            set('-', GuiItem("background", "BLACK_STAINED_GLASS_PANE", " ").build())
-
             val profile = ChemdahAPI.playerProfile[player.name]
+            val quests = profile?.getQuests() ?: emptyList()
 
             // 设置可用槽位（通过字符）
-            slotsBy('#')
+            slotsBy('@')
+
+            set('C', buildItem(XMaterial.COMPASS) {
+                name = "§b§l菜单"
+                lore += "§7点击打开菜单"
+            }.apply {
+                val m = itemMeta ?: return@apply
+                m.itemModel = NamespacedKey.fromString("kangelitem:void")
+                setItemMeta(m)
+            }) {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "invero menu open menu ${clicker.name}")
+                clicker.closeInventory()
+            }
 
             // 设置元素列表
-            elements { profile?.getQuests() ?: emptyList() }
+            elements { quests }
 
             // 生成每个元素对应的物品
             onGenerate(async = true) { player, element, index, slot ->
@@ -122,13 +136,25 @@ class AllQuestMenu {
             }
 
             // 设置上一页按钮
-            setPreviousPage(48) { page, hasPreviousPage ->
-                GuiItem("previouspage", "ARROW", "<dark_aqua><b>切换上一页").build()
+            setPreviousPage(7) { _, page ->
+                buildItem(XMaterial.ARROW) {
+                    name = "§a上一页"
+                }.apply {
+                    val m = itemMeta ?: return@apply
+                    m.itemModel = NamespacedKey.fromString(if (page) "kangelitem:previous" else "kangelitem:previous_no")
+                    setItemMeta(m)
+                }
             }
 
             // 设置下一页按钮
-            setNextPage(50) { page, hasNextPage ->
-                GuiItem("nextpage", "ARROW", "<dark_aqua><b>切换下一页").build()
+            setNextPage(8) { _, page ->
+                buildItem(XMaterial.ARROW) {
+                    name = "§a下一页"
+                }.apply {
+                    val m = itemMeta ?: return@apply
+                    m.itemModel = NamespacedKey.fromString(if (page) "kangelitem:next" else "kangelitem:next_no")
+                    setItemMeta(m)
+                }
             }
         }
     }
