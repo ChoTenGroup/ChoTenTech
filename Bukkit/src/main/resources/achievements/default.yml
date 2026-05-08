@@ -1,0 +1,150 @@
+categories:
+  EXPLORATION:
+    name: "探索"
+    icon: "MAP"
+  SURVIVAL:
+    name: "生存"
+    icon: "SHIELD"
+  CHALLENGE:
+    name: "挑战"
+    icon: "DRAGON_HEAD"
+
+achievements:
+  first_join:
+    name: "欢迎来到阈限"
+    description:
+      - "初次进入服务器"
+    icon: "OAK_DOOR"
+    category: "EXPLORATION"
+    howto:
+      - "首次进入服务器时自动获得"
+    criteria:
+      - type: "impossible"
+
+  explore_5:
+    name: "初探阈限"
+    description:
+      - "探索 5 个不同的层级"
+    icon: "MAP"
+    doneModel: "minecraft:item/map"
+    lockedModel: "minecraft:item/empty_map"
+    category: "EXPLORATION"
+    howto:
+      - "进入 5 个不同的层级即可自动完成"
+    criteria:
+      - type: "papi"
+        placeholder: "%chotentech_explored_levels%"
+        operator: ">="
+        value: "5"
+
+  explore_10:
+    name: "阈限漫游者"
+    description:
+      - "探索 10 个不同的层级"
+    icon: "FILLED_MAP"
+    doneModel: "minecraft:item/filled_map"
+    lockedModel: "minecraft:item/empty_map"
+    category: "EXPLORATION"
+    howto:
+      - "进入 10 个不同的层级即可自动完成"
+    criteria:
+      - type: "papi"
+        placeholder: "%chotentech_explored_levels%"
+        operator: ">="
+        value: "10"
+
+  explore_20:
+    name: "深渊探索者"
+    description:
+      - "探索 20 个不同的层级"
+    icon: "COMPASS"
+    category: "EXPLORATION"
+    howto:
+      - "进入 20 个不同的层级即可自动完成"
+    criteria:
+      - type: "papi"
+        placeholder: "%chotentech_explored_levels%"
+        operator: ">="
+        value: "20"
+
+  sanity_zero:
+    name: "理智边缘"
+    description:
+      - "理智值降至 0"
+    icon: "SOUL_SAND"
+    category: "SURVIVAL"
+    howto:
+      - "在游戏中让理智值降到 0"
+    criteria:
+      - type: "papi"
+        placeholder: "%chotentech_sanity%"
+        operator: "<="
+        value: "0"
+
+  sanity_full:
+    name: "心如止水"
+    description:
+      - "将理智值恢复至最大值"
+    icon: "BEACON"
+    category: "SURVIVAL"
+    howto:
+      - "将理智值恢复到满值"
+    criteria:
+      - type: "papi"
+        placeholder: "%chotentech_sanity%"
+        operator: "=="
+        value: "%chotentech_maxsanity%"
+
+  darkness_full:
+    name: "暗影缠身"
+    description:
+      - "黑暗值达到 100"
+    icon: "BLACK_CONCRETE"
+    category: "SURVIVAL"
+    howto:
+      - "在游戏中让黑暗值达到 100"
+    criteria:
+      - type: "papi"
+        placeholder: "%chotentech_darkness%"
+        operator: ">="
+        value: "100"
+
+  darkness_zero:
+    name: "驱散黑暗"
+    description:
+      - "将黑暗值降至 0"
+    icon: "GLOWSTONE"
+    category: "SURVIVAL"
+    howto:
+      - "将黑暗值降到 0"
+    criteria:
+      - type: "papi"
+        placeholder: "%chotentech_darkness%"
+        operator: "<="
+        value: "0"
+
+  no_death:
+    name: "永恒生命"
+    description:
+      - "保持 0 次死亡"
+    icon: "TOTEM_OF_UNDYING"
+    category: "CHALLENGE"
+    howto:
+      - "保持死亡次数为 0"
+      - "死亡后将无法获得此成就"
+    criteria:
+      - type: "papi"
+        placeholder: "%statistic_deaths%"
+        operator: "=="
+        value: "0"
+
+  admin_reward:
+    name: "管理员嘉奖"
+    description:
+      - "由管理员颁发的特殊成就"
+    icon: "COMMAND_BLOCK"
+    category: "CHALLENGE"
+    howto:
+      - "此成就只能由管理员手动颁发"
+    criteria:
+      - type: "impossible"

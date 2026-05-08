@@ -1,0 +1,109 @@
+package io.github.zzzyyylllty.chotentech.command
+
+import io.github.zzzyyylllty.chotentech.ChoTenTech.dataMap
+import io.github.zzzyyylllty.chotentech.ChoTenTech.levelsList
+import io.github.zzzyyylllty.chotentech.ChoTenTech.sdClassList
+import io.github.zzzyyylllty.chotentech.db.SQLDataBase
+import io.github.zzzyyylllty.chotentech.function.id.changeUserID
+import io.github.zzzyyylllty.chotentech.function.id.generateUserID
+import io.github.zzzyyylllty.chotentech.function.sender.sendComponent
+import io.github.zzzyyylllty.chotentech.function.sender.sendDebug
+import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
+import taboolib.common.platform.command.CommandBody
+import taboolib.common.platform.command.CommandHeader
+import taboolib.common.platform.command.PermissionDefault
+import taboolib.common.platform.command.mainCommand
+import taboolib.common.platform.command.player
+import taboolib.common.platform.command.subCommand
+import taboolib.common.platform.function.submitAsync
+
+@CommandHeader(
+    name = "chotentech-debug",
+    aliases = ["cttdebug"],
+    permission = "chotentech.command.debug",
+    description = "Debug Command for ChoTenTech.",
+    permissionMessage = "",
+    permissionDefault = PermissionDefault.OP,
+    newParser = false,
+)
+object ChoTenDebugCommand {
+
+    @CommandBody
+    val main = mainCommand {
+        createModernHelper()
+    }
+
+    @CommandBody
+    val getDataMap = subCommand {
+        execute<CommandSender> { sender, context, argument ->
+            sender.sendComponent(dataMap.entries.toString())
+        }
+    }
+
+    @CommandBody
+    val getLevelMap = subCommand {
+        execute<CommandSender> { sender, context, argument ->
+            sender.sendComponent(levelsList.entries.toString())
+        }
+    }
+
+    @CommandBody
+    val getSDClassMap = subCommand {
+        execute<CommandSender> { sender, context, argument ->
+            sender.sendComponent(sdClassList.entries.toString())
+        }
+    }
+    @CommandBody
+    val getIdExists = subCommand {
+        dynamic("id"){
+            execute<CommandSender> { sender, context, argument ->
+                sender.sendDebug("${SQLDataBase().getIDExists(context["id"])}")
+            }
+        }
+    }
+    @CommandBody
+    val getDataById = subCommand {
+        dynamic("id"){
+            execute<CommandSender> { sender, context, argument ->
+                sender.sendDebug("${SQLDataBase().getUserInDatabaseByUserID(context["id"])}")
+            }
+        }
+    }
+    @CommandBody
+    val getDataByPlayer = subCommand {
+        player("user") {
+            execute<CommandSender> { sender, context, argument ->
+                val user = context.player("user")
+                // 转化为Bukkit的Player
+                val bukkitPlayer = user.castSafely<Player>()
+                sender.sendDebug("${SQLDataBase().getUserInDatabase(bukkitPlayer)}")
+            }
+        }
+    }
+    @CommandBody
+    val changePlayerId = subCommand {
+        player("user") {
+            dynamic("id"){
+                execute<CommandSender> { sender, context, argument ->
+                    val user = context.player("user")
+                    // 转化为Bukkit的Player
+                    val bukkitPlayer = user.castSafely<Player>()
+                    if (SQLDataBase().getIDExists(context["id"])) sender.sendDebug("userId must be unique")
+                    else { bukkitPlayer?.let { changeUserID(it, context["id"]) } }
+            }
+            }
+        }
+    }
+    @CommandBody
+    val randomGenerateID = subCommand {
+        execute<CommandSender> { sender, context, argument ->
+            submitAsync {
+                repeat(10) {
+                    sender.sendDebug(generateUserID())
+                }
+            }
+        }
+    }
+
+}

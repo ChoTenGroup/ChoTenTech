@@ -1,5 +1,6 @@
 package io.github.zzzyyylllty.chotentech.listener
 
+import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
 import io.github.zzzyyylllty.chotentech.data.ChoTenDataHelper
 import io.github.zzzyyylllty.chotentech.data.getData
 import io.github.zzzyyylllty.sertraline.Sertraline
@@ -48,7 +49,7 @@ fun onPlayerInteractWithWaterDispenser(event: PlayerInteractEvent) {
     if (event.hand == EquipmentSlot.OFF_HAND || event.action != Action.RIGHT_CLICK_BLOCK) return
     val player = event.player
     val block = event.clickedBlock ?: return
-    if (player.getData()?.activeLevelStr != "level-4") return
+    if (playerDataMap[player.uniqueId.toString()]?.activeLevelStr != "level-4") return
 
     if (block.type == Material.TRIPWIRE_HOOK) {
         val key = "${block.world.name}:${block.x}:${block.y}:${block.z}"

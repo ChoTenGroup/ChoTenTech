@@ -1,0 +1,34 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew compileKotlin:*)",
+      "Bash(./gradlew build *)",
+      "Bash(./gradlew clean *)",
+      "Bash(./gradlew assemble *)",
+      "Bash(git log *)",
+      "Bash(git ls-files *)",
+      "Bash(./gradlew dependencies *)",
+      "Bash(java -version)",
+      "Read(//usr/lib/**)",
+      "Read(//usr/local/lib/**)",
+      "Read(//e//**)",
+      "Bash(./gradlew --version)",
+      "Bash(JAVA_HOME=\"E:/jdk-21\" ./gradlew build --no-daemon)",
+      "Bash(./gradlew.bat compileKotlin)",
+      "Bash(./gradlew.bat --version)",
+      "Bash(export JAVA_HOME=\"E:/jdk-21\")",
+      "Read(//c/Program Files/**)",
+      "Read(//c/Program Files/Eclipse Adoptium/**)",
+      "Bash(where javac *)",
+      "Bash(JAVA_HOME=\"E:/jdk-21\" ./gradlew build)",
+      "Bash(E:/jdk-21/bin/java -version)",
+      "Bash(JAVA_HOME=\"E:/jdk-21\" E:/jdk-21/bin/gradle build)",
+      "Bash(awk '/^          [a-zA-Z_][a-zA-Z0-9_]*:$/ { getline next_line; if \\(next_line ~ /^            /\\) { print \"          - \" substr\\(next_line, 13\\); next } else { print; print next_line; next } } { print }' hideout.yml)",
+      "Bash(mv hideout.yml.tmp hideout.yml)",
+      "Bash(JAVA_HOME=\"C:/Program Files/Eclipse Adoptium/jdk-21.0.11+10\" ./gradlew build)",
+      "Bash(JAVA_HOME=\"C:/Program Files/Eclipse Adoptium/jdk-21.0.11+10\" ./gradlew compileKotlin)",
+      "Bash(JAVA_HOME=\"C:/Program Files/Eclipse Adoptium/jdk-21.0.11+10\" jar tf build/libs/*.jar)",
+      "*"
+    ]
+  }
+}

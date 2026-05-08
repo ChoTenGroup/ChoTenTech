@@ -59,6 +59,8 @@ object MainCommand {
     val debug = ChoTenDebugCommand
     @CommandBody
     val base = BaseCommand
+    @CommandBody
+    val coolnumber = CoolNumberCommand
 //    @CommandBody
 //    val Data = ChoTenDataCommand
 

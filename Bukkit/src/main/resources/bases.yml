@@ -1,0 +1,280 @@
+# 基地配置
+# faction: MEG / BNTG / UEC
+# spawn.location: 复活点世界坐标
+# region: WorldGuard 区域ID，玩家进入此区域时将自动解锁图鉴
+
+bases:
+  ALP:
+    name: "Alpha 基地"
+    faction: MEG
+    model: "meg_alpha"
+    enable: true
+    dev: "<#22ebff>十年不晚"
+    lore:
+      - "ALPHA基地坐落于 Level 1 ——宜居地带的廊道内。"
+      - "它也是 M.E.G. 的重要基地之一。"
+      - "无论是研究突破还是探险发现，它功不可没。"
+    start: "5000积分，些许装备，食物和医疗物品。"
+    region: "base-alp"
+    spawn:
+      world: world
+      x: 0.0
+      y: 100.0
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+
+  BET:
+    name: "Beta 基地"
+    faction: MEG
+    model: "meg_beta"
+    enable: false
+    dev: "<#22ebff>十年不晚"
+    lore:
+      - "BETA基地坐落于 Level 11 无垠城市。"
+      - "是 M.E.G. 内居民最多的基地。"
+      - "安全保障团被分配到了这里，你或许可以和他们谈谈。"
+    start: "10000积分，少量装备和食物。"
+    region: "base-bet"
+    spawn:
+      world: world
+      x: 0.0
+      y: 100.0
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+
+  GAM:
+    name: "Gamma 基地"
+    faction: MEG
+    model: "meg_gamma"
+    enable: false
+    dev: "<#22ebff>十年不晚"
+    lore:
+      - "GAMMA基地坐落在前期比较危险的 Level 3 内。"
+      - "这里的装备很齐全，但是食物和药品经常短缺。"
+      - "许多特工和住宿者在这里寻求庇护。"
+    start: "5000积分，大量相对较好的装备，代价是缺少食物和医疗物品。"
+    region: "base-gam"
+    spawn:
+      world: world
+      x: 0.0
+      y: 100.0
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+
+  OMG:
+    name: "Omega 基地"
+    faction: MEG
+    model: "meg_omega"
+    enable: false
+    dev: "<#22ebff>十年不晚"
+    lore:
+      - "OMEGA基地坐落于前期最安全的 Level 4，废弃办公室。"
+      - "是食物和杏仁水的主要产地和后勤保障。"
+    start: "2000积分，大量且低价的食物供给，尚可的武器和装备。"
+    region: "base-ome"
+    spawn:
+      world: world
+      x: 0.0
+      y: 100.0
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+
+  EPS:
+    name: "Epsilon边防督办公署"
+    faction: MEG
+    model: "meg_epsilon"
+    enable: false
+    dev: "<#ff9966>夕阳一梦"
+    lore:
+      - "EPSILON基地坐落于冷战前线Level 283。"
+      - "在输掉战争后，Epsilon基地因各种原因半独立，"
+      - "也许是时候召他们回家了。"
+    start: "开发中..."
+    region: "base-eps"
+    spawn:
+      world: world
+      x: 0.0
+      y: 100.0
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+
+  DEL:
+    name: "Delta 基地"
+    faction: MEG
+    model: "meg_delta"
+    enable: false
+    dev: "<#888888>???"
+    lore:
+      - "坐落于交易中心——Level 230。"
+      - "M.E.G.修复了这里老旧的基础设施，肃清了实体。"
+      - "各大交易团体在那之后接连而至。"
+    start: "开发中..."
+    region: "base-del"
+    spawn:
+      world: world
+      x: 0.0
+      y: 100.0
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+
+  HOT:
+    name: "家政服务基地"
+    faction: MEG
+    model: "meg_hotel"
+    enable: false
+    dev: "<#cfaf60>旅馆秩序"
+    lore:
+      - "这个基地坐落在 Level 5。"
+      - "为保护其他团体免受实体伤害而建立。"
+      - "当然，更多是为了让M.E.G.更好的研究Level 5。"
+    start: "开发中..."
+    region: "base-hot"
+    spawn:
+      world: world
+      x: 0.0
+      y: 100.0
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+
+  SIX:
+    name: "第六层基地"
+    faction: MEG
+    model: "meg_six"
+    enable: false
+    dev: "<#667788>踏入深暗"
+    lore:
+      - "第六层基地坐落于 Level 6.1，"
+      - "用于适应 Level 6 黑暗而危险的环境。"
+    start: "开发中..."
+    region: "base-six"
+    spawn:
+      world: world
+      x: 0.0
+      y: 100.0
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+
+  ENE:
+    name: "Level 8 空巢基地"
+    faction: MEG
+    model: "meg_emptynest"
+    enable: false
+    dev: "<#ff9966>夕阳一梦"
+    lore:
+      - "极度危险的 Level 8 中的一抹火炬。"
+      - "绵延两三千格的洞穴内的最后希望。"
+    start: "10000积分，装备与矿镐，但食物和医疗物资稀缺。"
+    region: "base-ene"
+    spawn:
+      world: world
+      x: 0.0
+      y: 100.0
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+
+  TRA:
+    name: "商人之家"
+    faction: BNTG
+    model: "bntg_traders"
+    enable: false
+    dev: "<#22ebff>十年不晚"
+    lore:
+      - "Level 1 跃金段的商人之家是 B.N.T.G. 最著名的基地，"
+      - "商人之家是B.N.T.G.物流、贸易的运作核心。"
+    start: "500贸易点，充足的食物和医疗物资，尚可的武器和装备"
+    region: "base-tra"
+    spawn:
+      world: world
+      x: 0.0
+      y: 100.0
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+
+  ELA:
+    name: "EL3A 办公区"
+    faction: BNTG
+    model: "bntg_el3a"
+    enable: false
+    dev: "<#ff9966>夕阳一梦"
+    lore:
+      - "EL3A办公区是 B.N.T.G. 的重要占领地，"
+      - "它取代了 M.E.G. 的成果，在 Level 2内人尽皆知。"
+    start: "开发中..."
+    region: "base-ela"
+    spawn:
+      world: world
+      x: 0.0
+      y: 100.0
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+
+  RES:
+    name: "存储设施"
+    faction: BNTG
+    model: "bntg_reserves"
+    enable: false
+    dev: "<#ff9966>夕阳一梦"
+    lore:
+      - "这里是 B.N.T.G. 的主要物资存储的设施。"
+      - "基地内物价高昂，也非常危险。"
+    start: "开发中..."
+    region: "base-res"
+    spawn:
+      world: world
+      x: 0.0
+      y: 100.0
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+
+  TWC:
+    name: "白堡"
+    faction: BNTG
+    model: "bntg_whitecastle"
+    enable: false
+    dev: "<#ccff66>道阻且长"
+    lore:
+      - "B.N.T.G.的一个小基地，"
+      - "用于 Level 283的资源提取。"
+      - "但是，这个基地里面的人员正在遭受苦难与压榨。"
+    start: "开发中..."
+    region: "base-twc"
+    spawn:
+      world: world
+      x: 0.0
+      y: 100.0
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0
+
+  SEW:
+    name: "澹涿浃/无尽下水道"
+    faction: UEC
+    model: "uec_sewers"
+    enable: false
+    dev: "<#ccff66>道阻且长"
+    lore:
+      - "U.E.C. 声称澹涿浃居民十分感激他们的作为，"
+      - "我们让他们过上了幸福安宁的生活，"
+      - "不必担心野兽出现在澹涿浃中。"
+      - "至于这些话有几成可信，就不知道了。"
+    start: "开发中..."
+    region: "base-sew"
+    spawn:
+      world: world
+      x: 0.0
+      y: 100.0
+      z: 0.0
+      yaw: 0.0
+      pitch: 0.0

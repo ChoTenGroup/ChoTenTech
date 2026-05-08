@@ -3,6 +3,8 @@ package io.github.zzzyyylllty.chotentech.data
 import io.github.zzzyyylllty.chotentech.ChoTenTech.config
 import io.github.zzzyyylllty.chotentech.ChoTenTech.levelsList
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerHudMap
+import org.bukkit.Bukkit
+import org.bukkit.Location
 import org.bukkit.entity.Player
 import java.time.Instant
 import kotlin.math.round
@@ -44,7 +46,12 @@ data class PlayerData (
     var returnedInsuranceItems: MutableList<String> = mutableListOf(),
     // 死亡时保留在身上的物品（未掉落的40%）
     var deathKeepItems: MutableList<String> = mutableListOf(),
+    var respawnPoint: RespawnPoint? = null,
     var warehouseBaseSlots: Int? = null,
+    var hideoutData: MutableMap<String, HideoutPlayerData> = linkedMapOf(),
+    var statusEffects: MutableList<PlayerStatusEffect> = mutableListOf(),
+    // type -> rankId (e.g. "prefix" -> "owner")
+    var activeRanks: LinkedHashMap<String, String> = linkedMapOf(),
 
     @kotlin.jvm.Transient
     var activeLevelStr: String? = null
@@ -63,6 +70,12 @@ data class PlayerData (
         noclipCooldownEnd =  (noclipTimeEnd ?: current) + round(sec * 1000).toLong()
     }
 }
+
+data class PlayerStatusEffect(
+    val type: String,
+    val level: Int,
+    var remainingDuration: Long
+)
 
 data class PlayerHUDData(
     val huds: LinkedHashMap<String, MutableList<SingleHUDData>> = linkedMapOf()
@@ -116,5 +129,31 @@ class HUDManager(val player: Player) {
 
     fun getHUDContent(key: String, defaultValue: String): String {
         return getOrCreateHUDData().getCurrentHUDContent(key, defaultValue)
+    }
+}
+
+data class RespawnPoint(
+    val world: String,
+    val x: Double,
+    val y: Double,
+    val z: Double,
+    val yaw: Float,
+    val pitch: Float
+) {
+    fun toLocation(): Location? {
+        return Bukkit.getWorld(world)?.let { Location(it, x, y, z, yaw, pitch) }
+    }
+
+    companion object {
+        fun fromLocation(location: Location): RespawnPoint {
+            return RespawnPoint(
+                world = location.world?.name ?: "world",
+                x = location.x,
+                y = location.y,
+                z = location.z,
+                yaw = location.yaw,
+                pitch = location.pitch
+            )
+        }
     }
 }
