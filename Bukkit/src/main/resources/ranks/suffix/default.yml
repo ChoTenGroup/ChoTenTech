@@ -1,0 +1,19 @@
+default:
+  display:
+    current: ""
+    short: ""
+  name: "无后缀"
+  desc: "默认后缀，不显示任何内容。"
+  get: "自动获得"
+  condition: "true"
+  priority: 0
+
+trader:
+  display:
+    current: " <!i><gradient:#ffaa00:#ffff55>[商]</gradient>"
+    short: " <!i><gradient:#ffaa00:#ffff55>[商]</gradient>"
+  name: "商贾后缀"
+  desc: "商人专属后缀。"
+  get: "通过交易获得。"
+  condition: "perm group.trader"
+  priority: 10

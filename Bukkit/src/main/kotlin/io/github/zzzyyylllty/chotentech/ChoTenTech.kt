@@ -15,11 +15,14 @@ import io.github.zzzyyylllty.chotentech.data.SurvivalDifficulty
 import io.github.zzzyyylllty.chotentech.function.AchievementManager
 import io.github.zzzyyylllty.chotentech.function.BaseManager
 import io.github.zzzyyylllty.chotentech.function.DeathDropManager
+import io.github.zzzyyylllty.chotentech.function.RankManager
+import io.github.zzzyyylllty.chotentech.function.hideout.HideoutConfig
 import io.github.zzzyyylllty.chotentech.load.loadAchievementFiles
 import io.github.zzzyyylllty.chotentech.load.loadAccountTypes
 import io.github.zzzyyylllty.chotentech.load.loadLevelFiles
 import io.github.zzzyyylllty.chotentech.load.loadPowerFiles
 import io.github.zzzyyylllty.chotentech.load.tempPowers
+import io.github.zzzyyylllty.chotentech.util.CurrencyUtil
 import io.github.zzzyyylllty.chotentech.util.EconomyUtil
 import io.github.zzzyyylllty.chotentech.util.devLog
 import io.github.zzzyyylllty.sertraline.Sertraline
@@ -69,6 +72,12 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
     @Config("bases.yml")
     lateinit var baseConfig: Configuration
 
+    @Config("hideout.yml")
+    lateinit var hideoutConfig: Configuration
+
+    @Config("currency.yml")
+    lateinit var currencyConfig: Configuration
+
     val console by lazy { console() }
     val consoleSender by lazy { console.castSafely<CommandSender>()!! }
     val host by lazy { config.getHost("database") }
@@ -111,6 +120,7 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
         DeathDropManager.removeAll()
         onReload()
         AchievementManager.unload()
+        RankManager.unload()
     }
 
     override fun onActive() {
@@ -128,6 +138,8 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
 
             config.reload()
             baseConfig.reload()
+            hideoutConfig.reload()
+            currencyConfig.reload()
             onReload()
             devMode = config.getBoolean("debug",false)
             accountTypesList.clear()
@@ -137,6 +149,9 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
             loadAccountTypes()
             loadLevelFiles()
             BaseManager.loadBases(baseConfig)
+            HideoutConfig.load(hideoutConfig)
+            CurrencyUtil.load(currencyConfig)
+            RankManager.load()
             reloadAchievements()
         }
     }

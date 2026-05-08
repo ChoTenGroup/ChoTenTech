@@ -1,0 +1,1078 @@
+# 个人基地配置 — 全部使用 Sertraline 物品 + 货币
+
+modules:
+  # ── 前置模块（无实际用途） ──
+  audio:
+    name: "音频"
+    description: "基地广播与通讯系统基础"
+    material: "NOTE_BLOCK"
+    item_model: "kangelitem:hideout/audio"
+    slot: 10
+    max_level: 1
+    usage: 0.0
+    levels:
+      1:
+        upgrade_time: 60
+        upgrade_cost:
+          - sertraline_id: "plank"
+            amount: 8
+          - sertraline_id: "copper_wire"
+            amount: 2
+          - currency: "point"
+            amount: 100
+
+  surveillance:
+    name: "监控"
+    description: "基地安保监控系统基础"
+    material: "OBSERVER"
+    item_model: "kangelitem:hideout/surveillance"
+    slot: 11
+    max_level: 1
+    usage: 0.0
+    levels:
+      1:
+        upgrade_time: 60
+        upgrade_cost:
+          - sertraline_id: "iron_ingot"
+            amount: 4
+          - sertraline_id: "copper_wire"
+            amount: 4
+          - sertraline_id: "red_board"
+            amount: 1
+          - currency: "point"
+            amount: 200
+
+  ventilation:
+    name: "通风"
+    description: "保障基地空气流通"
+    material: "IRON_TRAPDOOR"
+    item_model: "kangelitem:hideout/ventilation"
+    slot: 12
+    max_level: 1
+    usage: 0.0
+    levels:
+      1:
+        upgrade_time: 60
+        upgrade_cost:
+          - sertraline_id: "iron_ingot"
+            amount: 4
+          - sertraline_id: "plank"
+            amount: 8
+          - sertraline_id: "gear"
+            amount: 2
+          - currency: "point"
+            amount: 200
+
+  lighting:
+    name: "灯光"
+    description: "基地照明系统基础"
+    material: "GLOWSTONE"
+    item_model: "kangelitem:hideout/lighting"
+    slot: 13
+    max_level: 1
+    usage: 0.0
+    levels:
+      1:
+        upgrade_time: 60
+        upgrade_cost:
+          - sertraline_id: "glowstone_dust"
+            amount: 4
+          - sertraline_id: "copper_wire"
+            amount: 2
+          - sertraline_id: "light_bulb"
+            amount: 2
+          - currency: "point"
+            amount: 200
+
+  # ── 核心功能模块 ──
+  generator:
+    name: "发电机"
+    description: "为基地提供电力，消耗燃料"
+    material: "FURNACE"
+    item_model: "kangelitem:hideout/generator"
+    slot: 14
+    max_level: 3
+    usage: 0.0
+    levels:
+      1:
+        upgrade_time: 60
+        fuel_capacity: 1000.0
+        fuel_efficiency: 1.0
+        upgrade_cost:
+          - sertraline_id: "iron_ingot"
+            amount: 8
+          - sertraline_id: "copper_ingot"
+            amount: 6
+          - sertraline_id: "copper_wire"
+            amount: 4
+          - currency: "point"
+            amount: 500
+      2:
+        upgrade_time: 300
+        fuel_capacity: 2500.0
+        fuel_efficiency: 1.5
+        upgrade_cost:
+          - sertraline_id: "copper_ingot"
+            amount: 16
+          - sertraline_id: "iron_ingot"
+            amount: 8
+          - sertraline_id: "copper_wire"
+            amount: 4
+          - currency: "point"
+            amount: 1500
+      3:
+        upgrade_time: 600
+        fuel_capacity: 5000.0
+        fuel_efficiency: 2.5
+        upgrade_cost:
+          - sertraline_id: "steel_ingot"
+            amount: 8
+          - sertraline_id: "gold_ingot_low"
+            amount: 8
+          - sertraline_id: "battery"
+            amount: 4
+          - sertraline_id: "precision_parts"
+            amount: 4
+          - currency: "point"
+            amount: 5000
+
+  restroom:
+    name: "卫生间"
+    description: "生产卫生用品"
+    material: "DISPENSER"
+    item_model: "kangelitem:hideout/restroom"
+    slot: 15
+    max_level: 2
+    usage: 1.0
+    levels:
+      1:
+        upgrade_time: 60
+        production_rate: 0.02
+        production_item: "paper"
+        upgrade_cost:
+          - sertraline_id: "plank"
+            amount: 16
+          - sertraline_id: "iron_ingot"
+            amount: 4
+          - currency: "point"
+            amount: 300
+      2:
+        upgrade_time: 300
+        production_rate: 0.04
+        production_item: "rag"
+        upgrade_cost:
+          - sertraline_id: "iron_ingot"
+            amount: 8
+          - sertraline_id: "plastic"
+            amount: 6
+          - currency: "point"
+            amount: 1000
+
+  kitchen:
+    name: "厨房"
+    description: "自动生产食物"
+    material: "SMOKER"
+    item_model: "kangelitem:hideout/kitchen"
+    slot: 16
+    max_level: 3
+    usage: 2.0
+    levels:
+      1:
+        upgrade_time: 60
+        production_rate: 0.015
+        production_item: "bread"
+        upgrade_cost:
+          - sertraline_id: "iron_ingot"
+            amount: 8
+          - sertraline_id: "plank"
+            amount: 16
+          - currency: "point"
+            amount: 400
+      2:
+        upgrade_time: 300
+        production_rate: 0.025
+        production_item: "barbecue"
+        upgrade_cost:
+          - sertraline_id: "steel_ingot"
+            amount: 4
+          - sertraline_id: "silver_ingot"
+            amount: 2
+          - currency: "point"
+            amount: 1500
+      3:
+        upgrade_time: 600
+        production_rate: 0.04
+        production_item: "pizza"
+        upgrade_cost:
+          - sertraline_id: "steel_ingot"
+            amount: 8
+          - sertraline_id: "glowstone_ingot"
+            amount: 2
+          - currency: "point"
+            amount: 4000
+
+  storage:
+    name: "仓库扩容"
+    description: "扩展个人仓库容量"
+    material: "CHEST"
+    item_model: "kangelitem:hideout/storage"
+    slot: 20
+    max_level: 3
+    usage: 0.0
+    levels:
+      1:
+        upgrade_time: 60
+        upgrade_cost:
+          - sertraline_id: "plank"
+            amount: 16
+          - sertraline_id: "nail"
+            amount: 8
+          - sertraline_id: "iron_ingot"
+            amount: 4
+          - currency: "point"
+            amount: 300
+      2:
+        upgrade_time: 300
+        upgrade_cost:
+          - sertraline_id: "steel_ingot"
+            amount: 8
+          - sertraline_id: "hard_plastic"
+            amount: 6
+          - sertraline_id: "silver_ingot"
+            amount: 4
+          - currency: "point"
+            amount: 2000
+      3:
+        upgrade_time: 600
+        upgrade_cost:
+          - sertraline_id: "black_diamond"
+            amount: 2
+          - sertraline_id: "plasma_ingot"
+            amount: 2
+          - sertraline_id: "advanced_ai_core"
+            amount: 1
+          - currency: "point"
+            amount: 5000
+
+  bedroom:
+    name: "卧室"
+    description: "休息获得增益效果，每8小时可点击一次"
+    material: "RED_BED"
+    item_model: "kangelitem:hideout/bedroom"
+    slot: 21
+    max_level: 3
+    usage: 0.0
+    levels:
+      1:
+        upgrade_time: 60
+        buff_duration: 120
+        buff_amplifier: 0
+        upgrade_cost:
+          - sertraline_id: "plank"
+            amount: 16
+          - sertraline_id: "rag"
+            amount: 8
+          - currency: "point"
+            amount: 300
+      2:
+        upgrade_time: 300
+        buff_duration: 240
+        buff_amplifier: 0
+        upgrade_cost:
+          - sertraline_id: "plank"
+            amount: 24
+          - sertraline_id: "rag"
+            amount: 16
+          - sertraline_id: "iron_ingot"
+            amount: 4
+          - currency: "point"
+            amount: 1200
+      3:
+        upgrade_time: 600
+        buff_duration: 480
+        buff_amplifier: 1
+        upgrade_cost:
+          - sertraline_id: "hard_plastic"
+            amount: 8
+          - sertraline_id: "glowstone_ingot"
+            amount: 2
+          - sertraline_id: "ruby"
+            amount: 2
+          - currency: "point"
+            amount: 4000
+
+  # ── 生产与精炼模块 ──
+  oil_refinery:
+    name: "炼油机"
+    description: "将粗碳等材料精炼为桶装燃料"
+    material: "BREWING_STAND"
+    item_model: "kangelitem:hideout/oil"
+    slot: 22
+    max_level: 2
+    usage: 3.0
+    levels:
+      1:
+        upgrade_time: 60
+        upgrade_cost:
+          - sertraline_id: "copper_ingot"
+            amount: 12
+          - sertraline_id: "copper_wire"
+            amount: 6
+          - sertraline_id: "iron_ingot"
+            amount: 4
+          - currency: "point"
+            amount: 500
+      2:
+        upgrade_time: 300
+        upgrade_cost:
+          - sertraline_id: "steel_ingot"
+            amount: 4
+          - sertraline_id: "precision_parts"
+            amount: 4
+          - sertraline_id: "gear"
+            amount: 4
+          - currency: "point"
+            amount: 2000
+
+  almond_collector:
+    name: "杏仁集水器"
+    description: "从环境中收集杏仁水，高级可产出变种"
+    material: "CAULDRON"
+    item_model: "kangelitem:hideout/water"
+    slot: 23
+    max_level: 3
+    usage: 3.0
+    levels:
+      1:
+        upgrade_time: 60
+        production_rate: 0.02
+        production_item: "almond_water_gray"
+        upgrade_cost:
+          - sertraline_id: "plastic"
+            amount: 8
+          - sertraline_id: "copper_ingot"
+            amount: 6
+          - sertraline_id: "glass_material"
+            amount: 4
+          - currency: "point"
+            amount: 400
+      2:
+        upgrade_time: 300
+        production_rate: 0.03
+        production_item: "almond_water_blue"
+        upgrade_cost:
+          - sertraline_id: "steel_ingot"
+            amount: 4
+          - sertraline_id: "silver_ingot"
+            amount: 2
+          - sertraline_id: "glass_material"
+            amount: 8
+          - currency: "point"
+            amount: 1500
+      3:
+        upgrade_time: 600
+        production_rate: 0.04
+        production_item: "luck_milk_original"
+        upgrade_cost:
+          - sertraline_id: "steel_ingot"
+            amount: 6
+          - sertraline_id: "glowstone_ingot"
+            amount: 2
+          - sertraline_id: "advanced_ai_core"
+            amount: 1
+          - currency: "point"
+            amount: 4000
+
+  drink_station:
+    name: "饮料站"
+    description: "合成各类饮品"
+    material: "BARREL"
+    item_model: "kangelitem:hideout/drinks"
+    slot: 24
+    max_level: 2
+    usage: 3.0
+    levels:
+      1:
+        upgrade_time: 60
+        craft_speed: 1.0
+        upgrade_cost:
+          - sertraline_id: "iron_ingot"
+            amount: 8
+          - sertraline_id: "plank"
+            amount: 12
+          - currency: "point"
+            amount: 400
+      2:
+        upgrade_time: 300
+        craft_speed: 1.5
+        upgrade_cost:
+          - sertraline_id: "steel_ingot"
+            amount: 4
+          - sertraline_id: "silver_ingot"
+            amount: 2
+          - currency: "point"
+            amount: 1500
+
+  crafting_station:
+    name: "合成站"
+    description: "合成各类生存物资与装备"
+    material: "CRAFTING_TABLE"
+    item_model: "kangelitem:hideout/crafting"
+    slot: 30
+    max_level: 3
+    usage: 3.0
+    levels:
+      1:
+        upgrade_time: 60
+        craft_speed: 1.0
+        upgrade_cost:
+          - sertraline_id: "iron_ingot"
+            amount: 8
+          - sertraline_id: "plank"
+            amount: 16
+          - currency: "point"
+            amount: 500
+      2:
+        upgrade_time: 300
+        craft_speed: 1.5
+        upgrade_cost:
+          - sertraline_id: "iron_ingot"
+            amount: 12
+          - sertraline_id: "plank"
+            amount: 16
+          - sertraline_id: "screw"
+            amount: 8
+          - currency: "point"
+            amount: 2000
+      3:
+        upgrade_time: 600
+        craft_speed: 2.0
+        upgrade_cost:
+          - sertraline_id: "steel_ingot"
+            amount: 6
+          - sertraline_id: "silver_ingot"
+            amount: 4
+          - sertraline_id: "cpu"
+            amount: 2
+          - sertraline_id: "precision_parts"
+            amount: 4
+          - currency: "point"
+            amount: 5000
+
+  medical_station:
+    name: "医疗站"
+    description: "产出医疗点数，可兑换治疗与药品"
+    material: "ENCHANTING_TABLE"
+    item_model: "kangelitem:hideout/medical"
+    slot: 31
+    max_level: 3
+    usage: 5.0
+    levels:
+      1:
+        upgrade_time: 60
+        production_rate: 0.05
+        upgrade_cost:
+          - sertraline_id: "iron_ingot"
+            amount: 8
+          - sertraline_id: "plastic"
+            amount: 8
+          - currency: "point"
+            amount: 500
+      2:
+        upgrade_time: 300
+        production_rate: 0.1
+        upgrade_cost:
+          - sertraline_id: "steel_ingot"
+            amount: 4
+          - sertraline_id: "silver_ingot"
+            amount: 2
+          - sertraline_id: "green_board"
+            amount: 2
+          - currency: "point"
+            amount: 2000
+      3:
+        upgrade_time: 600
+        production_rate: 0.2
+        upgrade_cost:
+          - sertraline_id: "glowstone_ingot"
+            amount: 2
+          - sertraline_id: "advanced_ai_core"
+            amount: 1
+          - sertraline_id: "black_diamond"
+            amount: 1
+          - currency: "point"
+            amount: 5000
+
+  # ── 信息与装备模块 ──
+  radar_station:
+    name: "雷达站"
+    description: "情报系统前置设施"
+    material: "LODESTONE"
+    item_model: "kangelitem:hideout/radar"
+    slot: 32
+    max_level: 1
+    usage: 2.0
+    levels:
+      1:
+        upgrade_time: 60
+        upgrade_cost:
+          - sertraline_id: "copper_ingot"
+            amount: 12
+          - sertraline_id: "copper_wire"
+            amount: 8
+          - sertraline_id: "red_board"
+            amount: 2
+          - currency: "point"
+            amount: 600
+
+  intelligence_station:
+    name: "情报站"
+    description: "生产情报文件（需雷达站）"
+    material: "LECTERN"
+    item_model: "kangelitem:hideout/intel"
+    slot: 33
+    max_level: 2
+    usage: 4.0
+    levels:
+      1:
+        upgrade_time: 60
+        production_rate: 0.01
+        production_item: "paper"
+        upgrade_cost:
+          - sertraline_id: "iron_ingot"
+            amount: 8
+          - sertraline_id: "red_board"
+            amount: 2
+          - sertraline_id: "cpu"
+            amount: 1
+          - currency: "point"
+            amount: 800
+      2:
+        upgrade_time: 300
+        production_rate: 0.02
+        production_item: "intelligence_folder"
+        upgrade_cost:
+          - sertraline_id: "steel_ingot"
+            amount: 4
+          - sertraline_id: "green_board"
+            amount: 2
+          - sertraline_id: "advanced_ai_core"
+            amount: 1
+          - currency: "point"
+            amount: 3000
+
+  accessory_station:
+    name: "配件站"
+    description: "生产装备配件（暂未开放配方）"
+    material: "SMITHING_TABLE"
+    item_model: "kangelitem:hideout/accessory"
+    slot: 34
+    max_level: 2
+    usage: 3.0
+    levels:
+      1:
+        upgrade_time: 60
+        upgrade_cost:
+          - sertraline_id: "iron_ingot"
+            amount: 12
+          - sertraline_id: "gear"
+            amount: 4
+          - sertraline_id: "precision_parts"
+            amount: 2
+          - currency: "point"
+            amount: 500
+      2:
+        upgrade_time: 300
+        upgrade_cost:
+          - sertraline_id: "steel_ingot"
+            amount: 6
+          - sertraline_id: "silver_ingot"
+            amount: 4
+          - sertraline_id: "cpu"
+            amount: 2
+          - currency: "point"
+            amount: 2000
+
+  # ── 特殊模块 ──
+  power_supply:
+    name: "供能机"
+    description: "减少整体燃料消耗"
+    material: "BLAST_FURNACE"
+    item_model: "kangelitem:hideout/powersupply"
+    slot: 40
+    max_level: 4
+    usage: 2.0
+    levels:
+      1:
+        upgrade_time: 60
+        fuel_save_percent: 15
+        upgrade_cost:
+          - sertraline_id: "copper_ingot"
+            amount: 16
+          - sertraline_id: "battery"
+            amount: 4
+          - sertraline_id: "copper_wire"
+            amount: 8
+          - currency: "point"
+            amount: 1000
+      2:
+        upgrade_time: 300
+        fuel_save_percent: 25
+        upgrade_cost:
+          - sertraline_id: "steel_ingot"
+            amount: 6
+          - sertraline_id: "battery_set"
+            amount: 2
+          - sertraline_id: "precision_parts"
+            amount: 4
+          - currency: "point"
+            amount: 3000
+      3:
+        upgrade_time: 600
+        fuel_save_percent: 35
+        upgrade_cost:
+          - sertraline_id: "gold_ingot_medium"
+            amount: 6
+          - sertraline_id: "glowstone_ingot"
+            amount: 2
+          - sertraline_id: "advanced_ai_core"
+            amount: 1
+          - currency: "point"
+            amount: 8000
+      4:
+        upgrade_time: 1200
+        fuel_save_percent: 45
+        upgrade_cost:
+          - sertraline_id: "gold_ingot_high"
+            amount: 4
+          - sertraline_id: "plasma_ingot"
+            amount: 2
+          - sertraline_id: "black_diamond"
+            amount: 2
+          - currency: "point"
+            amount: 20000
+
+  mine:
+    name: "矿场"
+    description: "生产 CitCoin，放入显卡可加速生产"
+    material: "PISTON"
+    item_model: "kangelitem:hideout/mine"
+    slot: 41
+    max_level: 3
+    usage: 6.0
+    levels:
+      1:
+        upgrade_time: 60
+        production_rate: 0.03
+        gpu_slots: 3
+        upgrade_cost:
+          - sertraline_id: "copper_ingot"
+            amount: 16
+          - sertraline_id: "red_board"
+            amount: 4
+          - sertraline_id: "copper_wire"
+            amount: 8
+          - currency: "point"
+            amount: 1000
+      2:
+        upgrade_time: 300
+        production_rate: 0.06
+        gpu_slots: 5
+        upgrade_cost:
+          - sertraline_id: "gold_ingot_medium"
+            amount: 8
+          - sertraline_id: "green_board"
+            amount: 4
+          - sertraline_id: "battery_set"
+            amount: 2
+          - currency: "point"
+            amount: 4000
+      3:
+        upgrade_time: 600
+        production_rate: 0.1
+        gpu_slots: 8
+        upgrade_cost:
+          - sertraline_id: "gold_ingot_high"
+            amount: 4
+          - sertraline_id: "advanced_ai_core"
+            amount: 1
+          - sertraline_id: "black_diamond"
+            amount: 2
+          - sertraline_id: "battery_set"
+            amount: 4
+          - currency: "point"
+            amount: 10000
+
+
+# ── 燃料类型 ──
+fuel_types:
+  raw_coal:
+    sertraline_id: "raw_coal"
+    burn_time: 80.0
+  fuel:
+    sertraline_id: "fuel"
+    burn_time: 240.0
+  battery:
+    sertraline_id: "battery"
+    burn_time: 120.0
+  battery_set:
+    sertraline_id: "battery_set"
+    burn_time: 500.0
+
+
+# ── 配方 ──
+recipes:
+  # Lv.1 基础生存
+  craft_almond_water:
+    module: "crafting_station"
+    min_level: 1
+    craft_time: 20
+    usage_cost: 3.0
+    input:
+      in_1:
+        sertraline_id: "almond_water_gray"
+        amount: 2
+      in_2:
+        sertraline_id: "glass_material"
+        amount: 2
+    output:
+      out_1:
+        sertraline_id: "almond_water_blue"
+        amount: 2
+
+  craft_healing_pills:
+    module: "crafting_station"
+    min_level: 1
+    craft_time: 20
+    usage_cost: 3.0
+    input:
+      in_1:
+        sertraline_id: "rag"
+        amount: 2
+      in_2:
+        sertraline_id: "plastic"
+        amount: 1
+      in_3:
+        sertraline_id: "berry"
+        amount: 3
+    output:
+      out_1:
+        sertraline_id: "sql_pills_aqua"
+        amount: 2
+
+  craft_baked_potato:
+    module: "crafting_station"
+    min_level: 1
+    craft_time: 15
+    usage_cost: 2.0
+    input:
+      in_1:
+        sertraline_id: "potato"
+        amount: 3
+    output:
+      out_1:
+        sertraline_id: "baked_potato"
+        amount: 3
+
+  craft_bread:
+    module: "crafting_station"
+    min_level: 1
+    craft_time: 25
+    usage_cost: 3.0
+    input:
+      in_1:
+        sertraline_id: "berry"
+        amount: 5
+      in_2:
+        sertraline_id: "plum"
+        amount: 3
+    output:
+      out_1:
+        sertraline_id: "bread"
+        amount: 3
+
+  craft_rag:
+    module: "crafting_station"
+    min_level: 1
+    craft_time: 15
+    usage_cost: 2.0
+    input:
+      in_1:
+        sertraline_id: "fibre"
+        amount: 3
+      in_2:
+        sertraline_id: "vine"
+        amount: 2
+    output:
+      out_1:
+        sertraline_id: "rag"
+        amount: 3
+
+  # Lv.2 中级加工
+  craft_steel_ingot:
+    module: "crafting_station"
+    min_level: 2
+    craft_time: 60
+    usage_cost: 8.0
+    input:
+      in_1:
+        sertraline_id: "iron_ingot"
+        amount: 3
+      in_2:
+        sertraline_id: "raw_coal"
+        amount: 2
+    output:
+      out_1:
+        sertraline_id: "steel_ingot"
+        amount: 2
+
+  craft_silver_ingot:
+    module: "crafting_station"
+    min_level: 2
+    craft_time: 45
+    usage_cost: 6.0
+    input:
+      in_1:
+        sertraline_id: "copper_ingot"
+        amount: 3
+      in_2:
+        sertraline_id: "glowstone_dust"
+        amount: 2
+    output:
+      out_1:
+        sertraline_id: "silver_ingot"
+        amount: 1
+
+  craft_barbecue:
+    module: "crafting_station"
+    min_level: 2
+    craft_time: 35
+    usage_cost: 5.0
+    input:
+      in_1:
+        sertraline_id: "beef_can"
+        amount: 1
+      in_2:
+        sertraline_id: "potato"
+        amount: 2
+      in_3:
+        sertraline_id: "berry"
+        amount: 3
+    output:
+      out_1:
+        sertraline_id: "barbecue"
+        amount: 2
+
+  craft_iron_sword:
+    module: "crafting_station"
+    min_level: 2
+    craft_time: 55
+    usage_cost: 7.0
+    input:
+      in_1:
+        sertraline_id: "iron_ingot"
+        amount: 4
+      in_2:
+        sertraline_id: "plank"
+        amount: 2
+      in_3:
+        sertraline_id: "rag"
+        amount: 1
+    output:
+      out_1:
+        sertraline_id: "iron_sword"
+        amount: 1
+
+  # Lv.3 高级合成
+  craft_gold_high:
+    module: "crafting_station"
+    min_level: 3
+    craft_time: 80
+    usage_cost: 10.0
+    input:
+      in_1:
+        sertraline_id: "gold_ingot_low"
+        amount: 2
+      in_2:
+        sertraline_id: "gold_ingot_medium"
+        amount: 2
+    output:
+      out_1:
+        sertraline_id: "gold_ingot_high"
+        amount: 1
+
+  craft_glowstone_ingot:
+    module: "crafting_station"
+    min_level: 3
+    craft_time: 50
+    usage_cost: 7.0
+    input:
+      in_1:
+        sertraline_id: "glowstone_dust"
+        amount: 4
+      in_2:
+        sertraline_id: "silver_ingot"
+        amount: 1
+    output:
+      out_1:
+        sertraline_id: "glowstone_ingot"
+        amount: 1
+
+  craft_plasma_ingot:
+    module: "crafting_station"
+    min_level: 3
+    craft_time: 120
+    usage_cost: 15.0
+    input:
+      in_1:
+        sertraline_id: "glowstone_ingot"
+        amount: 2
+      in_2:
+        sertraline_id: "steel_ingot"
+        amount: 2
+      in_3:
+        sertraline_id: "battery_set"
+        amount: 1
+    output:
+      out_1:
+        sertraline_id: "plasma_ingot"
+        amount: 1
+
+  craft_advanced_ai:
+    module: "crafting_station"
+    min_level: 3
+    craft_time: 150
+    usage_cost: 18.0
+    input:
+      in_1:
+        sertraline_id: "basic_ai_core"
+        amount: 1
+      in_2:
+        sertraline_id: "cpu"
+        amount: 2
+      in_3:
+        sertraline_id: "graphics_card"
+        amount: 1
+      in_4:
+        sertraline_id: "ram_stick"
+        amount: 2
+    output:
+      out_1:
+        sertraline_id: "advanced_ai_core"
+        amount: 1
+
+  craft_diamond_sword:
+    module: "crafting_station"
+    min_level: 3
+    craft_time: 120
+    usage_cost: 15.0
+    input:
+      in_1:
+        sertraline_id: "steel_ingot"
+        amount: 3
+      in_2:
+        sertraline_id: "black_diamond"
+        amount: 2
+      in_3:
+        sertraline_id: "ruby"
+        amount: 2
+      in_4:
+        sertraline_id: "gear"
+        amount: 1
+    output:
+      out_1:
+        sertraline_id: "diamond_sword"
+        amount: 1
+
+  # 饮料站配方
+  craft_apple_can:
+    module: "drink_station"
+    min_level: 1
+    craft_time: 25
+    usage_cost: 3.0
+    input:
+      in_1:
+        sertraline_id: "strawberry"
+        amount: 3
+      in_2:
+        sertraline_id: "berry"
+        amount: 5
+      in_3:
+        sertraline_id: "glass_material"
+        amount: 2
+    output:
+      out_1:
+        sertraline_id: "apple_can"
+        amount: 2
+
+  craft_ice_tea:
+    module: "drink_station"
+    min_level: 1
+    craft_time: 30
+    usage_cost: 3.0
+    input:
+      in_1:
+        sertraline_id: "berry"
+        amount: 3
+      in_2:
+        sertraline_id: "ice"
+        amount: 2
+      in_3:
+        sertraline_id: "glass_material"
+        amount: 2
+    output:
+      out_1:
+        sertraline_id: "ice_tea"
+        amount: 2
+
+  craft_cola:
+    module: "drink_station"
+    min_level: 1
+    craft_time: 35
+    usage_cost: 4.0
+    input:
+      in_1:
+        sertraline_id: "sugar_cube"
+        amount: 2
+      in_2:
+        sertraline_id: "glass_material"
+        amount: 2
+      in_3:
+        sertraline_id: "plum"
+        amount: 3
+    output:
+      out_1:
+        sertraline_id: "cola"
+        amount: 2
+
+  # 炼油机配方
+  refine_fuel:
+    module: "oil_refinery"
+    min_level: 1
+    craft_time: 40
+    usage_cost: 5.0
+    input:
+      in_1:
+        sertraline_id: "raw_coal"
+        amount: 4
+    output:
+      out_1:
+        sertraline_id: "fuel"
+        amount: 1
+
+  refine_fuel_batch:
+    module: "oil_refinery"
+    min_level: 2
+    craft_time: 90
+    usage_cost: 8.0
+    input:
+      in_1:
+        sertraline_id: "raw_coal"
+        amount: 12
+      in_2:
+        sertraline_id: "engine_lubricating_oil"
+        amount: 1
+    output:
+      out_1:
+        sertraline_id: "fuel"
+        amount: 4

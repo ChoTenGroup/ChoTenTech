@@ -1,0 +1,119 @@
+title: '<image:kangelrank:setupgui>'
+
+layout:
+  - '111222333'
+  - 'ABCDEFGHI'
+  - 'JKLMNOPQR'
+  - '000000000'
+  - '000000000'
+  - '???   VVV'
+
+settings:
+  default: Wanderer
+bookmark:
+  Wanderer:
+    bind: 0
+    major: "<gradient:#CCCCCC:#AAAABB>流浪者"
+    name: "流浪者"
+    model: "kangelitem:itm/bookmark/wanderer"
+    faction: WANDERER
+    enable: true
+    difficulty: HARD
+    description: |
+      尽管资深流浪者对后室已经了如指掌，但对于那些初入者来说，
+      在这个昏黄地狱生存下去绝非易事。
+      我所见过的每一个流浪者，无论这个流浪者的谋生技巧如何高超，
+      终将难逃身体崩溃，或是饥饿致死，或是精神阵地的陷落。
+      无论如何，在流浪者与后室的对决中，后室都会最终取得胜利。
+    info: |
+      您将初始出生在 Level 0。
+      您将获得5000积分作为启动资金。但您在该模式下没有装备。
+      您将获得一些初始可支配的特质点数。
+      可自由探索，适合玩过相关服务器的人，不推荐新手选择!
+    agent: {}
+    spawnpoint: Chapter1 0 100 0
+  MEG:
+    bind: 1
+    major: "<gradient:#FFFF99:#CCAA66>探险者总署"
+    name: "<#9999BB>职员"
+    model: "kangelitem:itm/bookmark/meg"
+    faction: MEG
+    enable: true
+    difficulty: EASY
+    description: |
+      我们是一线希望。我们承诺尽可能保护所有人，探索从未有人见过的非凡地方。
+      我们会保证你的安全。这是他们所承诺的。而如今，随着冷战愈演愈烈，
+      作为代价，许多在战争被波及到的流浪者们纷纷向 M.E.G. 寻求指导、安全和物质支持。
+      然而，这些特权伴随着一个不成文的要求：M.E.G. 必须继续维护其名号的高标准，
+      否则，阈限世界将突然失去一个相对而言值得追随的组织......
+    info: |
+      您将初始出生在位于 Level 1 的基地内，并附带 M.E.G. 职员身份。
+      您将获得一套初级装备，以及10000积分作为启动资金。
+      解锁部分专属任务。但在某些任务完成之前，您在后续探索时可能受到阻碍。
+    agent: {}
+    spawnpoint: Chapter1 0 100 0
+  BNTG:
+    bind: 2
+    major: "<gradient:#33FF99:#22AA66>不结盟贸易集团"
+    name: "<#9999BB>职员"
+    model: "kangelitem:itm/bookmark/bntg"
+    faction: BNTG
+    enable: true
+    difficulty: EASY
+    description: |
+      金钱归我，荣耀归你。
+      B.N.T.G.，亦称不结盟贸易集团。
+      一个通过电汇、钞票和股票证书联系在一起的组织。
+      只要你能带来收益，你就是B.N.T.G.的不错人选。
+      集团的人民和富豪们等待着，渴望一个未来，一个可能属于金钱和荣耀的秩序。
+    info: |
+      您将初始出生在位于 Level 2 的基地内，并附带 B.N.T.G. 职员身份。
+      您将获得一套中等的装备，以及5000积分和500贸易点作为启动资金。
+      解锁部分专属任务。但在某些任务完成之前，您在后续探索时可能受到阻碍。
+    agent: {}
+    spawnpoint: Chapter1 0 100 0
+  UEC:
+    bind: 3
+    major: "<gradient:#FF3300:#CC0000>无羁探险者联盟"
+    name: "<#9999BB>职员"
+    model: "kangelitem:itm/bookmark/uec"
+    faction: UEC
+    enable: false
+    difficulty: VERY_HARD
+    description: |
+      U.E.C.创立的宗旨是“人们的安全高于一切”。至少他们是这么说的。
+      无羁探险者联盟通过创立傀儡组织，扶持代理人来攫取利益。
+      一个臭名昭著的例子是“无尽下水道”组织，许多U.E.C.的居民都定居于此。
+      无羁探险者联盟是一个结合了经济联盟、军事联盟和一体化项目的组织。
+    info: |
+      您将初始出生在位于 Level 3 的基地内，并附带 U.E.C. 职员身份。
+      您将获得一套较好的装备，以及10000积分和500无羁点作为启动资金。
+      解锁部分专属任务。但在某些任务完成之前，您在后续探索时可能受到阻碍。
+    indev:
+      info1: "开发中!"
+      info2: "将在 <#ff6600>团结<#ff6600> 版本更新后可用..."
+    agent: {}
+    spawnpoint: Chapter1 0 100 0
+  UEC_SEWERS:
+    bind: P
+    major: "<gradient:#FF3300:#CC0000>无羁探险者联盟"
+    name: "<#9999BB>水道维护者"
+    model: "kangelitem:itm/bookmark/uec_sewers"
+    faction: UEC_SEWERS
+    enable: false
+    difficulty: VERY_HARD
+    description: |
+      U.E.C.创立的宗旨是“人们的安全高于一切”。至少他们是这么说的。
+      然而，尽管他们在法律上享有球体其他成员的资历，现实远没有表面看起来那么乐观。
+      下水道和发电站凭借其名义上的更高地位，必须向无羁组织贡献更多资源。
+      不用说，“核心成员”不过是统治下水道的居民的借口，
+      但下水道的君主和发电站的将军都不会放弃这一合法性赖以存在的称号。
+    info: |
+      您将初始出生在位于 Level 76 的基地内，并附带 U.E.C. 水道维护者身份。
+      您将获得一套不错的装备和2000无羁点作为启动资金。
+      解锁部分专属任务。但在某些任务完成之前，您在后续探索时可能受到阻碍。
+    indev:
+      info1: "开发中!"
+      info2: "将在 <#ff6600>团结<#ff6600> 版本更新后可用..."
+    agent: {}
+    spawnpoint: Chapter1 0 100 0

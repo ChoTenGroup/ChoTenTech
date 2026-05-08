@@ -11,6 +11,7 @@ import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
 import io.github.zzzyyylllty.chotentech.function.AchievementManager
 import io.github.zzzyyylllty.chotentech.function.BaseManager
+import io.github.zzzyyylllty.chotentech.function.RankManager
 import taboolib.platform.compat.PlaceholderExpansion
 import taboolib.platform.compat.replacePlaceholder
 import kotlin.math.floor
@@ -105,6 +106,19 @@ object ExamplePapiHook : PlaceholderExpansion {
                     }
                 }).toString()
             }
+            "rank" -> {
+                if (player == null) return ""
+                val type = list.getOrNull(1)?.lowercase() ?: return ""
+                val field = list.getOrNull(2)?.lowercase() ?: "current"
+                val rank = RankManager.getPlayerActiveRank(player, type)
+                when (field) {
+                    "name" -> rank?.name ?: ""
+                    "desc" -> rank?.desc ?: ""
+                    "get" -> rank?.get ?: ""
+                    "id" -> rank?.id ?: ""
+                    else -> rank?.display?.get(field) ?: ""
+                }
+            }
             "hud" -> {
                 val split = list[1].split("?:")
                 val first = split[0]
@@ -148,6 +162,24 @@ object ExamplePapiHook : PlaceholderExpansion {
                 val baseRegion = regions.firstOrNull { it.startsWith("base-") } ?: return "野外"
                 val base = BaseManager.getBaseByRegion(baseRegion) ?: return "?"
                 return base.idef.uppercase()
+            }
+            "effect" -> {
+                val sub = list.getOrNull(1)?.lowercase()
+                val type = list.drop(2).joinToString("_") // 支持 heavy_bleeding 等多词ID
+                when (sub) {
+                    "list" -> {
+                        player?.getData()?.statusEffects?.joinToString(", ") {
+                            "${it.type}:${it.level}(${it.remainingDuration / 1000}s)"
+                        } ?: ""
+                    }
+                    "has" -> (player?.getData()?.statusEffects?.any { it.type == type } == true).toString()
+                    "level" -> player?.getData()?.statusEffects?.firstOrNull { it.type == type }?.level?.toString() ?: "0"
+                    "time" -> {
+                        val remaining = player?.getData()?.statusEffects?.firstOrNull { it.type == type }?.remainingDuration ?: 0L
+                        (remaining / 1000).toString()
+                    }
+                    else -> "Error"
+                }
             }
         }
         return "Error"

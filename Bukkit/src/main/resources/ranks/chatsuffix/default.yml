@@ -1,0 +1,19 @@
+default:
+  display:
+    current: ""
+    short: ""
+  name: "无聊天后缀"
+  desc: "默认聊天后缀。"
+  get: "自动获得"
+  condition: "true"
+  priority: 0
+
+ender:
+  display:
+    current: " <!i><dark_purple>末影行者</dark_purple>"
+    short: " <!i><dark_purple>末影行者</dark_purple>"
+  name: "末影行者"
+  desc: "探索末地的证明。"
+  get: "探索末地并完成相关成就。"
+  condition: "perm group.ender"
+  priority: 10
