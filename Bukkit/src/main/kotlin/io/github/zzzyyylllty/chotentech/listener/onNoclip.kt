@@ -11,6 +11,7 @@ import io.github.zzzyyylllty.chotentech.data.ChoTenDataHelper
 import io.github.zzzyyylllty.chotentech.data.Level
 import io.github.zzzyyylllty.chotentech.data.NoclipPoint
 import io.github.zzzyyylllty.chotentech.data.PlayerData
+import io.github.zzzyyylllty.chotentech.data.PowerManager
 import io.github.zzzyyylllty.chotentech.function.player.sendComponent
 import org.bukkit.Location
 import org.bukkit.Sound
@@ -36,8 +37,12 @@ fun onPlayerSneak(event: PlayerToggleSneakEvent) {
 // 当玩家完成切出时：noclipcooldown>0,noclippoint==null,noclipping=false
 
     // 如果玩家没有下蹲，设置切出点为null，切出中为false
+    // 但 autoNoclip 的切出点或电梯触发的切出不因松开潜行而取消
     if (!event.isSneaking || player.location.pitch <= 85f) {
-        if (data != null && data.noclipping) {
+        if (data != null && data.noclipping
+            && data.noclipPoint?.autoNoclip != true
+            && !PowerManager.elevatorNoclipPlayers.contains(uuid)
+        ) {
             playerDataMap[uuid] = data.copy(noclipping = false, noclipPoint = null)
             player.playSound(player, Sound.ENTITY_ENDER_EYE_DEATH, 1F, 0.5F)
             player.sendComponent("<gradient:red:#550000>切出已取消")

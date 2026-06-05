@@ -11,6 +11,7 @@ import io.github.zzzyyylllty.chotentech.ChoTenTech.sdClassList
 import io.github.zzzyyylllty.chotentech.data.IDType
 import io.github.zzzyyylllty.chotentech.data.Level
 import io.github.zzzyyylllty.chotentech.data.NoclipPoint
+import io.github.zzzyyylllty.chotentech.data.SanityLevelConfig
 import io.github.zzzyyylllty.chotentech.data.SurvivalDifficulty
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -21,6 +22,7 @@ import taboolib.common.platform.function.getDataFolder
 import taboolib.common.platform.function.info
 import taboolib.common.platform.function.releaseResourceFolder
 import taboolib.common.platform.function.severe
+import taboolib.library.configuration.ConfigurationSection
 import taboolib.module.configuration.Configuration
 import java.io.File
 import java.util.LinkedHashMap
@@ -136,7 +138,8 @@ fun loadLevel(root: String, config: Configuration) {
             cooldown = (map["cooldown"] ?: "5.0").toDouble(),
             noclippingTime = (map["time"] ?: "5.0").toDouble(),
             name = map["name"],
-            targetLevel = map["target"]
+            targetLevel = map["target"],
+            autoNoclip = map["autoNoclip"]?.equals("true", ignoreCase = true) == true
         ))
     }
 
@@ -176,6 +179,18 @@ fun loadLevel(root: String, config: Configuration) {
         isPlaceable = config.getBoolean("$root.isPlaceable"),
         guiMaterial = config.getString("$root.guiMaterial"),
         powers = (config.getList("$root.powers")?.toSet() as? Set<String>?) ?: emptySet(),
-        root
+        root,
+        config.getString("$root.music"),
+        dmz = config.getBoolean("$root.dmz"),
+        sanity = loadSanityConfig(config.getConfigurationSection("$root.sanity"))
+    )
+}
+
+private fun loadSanityConfig(section: ConfigurationSection?): SanityLevelConfig? {
+    if (section == null) return null
+    return SanityLevelConfig(
+        regen = section.getDouble("regen", 0.0),
+        min = section.getString("min", "40%") ?: "40%",
+        safe = section.getBoolean("safe", false),
     )
 }

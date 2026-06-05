@@ -18,7 +18,7 @@ import taboolib.common.platform.function.submitAsync
 import taboolib.library.xseries.XMaterial
 import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.Chest
-import taboolib.platform.util.buildItem
+import io.github.zzzyyylllty.chotentech.util.guiItem
 
 class CoolNumberConfirmMenu(
     private val info: CoolNumberInfo
@@ -60,9 +60,7 @@ class CoolNumberConfirmMenu(
             set('A', buildInfoItem(player, currentTier))
 
             // ── X (close) row 3, slot 0 ──
-            set('X', buildItem(XMaterial.BARRIER) {
-                name = "§c关闭"
-            }) {
+            set('X', guiItem(XMaterial.BARRIER, "<red>关闭")) {
                 clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
                 clicker.closeInventory()
                 CoolNumberMenu().open(clicker)

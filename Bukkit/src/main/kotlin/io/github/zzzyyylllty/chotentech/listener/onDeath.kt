@@ -20,6 +20,8 @@ fun onPlayerDeath(event: PlayerDeathEvent) {
     // 重置状态
     ChoTenDataHelper(player).resetSanity()
     ChoTenDataHelper(player).resetDarkness()
+    ChoTenDataHelper(player).resetExternalInjury()
+    ChoTenDataHelper(player).resetInternalInjury()
 
     // 清除原版掉落，使用自定义死亡掉落系统
     event.drops.clear()
@@ -29,6 +31,10 @@ fun onPlayerDeath(event: PlayerDeathEvent) {
 @SubscribeEvent
 fun onPlayerRespawn(event: PlayerRespawnEvent) {
     val data = playerDataMap[event.player.uniqueId.toString()]
+    if (data != null) {
+        data.customHunger = 80.0
+        data.customSaturation = 20.0
+    }
     val point = data?.respawnPoint
     if (point != null) {
         point.toLocation()?.let { event.respawnLocation = it }

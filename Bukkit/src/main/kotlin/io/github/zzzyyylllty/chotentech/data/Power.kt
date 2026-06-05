@@ -50,13 +50,64 @@ data class ObstacleConfig(
 
     val mode: ObstacleMode = ObstacleMode.RESTORE_BLOCKS,
 
-    /** 新增：缓慢开门动画配置 */
-    val sequentialConfig: ObstacleSequentialConfig = ObstacleSequentialConfig()
+    /** 缓慢开门动画配置 */
+    val sequentialConfig: ObstacleSequentialConfig = ObstacleSequentialConfig(),
+
+    /** 电梯门配置（仅 ELEVATOR_DOORS 模式） */
+    val elevatorConfig: ElevatorConfig? = null,
 ) {
     fun allBlocks(): List<Pos> {
         return cuboid?.toPositions() ?: blocks
     }
 }
+
+/** 电梯门配置 */
+data class ElevatorConfig(
+    /** 外按钮位置（呼叫开门） */
+    val externalButton: Pos,
+    /** 内按钮位置（关门切出 / 紧急开门） */
+    val internalButton: Pos,
+    /** 切出点名称 */
+    val noclipPointName: String,
+    /** 切出点范围检查用（两个对角线Pos） */
+    val noclipArea1: Pos,
+    val noclipArea2: Pos,
+    /** 无电源时内部按钮开门持续时间（秒） */
+    val doorOpenDurationSeconds: Int = 5,
+    /** 开门音效 */
+    val doorOpenSound: Sound? = Sound.BLOCK_IRON_TRAPDOOR_OPEN,
+    /** 关门音效 */
+    val doorCloseSound: Sound? = Sound.BLOCK_IRON_TRAPDOOR_CLOSE,
+    /** 开门动画粒子 */
+    val doorOpenParticle: Particle? = Particle.SMOKE,
+    /** 关门动画粒子 */
+    val doorCloseParticle: Particle? = Particle.SMOKE,
+    /** 音量和音高 */
+    val soundVolume: Float = 1.0f,
+    val soundPitch: Float = 1.0f,
+)
+
+/** 电梯运行时状态 */
+enum class ElevatorState {
+    /** 门关闭，等待中 */
+    IDLE,
+    /** 门正在打开 */
+    DOORS_OPENING,
+    /** 门已打开，等待玩家进入 */
+    DOORS_OPEN,
+    /** 门正在关闭 */
+    DOORS_CLOSING,
+    /** 正在切出中 */
+    NOCLIPPING
+}
+
+/** 电梯运行时的临时数据 */
+data class ElevatorRuntime(
+    val config: ElevatorConfig,
+    var state: ElevatorState = ElevatorState.IDLE,
+    var doorTask: Any? = null,
+    var noclipPlayers: MutableSet<String> = mutableSetOf(),
+)
 
 data class ObstacleSequentialConfig(
     val enabled: Boolean = true,
@@ -87,7 +138,10 @@ enum class ObstacleMode {
     RESTORE_BLOCKS,
 
     /** 拉闸后：适用于门类方块，直接打开 */
-    OPEN_DOOR
+    OPEN_DOOR,
+
+    /** 电梯门：电源激活后外按钮开门，内按钮关门切出，无电源时内按钮短暂开门 */
+    ELEVATOR_DOORS
 }
 fun sortPositionsByDirection(
     positions: List<Pos>,

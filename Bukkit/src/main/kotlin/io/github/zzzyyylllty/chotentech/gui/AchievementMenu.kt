@@ -10,7 +10,7 @@ import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import taboolib.library.xseries.XMaterial
-import taboolib.platform.util.buildItem
+import io.github.zzzyyylllty.chotentech.util.guiItem
 import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.PageableChest
 import java.text.SimpleDateFormat
@@ -43,14 +43,7 @@ class AchievementMenu {
                 "         "
             )
 
-            set('C', buildItem(XMaterial.COMPASS) {
-                name = "§b§l菜单"
-                lore += "§7点击打开菜单"
-            }.apply {
-                val m = itemMeta ?: return@apply
-                m.itemModel = NamespacedKey.fromString("kangelitem:void")
-                setItemMeta(m)
-            }) {
+            set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>菜单", listOf("<gray>点击打开菜单"), model = "kangelitem:void")) {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "invero menu open menu ${clicker.name}")
                 clicker.closeInventory()
             }

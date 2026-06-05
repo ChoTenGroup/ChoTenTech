@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap
 private val stressBossBars = ConcurrentHashMap<UUID, BossBar>()
 
 @Awake(LifeCycle.ACTIVE)
-fun stressTimer() {
+fun stressesTimer() {
     val interval = config.getLong("stress.interval", 40L)
     val maxStressGain = config.getDouble("stress.max-stress-gain", 2.0)
     val maxStressReduce = config.getDouble("stress.max-stress-reduce", 1.0)
@@ -66,7 +66,7 @@ fun stressTimer() {
                     bar.addViewer(player)
                     stressBossBars[uuid] = bar
                 }
-                bar.progress((data.sanity / data.maxSanity).toFloat().coerceIn(0f, 1f))
+                bar.progress((data.sanity / data.effectiveMaxSanity).toFloat().coerceIn(0f, 1f))
             } else {
                 removeStressBossBar(player, uuid)
             }
@@ -74,11 +74,6 @@ fun stressTimer() {
             // 极度黑暗环境额外掉精神
             if (lightLevel <= 3 && stressChange > 0) {
                 ChoTenDataHelper(player).removeSanity(darkSanityDrain)
-            }
-
-            // 基地外压力低时精神缓慢回复至 40
-            if (data.stress <= 10.0 && data.sanity < 40.0) {
-                ChoTenDataHelper(player).addSanity(1.0)
             }
         }
 
@@ -100,7 +95,7 @@ private fun removeStressBossBar(player: Player, uuid: UUID) {
 
 /** 玩家退出时主动清理 BossBar，防止重连后残留 */
 @SubscribeEvent
-fun onPlayerQuitClearBossBar(event: PlayerQuitEvent) {
+fun onPlayerQuitClearBossbar(event: PlayerQuitEvent) {
     val uuid = event.player.uniqueId
     stressBossBars.remove(uuid) // 直接清理缓存，定时器 cleanup 会处理 viewer
 }

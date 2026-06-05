@@ -7,7 +7,6 @@ import io.github.zzzyyylllty.chotentech.util.minimessage.mmJsonUtil
 import io.github.zzzyyylllty.chotentech.util.toComponent
 import org.bukkit.Bukkit
 import org.bukkit.Material
-import org.bukkit.NamespacedKey
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -15,7 +14,7 @@ import taboolib.library.xseries.XMaterial
 import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.Chest
 import taboolib.module.ui.type.PageableChest
-import taboolib.platform.util.buildItem
+import io.github.zzzyyylllty.chotentech.util.guiItem
 
 class FactionSelectMenu {
 
@@ -121,14 +120,7 @@ class FactionSelectMenu {
                 "         "
             )
 
-            set('C', buildItem(XMaterial.COMPASS) {
-                name = "§b§l菜单"
-                lore += "§7点击打开菜单"
-            }.apply {
-                val m = itemMeta ?: return@apply
-                m.itemModel = NamespacedKey.fromString("kangelitem:void")
-                setItemMeta(m)
-            }) {
+            set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>菜单", listOf("<gray>点击打开菜单"), model = "kangelitem:void")) {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "invero menu open menu ${clicker.name}")
                 clicker.closeInventory()
             }
@@ -165,23 +157,11 @@ class FactionSelectMenu {
             }
 
             setPreviousPage(7) { _, page ->
-                buildItem(XMaterial.ARROW) {
-                    name = "§a上一页"
-                }.apply {
-                    val m = itemMeta ?: return@apply
-                    m.itemModel = NamespacedKey.fromString(if (page) "kangelitem:previous" else "kangelitem:previous_no")
-                    setItemMeta(m)
-                }
+                guiItem(XMaterial.ARROW, "<green>上一页", model = if (page) "kangelitem:previous" else "kangelitem:previous_no")
             }
 
             setNextPage(8) { _, page ->
-                buildItem(XMaterial.ARROW) {
-                    name = "§a下一页"
-                }.apply {
-                    val m = itemMeta ?: return@apply
-                    m.itemModel = NamespacedKey.fromString(if (page) "kangelitem:next" else "kangelitem:next_no")
-                    setItemMeta(m)
-                }
+                guiItem(XMaterial.ARROW, "<green>下一页", model = if (page) "kangelitem:next" else "kangelitem:next_no")
             }
         }
     }

@@ -28,7 +28,26 @@
       "Bash(JAVA_HOME=\"C:/Program Files/Eclipse Adoptium/jdk-21.0.11+10\" ./gradlew build)",
       "Bash(JAVA_HOME=\"C:/Program Files/Eclipse Adoptium/jdk-21.0.11+10\" ./gradlew compileKotlin)",
       "Bash(JAVA_HOME=\"C:/Program Files/Eclipse Adoptium/jdk-21.0.11+10\" jar tf build/libs/*.jar)",
-      "*"
+      "*",
+      "Bash(chmod +x gradlew)",
+      "Bash(./gradlew *)",
+      "Bash(export JAVA_HOME=\"C:\\\\Program Files\\\\Eclipse Adoptium\\\\jdk-21.0.11+10\")",
+      "Bash(Get-ChildItem -Path E:\\\\ChoTenTechbk\\\\Bukkit -Recurse -Depth 0)",
+      "Bash(Select-Object FullName, Mode)",
+      "PowerShell(New-Item *)",
+      "Read(//mnt/e/ChoTenTechbk/**)",
+      "Bash(export JAVA_HOME=\"/mnt/c/Program Files/Eclipse Adoptium/jdk-21.0.11+10\")",
+      "Bash(export PATH=\"$JAVA_HOME/bin:$PATH\")",
+      "Read(//mnt/**)",
+      "Bash(cmd.exe /c \"echo %CD%\")",
+      "Bash(export JAVA_HOME=\"/c/Program Files/Eclipse Adoptium/jdk-21.0.11+10\")",
+      "mcp__ide__getDiagnostics",
+      "Bash(set JAVA_HOME=E:\\\\jdk-21)",
+      "Bash(E:\\\\jdk-21\\\\bin\\\\java -version)",
+      "Bash(git checkout *)",
+      "Bash(JAVA_HOME=E:/jdk-21 ./gradlew compileKotlin)",
+      "Bash(JAVA_HOME=E:/jdk-21 ./gradlew compileKotlin --no-daemon)",
+      "Bash(JAVA_HOME=E:/jdk-21 ./gradlew compileKotlin --info)"
     ]
   }
 }

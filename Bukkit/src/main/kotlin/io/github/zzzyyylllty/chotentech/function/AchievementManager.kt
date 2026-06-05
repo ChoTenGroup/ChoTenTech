@@ -5,6 +5,7 @@ import io.github.zzzyyylllty.chotentech.data.Achievement
 import io.github.zzzyyylllty.chotentech.data.AchievementProgress
 import io.github.zzzyyylllty.chotentech.data.Criterion
 import io.github.zzzyyylllty.chotentech.data.Operator
+import io.github.zzzyyylllty.chotentech.util.NotificationQueue
 import io.github.zzzyyylllty.chotentech.util.devLog
 import me.clip.placeholderapi.PlaceholderAPI
 import org.bukkit.Bukkit
@@ -82,6 +83,7 @@ object AchievementManager {
 
     fun unload() {
         stopAutoCheck()
+        NotificationQueue.clearAll()
         achievements.clear()
         categories.clear()
     }
@@ -156,7 +158,7 @@ object AchievementManager {
                     completedTime = System.currentTimeMillis()
                 )
                 devLog("[成就] 玩家 ${player.name} 自动完成成就: ${achievement.name}")
-                player.sendMessage("§a[成就] 恭喜你完成了成就: §e${achievement.name}§a！")
+                NotificationQueue.enqueue(player.uniqueId, "<green>[成就] 恭喜你完成了成就: <yellow>${achievement.name}<green>！")
             }
         }
     }

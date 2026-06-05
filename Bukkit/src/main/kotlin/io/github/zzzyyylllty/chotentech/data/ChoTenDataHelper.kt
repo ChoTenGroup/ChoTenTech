@@ -11,6 +11,8 @@ import io.github.zzzyyylllty.chotentech.util.jsonUtils
 import io.github.zzzyyylllty.chotentech.util.toComponent
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor.RED
+import net.kyori.adventure.key.Key as AdventureKey
+import net.kyori.adventure.sound.Sound as AdventureSound
 import net.kyori.adventure.title.Title
 import org.bukkit.Bukkit
 import org.bukkit.Chunk
@@ -574,7 +576,7 @@ class ChoTenDataHelper(val player: Player) {
     val data = playerDataMap[player.uniqueId.toString()] ?: DataManager.initData(player)
 
     fun addSanity(amount: Double) {
-        data.sanity = minOf(maxOf(data.sanity + amount, 0.0), data.maxSanity)
+        data.sanity = minOf(maxOf(data.sanity + amount, 0.0), data.effectiveMaxSanity)
     }
 
     fun removeSanity(amount: Double) {
@@ -582,15 +584,15 @@ class ChoTenDataHelper(val player: Player) {
     }
 
     fun setSanity(amount: Double) {
-        data.sanity = minOf(maxOf(amount, 0.0), data.maxSanity)
+        data.sanity = minOf(maxOf(amount, 0.0), data.effectiveMaxSanity)
     }
 
     fun fullSanity() {
-        data.sanity = data.maxSanity
+        data.sanity = data.effectiveMaxSanity
     }
 
     fun resetSanity() {
-        data.sanity = minOf(maxOf(config.getDouble("default.sanity", 40.0), 0.0), data.maxSanity)
+        data.sanity = minOf(maxOf(config.getDouble("default.sanity", 40.0), 0.0), data.effectiveMaxSanity)
     }
 
     fun addMaxSanity(amount: Double) {
@@ -607,6 +609,22 @@ class ChoTenDataHelper(val player: Player) {
 
     fun resetMaxSanity() {
         data.maxSanity = maxOf(config.getDouble("default.max-sanity", 100.0), 0.0)
+    }
+
+    fun addSanityRegeneration(amount: Double) {
+        data.sanityRegeneration = maxOf(data.sanityRegeneration + amount, 0.0)
+    }
+
+    fun removeSanityRegeneration(amount: Double) {
+        data.sanityRegeneration = maxOf(data.sanityRegeneration - amount, 0.0)
+    }
+
+    fun setSanityRegeneration(amount: Double) {
+        data.sanityRegeneration = maxOf(amount, 0.0)
+    }
+
+    fun resetSanityRegeneration() {
+        data.sanityRegeneration = maxOf(config.getDouble("default.sanity-regen", 0.0), 0.0)
     }
 
     fun addStress(amount: Double) {
@@ -626,7 +644,7 @@ class ChoTenDataHelper(val player: Player) {
     }
 
     fun addDarkness(amount: Double) {
-        data.darkness = minOf(maxOf(data.darkness + amount, 0.0), data.maxDarkness)
+        data.darkness = minOf(maxOf(data.darkness + amount, 0.0), data.effectiveMaxDarkness)
     }
 
     fun removeDarkness(amount: Double) {
@@ -634,15 +652,15 @@ class ChoTenDataHelper(val player: Player) {
     }
 
     fun setDarkness(amount: Double) {
-        data.darkness = minOf(maxOf(amount, 0.0), data.maxDarkness)
+        data.darkness = minOf(maxOf(amount, 0.0), data.effectiveMaxDarkness)
     }
 
     fun fullDarkness() {
-        data.darkness = data.maxDarkness
+        data.darkness = data.effectiveMaxDarkness
     }
 
     fun resetDarkness() {
-        data.darkness = minOf(maxOf(config.getDouble("default.darkness", 15.0), 0.0), data.maxDarkness)
+        data.darkness = minOf(maxOf(config.getDouble("default.darkness", 15.0), 0.0), data.effectiveMaxDarkness)
     }
 
     fun addMaxDarkness(amount: Double) {
@@ -717,5 +735,47 @@ class ChoTenDataHelper(val player: Player) {
 
     fun clearAllStatusEffects() {
         data.statusEffects.clear()
+    }
+
+    // 外伤
+    fun addExternalInjury(amount: Double) {
+        data.externalInjury = minOf(data.externalInjury + amount, data.effectiveMaxExternalInjury)
+    }
+    fun removeExternalInjury(amount: Double) {
+        data.externalInjury = maxOf(data.externalInjury - amount, 0.0)
+    }
+    fun setExternalInjury(amount: Double) {
+        data.externalInjury = amount.coerceIn(0.0, data.effectiveMaxExternalInjury)
+    }
+    fun resetExternalInjury() {
+        data.externalInjury = data.effectiveMaxExternalInjury
+    }
+
+    // 内伤
+    fun addInternalInjury(amount: Double) {
+        data.internalInjury = minOf(data.internalInjury + amount, data.effectiveMaxInternalInjury)
+    }
+    fun removeInternalInjury(amount: Double) {
+        data.internalInjury = maxOf(data.internalInjury - amount, 0.0)
+    }
+    fun setInternalInjury(amount: Double) {
+        data.internalInjury = amount.coerceIn(0.0, data.effectiveMaxInternalInjury)
+    }
+    fun resetInternalInjury() {
+        data.internalInjury = data.effectiveMaxInternalInjury
+    }
+
+    fun playLevelMusic() {
+        val level = data.activeLevel ?: return
+        val music = level.music ?: return
+        val now = System.currentTimeMillis()
+        if (data.musicReplayDelay == 0L) {
+            data.musicReplayDelay = (120000L..300000L).random()
+        }
+        if (now - data.lastMusicPlayTime < data.musicReplayDelay) return
+        data.lastMusicPlayTime = now
+        data.musicReplayDelay = (120000L..300000L).random()
+        val soundKey = if (music.contains(':')) music else "kangelsound:$music"
+        player.playSound(AdventureSound.sound(AdventureKey.key(soundKey), AdventureSound.Source.MUSIC, 1f, 1f))
     }
 }

@@ -1,5 +1,7 @@
 package io.github.zzzyyylllty.chotentech.feature
 
+import io.github.zzzyyylllty.chotentech.attribute.api.ChoTenAttributeAPI
+import io.github.zzzyyylllty.chotentech.attribute.api.ChoTenAttributeAPIImpl
 import io.github.zzzyyylllty.chotentech.data.ChoTenDataHelper
 import io.github.zzzyyylllty.sertraline.data.defaultData
 import io.github.zzzyyylllty.sertraline.event.SertralineCustomScriptDataLoadEvent
@@ -17,6 +19,7 @@ fun registerFeatures() {
     defaultData["ChoTenManager"] = java.util.function.Function<Player, ChoTenDataHelper> { player ->
         ChoTenDataHelper(player)
     }
+    defaultData["ChoTenAttributeAPI"] = ChoTenAttributeAPIImpl()
 }
 
 

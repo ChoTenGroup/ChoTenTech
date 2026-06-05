@@ -39,20 +39,39 @@ object ExamplePapiHook : PlaceholderExpansion {
                 return "$first $last"
             }
             "sanity" -> return (round((player?.getData()?.sanity ?: 0.0)*100)/100).toString()
-            "maxsanity" -> return (round((player?.getData()?.maxSanity ?: 0.0)*100)/100).toString()
+            "maxsanity" -> return (round((player?.getData()?.effectiveMaxSanity ?: 0.0)*100)/100).toString()
+            "sanityregen" -> return (round((player?.getData()?.effectiveSanityRegeneration ?: 0.0)*100)/100).toString()
             "darkness" -> return (round((player?.getData()?.darkness ?: 0.0)*100)/100).toString()
-            "maxdarkness" -> return (round((player?.getData()?.maxDarkness ?: 0.0)*100)/100).toString()
+            "maxdarkness" -> return (round((player?.getData()?.effectiveMaxDarkness ?: 0.0)*100)/100).toString()
             "hppercent" -> return player?.let { (it.health/(it.getAttribute(Attribute.MAX_HEALTH)?.value ?: 20.0)*100).toString() } ?: "50"
             "sanpercent" -> {
                 val data = player?.getData() ?: return "0"
                 val current = data.sanity
-                val max = data.maxSanity
+                val max = data.effectiveMaxSanity
                 return (current/max*100).toString()
             }
             "darkpercent" -> {
                 val data = player?.getData() ?: return "0"
                 val current = data.darkness
-                val max = data.maxDarkness
+                val max = data.effectiveMaxDarkness
+                return (current/max*100).toString()
+            }
+            "externalinjury" -> return (round((player?.getData()?.externalInjury ?: 0.0)*100)/100).toString()
+            "maxexternalinjury" -> return (round((player?.getData()?.effectiveMaxExternalInjury ?: 0.0)*100)/100).toString()
+            "externalinjurypercent" -> {
+                val data = player?.getData() ?: return "100"
+                val current = data.externalInjury
+                val max = data.effectiveMaxExternalInjury
+                if (max <= 0) return "100"
+                return (current/max*100).toString()
+            }
+            "internalinjury" -> return (round((player?.getData()?.internalInjury ?: 0.0)*100)/100).toString()
+            "maxinternalinjury" -> return (round((player?.getData()?.effectiveMaxInternalInjury ?: 0.0)*100)/100).toString()
+            "internalinjurypercent" -> {
+                val data = player?.getData() ?: return "100"
+                val current = data.internalInjury
+                val max = data.effectiveMaxInternalInjury
+                if (max <= 0) return "100"
                 return (current/max*100).toString()
             }
             "formatted" -> return player?.let { "%${args.removePrefix("formatted_")}%".replacePlaceholder(it).numberFormat() } ?: "1"
@@ -204,46 +223,24 @@ object ExamplePapiHook : PlaceholderExpansion {
 }
 
 fun getPercentHunger(player: Player): Double {
-    val food = player.foodLevel.toDouble()       // 0 to 20
-    val saturation = player.saturation.toDouble() // 0 to 20 (Float in NMS)
-    val exhaustion = player.exhaustion.toDouble() // 0 to 4.0
+    val data = player.getData() ?: return 100.0
+    val max = data.maxCustomHunger
+    if (max <= 0.0) return 100.0
 
-    // 1. 计算基础分数
-    val foodValue = food * 3.5
-    val saturationValue = saturation * 1.5
-    val baseValue = foodValue + saturationValue
+    // Blend customHunger (70%) and customSaturation (30%) into a 0-100 display
+    val hungerScore = (data.customHunger / max).coerceIn(0.0, 1.0) * 70.0
+    val saturationScore = (data.customSaturation / max).coerceIn(0.0, 1.0) * 30.0
+    val base = hungerScore + saturationScore
 
-    // 2. 计算消耗度（Exhaustion）即将扣除的价值
-    // 根据 MC 机制，消耗度满 4.0 时执行扣除
-    val currentExhaustionRatio = (exhaustion / 4.0)
-
-    val penalty = when {
-        // 情况 A：饱和度大于或等于 1
-        // 消耗度达到 4 时，会扣除 1.0 饱和度（价值 1.5）
-        saturation >= 1.0 -> {
-            currentExhaustionRatio * 1.5
-        }
-
-        // 情况 B：饱和度在 0 到 1 之间
-        // 消耗度达到 4 时，只会把剩余的饱和度扣完，不会扣饥饿值
-        // 所以这 4 点消耗度的总价值仅等于剩余饱和度的价值
-        saturation > 0.0 -> {
-            currentExhaustionRatio * (saturation * 1.5)
-        }
-
-        // 情况 C：饱和度已经为 0
-        // 消耗度达到 4 时，会扣除 1 点饥饿值（价值 3.5）
-        else -> {
-            currentExhaustionRatio * 3.5
-        }
+    // Subtract pending consumption's effective drain
+    val consumptionRatio = (data.consumption / 100.0).coerceIn(0.0, 1.0)
+    val penalty = if (data.customSaturation >= 5.0) {
+        consumptionRatio * data.consumption * 0.015
+    } else {
+        consumptionRatio * data.consumption * 0.014
     }
 
-    // 3. 最终得分 = (饥饿+饱和) - 正在消耗的分值
-    val result = baseValue - penalty
-
-    // 理论上由于 saturation <= foodLevel，最大值为 20*3.5 + 20*1.5 = 100.0
-    // 最小值为 0.0
-    return result.coerceIn(0.0, 100.0)
+    return (base - penalty).coerceIn(0.0, 100.0)
 }
 
 fun String.numberFormat(): String {

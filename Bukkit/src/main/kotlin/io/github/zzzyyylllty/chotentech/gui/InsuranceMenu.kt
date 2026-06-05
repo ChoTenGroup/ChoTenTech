@@ -16,7 +16,7 @@ import io.github.zzzyyylllty.chotentech.util.minimessage.mmJsonUtil
 import io.github.zzzyyylllty.chotentech.util.toComponent
 import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.Chest
-import taboolib.platform.util.buildItem
+import io.github.zzzyyylllty.chotentech.util.guiItem
 
 class InsuranceMenu {
 
@@ -35,45 +35,35 @@ class InsuranceMenu {
                 " B  C  B "
             )
 
-            set('C', buildItem(XMaterial.COMPASS) {
-                name = "§b§l菜单"
-                lore += "§7点击打开菜单"
-            }.apply {
-                val m = itemMeta ?: return@apply
-                m.itemModel = NamespacedKey.fromString("kangelitem:void")
-                setItemMeta(m)
-            }) {
+            set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>菜单", listOf("<gray>点击打开菜单"), model = "kangelitem:void")) {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "invero menu open menu ${clicker.name}")
                 clicker.closeInventory()
             }
 
             onBuild { _, inv ->
                 // Left info (slot 46)
-                inv.setItem(46, buildItem(XMaterial.BOOK) {
-                    name = "§6投保说明"
-                    lore += "§7将工具或盔甲放入中间格子"
-                    lore += "§7点击 §6[确认投保] §7完成投保"
-                    lore += "§7仅工具和盔甲可以投保"
-                    lore += "§7投保物品死亡不掉落"
-                })
+                inv.setItem(46, guiItem(XMaterial.BOOK, "<gold>投保说明", listOf(
+                    "<gray>将工具或盔甲放入中间格子",
+                    "<gray>点击 <gold>[确认投保] <gray>完成投保",
+                    "<gray>仅工具和盔甲可以投保",
+                    "<gray>投保物品死亡不掉落"
+                )))
 
                 // Right info — price list (slot 52)
-                inv.setItem(52, buildItem(XMaterial.GOLD_INGOT) {
-                    name = "§e价格表"
-                    val tiers = config.getConfigurationSection("insurance.tiers")
-                    if (tiers != null) {
-                        for (key in tiers.getKeys(false)) {
-                            lore += "§7$key: §6${tiers.getDouble(key, 0.0).toLong()}"
-                        }
+                val priceLore = mutableListOf<String>()
+                val tiers = config.getConfigurationSection("insurance.tiers")
+                if (tiers != null) {
+                    for (key in tiers.getKeys(false)) {
+                        priceLore += "<gray>$key: <gold>${tiers.getDouble(key, 0.0).toLong()}"
                     }
-                })
+                }
+                inv.setItem(52, guiItem(XMaterial.GOLD_INGOT, "<yellow>价格表", priceLore))
 
                 // Confirm button (slot 49)
-                inv.setItem(49, buildItem(XMaterial.ANVIL) {
-                    name = "§6■ 确认投保"
-                    lore += "§7投保中间区域的所有物品"
-                    lore += "§7点击后自动返还无法投保的物品"
-                })
+                inv.setItem(49, guiItem(XMaterial.ANVIL, "<gold>■ 确认投保", listOf(
+                    "<gray>投保中间区域的所有物品",
+                    "<gray>点击后自动返还无法投保的物品"
+                )))
             }
 
             // Deposit slots: allow free interaction
