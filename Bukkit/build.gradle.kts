@@ -61,6 +61,7 @@ taboolib {
 }
 
 repositories {
+    mavenCentral()
 
     maven {
         url = uri("https://repo.opencollab.dev/main/")
@@ -69,7 +70,6 @@ repositories {
     maven("https://maven.enginehub.org/repo/")
     maven("https://maven.aliyun.com/repository/google")
     maven("https://repo.fancyinnovations.com/releases")
-    mavenCentral()
     jcenter()
     google()
     mavenLocal()
@@ -129,6 +129,7 @@ repositories {
     maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
     maven("https://repo.codemc.org/repository/maven-public")
     maven("https://repo.rosewooddev.io/repository/public/")
+    maven("https://repo.gtemc.net/releases/")
     maven("https://repo.opencollab.dev/main/")
     maven("https://nexus.phoenixdevt.fr/repository/maven-public/")
     maven("https://r.irepo.space/maven/")
@@ -158,8 +159,9 @@ repositories {
 }
 
 dependencies {
+    implementation("io.github.zzzyyylllty.sertraline:common:3.9.0.3")
     compileOnly("org.geysermc.floodgate:api:2.2.4-SNAPSHOT")
-    implementation("com.github.zzzyyylllty:Sertraline-Hydrochloride:3.8.2")
+//    compileOnly(files("$rootDir/libs/Se-common-3.8.19.4-api.jar"))
     compileOnly("de.oliver:FancyNpcs:2.7.0")
     compileOnly("ink.ptms.chemdah:api:1.1.17")
     compileOnly("net.luckperms:api:5.4")
@@ -172,6 +174,14 @@ dependencies {
     implementation("net.kyori:adventure-text-minimessage:4.19.0")
     compileOnly("com.google.code.gson:gson:2.10.1")
     implementation("me.clip:placeholderapi:2.11.6")
+    // Jackson (compileOnly — loaded at runtime via TabooLib META-INF/dependencies)
+    compileOnly("com.fasterxml.jackson.core:jackson-databind:2.16.1")
+    compileOnly("com.fasterxml.jackson.core:jackson-annotations:2.16.1")
+    compileOnly("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.16.1")
+    compileOnly("com.fasterxml.jackson.dataformat:jackson-dataformat-toml:2.16.1")
+    compileOnly("com.fasterxml.jackson.module:jackson-module-kotlin:2.16.1")
+    // ItemBridge (optional)
+    compileOnly("cn.gtemc:itembridge:1.0.17")
     implementation("com.sk89q.worldguard:worldguard-bukkit:7.0.10-SNAPSHOT")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7") { isTransitive = false }
     compileOnly(kotlin("stdlib"))

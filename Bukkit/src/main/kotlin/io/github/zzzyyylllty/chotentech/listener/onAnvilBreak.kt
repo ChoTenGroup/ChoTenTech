@@ -31,6 +31,7 @@ fun onTakeLecternBook(event: PlayerTakeLecternBookEvent) {
 fun onFlowerPotManipulate(event: PlayerFlowerPotManipulateEvent) {
 
     val player = event.player
+
     if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) return
     event.isCancelled = true
 

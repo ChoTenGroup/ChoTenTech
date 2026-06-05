@@ -1,7 +1,11 @@
 package io.github.zzzyyylllty.chotentech.listener
 
+import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
+import io.github.zzzyyylllty.chotentech.function.player.getPlayerLevel
+import io.github.zzzyyylllty.chotentech.player.sendComponent
 import io.github.zzzyyylllty.chotentech.util.minimessage.mmUtil
 import net.kyori.adventure.text.minimessage.MiniMessage
+import org.bukkit.GameMode
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityDamageByEntityEvent
@@ -10,9 +14,33 @@ import taboolib.common.platform.event.SubscribeEvent
 @SubscribeEvent
 fun onPlayerAttack(event: EntityDamageByEntityEvent) {
     val player = event.damager as? Player ?: return
+    if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) return
+
+    // DMZ PvP check
     val target = event.entity as? LivingEntity ?: return
+    if (target is Player && target !== player) {
+        val level = player.getPlayerLevel()
+        if (level?.dmz == true) {
+            val attackerData = playerDataMap[player.uniqueId.toString()]
+            val victimData = playerDataMap[target.uniqueId.toString()]
+            val attackerPvp = attackerData?.pvpEnabled == true
+            val victimPvp = victimData?.pvpEnabled == true
+            if (!attackerPvp || !victimPvp) {
+                event.isCancelled = true
+                if (!attackerPvp) {
+                    player.sendComponent("<red>你处于非军事区，需要开启PVP模式才能攻击玩家。使用 <yellow>/pvp <red>开启")
+                } else {
+                    player.sendComponent("<red>对方未开启PVP模式，无法攻击。")
+                }
+                return
+            }
+        }
+    }
 
     if (target === player) return
+
+    // Add consumption for attacking
+    playerDataMap[player.uniqueId.toString()]?.let { it.consumption += 5.0 }
 
     val damage = event.finalDamage
     val currentHealth = target.health

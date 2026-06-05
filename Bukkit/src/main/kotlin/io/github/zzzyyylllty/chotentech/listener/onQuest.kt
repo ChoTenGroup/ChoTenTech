@@ -3,7 +3,7 @@ package io.github.zzzyyylllty.chotentech.listener
 import ink.ptms.chemdah.api.event.collect.ObjectiveEvents
 import ink.ptms.chemdah.api.event.collect.QuestEvents
 import ink.ptms.chemdah.core.quest.meta.MetaName
-import io.github.zzzyyylllty.chotentech.player.sendComponent
+import io.github.zzzyyylllty.chotentech.util.NotificationQueue
 import io.github.zzzyyylllty.chotentech.util.minimessage.legacyToMiniMessage
 import io.github.zzzyyylllty.chotentech.util.toComponent
 import net.kyori.adventure.title.Title
@@ -43,5 +43,10 @@ fun onTaskComplete(e: ObjectiveEvents.Complete.Post) {
     val quest = e.quest
     val task = e.task
     player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, SoundCategory.MASTER, 1f, 1.2f)
-    player.sendComponent("<gray>任务 <white>${quest.template.meta<MetaName>("name")?.displayName?.legacyToMiniMessage()}<reset> <gray>的 <white>${task.meta<MetaName>("name")?.displayName?.legacyToMiniMessage()}<reset><gray> 目标已完成。")
+    val questName = quest.template.meta<MetaName>("name")?.displayName?.legacyToMiniMessage() ?: "Unknown"
+    val taskName = task.meta<MetaName>("name")?.displayName?.legacyToMiniMessage() ?: "Unknown"
+    NotificationQueue.enqueue(
+        player.uniqueId,
+        "<gray>任务 <white>$questName<reset> <gray>的 <white>$taskName<reset><gray> 目标已完成。"
+    )
 }

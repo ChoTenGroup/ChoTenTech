@@ -24,7 +24,7 @@ import taboolib.library.xseries.XMaterial
 import taboolib.module.chat.colored
 import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.PageableChest
-import taboolib.platform.util.buildItem
+import io.github.zzzyyylllty.chotentech.util.guiItem
 
 import kotlin.collections.toList
 import kotlin.math.roundToInt
@@ -52,14 +52,7 @@ class QuestMenu {
             // 设置可用槽位（通过字符）
             slotsBy('@')
 
-            set('C', buildItem(XMaterial.COMPASS) {
-                name = "§b§l菜单"
-                lore += "§7点击打开菜单"
-            }.apply {
-                val m = itemMeta ?: return@apply
-                m.itemModel = NamespacedKey.fromString("kangelitem:void")
-                setItemMeta(m)
-            }) {
+            set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>菜单", listOf("<gray>点击打开菜单"), model = "kangelitem:void")) {
 
                 player.playSound(player.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
                 player.closeInventory()
@@ -141,24 +134,12 @@ class QuestMenu {
 
             // 设置上一页按钮
             setPreviousPage(7) { _, page ->
-                buildItem(XMaterial.ARROW) {
-                    name = "§a上一页"
-                }.apply {
-                    val m = itemMeta ?: return@apply
-                    m.itemModel = NamespacedKey.fromString(if (page) "kangelitem:previous" else "kangelitem:previous_no")
-                    setItemMeta(m)
-                }
+                guiItem(XMaterial.ARROW, "<green>上一页", model = if (page) "kangelitem:previous" else "kangelitem:previous_no")
             }
 
             // 设置下一页按钮
             setNextPage(8) { _, page ->
-                buildItem(XMaterial.ARROW) {
-                    name = "§a下一页"
-                }.apply {
-                    val m = itemMeta ?: return@apply
-                    m.itemModel = NamespacedKey.fromString(if (page) "kangelitem:next" else "kangelitem:next_no")
-                    setItemMeta(m)
-                }
+                guiItem(XMaterial.ARROW, "<green>下一页", model = if (page) "kangelitem:next" else "kangelitem:next_no")
             }
 
 

@@ -17,5 +17,6 @@ data class NoclipPoint(
     val noclippingTime: Double = 10.0,
     val name: String?,
     val targetLevel: String?,
+    val autoNoclip: Boolean = false, // 是否自动切出（无需蹲下）
 ){
 }

@@ -101,7 +101,10 @@ private fun loadObstacles(section: ConfigurationSection): List<ObstacleConfig> {
             ),
             sequentialConfig = loadSequentialConfig(
                 obstacleSection.getConfigurationSection("sequentialConfig")
-            )
+            ),
+            elevatorConfig = if (obstacleSection.getString("mode") == "ELEVATOR_DOORS") {
+                loadElevatorConfig(obstacleSection.getConfigurationSection("elevator"))
+            } else null
         )
     }
 }
@@ -200,4 +203,30 @@ private fun ConfigurationSection.requirePos(path: String): Pos {
 private inline fun <reified T : Enum<T>> parseEnum(value: String?, default: T): T {
     if (value.isNullOrBlank()) return default
     return runCatching { enumValueOf<T>(value.uppercase()) }.getOrElse { default }
+}
+
+private fun loadElevatorConfig(section: ConfigurationSection?): ElevatorConfig? {
+    if (section == null) return null
+    return ElevatorConfig(
+        externalButton = section.requirePos("externalButton"),
+        internalButton = section.requirePos("internalButton"),
+        noclipPointName = section.requireString("noclipPointName"),
+        noclipArea1 = section.requirePos("noclipArea1"),
+        noclipArea2 = section.requirePos("noclipArea2"),
+        doorOpenDurationSeconds = section.getInt("doorOpenDurationSeconds", 5),
+        doorOpenSound = section.getString("doorOpenSound")?.let {
+            NamespacedKey.fromString(it)?.let { k -> Registry.SOUNDS.get(k) }
+        } ?: Sound.BLOCK_IRON_TRAPDOOR_OPEN,
+        doorCloseSound = section.getString("doorCloseSound")?.let {
+            NamespacedKey.fromString(it)?.let { k -> Registry.SOUNDS.get(k) }
+        } ?: Sound.BLOCK_IRON_TRAPDOOR_CLOSE,
+        doorOpenParticle = section.getString("doorOpenParticle")?.let {
+            runCatching { Particle.valueOf(it.uppercase()) }.getOrNull()
+        } ?: Particle.SMOKE,
+        doorCloseParticle = section.getString("doorCloseParticle")?.let {
+            runCatching { Particle.valueOf(it.uppercase()) }.getOrNull()
+        } ?: Particle.SMOKE,
+        soundVolume = section.getDouble("soundVolume", 1.0).toFloat(),
+        soundPitch = section.getDouble("soundPitch", 1.0).toFloat(),
+    )
 }

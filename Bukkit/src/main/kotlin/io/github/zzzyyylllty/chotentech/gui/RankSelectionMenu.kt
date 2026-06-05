@@ -6,7 +6,6 @@ import io.github.zzzyyylllty.chotentech.function.RankManager
 import io.github.zzzyyylllty.chotentech.util.minimessage.mmJsonUtil
 import io.github.zzzyyylllty.chotentech.util.toComponent
 import org.bukkit.Material
-import org.bukkit.NamespacedKey
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -14,7 +13,7 @@ import taboolib.library.xseries.XMaterial
 import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.Chest
 import taboolib.module.ui.type.PageableChest
-import taboolib.platform.util.buildItem
+import io.github.zzzyyylllty.chotentech.util.guiItem
 
 class RankSelectionMenu {
 
@@ -45,11 +44,7 @@ class RankSelectionMenu {
                 val activeId = data.activeRanks[type]
                 val activeName = RankManager.ranks[type]?.get(activeId)?.name ?: "无"
 
-                set(slot, buildItem(XMaterial.BOOK) {
-                    name = "§6$type"
-                    lore += "§7当前: §f$activeName"
-                    lore += "§a点击查看"
-                }) {
+                set(slot, guiItem(XMaterial.BOOK, "<gold>$type", listOf("<gray>当前: <white>$activeName", "<green>点击查看"))) {
                     clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
                     openRankList(clicker, type)
                 }
@@ -107,31 +102,17 @@ class RankSelectionMenu {
                 p.playSound(p.location, Sound.ITEM_BOOK_PAGE_TURN, 1f, 1f)
             }
 
-            set('B', buildItem(XMaterial.COMPASS) {
-                name = "§6返回"
-            }) {
+            set('B', guiItem(XMaterial.COMPASS, "<gold>返回")) {
                 clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
                 open(clicker)
             }
 
             setPreviousPage(7) { _, page ->
-                buildItem(XMaterial.ARROW) {
-                    name = "§b上一页"
-                }.apply {
-                    val m = itemMeta ?: return@apply
-                    m.itemModel = NamespacedKey.fromString(if (page) "kangelitem:previous" else "kangelitem:previous_no")
-                    setItemMeta(m)
-                }
+                guiItem(XMaterial.ARROW, "<aqua>上一页", model = if (page) "kangelitem:previous" else "kangelitem:previous_no")
             }
 
             setNextPage(8) { _, page ->
-                buildItem(XMaterial.ARROW) {
-                    name = "§b下一页"
-                }.apply {
-                    val m = itemMeta ?: return@apply
-                    m.itemModel = NamespacedKey.fromString(if (page) "kangelitem:next" else "kangelitem:next_no")
-                    setItemMeta(m)
-                }
+                guiItem(XMaterial.ARROW, "<aqua>下一页", model = if (page) "kangelitem:next" else "kangelitem:next_no")
             }
         }
     }

@@ -17,7 +17,7 @@ import taboolib.common.platform.function.submit
 import taboolib.library.xseries.XMaterial
 import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.Chest
-import taboolib.platform.util.buildItem
+import io.github.zzzyyylllty.chotentech.util.guiItem
 import kotlin.math.min
 
 class SubmitMenu {
@@ -50,14 +50,7 @@ class SubmitMenu {
                 if (quest != null) " B  S  B " else "    S    "
             )
 
-            set('C', buildItem(XMaterial.COMPASS) {
-                name = "§b§l菜单"
-                lore += "§7点击打开菜单"
-            }.apply {
-                val m = itemMeta ?: return@apply
-                m.itemModel = NamespacedKey.fromString("kangelitem:void")
-                setItemMeta(m)
-            }) {
+            set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>菜单", listOf("<gray>点击打开菜单"), model = "kangelitem:void")) {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "invero menu open menu ${clicker.name}")
                 clicker.closeInventory()
             }
@@ -65,42 +58,25 @@ class SubmitMenu {
             onBuild { _, inv ->
                 if (task != null) {
                     val amount = task.condition["amount"]?.toInt() ?: 1
-                    inv.setItem(4, buildItem(XMaterial.BOOK) {
-                        name = "§6提交说明"
-                        lore += "§7将需要提交的物品放入中间区域"
-                        lore += "§7点击 §6[确认提交] §7完成提交"
-                        lore += "§7所需数量: §e$amount"
-                    })
+                    inv.setItem(4, guiItem(XMaterial.BOOK, "<gold>提交说明", listOf(
+                        "<gray>将需要提交的物品放入中间区域",
+                        "<gray>点击 <gold>[确认提交] <gray>完成提交",
+                        "<gray>所需数量: <yellow>$amount"
+                    )))
                 } else {
-                    inv.setItem(4, buildItem(XMaterial.BOOK) {
-                        name = "§6提交说明"
-                        lore += "§7将需要提交的物品放入中间区域"
-                        lore += "§7点击 §6[确认提交] §7完成提交"
-                        lore += "§7NPCID: §e$npcId"
-                    })
+                    inv.setItem(4, guiItem(XMaterial.BOOK, "<gold>提交说明", listOf(
+                        "<gray>将需要提交的物品放入中间区域",
+                        "<gray>点击 <gold>[确认提交] <gray>完成提交",
+                        "<gray>NPCID: <yellow>$npcId"
+                    )))
                 }
             }
 
-            set(49, buildItem(XMaterial.ANVIL) {
-                name = "§6■ 确认提交"
-                lore += "§7提交中间区域的所有物品"
-            })
+            set(49, guiItem(XMaterial.ANVIL, "<gold>■ 确认提交", listOf("<gray>提交中间区域的所有物品")))
 
             if (quest != null) {
-                set(45, buildItem(XMaterial.BARRIER) {
-                    name = "§c返回"
-                }.apply {
-                    val m = itemMeta ?: return@apply
-                    m.itemModel = NamespacedKey.fromString("kangelitem:void")
-                    setItemMeta(m)
-                })
-                set(53, buildItem(XMaterial.BARRIER) {
-                    name = "§c返回"
-                }.apply {
-                    val m = itemMeta ?: return@apply
-                    m.itemModel = NamespacedKey.fromString("kangelitem:void")
-                    setItemMeta(m)
-                })
+                set(45, guiItem(XMaterial.BARRIER, "<red>返回", model = "kangelitem:void"))
+                set(53, guiItem(XMaterial.BARRIER, "<red>返回", model = "kangelitem:void"))
             }
 
             onClick(lock = false) { event ->

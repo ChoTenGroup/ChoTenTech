@@ -15,7 +15,7 @@ import io.github.zzzyyylllty.chotentech.util.minimessage.mmJsonUtil
 import io.github.zzzyyylllty.chotentech.util.toComponent
 import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.Chest
-import taboolib.platform.util.buildItem
+import io.github.zzzyyylllty.chotentech.util.guiItem
 
 class WarehouseMenu {
 
@@ -85,25 +85,20 @@ class WarehouseMenu {
 
         fun updateInfo(inv: Inventory) {
             val pages = totalPages()
-            inv.setItem(7, buildItem(if (currentPage > 0) XMaterial.ARROW else XMaterial.GRAY_STAINED_GLASS_PANE) {
-                name = if (currentPage > 0) "§a上一页" else "§7已是第一页"
-            }.apply {
-                val m = itemMeta ?: return@apply
-                m.itemModel = NamespacedKey.fromString(if (currentPage > 0) "kangelitem:previous" else "kangelitem:previous_no")
-                setItemMeta(m)
-            })
-            inv.setItem(49, buildItem(XMaterial.CHEST) {
-                name = "§e仓库信息"
-                lore += "§7物品: §e${contents.size} §7/ §e$maxItems"
-                lore += "§7页数: §e${currentPage + 1} §7/ §e$pages"
-            })
-            inv.setItem(8, buildItem(if (currentPage < pages - 1) XMaterial.ARROW else XMaterial.GRAY_STAINED_GLASS_PANE) {
-                name = if (currentPage < pages - 1) "§a下一页" else "§7已是最后一页"
-            }.apply {
-                val m = itemMeta ?: return@apply
-                m.itemModel = NamespacedKey.fromString(if (currentPage < pages - 1) "kangelitem:next" else "kangelitem:next_no")
-                setItemMeta(m)
-            })
+            inv.setItem(7, guiItem(
+                if (currentPage > 0) XMaterial.ARROW else XMaterial.GRAY_STAINED_GLASS_PANE,
+                if (currentPage > 0) "<green>上一页" else "<gray>已是第一页",
+                model = if (currentPage > 0) "kangelitem:previous" else "kangelitem:previous_no"
+            ))
+            inv.setItem(49, guiItem(XMaterial.CHEST, "<yellow>仓库信息", listOf(
+                "<gray>物品: <yellow>${contents.size} <gray>/ <yellow>$maxItems",
+                "<gray>页数: <yellow>${currentPage + 1} <gray>/ <yellow>$pages"
+            )))
+            inv.setItem(8, guiItem(
+                if (currentPage < pages - 1) XMaterial.ARROW else XMaterial.GRAY_STAINED_GLASS_PANE,
+                if (currentPage < pages - 1) "<green>下一页" else "<gray>已是最后一页",
+                model = if (currentPage < pages - 1) "kangelitem:next" else "kangelitem:next_no"
+            ))
         }
 
         player.openMenu<Chest>(mmJsonUtil.serialize("<white><shift:-16><image:kangelicon:list><shift:-176><aqua><font:minecraft:fusionpixel10>${title}".toComponent())) {
@@ -119,14 +114,7 @@ class WarehouseMenu {
                 "         "
             )
 
-            set('C', buildItem(XMaterial.COMPASS) {
-                name = "§b§l菜单"
-                lore += "§7点击打开菜单"
-            }.apply {
-                val m = itemMeta ?: return@apply
-                m.itemModel = NamespacedKey.fromString("kangelitem:void")
-                setItemMeta(m)
-            })
+            set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>菜单", listOf("<gray>点击打开菜单"), model = "kangelitem:void"))
 
             onBuild { _, inv ->
                 loadPage(inv)

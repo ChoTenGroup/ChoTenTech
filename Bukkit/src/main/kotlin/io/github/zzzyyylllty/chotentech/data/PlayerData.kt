@@ -3,16 +3,31 @@ package io.github.zzzyyylllty.chotentech.data
 import io.github.zzzyyylllty.chotentech.ChoTenTech.config
 import io.github.zzzyyylllty.chotentech.ChoTenTech.levelsList
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerHudMap
+import io.github.zzzyyylllty.chotentech.attribute.manager.AttributeManager
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import java.time.Instant
+import java.util.UUID
 import kotlin.math.round
 
 val defMaxDarkness by lazy { config.getDouble("default.max-darkness", 100.0) }
 val defDarkness by lazy { config.getDouble("default.darkness", 15.0) }
 val defMaxSanity by lazy { config.getDouble("default.max-sanity", 100.0) }
 val defSanity by lazy { config.getDouble("default.sanity", 40.0) }
+val defMaxStamina by lazy { config.getDouble("default.max-stamina", 100.0) }
+val defStamina by lazy { config.getDouble("default.stamina", 100.0) }
+val defMaxCustomHunger by lazy { config.getDouble("default.max-custom-hunger", 100.0) }
+val defCustomHunger by lazy { config.getDouble("default.custom-hunger", 100.0) }
+val defMaxCustomSaturation by lazy { config.getDouble("default.max-custom-saturation", 100.0) }
+val defCustomSaturation by lazy { config.getDouble("default.custom-saturation", 100.0) }
+val defMaxExternalInjury by lazy { config.getDouble("default.max-external-injury", 100.0) }
+val defExternalInjury by lazy { config.getDouble("default.external-injury", 100.0) }
+val defMaxInternalInjury by lazy { config.getDouble("default.max-internal-injury", 100.0) }
+val defInternalInjury by lazy { config.getDouble("default.internal-injury", 100.0) }
+val defExternalInjuryRegen by lazy { config.getDouble("default.external-injury-regen", 0.3) }
+val defInternalInjuryRegen by lazy { config.getDouble("default.internal-injury-regen", 0.2) }
+val defSanityRegen by lazy { config.getDouble("default.sanity-regen", 0.0) }
 
 data class PlayerData (
     val playerName: String,
@@ -53,11 +68,56 @@ data class PlayerData (
     // type -> rankId (e.g. "prefix" -> "owner")
     var activeRanks: LinkedHashMap<String, String> = linkedMapOf(),
 
+    var stamina: Double = defStamina,
+    var maxStamina: Double = defMaxStamina,
+    var customHunger: Double = defCustomHunger,
+    var maxCustomHunger: Double = defMaxCustomHunger,
+    var customSaturation: Double = defCustomSaturation,
+    var maxCustomSaturation: Double = defMaxCustomSaturation,
+    var consumption: Double = 0.0,
+    var externalInjury: Double = defExternalInjury,
+    var maxExternalInjury: Double = defMaxExternalInjury,
+    var internalInjury: Double = defInternalInjury,
+    var maxInternalInjury: Double = defMaxInternalInjury,
+    var sanityRegeneration: Double = defSanityRegen,
+    // NPC uuid/id -> affection value
+    var affection: MutableMap<String, Long> = mutableMapOf(),
+    // faction id -> reputation value (e.g. MEG, BNTG, UEC)
+    var reputation: MutableMap<String, Long> = mutableMapOf(),
+    // cosmetic slot -> cosmetic id (e.g. AURA -> flame_aura)
+    var cosmetics: MutableMap<String, String> = mutableMapOf(),
+
+    // pvp mode toggle
+    var pvpEnabled: Boolean = false,
+
+    // music replay tracking
+    var lastMusicPlayTime: Long = 0L,
+    var musicReplayDelay: Long = 0L,  // randomized 120000..300000 ms
+
+    // currencies (use Long to avoid floating-point errors)
+    var money: Long = 0L,
+    var point: Long = 0L,
+    var tape: Long = 0L,
+    var goldentape: Long = 0L,
+
     @kotlin.jvm.Transient
     var activeLevelStr: String? = null
 ) {
     val activeLevel: Level?
         get() = levelsList[activeLevelStr]
+
+    // Effective max values — resolve from attribute system when player is online
+    private fun attrMax(attrId: String, fallback: Double): Double {
+        val p = Bukkit.getPlayer(UUID.fromString(uuid)) ?: return fallback
+        val v = AttributeManager.getAttributeValue(p, attrId)
+        return if (v > 0.0) v else fallback
+    }
+
+    val effectiveMaxSanity: Double get() = attrMax("max_sanity", maxSanity)
+    val effectiveSanityRegeneration: Double get() = attrMax("sanity_regeneration", sanityRegeneration)
+    val effectiveMaxDarkness: Double get() = attrMax("max_darkness", maxDarkness)
+    val effectiveMaxExternalInjury: Double get() = attrMax("external_injury", maxExternalInjury)
+    val effectiveMaxInternalInjury: Double get() = attrMax("internal_injury", maxInternalInjury)
 
     fun getCooldownLeftLong(): Long? {
         return noclipCooldownEnd?.minus(Instant.now().toEpochMilli())

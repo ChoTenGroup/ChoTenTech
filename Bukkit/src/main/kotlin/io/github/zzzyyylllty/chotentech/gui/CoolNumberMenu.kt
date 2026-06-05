@@ -17,7 +17,7 @@ import taboolib.common.platform.function.submitAsync
 import taboolib.library.xseries.XMaterial
 import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.PageableChest
-import taboolib.platform.util.buildItem
+import io.github.zzzyyylllty.chotentech.util.guiItem
 import taboolib.platform.util.nextChat
 
 class CoolNumberMenu(
@@ -122,29 +122,11 @@ class CoolNumberMenu(
             }
 
             setPreviousPage(7) { _, hasPrev ->
-                buildItem(XMaterial.ARROW) {
-                    name = "§a上一页"
-                }.apply {
-                    itemMeta?.let { m ->
-                        m.itemModel = NamespacedKey.fromString(
-                            if (hasPrev) "kangelitem:previous" else "kangelitem:previous_no"
-                        )
-                        itemMeta = m
-                    }
-                }
+                guiItem(XMaterial.ARROW, "<green>上一页", model = if (hasPrev) "kangelitem:previous" else "kangelitem:previous_no")
             }
 
             setNextPage(8) { _, hasNext ->
-                buildItem(XMaterial.ARROW) {
-                    name = "§a下一页"
-                }.apply {
-                    itemMeta?.let { m ->
-                        m.itemModel = NamespacedKey.fromString(
-                            if (hasNext) "kangelitem:next" else "kangelitem:next_no"
-                        )
-                        itemMeta = m
-                    }
-                }
+                guiItem(XMaterial.ARROW, "<green>下一页", model = if (hasNext) "kangelitem:next" else "kangelitem:next_no")
             }
 
             // ── Search button (slot 4 + 9*5 = 49) ──

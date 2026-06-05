@@ -1,7 +1,9 @@
 level-0:
+  music: tutorial
   world: Area0
   name: '阈界'
   cluster: I
+  dmz: true
   sdclass:
     classname: Class 1
     one: 安全
@@ -9,6 +11,8 @@ level-0:
     three: 未确认实体
     prefix: <#FFFF88>
   number: 0
+  sanity:
+    regen: 0.2
   author: AkaCandyKAngel
   tip: '外观类似于一家零售店的储藏后室。这里是你开始的地方。'
   guiMaterial: BARREL
@@ -48,7 +52,11 @@ level-1:
   name: 宜居地带
   cluster: I
   sdclass: '1'
+  music: parking
+  dmz: true
   number: 1
+  sanity:
+    regen: 0.2
   author: AkaCandyKAngel,zuanlan
   tip: 一个大型混凝土仓库，冷凝的雾气与冷色的环境让这里显得有些阴森。
   guiMaterial: SMOOTH_STONE
@@ -115,6 +123,16 @@ level-1:
       hunger: 4.0
       damage: 1.0
       cooldown: 10.0
+    - target: 'level-26'
+      noclipPointLoc: 'Area1 10241 10 267 10245 14 271'
+      targetLoc: 'Area5 259915 89 -74'
+      successRate: 50
+      time: 1.0
+      name: '享乐通道'
+      rangeDecay: 50.0
+      hunger: 1.0
+      damage: 1.0
+      cooldown: 5.0
     - target: 'level-19' #10212 27 406
       noclipPointLoc: 'Area1 10209 27 402 10216 30 410'
       targetLoc: 'Area4 190090 20 160'
@@ -126,6 +144,7 @@ level-1:
       damage: 1.0
       cooldown: 10.0
 level-283:
+  music: fun
   world: Area6
   name: 游乐天地
   cluster: I
@@ -137,7 +156,7 @@ level-283:
   noclips:
     - target: 'level-2'
       noclipPointLoc: 'Area6 2829954 90 36 2829950 95 32'
-      targetLoc: 'Area2 20253 3 162 '
+      targetLoc: 'Area2 20253 3 162'
       successRate: 50
       time: 5.0
       name: '森林涂鸦门'
@@ -156,6 +175,7 @@ level-283:
       damage: 1.0
       cooldown: 5.0
 level-2:
+  music: pipe
   world: Area2
   name: 废弃公共带
   cluster: I
@@ -256,6 +276,7 @@ level-2:
       damage: 1.0
       cooldown: 10.0
 level-3:
+  music: power
   world: Area2
   name: 发电站
   cluster: I
@@ -372,6 +393,7 @@ level-3:
       cooldown: 5.0
       elevatorDoor: 'Area2 30006 9 107 30008 12 107'
 level-4:
+  music: office
   world: Area3
   name: 废弃办公室
   cluster: I
@@ -380,6 +402,8 @@ level-4:
   author: AkaCandyKAngel,zuanlan
   tip: 一座安静的办公室大楼。
   guiMaterial: BOOKSHELF
+  sanity:
+    regen: 0.2
   powers:
     - 办公室旅馆通道
     - 办公室楼梯间
@@ -425,6 +449,7 @@ level-4:
       damage: 1.0
       cooldown: 5.0
 level-5:
+  music: hotel
   world: Area3
   name: 恐怖旅馆
   cluster: I
@@ -507,6 +532,7 @@ level-6:
       cooldown: 5.0
 
 level-7:
+  music: sea
   world: Area3
   name: 深海恐惧症
   cluster: I
@@ -558,6 +584,7 @@ level-7:
       damage: 1.0
       cooldown: 5.0
 level-8:
+  music: cave
   world: Area3
   name: 岩洞系统
   cluster: I
@@ -598,6 +625,7 @@ level-8:
       #  damage: 1.0
       #  cooldown: 5.0
 level-9:
+  music: garden
   world: Area3
   name: 郊区
   cluster: I
@@ -638,6 +666,7 @@ level-9:
       damage: 1.0
       cooldown: 5.0
 level-10:
+  music: wheats
   world: Area3
   name: 丰裕
   cluster: I
@@ -646,6 +675,8 @@ level-10:
   author: zuanlan
   tip: '虚伪的温饱'
   guiMaterial: WHEAT
+  sanity:
+    regen: 0.2
   noclips:
     - target: 'level-15'
       noclipPointLoc: 'Area3 100176 6 88 100165 10 79'
@@ -668,8 +699,10 @@ level-10:
       damage: 1.0
       cooldown: 5.0
 level-11:
+  music: cityneversleep
   world: Area4
   name: 不夜城
+  dmz: true
   cluster: I
   sdclass: '2'
   number: 11
@@ -800,7 +833,7 @@ level-13:
       cooldown: 5.0
     - target: 'level-26'
       noclipPointLoc: 'Area4 130093 77 70 130084 82 72'
-      targetLoc: 'Area5 260020 3 6'
+      targetLoc: 'Area5 259915 101 -88'
       successRate: 75
       time: 5.0
       name: '特异通道'
@@ -857,6 +890,8 @@ level-15:
   author: zuanlan
   tip: 'Lonely...'
   guiMaterial: IRON_TRAPDOOR
+  sanity:
+    safe: true
   noclips:
     - target: 'level-0'
       noclipPointLoc: 'Area4 150052 4 99 150057 6 94'
@@ -877,6 +912,8 @@ level-16:
   author: zuanlan
   tip: 'Unknown...'
   guiMaterial: DIRT
+  sanity:
+    safe: true
   noclips:
     - target: 'level-0'
       noclipPointLoc: 'Area4 159476 8 -469 159482 12 -476'
@@ -900,6 +937,7 @@ level-16:
       cooldown: 5.0
 
 level-17:
+  music: office
   world: Area4
   name: 航空母舰
   cluster: I
@@ -908,6 +946,8 @@ level-17:
   author: zuanlan,AkaCandyKAngel
   tip: '不大的建筑物，然而并不像有海的样子。'
   guiMaterial: IRON_BLOCK
+  sanity:
+    regen: 0.2
   noclips:
     - target: 'level-18'
       noclipPointLoc: 'Area4 170145 -7 109 170140 -3 115'
@@ -928,6 +968,8 @@ level-18:
   author: zuanlan,AkaCandyKAngel
   tip: '所以，还记得小时候差点撞到你的那辆车吗?'
   guiMaterial: CLOCK
+  sanity:
+    regen: 0.2
   noclips:
     - target: 'level-19'
       noclipPointLoc: 'Area4 180008 2 36 180001 5 33'
@@ -940,6 +982,7 @@ level-18:
       damage: 1.0
       cooldown: 5.0
 level-19:
+  music: wheat
   world: Area4
   name: 阁楼
   cluster: I
@@ -978,6 +1021,8 @@ level-20:
   author: zuanlan,AkaCandyKAngel
   tip: '物资没有想象中的那么多。'
   guiMaterial: CHEST
+  sanity:
+    safe: true
   noclips:
     - target: 'level-6'
       noclipPointLoc: 'Area4 200115 9 113 200118 13 118'
@@ -1011,6 +1056,7 @@ level-20:
       cooldown: 5.0
 
 level-21:
+  music: power
   world: Area4
   name: 编号门
   cluster: I
@@ -1042,6 +1088,7 @@ level-21:
       cooldown: 5.0
 
 level-22:
+  music: parkruin
   world: Area4
   name: 颓桓
   cluster: I
@@ -1073,6 +1120,7 @@ level-22:
       cooldown: 10.0
 
 level-23:
+  music: garden
   world: Area4
   name: 石化花园
   cluster: I
@@ -1084,14 +1132,15 @@ level-23:
   noclips: []
 
 level-26:
+  music: power
   world: Area5
-  name: 恍如隔世
+  name: 享乐号汽船
   cluster: I
   sdclass: '5'
   number: 26
   author: AkaCandyKAngel
-  tip: '???'
-  guiMaterial: PURPUR_BLOCK
+  tip: '看起来十分繁华的一辆汽船'
+  guiMaterial: YELLOW_GLAZED_TERRACOTTA
   noclips:
     - target: 'level-13'
       noclipPointLoc: 'Area5 260019 0 4 260021 6 8'
@@ -1112,6 +1161,8 @@ level-27:
   author: AkaCandyKAngel
   tip: '收起你的好奇心.'
   guiMaterial: WATER_BUCKET
+  sanity:
+    safe: true
   noclips:
     - target: 'level-28'
       noclipPointLoc: 'Area5 270018 72 25 270020 76 22'
@@ -1124,6 +1175,7 @@ level-27:
       damage: 10.0
       cooldown: 5.0
 level-28:
+  music: mountains
   world: Area5
   name: 终末美德
   cluster: I
@@ -1149,6 +1201,8 @@ level-28:
       damage: 10.0
       cooldown: 5.0
 level-29:
+  dmz: true
+  music: mountains
   world: Area5
   name: 海波利亚
   cluster: I
@@ -1169,6 +1223,7 @@ level-29:
       damage: 10.0
       cooldown: 5.0
 level-31:
+  music: skating_rink
   world: Area5
   name: 环形溜冰场
   cluster: I
@@ -1177,6 +1232,8 @@ level-31:
   author: AkaCandyKAngel
   tip: '一个上世纪90年代风格的环形溜冰场。'
   guiMaterial: PACKED_ICE
+  sanity:
+    regen: 0.2
   noclips:
     - target: 'level-32'
       noclipPointLoc: 'Area5 310113 1 38 310118 7 30'
@@ -1210,6 +1267,7 @@ level-32:
   noclips: []
 
 level-34:
+  music: power
   world: Area5
   name: 下水道系统
   cluster: I
@@ -1220,6 +1278,7 @@ level-34:
   guiMaterial: DARK_OAK_FENCE
 
 level-33:
+  music: jungle
   world: Area5
   name: 无尽购物体验
   cluster: I
@@ -1271,6 +1330,7 @@ level-37:
       cooldown: 5.0
 
 level-43:
+  music: waterworld
   world: Area5
   name: 水世界
   cluster: I
@@ -1312,6 +1372,7 @@ level-44:
       damage: 1.0
       cooldown: 5.0
 level-45:
+  music: office
   world: Area5
   name: 深渊公司
   cluster: I
@@ -1320,6 +1381,8 @@ level-45:
   author: zuanlan,AkaCandyKAngel
   tip: '一片黑漆漆的虚空，以及各种各样的建筑。'
   guiMaterial: BLACK_STAINED_GLASS
+  sanity:
+    regen: 0.2
   noclips: []
 level-46:
   world: Area5
@@ -1352,6 +1415,7 @@ level-75:
       damage: 1.0
       cooldown: 5.0
 level-76:
+  music: sewers
   world: Area6
   name: 无限下水道
   cluster: I
@@ -1372,6 +1436,7 @@ level-76:
       damage: 1.0
       cooldown: 5.0
 level-881:
+  music: power
   world: Area6
   name: 百窗庭
   cluster: I
@@ -1392,6 +1457,7 @@ level-881:
       damage: 10.0
       cooldown: 1.0
 level-888:
+  music: snowrealm
   world: Area6
   name: 无邪
   cluster: I
@@ -1420,4 +1486,6 @@ the-hub:
   author: AkaCandyKAngel,zuanlan
   tip: '很多流浪者安全的通行/定居之所。'
   guiMaterial: NETHER_STAR
+  sanity:
+    safe: true
   noclips: []

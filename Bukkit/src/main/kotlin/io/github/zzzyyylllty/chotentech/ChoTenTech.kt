@@ -12,13 +12,20 @@ import io.github.zzzyyylllty.chotentech.data.PlayerData
 import io.github.zzzyyylllty.chotentech.data.PlayerHUDData
 import io.github.zzzyyylllty.chotentech.data.PowerManager.onReload
 import io.github.zzzyyylllty.chotentech.data.SurvivalDifficulty
+import io.github.zzzyyylllty.chotentech.punish.PunishManager
 import io.github.zzzyyylllty.chotentech.function.AchievementManager
 import io.github.zzzyyylllty.chotentech.function.BaseManager
 import io.github.zzzyyylllty.chotentech.function.DeathDropManager
 import io.github.zzzyyylllty.chotentech.function.RankManager
 import io.github.zzzyyylllty.chotentech.function.hideout.HideoutConfig
+import io.github.zzzyyylllty.chotentech.attribute.manager.AttributeManager
 import io.github.zzzyyylllty.chotentech.load.loadAchievementFiles
 import io.github.zzzyyylllty.chotentech.load.loadAccountTypes
+import io.github.zzzyyylllty.chotentech.data.conflictConfigs
+import io.github.zzzyyylllty.chotentech.data.cosmeticConfigs
+import io.github.zzzyyylllty.chotentech.data.loadConflictFiles
+import io.github.zzzyyylllty.chotentech.data.loadCosmeticFiles
+import io.github.zzzyyylllty.chotentech.listener.initCosmeticEffects
 import io.github.zzzyyylllty.chotentech.load.loadLevelFiles
 import io.github.zzzyyylllty.chotentech.load.loadPowerFiles
 import io.github.zzzyyylllty.chotentech.load.tempPowers
@@ -101,6 +108,14 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
         Language.enableSimpleComponent = true
         EconomyUtil.setup()
         reloadCustomConfig()
+
+        // Initialize punishment system
+        PunishManager.reloadConfig()
+
+        // Initialize attribute system
+        AttributeManager.registerBuiltinAttributes()
+        AttributeManager.loadAttributeFiles()
+        AttributeManager.loadBasicAttributes()
 //        val worlds = Bukkit.getWorlds()
 //        submitAsync {
 //            worlds.forEach { world ->
@@ -125,6 +140,9 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
 
     override fun onActive() {
         autoLoadChunk()
+        loadConflictFiles()
+        loadCosmeticFiles()
+        initCosmeticEffects()
     }
     /*
     fun compat() {
@@ -152,6 +170,11 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
             HideoutConfig.load(hideoutConfig)
             CurrencyUtil.load(currencyConfig)
             RankManager.load()
+            PunishManager.reloadConfig()
+            conflictConfigs.clear()
+            cosmeticConfigs.clear()
+            loadConflictFiles()
+            loadCosmeticFiles()
             reloadAchievements()
         }
     }

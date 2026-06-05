@@ -20,6 +20,19 @@ default:
   max-sanity: 100.0
   darkness: 15.0
   max-darkness: 100.0
+  stamina: 100.0
+  max-stamina: 100.0
+  custom-hunger: 100.0
+  max-custom-hunger: 100.0
+  custom-saturation: 100.0
+  max-custom-saturation: 100.0
+  external-injury: 100.0
+  max-external-injury: 100.0
+  internal-injury: 100.0
+  max-internal-injury: 100.0
+  external-injury-regen: 0.3
+  internal-injury-regen: 0.2
+  sanity-regen: 0.0
 
 warehouse:
   # 玩家默认仓库格数
@@ -104,3 +117,23 @@ death-drop:
   timeout-seconds: 1200
   # 掉落 UI 标题
   drop-title: "死亡掉落"
+
+# 处罚系统配置
+punishment:
+  # 累计警告达到上限时自动封禁 (0=禁用)
+  max-warn-before-ban: 5
+  # 各权限组最大可处罚时长 (毫秒, -1=无限制)
+  duration-limits:
+    default: 2592000000        # 30天
+    chotentech.punish.vip: 7776000000  # 90天
+    chotentech.punish.admin: -1  # 无限制
+  # 预配置禁言理由及对应时长
+  mute-reasons:
+    - reason: "刷屏/恶意灌水"
+      duration: "10m"
+    - reason: "辱骂/人身攻击"
+      duration: "1h"
+    - reason: "发布不当内容"
+      duration: "3d"
+    - reason: "广告/宣传"
+      duration: "7d"

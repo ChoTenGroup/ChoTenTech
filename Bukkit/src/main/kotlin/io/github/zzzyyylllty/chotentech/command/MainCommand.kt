@@ -1,6 +1,7 @@
 package io.github.zzzyyylllty.chotentech.command
 
 import io.github.zzzyyylllty.chotentech.ChoTenTech.reloadCustomConfig
+import io.github.zzzyyylllty.chotentech.attribute.command.ChoTenAttributeMainCommand
 import io.github.zzzyyylllty.chotentech.player.sendComponent
 import org.bukkit.command.CommandSender
 import taboolib.common.platform.ProxyCommandSender
@@ -61,6 +62,12 @@ object MainCommand {
     val base = BaseCommand
     @CommandBody
     val coolnumber = CoolNumberCommand
+    @CommandBody
+    val conflict = ConflictCommand
+    @CommandBody
+    val pvp = PvpCommand
+    @CommandBody
+    val attribute = ChoTenAttributeMainCommand
 //    @CommandBody
 //    val Data = ChoTenDataCommand
 
