@@ -1,0 +1,23 @@
+interfere_medicinal:
+  name: 我不是药神
+  score:
+    perfect:
+      MEG: 60
+      BNTG: -20
+      UEC: 30
+    success:
+      MEG: 40
+      BNTG: -10
+      UEC: 20
+    neutral:
+      MEG: 0
+      BNTG: -5
+      UEC: 10
+    fail:
+      MEG: -40
+      BNTG: 20
+      UEC: -15
+    full_fail:
+      MEG: -80
+      BNTG: 40
+      UEC: -30

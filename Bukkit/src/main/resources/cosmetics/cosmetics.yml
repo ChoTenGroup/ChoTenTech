@@ -1,0 +1,544 @@
+# ===== 粒子环绕 (AURA) — 散射风格 =====
+flame_aura:
+  slot: AURA
+  name: "烈焰散发"
+  permission: "chotentech.cosmetic.flame_aura"
+  material: BLAZE_POWDER
+  model: ""
+  particle: FLAME
+  particle_count: 5
+  particle_speed: 0.1
+  particle_height: 0.5
+  particle_radius: 0.6
+  particle_pattern: scatter
+
+heart_aura:
+  slot: AURA
+  name: "爱心散发"
+  permission: "chotentech.cosmetic.heart_aura"
+  material: RED_DYE
+  model: ""
+  particle: HEART
+  particle_count: 4
+  particle_speed: 0.15
+  particle_height: 0.8
+  particle_radius: 0.6
+  particle_pattern: scatter
+
+endrod_aura:
+  slot: AURA
+  name: "末影光辉"
+  permission: "chotentech.cosmetic.endrod_aura"
+  material: END_ROD
+  model: ""
+  particle: END_ROD
+  particle_count: 3
+  particle_speed: 0.08
+  particle_height: 0.5
+  particle_radius: 0.8
+  particle_pattern: scatter
+
+portal_aura:
+  slot: AURA
+  name: "传送门散发"
+  permission: "chotentech.cosmetic.portal_aura"
+  material: OBSIDIAN
+  model: ""
+  particle: PORTAL
+  particle_count: 8
+  particle_speed: 0.3
+  particle_height: 0.3
+  particle_radius: 1.0
+  particle_pattern: scatter
+
+# ===== 粒子环绕 (AURA) — 环绕风格 =====
+flame_orbit:
+  slot: AURA
+  name: "烈焰环绕"
+  permission: "chotentech.cosmetic.flame_orbit"
+  material: BLAZE_POWDER
+  model: ""
+  particle: FLAME
+  particle_count: 6
+  particle_speed: 0.12
+  particle_height: 0.5
+  particle_radius: 1.2
+  particle_pattern: orbit
+
+spell_aura:
+  slot: AURA
+  name: "符文环绕"
+  permission: "chotentech.cosmetic.spell_aura"
+  material: ENCHANTED_BOOK
+  model: ""
+  particle: ENCHANT
+  particle_count: 8
+  particle_speed: 0.2
+  particle_height: 0.6
+  particle_radius: 1.0
+  particle_pattern: orbit
+
+note_orbit:
+  slot: AURA
+  name: "音符环绕"
+  permission: "chotentech.cosmetic.note_orbit"
+  material: NOTE_BLOCK
+  model: ""
+  particle: NOTE
+  particle_count: 5
+  particle_speed: 0.08
+  particle_height: 1.0
+  particle_radius: 0.7
+  particle_pattern: orbit
+
+soul_orbit:
+  slot: AURA
+  name: "灵魂环绕"
+  permission: "chotentech.cosmetic.soul_orbit"
+  material: SOUL_TORCH
+  model: ""
+  particle: SOUL
+  particle_count: 4
+  particle_speed: 0.06
+  particle_height: 0.8
+  particle_radius: 1.0
+  particle_pattern: orbit
+
+# ===== 粒子环绕 (AURA) — 光环风格 =====
+flame_halo:
+  slot: AURA
+  name: "烈焰光环"
+  permission: "chotentech.cosmetic.flame_halo"
+  material: CAMPFIRE
+  model: ""
+  particle: FLAME
+  particle_count: 12
+  particle_speed: 0.0
+  particle_height: 1.8
+  particle_radius: 0.6
+  particle_pattern: halo
+
+electric_halo:
+  slot: AURA
+  name: "电击光环"
+  permission: "chotentech.cosmetic.electric_halo"
+  material: LIGHTNING_ROD
+  model: ""
+  particle: ELECTRIC_SPARK
+  particle_count: 8
+  particle_speed: 0.0
+  particle_height: 1.8
+  particle_radius: 0.8
+  particle_pattern: halo
+
+enchant_halo:
+  slot: AURA
+  name: "附魔光环"
+  permission: "chotentech.cosmetic.enchant_halo"
+  material: EXPERIENCE_BOTTLE
+  model: ""
+  particle: ENCHANT
+  particle_count: 10
+  particle_speed: 0.0
+  particle_height: 1.8
+  particle_radius: 0.7
+  particle_pattern: halo
+
+cherry_halo:
+  slot: AURA
+  name: "樱花光环"
+  permission: "chotentech.cosmetic.cherry_halo"
+  material: PINK_PETALS
+  model: ""
+  particle: CHERRY_LEAVES
+  particle_count: 10
+  particle_speed: 0.0
+  particle_height: 1.9
+  particle_radius: 0.75
+  particle_pattern: halo
+
+# ===== 脚步粒子 (FOOTSTEP) =====
+flame_footstep:
+  slot: FOOTSTEP
+  name: "火焰足迹"
+  permission: "chotentech.cosmetic.flame_footstep"
+  material: CAMPFIRE
+  model: ""
+  particle: FLAME
+  particle_count: 2
+  particle_speed: 0.05
+  particle_height: 0.0
+
+heart_footstep:
+  slot: FOOTSTEP
+  name: "爱心足迹"
+  permission: "chotentech.cosmetic.heart_footstep"
+  material: POPPY
+  model: ""
+  particle: HEART
+  particle_count: 1
+  particle_speed: 0.0
+  particle_height: 0.0
+
+snow_footstep:
+  slot: FOOTSTEP
+  name: "雪花足迹"
+  permission: "chotentech.cosmetic.snow_footstep"
+  material: SNOWBALL
+  model: ""
+  particle: SNOWFLAKE
+  particle_count: 2
+  particle_speed: 0.05
+  particle_height: 0.0
+
+enchant_footstep:
+  slot: FOOTSTEP
+  name: "附魔足迹"
+  permission: "chotentech.cosmetic.enchant_footstep"
+  material: EXPERIENCE_BOTTLE
+  model: ""
+  particle: ENCHANT
+  particle_count: 3
+  particle_speed: 0.03
+  particle_height: 0.0
+
+cloud_footstep:
+  slot: FOOTSTEP
+  name: "云雾足迹"
+  permission: "chotentech.cosmetic.cloud_footstep"
+  material: WHITE_DYE
+  model: ""
+  particle: CLOUD
+  particle_count: 1
+  particle_speed: 0.0
+  particle_height: 0.0
+
+soul_footstep:
+  slot: FOOTSTEP
+  name: "灵魂足迹"
+  permission: "chotentech.cosmetic.soul_footstep"
+  material: SOUL_TORCH
+  model: ""
+  particle: SOUL
+  particle_count: 2
+  particle_speed: 0.03
+  particle_height: 0.0
+
+# ===== 击杀粒子 (KILL_PARTICLE) =====
+explosion_kill:
+  slot: KILL_PARTICLE
+  name: "爆炸击杀"
+  permission: "chotentech.cosmetic.explosion_kill"
+  material: TNT
+  model: ""
+  particle: EXPLOSION
+  particle_count: 5
+  particle_speed: 1.0
+  particle_height: 0.0
+
+crit_kill:
+  slot: KILL_PARTICLE
+  name: "暴击击杀"
+  permission: "chotentech.cosmetic.crit_kill"
+  material: DIAMOND_SWORD
+  model: ""
+  particle: CRIT
+  particle_count: 20
+  particle_speed: 0.5
+  particle_height: 0.0
+
+ender_kill:
+  slot: KILL_PARTICLE
+  name: "末影击杀"
+  permission: "chotentech.cosmetic.ender_kill"
+  material: ENDER_PEARL
+  model: ""
+  particle: PORTAL
+  particle_count: 30
+  particle_speed: 0.5
+  particle_height: 0.0
+
+flame_kill:
+  slot: KILL_PARTICLE
+  name: "烈焰击杀"
+  permission: "chotentech.cosmetic.flame_kill"
+  material: BLAZE_ROD
+  model: ""
+  particle: FLAME
+  particle_count: 25
+  particle_speed: 0.8
+  particle_height: 0.0
+
+spell_kill:
+  slot: KILL_PARTICLE
+  name: "符文击杀"
+  permission: "chotentech.cosmetic.spell_kill"
+  material: ENCHANTING_TABLE
+  model: ""
+  particle: ENCHANT
+  particle_count: 15
+  particle_speed: 1.0
+  particle_height: 0.0
+
+cloud_kill:
+  slot: KILL_PARTICLE
+  name: "云雾击杀"
+  permission: "chotentech.cosmetic.cloud_kill"
+  material: WHITE_WOOL
+  model: ""
+  particle: CLOUD
+  particle_count: 10
+  particle_speed: 0.3
+  particle_height: 0.0
+
+# ===== 击杀信息 (KILL_MESSAGE) =====
+default_kill_msg:
+  slot: KILL_MESSAGE
+  name: "默认击杀信息"
+  permission: "chotentech.cosmetic.default_kill_msg"
+  material: PAPER
+  model: ""
+  particle: ""
+  particle_count: 0
+  particle_speed: 0.0
+  particle_height: 0.0
+  message_format: "<yellow>%player% <gray>击杀了 <red>%target%"
+
+epic_kill_msg:
+  slot: KILL_MESSAGE
+  name: "史诗击杀信息"
+  permission: "chotentech.cosmetic.epic_kill_msg"
+  material: ENCHANTED_BOOK
+  model: ""
+  particle: ""
+  particle_count: 0
+  particle_speed: 0.0
+  particle_height: 0.0
+  message_format: "<gold>⚔ <yellow>%player% <gold>用神威击杀了 <red>%target% <gold>⚔"
+
+headshot_kill_msg:
+  slot: KILL_MESSAGE
+  name: "爆头击杀信息"
+  permission: "chotentech.cosmetic.headshot_kill_msg"
+  material: ARROW
+  model: ""
+  particle: ""
+  particle_count: 0
+  particle_speed: 0.0
+  particle_height: 0.0
+  message_format: "<aqua>☠ <white>%player% <aqua>一枪爆头击杀了 <red>%target% <aqua>☠"
+
+anime_kill_msg:
+  slot: KILL_MESSAGE
+  name: "动漫击杀信息"
+  permission: "chotentech.cosmetic.anime_kill_msg"
+  material: FIREWORK_STAR
+  model: ""
+  particle: ""
+  particle_count: 0
+  particle_speed: 0.0
+  particle_height: 0.0
+  message_format: "<light_purple>✨ <white>%player% <light_purple>用华丽的招式击败了 <red>%target% <light_purple>✨"
+
+void_kill_msg:
+  slot: KILL_MESSAGE
+  name: "虚空击杀信息"
+  permission: "chotentech.cosmetic.void_kill_msg"
+  material: ENDER_EYE
+  model: ""
+  particle: ""
+  particle_count: 0
+  particle_speed: 0.0
+  particle_height: 0.0
+  message_format: "<dark_gray>◈ <dark_purple>%player% <dark_gray>将 <red>%target% <dark_gray>拖入了无尽的虚空 <dark_gray>◈"
+
+# ===== 粒子环绕 (AURA) — 螺旋风格 =====
+dragon_spiral:
+  slot: AURA
+  name: "龙息螺旋"
+  permission: "chotentech.cosmetic.dragon_spiral"
+  material: DRAGON_BREATH
+  model: ""
+  particle: DRAGON_BREATH
+  particle_count: 8
+  particle_speed: 0.15
+  particle_height: 0.5
+  particle_radius: 1.0
+  particle_pattern: spiral
+
+dust_spiral:
+  slot: AURA
+  name: "星尘螺旋"
+  permission: "chotentech.cosmetic.dust_spiral"
+  material: GLOWSTONE_DUST
+  model: ""
+  particle: DUST_PLUME
+  particle_count: 10
+  particle_speed: 0.2
+  particle_height: 0.6
+  particle_radius: 0.9
+  particle_pattern: spiral
+
+nautilus_spiral:
+  slot: AURA
+  name: "螺壳螺旋"
+  permission: "chotentech.cosmetic.nautilus_spiral"
+  material: NAUTILUS_SHELL
+  model: ""
+  particle: NAUTILUS
+  particle_count: 6
+  particle_speed: 0.12
+  particle_height: 0.7
+  particle_radius: 1.1
+  particle_pattern: spiral
+
+sculk_spiral:
+  slot: AURA
+  name: "幽匿螺旋"
+  permission: "chotentech.cosmetic.sculk_spiral"
+  material: SCULK_CATALYST
+  model: ""
+  particle: SCULK_CHARGE
+  particle_count: 7
+  particle_speed: 0.18
+  particle_height: 0.4
+  particle_radius: 0.8
+  particle_pattern: spiral
+
+# ===== 粒子环绕 (AURA) — 波浪风格 =====
+glow_wave:
+  slot: AURA
+  name: "荧光波浪"
+  permission: "chotentech.cosmetic.glow_wave"
+  material: GLOW_INK_SAC
+  model: ""
+  particle: GLOW
+  particle_count: 8
+  particle_speed: 0.1
+  particle_height: 0.5
+  particle_radius: 1.0
+  particle_pattern: wave
+
+gust_wave:
+  slot: AURA
+  name: "狂风波浪"
+  permission: "chotentech.cosmetic.gust_wave"
+  material: WIND_CHARGE
+  model: ""
+  particle: GUST
+  particle_count: 6
+  particle_speed: 0.2
+  particle_height: 0.6
+  particle_radius: 1.2
+  particle_pattern: wave
+
+firefly_wave:
+  slot: AURA
+  name: "流萤波浪"
+  permission: "chotentech.cosmetic.firefly_wave"
+  material: LANTERN
+  model: ""
+  particle: FIREFLY
+  particle_count: 6
+  particle_speed: 0.08
+  particle_height: 0.8
+  particle_radius: 0.9
+  particle_pattern: wave
+
+sonic_wave:
+  slot: AURA
+  name: "音爆波浪"
+  permission: "chotentech.cosmetic.sonic_wave"
+  material: SCULK_SHRIEKER
+  model: ""
+  particle: SONIC_BOOM
+  particle_count: 4
+  particle_speed: 0.25
+  particle_height: 0.3
+  particle_radius: 1.5
+  particle_pattern: wave
+
+# ===== 粒子环绕 (AURA) — 更多粒子类型 =====
+wax_aura:
+  slot: AURA
+  name: "蜂蜡散射"
+  permission: "chotentech.cosmetic.wax_aura"
+  material: HONEYCOMB
+  model: ""
+  particle: WAX_OFF
+  particle_count: 5
+  particle_speed: 0.05
+  particle_height: 0.5
+  particle_radius: 0.7
+  particle_pattern: scatter
+
+ominous_aura:
+  slot: AURA
+  name: "不祥光环"
+  permission: "chotentech.cosmetic.ominous_aura"
+  material: OMINOUS_BOTTLE
+  model: ""
+  particle: OMINOUS_SPAWNING
+  particle_count: 8
+  particle_speed: 0.0
+  particle_height: 1.6
+  particle_radius: 0.8
+  particle_pattern: halo
+
+totem_halo:
+  slot: AURA
+  name: "图腾光环"
+  permission: "chotentech.cosmetic.totem_halo"
+  material: TOTEM_OF_UNDYING
+  model: ""
+  particle: TOTEM_OF_UNDYING
+  particle_count: 10
+  particle_speed: 0.0
+  particle_height: 1.8
+  particle_radius: 0.7
+  particle_pattern: halo
+
+# ===== 脚步粒子 (FOOTSTEP) — 更多类型 =====
+dragon_footstep:
+  slot: FOOTSTEP
+  name: "龙息足迹"
+  permission: "chotentech.cosmetic.dragon_footstep"
+  material: DRAGON_BREATH
+  model: ""
+  particle: DRAGON_BREATH
+  particle_count: 2
+  particle_speed: 0.03
+  particle_height: 0.0
+
+glow_footstep:
+  slot: FOOTSTEP
+  name: "荧光足迹"
+  permission: "chotentech.cosmetic.glow_footstep"
+  material: GLOW_INK_SAC
+  model: ""
+  particle: GLOW
+  particle_count: 2
+  particle_speed: 0.02
+  particle_height: 0.0
+
+spore_footstep:
+  slot: FOOTSTEP
+  name: "孢子足迹"
+  permission: "chotentech.cosmetic.spore_footstep"
+  material: SPORE_BLOSSOM
+  model: ""
+  particle: SPORE_BLOSSOM
+  particle_count: 2
+  particle_speed: 0.04
+  particle_height: 0.0
+
+cherry_footstep:
+  slot: FOOTSTEP
+  name: "樱花足迹"
+  permission: "chotentech.cosmetic.cherry_footstep"
+  material: CHERRY_LEAVES
+  model: ""
+  particle: CHERRY_LEAVES
+  particle_count: 2
+  particle_speed: 0.03
+  particle_height: 0.0

@@ -1,0 +1,84 @@
+停车场玻璃门:
+  name: 停车场玻璃门
+
+  agent:
+    onAlready: 
+      - tell color "&6这个电源已经启动了。"
+    onPrepare: 
+      - title color "&e&l!" subtitle color "&c&l电源已激活"
+      - command papi inline "broadcast <white>宜居地带颓垣区停车场有未经授权的活动。<yellow>{{ &powername }}</yellow>电源的供电程序将在<green>30秒</green>后开始。" as console
+    onStart: 
+      - command papi inline "broadcast <white>宜居地带中<yellow>{{ &powername }}</yellow>电源的供电程序已开始运作。" as console
+    onClose: 
+      - command papi inline "broadcast <white>宜居地带中<yellow>{{ &powername }}</yellow>电源的供电程序正在停止。" as console
+    onCloseEnd: 
+      - command papi inline "broadcast <white>宜居地带中<yellow>{{ &powername }}</yellow>电源的供电程序已正常关闭。" as console
+
+  leverPos:
+    world: "Area1"
+    x: 9914
+    y: 12
+    z: 11
+
+  openDelaySeconds: 30
+  activeDurationSeconds: 100
+
+  openingAnimation:
+    enabled: true
+    particle: END_ROD
+    particleCount: 40
+    sound: BLOCK_LEVER_CLICK
+    volume: 1.0
+    pitch: 1.0
+    durationTicks: 3
+    intervalTicks: 2
+
+  closingAnimation:
+    enabled: true
+    particle: SMOKE_NORMAL
+    particleCount: 20
+
+  obstacles:
+    gate1:
+      id: "gate1"
+      mode: RESTORE_BLOCKS
+
+#      blocks:
+#        0:
+#          world: "world"
+#          x: 101
+#          y: 64
+#          z: 200
+#        1:
+#          world: "world"
+#          x: 102
+#          y: 64
+#          z: 200
+      cuboid:
+        pos1:
+          world: "Area1"
+          x: 9981
+          y: 11
+          z: 59
+        pos2:
+          world: "Area1"
+          x: 9974
+          y: 14
+          z: 59
+
+      sequentialConfig:
+        enabled: true
+        openDirection: LEFT_TO_RIGHT
+        reverseOnClose: true
+        blocksPerStep: 1
+        stepDelayTicks: 3
+
+        openEffect:
+          enabled: true
+          particle: WHITE_SMOKE
+          count: 8
+
+        closeEffect:
+          enabled: true
+          particle: WHITE_SMOKE
+          count: 6

@@ -1,0 +1,23 @@
+interfere_trade:
+  name: 贸易集团通商
+  score:
+    perfect:
+      MEG: 40
+      BNTG: 80
+      UEC: 20
+    success:
+      MEG: 25
+      BNTG: 50
+      UEC: 10
+    neutral:
+      MEG: 5
+      BNTG: 10
+      UEC: 5
+    fail:
+      MEG: -20
+      BNTG: -40
+      UEC: -10
+    full_fail:
+      MEG: -50
+      BNTG: -100
+      UEC: -30

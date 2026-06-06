@@ -132,6 +132,9 @@ object ChoTenDataCommand {
 
                             }
                         }
+                        suggestion<CommandSender> { _, _ ->
+                            listOf("100.0", "50.0", "10.0", "1.0", "-10.0")
+                        }
                     }
                     suggestion<CommandSender> { sender, context ->
                         listOf("+","-","=")
@@ -215,6 +218,9 @@ object ChoTenDataCommand {
                             val current = ReputationManager.getReputation(player, faction)
                             sender.sendComponent("<green>已将 ${player.name} 的 $faction 信誉设为 <yellow>$current")
                         }
+                        suggestion<CommandSender> { _, _ ->
+                            listOf("100", "500", "1000", "-500")
+                        }
                     }
                     suggestion<CommandSender> { _, _ ->
                         listOf("+", "-", "=")
@@ -259,11 +265,17 @@ object ChoTenDataCommand {
                             val current = ReputationManager.getAffection(player, npc)
                             sender.sendComponent("<green>已将 ${player.name} 对 $npc 的好感度设为 <yellow>$current")
                         }
+                        suggestion<CommandSender> { _, _ ->
+                            listOf("100", "500", "1000", "-500")
+                        }
                     }
                     suggestion<CommandSender> { _, _ ->
                         listOf("+", "-", "=")
                     }
                 }
+            }
+            suggestion<CommandSender> { _, _ ->
+                listOf("NPC_A", "NPC_B")
             }
         }
     }

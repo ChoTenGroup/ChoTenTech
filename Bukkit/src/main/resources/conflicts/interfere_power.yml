@@ -1,0 +1,23 @@
+interfere_power:
+  name: 权力斗争
+  score:
+    perfect:
+      MEG: 80
+      BNTG: 20
+      UEC: -60
+    success:
+      MEG: 50
+      BNTG: 15
+      UEC: -40
+    neutral:
+      MEG: -20
+      BNTG: 10
+      UEC: 10
+    fail:
+      MEG: -80
+      BNTG: 30
+      UEC: 60
+    full_fail:
+      MEG: -150
+      BNTG: 40
+      UEC: 100

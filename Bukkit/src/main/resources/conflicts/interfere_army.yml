@@ -1,0 +1,23 @@
+interfere_army:
+  name: 毛瑟兵变
+  score:
+    perfect:
+      MEG: 100
+      BNTG: 10
+      UEC: -80
+    success:
+      MEG: 60
+      BNTG: 10
+      UEC: -50
+    neutral:
+      MEG: -30
+      BNTG: 20
+      UEC: 20
+    fail:
+      MEG: -100
+      BNTG: 30
+      UEC: 80
+    full_fail:
+      MEG: -180
+      BNTG: 40
+      UEC: 120

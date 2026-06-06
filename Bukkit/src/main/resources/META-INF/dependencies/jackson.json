@@ -1,0 +1,98 @@
+[
+  {
+    "value": "com.fasterxml.jackson.core:jackson-annotations:2.16.1",
+    "relocate": [
+      "com.fasterxml.jackson",
+      "io.github.zzzyyylllty.chotentech.attribute.dep.jackson"
+    ],
+    "repository": "https://repo1.maven.org/maven2",
+    "transitive": true,
+    "ignoreOptional": false,
+    "ignoreException": false,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  },
+  {
+    "value": "com.fasterxml.jackson.module:jackson-module-kotlin:2.16.1",
+    "relocate": [
+      "com.fasterxml.jackson",
+      "io.github.zzzyyylllty.chotentech.attribute.dep.jackson"
+    ],
+    "repository": "https://repo1.maven.org/maven2",
+    "transitive": true,
+    "ignoreOptional": false,
+    "ignoreException": false,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  },
+  {
+    "value": "com.fasterxml.jackson.core:jackson-databind:2.16.1",
+    "relocate": [
+      "com.fasterxml.jackson",
+      "io.github.zzzyyylllty.chotentech.attribute.dep.jackson"
+    ],
+    "repository": "https://repo1.maven.org/maven2",
+    "transitive": true,
+    "ignoreOptional": false,
+    "ignoreException": false,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  },
+  {
+    "value": "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.16.1",
+    "relocate": [
+      "com.fasterxml.jackson",
+      "io.github.zzzyyylllty.chotentech.attribute.dep.jackson"
+    ],
+    "repository": "https://repo1.maven.org/maven2",
+    "transitive": true,
+    "ignoreOptional": false,
+    "ignoreException": false,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  },
+  {
+    "value": "com.fasterxml.jackson.dataformat:jackson-dataformat-toml:2.16.1",
+    "relocate": [
+      "com.fasterxml.jackson",
+      "io.github.zzzyyylllty.chotentech.attribute.dep.jackson"
+    ],
+    "repository": "https://repo1.maven.org/maven2",
+    "transitive": true,
+    "ignoreOptional": false,
+    "ignoreException": false,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  },
+  {
+    "value": "com.fasterxml.jackson.core:jackson-annotations:2.16.1",
+    "relocate": [
+      "com.fasterxml.jackson",
+      "io.github.zzzyyylllty.chotentech.attribute.dep.jackson"
+    ],
+    "repository": "https://repo1.maven.org/maven2",
+    "transitive": true,
+    "ignoreOptional": false,
+    "ignoreException": false,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  }
+]

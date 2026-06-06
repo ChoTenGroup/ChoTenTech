@@ -1,0 +1,23 @@
+interfere_office:
+  name: 办公室紧急状态
+  score:
+    perfect:
+      MEG: 70
+      BNTG: 15
+      UEC: -50
+    success:
+      MEG: 40
+      BNTG: 10
+      UEC: -30
+    neutral:
+      MEG: -15
+      BNTG: 5
+      UEC: 5
+    fail:
+      MEG: -70
+      BNTG: 25
+      UEC: 50
+    full_fail:
+      MEG: -130
+      BNTG: 35
+      UEC: 90

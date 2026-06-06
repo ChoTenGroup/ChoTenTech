@@ -1,0 +1,72 @@
+[
+  {
+    "value": "net.kyori:adventure-text-serializer-legacy:4.25.0",
+    "relocate": [
+      "net.kyori",
+      "io.github.zzzyyylllty.chotentech.attribute.dep.kyori"
+    ],
+    "test": [
+      "net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer"
+    ],
+    "transitive": false,
+    "ignoreOptional": false,
+    "ignoreException": false,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  },
+  {
+    "value": "net.kyori:adventure-text-serializer-gson:4.25.0",
+    "relocate": [
+      "net.kyori",
+      "io.github.zzzyyylllty.chotentech.attribute.dep.kyori"
+    ],
+    "test": [
+      "net.kyori.adventure.text.serializer.gson.GsonComponentSerializer"
+    ],
+    "transitive": false,
+    "ignoreOptional": false,
+    "ignoreException": false,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  },
+  {
+    "value": "net.kyori:adventure-api:4.25.0",
+    "relocate": [
+      "net.kyori",
+      "io.github.zzzyyylllty.chotentech.attribute.dep.kyori"
+    ],
+    "test": [],
+    "transitive": false,
+    "ignoreOptional": false,
+    "ignoreException": false,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  },
+  {
+    "value": "net.kyori:adventure-text-minimessage:4.25.0",
+    "relocate": [
+      "net.kyori",
+      "io.github.zzzyyylllty.chotentech.attribute.dep.kyori"
+    ],
+    "test": [
+      "net.kyori.adventure.text.minimessage.MiniMessage"
+    ],
+    "transitive": false,
+    "ignoreOptional": false,
+    "ignoreException": false,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  }
+]
