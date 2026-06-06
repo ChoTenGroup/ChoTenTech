@@ -1,0 +1,23 @@
+interfere_stopworrying:
+  name: 奇爱博士
+  score:
+    perfect:
+      MEG: 85
+      BNTG: -40
+      UEC: -80
+    success:
+      MEG: 50
+      BNTG: -25
+      UEC: -50
+    neutral:
+      MEG: -10
+      BNTG: 0
+      UEC: 0
+    fail:
+      MEG: -85
+      BNTG: 30
+      UEC: 70
+    full_fail:
+      MEG: -170
+      BNTG: 50
+      UEC: 130

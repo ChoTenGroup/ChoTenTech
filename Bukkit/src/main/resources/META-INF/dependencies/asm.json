@@ -1,0 +1,46 @@
+[
+  {
+    "value": "org.ow2.asm:asm:9.2",
+    "repository": "https://repo1.maven.org/maven2",
+    "ignoreOptional": false,
+    "ignoreException": false,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  },
+  {
+    "value": "org.ow2.asm:asm-util:9.2",
+    "repository": "https://repo1.maven.org/maven2",
+    "ignoreOptional": false,
+    "ignoreException": false,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  },
+  {
+    "value": "org.ow2.asm:asm-tree:9.2",
+    "repository": "https://repo1.maven.org/maven2",
+    "ignoreOptional": false,
+    "ignoreException": false,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  },
+  {
+    "value": "org.ow2.asm:asm-analysis:9.2",
+    "repository": "https://repo1.maven.org/maven2",
+    "ignoreOptional": false,
+    "ignoreException": false,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  }
+]

@@ -1,0 +1,254 @@
+发电站主电梯:
+  name: 发电站主电梯
+
+  agent:
+    onAlready:
+      - tell color "&6这个电源已经启动了。"
+    onPrepare:
+      - title color "&e&l!" subtitle color "&c&l电源已激活"
+      - command papi inline "broadcast <white>发电站安保人员注意，<yellow>主电梯</yellow>供电程序正在激活。" as console
+    onStart:
+      - command papi inline "broadcast <white>发电站安保人员注意，<yellow>主电梯</yellow>供电程序已完成初始化并成功激活。当前剩余电力预计可维持五分钟。外按钮已可使用。" as console
+    onClose:
+      - command papi inline "broadcast <white>发电站安保人员注意，<yellow>主电梯</yellow>供电程序即将停止。" as console
+    onCloseEnd:
+      - command papi inline "broadcast <white>发电站安保人员注意，<yellow>主电梯</yellow>供电程序已停止。" as console
+
+  leverPos:
+    world: "Area2"
+    x: 30023
+    y: 10
+    z: 93
+
+  openDelaySeconds: 10
+  activeDurationSeconds: 300
+
+  openingAnimation:
+    enabled: true
+    particle: END_ROD
+    particleCount: 20
+    sound: BLOCK_LEVER_CLICK
+    volume: 1.0
+    pitch: 1.0
+    durationTicks: 20
+    intervalTicks: 2
+
+  closingAnimation:
+    enabled: true
+    particle: SMOKE_NORMAL
+    particleCount: 15
+
+  obstacles:
+    elevator_main:
+      id: "elevator_main"
+      mode: ELEVATOR_DOORS
+      cuboid:
+        pos1:
+          world: "Area2"
+          x: 30124
+          y: 9
+          z: 57
+        pos2:
+          world: "Area2"
+          x: 30124
+          y: 12
+          z: 59
+      elevator:
+        externalButton:
+          world: "Area2"
+          x: 30123
+          y: 9
+          z: 60
+        internalButton:
+          world: "Area2"
+          x: 30125
+          y: 9
+          z: 56
+        noclipPointName: "主电梯"
+        noclipArea1:
+          world: "Area2"
+          x: 30124
+          y: 8
+          z: 56
+        noclipArea2:
+          world: "Area2"
+          x: 30129
+          y: 12
+          z: 60
+        doorOpenDurationSeconds: 5
+        doorOpenSound: BLOCK_IRON_DOOR_OPEN
+        doorCloseSound: BLOCK_IRON_DOOR_CLOSE
+        doorOpenParticle: SMOKE
+        doorCloseParticle: SMOKE
+        soundVolume: 1.0
+        soundPitch: 1.0
+
+发电站二楼货梯:
+  name: 发电站二楼货梯
+
+  agent:
+    onAlready:
+      - tell color "&6这个电源已经启动了。"
+    onPrepare:
+      - title color "&e&l!" subtitle color "&c&l电源已激活"
+      - command papi inline "broadcast <white>发电站安保人员注意，<yellow>货运电梯</yellow>供电程序正在激活。" as console
+    onStart:
+      - command papi inline "broadcast <white>发电站安保人员注意，<yellow>货运电梯</yellow>供电程序已完成初始化并成功激活。当前剩余电力预计可维持五分钟。外按钮已可使用。" as console
+    onClose:
+      - command papi inline "broadcast <white>发电站安保人员注意，<yellow>货运电梯</yellow>供电程序即将停止。" as console
+    onCloseEnd:
+      - command papi inline "broadcast <white>发电站安保人员注意，<yellow>货运电梯</yellow>供电程序已停止。" as console
+
+  leverPos:
+    world: "Area2"
+    x: 29904
+    y: 10
+    z: 60
+
+  openDelaySeconds: 10
+  activeDurationSeconds: 300
+
+  openingAnimation:
+    enabled: true
+    particle: END_ROD
+    particleCount: 20
+    sound: BLOCK_LEVER_CLICK
+    volume: 1.0
+    pitch: 1.0
+    durationTicks: 20
+    intervalTicks: 2
+
+  closingAnimation:
+    enabled: true
+    particle: SMOKE_NORMAL
+    particleCount: 15
+
+  obstacles:
+    elevator_cargo:
+      id: "elevator_cargo"
+      mode: ELEVATOR_DOORS
+      cuboid:
+        pos1:
+          world: "Area2"
+          x: 30006
+          y: 9
+          z: 107
+        pos2:
+          world: "Area2"
+          x: 30008
+          y: 12
+          z: 107
+      elevator:
+        externalButton:
+          world: "Area2"
+          x: 30009
+          y: 9
+          z: 108
+        internalButton:
+          world: "Area2"
+          x: 30005
+          y: 9
+          z: 106
+        noclipPointName: "二楼货梯"
+        noclipArea1:
+          world: "Area2"
+          x: 30005
+          y: 8
+          z: 102
+        noclipArea2:
+          world: "Area2"
+          x: 30009
+          y: 12
+          z: 107
+        doorOpenDurationSeconds: 5
+        doorOpenSound: BLOCK_IRON_DOOR_OPEN
+        doorCloseSound: BLOCK_IRON_DOOR_CLOSE
+        doorOpenParticle: SMOKE
+        doorCloseParticle: SMOKE
+        soundVolume: 1.0
+        soundPitch: 1.0
+
+发电站旅馆木梯:
+  name: 发电站旅馆木梯
+
+  agent:
+    onAlready: 
+      - tell color "&6这个电源已经启动了。"
+    onPrepare: 
+      - title color "&e&l!" subtitle color "&c&l电源已激活"
+      - command papi inline "broadcast <white>发电站工作人员须知，<yellow>旅馆木梯</yellow>开始提供电力，正在变压为旧版电力电压，可能需要更长时间..." as console
+    onStart: 
+      - command papi inline "broadcast <white>发电站工作人员须知，<yellow>旅馆木梯</yellow>变压已完成，当前可维持约10分钟电力，请工作人员尽快前往地点。" as console
+    onClose: 
+      - command papi inline "broadcast <white>发电站工作人员须知，<yellow>旅馆木梯</yellow>供电程序正在停止。" as console
+    onCloseEnd: 
+      - command papi inline "broadcast <white>发电站工作人员须知，<yellow>旅馆木梯</yellow>供电程序已正常退出。" as console
+
+  leverPos:
+    world: "Area2"
+    x: 30122
+    y: 10
+    z: 93
+
+  openDelaySeconds: 25
+  activeDurationSeconds: 600
+
+  openingAnimation:
+    enabled: true
+    particle: WAX_ON
+    particleCount: 20
+    sound: BLOCK_LEVER_CLICK
+    volume: 1.0
+    pitch: 1.0
+    durationTicks: 20
+    intervalTicks: 2
+
+  closingAnimation:
+    enabled: true
+    particle: SMOKE_NORMAL
+    particleCount: 15
+
+  obstacles:
+    gate1:
+      id: "gate1"
+      mode: RESTORE_BLOCKS
+
+#      blocks:
+#        0:
+#          world: "world"
+#          x: 101
+#          y: 64
+#          z: 200
+#        1:
+#          world: "world"
+#          x: 102
+#          y: 64
+#          z: 200
+      cuboid:
+        pos1:
+          world: "Area2"
+          x: 30081
+          y: 5
+          z: 164
+        pos2:
+          world: "Area3"
+          x: 30081
+          y: 2
+          z: 166
+
+      sequentialConfig:
+        enabled: true
+        openDirection: TOP_TO_BOTTOM
+        reverseOnClose: true
+        blocksPerStep: 3
+        stepDelayTicks: 50
+
+        openEffect:
+          enabled: true
+          particle: WAX_ON
+          count: 12
+
+        closeEffect:
+          enabled: true
+          particle: WAX_OFF
+          count: 12

@@ -1,0 +1,19 @@
+tutorial:
+  world: world
+  name: '教学关卡*'
+  cluster: I
+  sdclass: '1'
+  number: 0
+  author: AkaCandyKAngel
+  tip: '外观类似于一家零售店的储藏后室。这里是你开始的地方。 *新手引导区域*'
+  noclips: 
+    - target: 'level-1'
+      noclipPointLoc: 'world 19887 192 -149 19879 198 -142'
+      targetLoc: 'Area0 -6 14 6'
+      successRate: 100
+      time: 5.0
+      name: '引导任务结束'
+      rangeDecay: 50.0
+      hunger: 1.0
+      damage: 1.0
+      cooldown: 5.0

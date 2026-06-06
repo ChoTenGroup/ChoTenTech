@@ -1,0 +1,20 @@
+[
+  {
+    "value": "com.google.code.gson:gson:2.10.1",
+    "test": [
+      "com.google.gson.Gson"
+    ],
+    "relocate": [
+      "com.google.gson",
+      "io.github.zzzyyylllty.chotentech.attribute.dep.gson"
+    ],
+    "transitive": true,
+    "ignoreOptional": false,
+    "ignoreException": false,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "external": true
+  }
+]

@@ -1,0 +1,23 @@
+interfere_skirmish:
+  name: 宜居地带冲突
+  score:
+    perfect:
+      MEG: 90
+      BNTG: 20
+      UEC: -70
+    success:
+      MEG: 55
+      BNTG: 15
+      UEC: -45
+    neutral:
+      MEG: -25
+      BNTG: 10
+      UEC: 15
+    fail:
+      MEG: -90
+      BNTG: 30
+      UEC: 70
+    full_fail:
+      MEG: -160
+      BNTG: 45
+      UEC: 110
