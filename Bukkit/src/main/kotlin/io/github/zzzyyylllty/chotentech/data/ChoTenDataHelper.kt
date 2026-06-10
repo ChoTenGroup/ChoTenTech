@@ -7,6 +7,7 @@ import io.github.zzzyyylllty.chotentech.ChoTenTech.sharedNoclipSessions
 import io.github.zzzyyylllty.chotentech.data.DataManager.getDataByCID
 import io.github.zzzyyylllty.chotentech.data.DataManager.releaseData
 import io.github.zzzyyylllty.chotentech.function.player.getPlayerLevel
+import io.github.zzzyyylllty.chotentech.function.timer.cleanupNoclipState
 import io.github.zzzyyylllty.chotentech.util.devLog
 import io.github.zzzyyylllty.chotentech.util.jsonUtils
 import io.github.zzzyyylllty.chotentech.util.toComponent
@@ -561,8 +562,9 @@ object DataManager {
     @SubscribeEvent
     fun onQuit(e: PlayerQuitEvent) {
         val player = e.player
+        val uuid = player.uniqueId.toString()
+        cleanupNoclipState(uuid)
         submitAsync {
-            val uuid = player.uniqueId.toString()
             for (session in sharedNoclipSessions.values) {
                 session.playersInRange.remove(uuid)
                 session.paidBy.remove(uuid)

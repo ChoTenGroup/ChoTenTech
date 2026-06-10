@@ -16,6 +16,7 @@ import io.github.zzzyyylllty.chotentech.function.noclip.ConditionResult
 import io.github.zzzyyylllty.chotentech.function.noclip.NoclipConditionChecker
 import io.github.zzzyyylllty.chotentech.function.noclip.RandomNoclipSelector
 import io.github.zzzyyylllty.chotentech.function.player.sendComponent
+import io.github.zzzyyylllty.chotentech.util.toComponent
 import org.bukkit.Location
 import org.bukkit.Sound
 import org.bukkit.entity.Player
@@ -39,18 +40,8 @@ fun onPlayerSneak(event: PlayerToggleSneakEvent) {
 // 当玩家离开切出点时：noclipcooldown<0,noclippoint==null,noclipping=false
 // 当玩家完成切出时：noclipcooldown>0,noclippoint==null,noclipping=false
 
-    // 如果玩家没有下蹲，设置切出点为null，切出中为false
-    // 但 autoNoclip 的切出点或电梯触发的切出不因松开潜行而取消
+    // 如果玩家没有下蹲或没有低头，不处理（离开区域由计时器检测取消）
     if (!event.isSneaking || player.location.pitch <= 85f) {
-        if (data != null && data.noclipping
-            && data.noclipPoint?.autoNoclip != true
-            && !PowerManager.elevatorNoclipPlayers.contains(uuid)
-        ) {
-            playerDataMap[uuid] = data.copy(noclipping = false, noclipPoint = null)
-            player.playSound(player, Sound.ENTITY_ENDER_EYE_DEATH, 1F, 0.5F)
-            player.sendComponent("<gradient:red:#550000>切出已取消")
-            return
-        }
         return
     }
 
@@ -69,20 +60,20 @@ fun onPlayerSneak(event: PlayerToggleSneakEvent) {
     data = playerDataMap[uuid] ?: return
     var foundAnyNoclipPoint = false
     if (data.noclipPoint == null) {
-        player.playSound(player, Sound.ENTITY_ENDER_EYE_LAUNCH, 1F, 0.5F)
-        player.sendComponent("<#66CCFF>正在尝试切出。")
         val (check, foundAny) = checkPlayerRegion(player, data, levelsList)
         foundAnyNoclipPoint = foundAny
         if (check != null) {
             playerDataMap[uuid] = check
             data = playerDataMap[uuid] ?: return
-            player.sendComponent("<#66CCFF>正在尝试切出，请注意松开潜行会导致取消。")
+            player.playSound(player, Sound.ENTITY_ENDER_EYE_LAUNCH, 1F, 0.5F)
+            player.sendActionBar("<green>保持在切出点内".toComponent())
         }
     }
 
     if (playerDataMap[uuid]?.noclipPoint == null && !foundAnyNoclipPoint) {
         data.setCooldownSec(10.0)
         player.sendComponent("<#FF6666>此处不是切出点。")
+        player.sendActionBar("<red>此处不是切出点".toComponent())
     }
 }
 
@@ -107,6 +98,7 @@ fun checkPlayerRegion(
         val enabledNames = RandomNoclipSelector.getEnabledNoclips(player.uniqueId.toString(), levelObj)
 
         for (noclipPoint in levels) {
+            if (noclipPoint.autoNoclip) continue
             if (noclipPoint.name != null && noclipPoint.name !in enabledNames) continue
 
             val isInNoclipPoint = checkPlayerIsInNoclipPoint(player, noclipPoint)
@@ -125,7 +117,6 @@ fun checkPlayerRegion(
                     ), true)
                 }
                 is ConditionResult.NeedsSubmission -> {
-                    // Try both item and car, then re-check all conditions
                     NoclipConditionChecker.trySubmitItems(player, noclipPoint)
                     NoclipConditionChecker.trySubmitCar(player, noclipPoint)
                     val finalCheck = NoclipConditionChecker.checkConditions(player, noclipPoint)
@@ -139,15 +130,15 @@ fun checkPlayerRegion(
                             ), true)
                         }
                         is ConditionResult.Blocked -> {
-                            if (finalCheck.message != null) player.sendComponent("<red>${finalCheck.message}")
+                            player.sendActionBar((finalCheck.message ?: "需要满足条件").toComponent())
                         }
                         is ConditionResult.NeedsSubmission -> {
-                            if (finalCheck.message != null) player.sendComponent("<red>${finalCheck.message}")
+                            player.sendActionBar((finalCheck.message ?: "需要满足条件").toComponent())
                         }
                     }
                 }
                 is ConditionResult.Blocked -> {
-                    if (condResult.message != null) player.sendComponent("<red>${condResult.message}")
+                    player.sendActionBar((condResult.message ?: "需要满足条件").toComponent())
                 }
             }
         }

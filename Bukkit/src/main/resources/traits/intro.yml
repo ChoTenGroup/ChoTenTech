@@ -1,0 +1,30 @@
+weak_heart:
+  score: 800
+  name: 脆弱的心脏
+  default: true
+  lore: |-
+    以更差更脆弱的健康状况开始。
+  decoration: |-
+    你切不过我你信不信?
+  effect:
+    - setattr:
+        max_health: 60
+  group: health
+  conflict:
+    - group:health # 与其他分类为 health 的特质冲突
+
+_heart:
+  score: -400
+  name: 脆弱的心脏
+  default: true
+  lore: |-
+    以更的健康状况开始。
+  decoration: |-
+    你切不过我你信不信?
+  effect:
+    - setattr:
+        max_health: 60
+  group: health
+  conflict:
+    - group:health # 与其他分类为 health 的特质冲突
+
