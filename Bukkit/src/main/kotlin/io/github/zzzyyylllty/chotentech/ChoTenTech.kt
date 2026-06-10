@@ -10,6 +10,7 @@ import io.github.zzzyyylllty.chotentech.data.IDType
 import io.github.zzzyyylllty.chotentech.data.Level
 import io.github.zzzyyylllty.chotentech.data.PlayerData
 import io.github.zzzyyylllty.chotentech.data.PlayerHUDData
+import io.github.zzzyyylllty.chotentech.data.SharedNoclipSession
 import io.github.zzzyyylllty.chotentech.data.PowerManager.onReload
 import io.github.zzzyyylllty.chotentech.data.SurvivalDifficulty
 import io.github.zzzyyylllty.chotentech.punish.PunishManager
@@ -96,6 +97,10 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
     val playerDataMap = ConcurrentHashMap<String, PlayerData>()
     val playerHudMap = ConcurrentHashMap<String, PlayerHUDData>()
     val loadedChunk = ConcurrentHashMap<io.github.zzzyyylllty.chotentech.data.ChunkPos, ChunkProvince>()
+    val playerRandomNoclips = ConcurrentHashMap<String, Set<String>>()
+    val restartRandomNoclips = ConcurrentHashMap<String, Set<String>>()
+    val sharedNoclipSessions = ConcurrentHashMap<String, SharedNoclipSession>()
+    val sessionUnlockedNoclips = ConcurrentHashMap<String, Boolean>()
 
     val dateTimeFormatter: DateTimeFormatter by lazy { DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss") }
     var devMode = true

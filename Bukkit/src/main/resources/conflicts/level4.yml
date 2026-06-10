@@ -1,7 +1,7 @@
 level4almond:
   name: Level 4 杏仁水危机
   score:
-    perfect:
+    full_success:
       MEG: 75
       BNTG: 20
       UEC: -75

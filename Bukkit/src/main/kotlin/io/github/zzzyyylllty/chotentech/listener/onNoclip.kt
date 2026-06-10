@@ -12,6 +12,9 @@ import io.github.zzzyyylllty.chotentech.data.Level
 import io.github.zzzyyylllty.chotentech.data.NoclipPoint
 import io.github.zzzyyylllty.chotentech.data.PlayerData
 import io.github.zzzyyylllty.chotentech.data.PowerManager
+import io.github.zzzyyylllty.chotentech.function.noclip.ConditionResult
+import io.github.zzzyyylllty.chotentech.function.noclip.NoclipConditionChecker
+import io.github.zzzyyylllty.chotentech.function.noclip.RandomNoclipSelector
 import io.github.zzzyyylllty.chotentech.function.player.sendComponent
 import org.bukkit.Location
 import org.bukkit.Sound
@@ -64,10 +67,12 @@ fun onPlayerSneak(event: PlayerToggleSneakEvent) {
         return
     }
     data = playerDataMap[uuid] ?: return
+    var foundAnyNoclipPoint = false
     if (data.noclipPoint == null) {
         player.playSound(player, Sound.ENTITY_ENDER_EYE_LAUNCH, 1F, 0.5F)
         player.sendComponent("<#66CCFF>正在尝试切出。")
-        val check = checkPlayerRegion(player, data, levelsList)
+        val (check, foundAny) = checkPlayerRegion(player, data, levelsList)
+        foundAnyNoclipPoint = foundAny
         if (check != null) {
             playerDataMap[uuid] = check
             data = playerDataMap[uuid] ?: return
@@ -75,7 +80,7 @@ fun onPlayerSneak(event: PlayerToggleSneakEvent) {
         }
     }
 
-    if (playerDataMap[uuid]?.noclipPoint == null) {
+    if (playerDataMap[uuid]?.noclipPoint == null && !foundAnyNoclipPoint) {
         data.setCooldownSec(10.0)
         player.sendComponent("<#FF6666>此处不是切出点。")
     }
@@ -86,34 +91,68 @@ fun checkPlayerRegion(
     player: Player,
     list: PlayerData,
     level: LinkedHashMap<String, Level>,
-): PlayerData? {
+): Pair<PlayerData?, Boolean> {
     val world = BukkitAdapter.adapt(player.world)
     val loc: Location = player.location
     val container = WorldGuard.getInstance().platform.regionContainer
-    val regions = container.get(world) ?: return null
+    val regions = container.get(world) ?: return Pair(null, false)
     val playerInRegions: ApplicableRegionSet =
         regions.getApplicableRegions(BlockVector3.at(loc.x.toInt(), loc.y.toInt(), loc.z.toInt()))
-    // ^ 获取玩家在的区域
+
+    var foundAnyPoint = false
 
     for (playerLevel in playerInRegions) {
-        // 获取每一个玩家所在的区域
-        val levels = level[playerLevel.id]?.noclips
-        if (levels != null) {
-            for (noclipPoint in levels) {
-                val isInNoclipPoint = checkPlayerIsInNoclipPoint(player, noclipPoint)
-                if (isInNoclipPoint) {
-                    // 如果符合条件，则将切出区设置为区域
-                    return list.copy(
+        val levelObj = level[playerLevel.id] ?: continue
+        val levels = levelObj.noclips
+        val enabledNames = RandomNoclipSelector.getEnabledNoclips(player.uniqueId.toString(), levelObj)
+
+        for (noclipPoint in levels) {
+            if (noclipPoint.name != null && noclipPoint.name !in enabledNames) continue
+
+            val isInNoclipPoint = checkPlayerIsInNoclipPoint(player, noclipPoint)
+            if (!isInNoclipPoint) continue
+
+            foundAnyPoint = true
+
+            val condResult = NoclipConditionChecker.checkConditions(player, noclipPoint)
+            when (condResult) {
+                is ConditionResult.Allowed -> {
+                    return Pair(list.copy(
                         noclipPoint = noclipPoint,
                         noclipTimeEnd = System.currentTimeMillis() + (noclipPoint.noclippingTime * 1000).roundToLong(),
                         noclipCooldownEnd = System.currentTimeMillis() + (noclipPoint.cooldown * 1000).roundToLong(),
                         noclipping = true
-                    )
+                    ), true)
+                }
+                is ConditionResult.NeedsSubmission -> {
+                    // Try both item and car, then re-check all conditions
+                    NoclipConditionChecker.trySubmitItems(player, noclipPoint)
+                    NoclipConditionChecker.trySubmitCar(player, noclipPoint)
+                    val finalCheck = NoclipConditionChecker.checkConditions(player, noclipPoint)
+                    when (finalCheck) {
+                        is ConditionResult.Allowed -> {
+                            return Pair(list.copy(
+                                noclipPoint = noclipPoint,
+                                noclipTimeEnd = System.currentTimeMillis() + (noclipPoint.noclippingTime * 1000).roundToLong(),
+                                noclipCooldownEnd = System.currentTimeMillis() + (noclipPoint.cooldown * 1000).roundToLong(),
+                                noclipping = true
+                            ), true)
+                        }
+                        is ConditionResult.Blocked -> {
+                            if (finalCheck.message != null) player.sendComponent("<red>${finalCheck.message}")
+                        }
+                        is ConditionResult.NeedsSubmission -> {
+                            if (finalCheck.message != null) player.sendComponent("<red>${finalCheck.message}")
+                        }
+                    }
+                }
+                is ConditionResult.Blocked -> {
+                    if (condResult.message != null) player.sendComponent("<red>${condResult.message}")
                 }
             }
         }
     }
-    return null
+    return Pair(null, foundAnyPoint)
 }
 
 fun checkPlayerIsInNoclipPoint(

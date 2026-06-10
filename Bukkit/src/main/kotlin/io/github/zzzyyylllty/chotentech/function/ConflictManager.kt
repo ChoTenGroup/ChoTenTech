@@ -19,7 +19,7 @@ data class ActiveConflict(
     val configId: String,
     val name: String,
     val status: ConflictStatus,
-    val level: ResultLevel? = null,
+    val factionLevels: Map<String, ResultLevel> = emptyMap(),
     val startTime: Long,
     var endTime: Long? = null
 )
@@ -54,11 +54,24 @@ object ConflictManager {
         return true
     }
 
-    fun setParticipantLevel(playerUuid: String, level: ResultLevel): Boolean {
+    fun setFactionLevel(playerUuid: String, faction: String, level: ResultLevel): Boolean {
         val conflict = playerConflicts[playerUuid] ?: return false
         if (conflict.status == ConflictStatus.FINISHED) return false
-        playerConflicts[playerUuid] = conflict.copy(level = level)
+        val newLevels = conflict.factionLevels.toMutableMap()
+        newLevels[faction] = level
+        playerConflicts[playerUuid] = conflict.copy(factionLevels = newLevels)
         return true
+    }
+
+    fun removeFactionLevel(playerUuid: String, faction: String): Boolean {
+        val conflict = playerConflicts[playerUuid] ?: return false
+        if (conflict.status == ConflictStatus.FINISHED) return false
+        val newLevels = conflict.factionLevels.toMutableMap()
+        val removed = newLevels.remove(faction) != null
+        if (removed) {
+            playerConflicts[playerUuid] = conflict.copy(factionLevels = newLevels)
+        }
+        return removed
     }
 
     fun endConflict(playerUuid: String): List<ReputationManager.ReputationChange>? {
@@ -66,15 +79,16 @@ object ConflictManager {
         if (conflict.status == ConflictStatus.FINISHED) return null
 
         val config = conflictConfigs[conflict.configId] ?: return null
-        val level = conflict.level ?: return null
-        val score = config.scores[level] ?: return null
+        if (conflict.factionLevels.isEmpty()) return null
 
         val player = Bukkit.getPlayer(playerUuid)
         val changes = mutableListOf<ReputationManager.ReputationChange>()
         if (player != null && player.isOnline) {
             val data = playerDataMap[playerUuid]
             if (data != null) {
-                for ((faction, change) in score.changes) {
+                for ((faction, level) in conflict.factionLevels) {
+                    val score = config.scores[level] ?: continue
+                    val change = score.changes[faction] ?: continue
                     val current = data.reputation.getOrDefault(faction, 0L)
                     data.reputation[faction] = current + change
                     changes.add(ReputationManager.ReputationChange(faction, change))

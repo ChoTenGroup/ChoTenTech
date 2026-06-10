@@ -1,7 +1,7 @@
 interfere_skirmish:
   name: 宜居地带冲突
   score:
-    perfect:
+    full_success:
       MEG: 90
       BNTG: 20
       UEC: -70

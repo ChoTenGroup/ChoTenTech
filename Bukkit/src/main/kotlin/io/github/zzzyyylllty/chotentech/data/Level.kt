@@ -27,6 +27,8 @@ data class Level(
     val music: String?,
     val dmz: Boolean = false,
     val sanity: SanityLevelConfig? = null,
+    val randomNoclip: RandomNoclipMode? = null,
+    val randomGroups: List<List<String>>? = null,
 ) {
     fun getWorld() = Bukkit.getWorld(world)
     fun generateLore() : String{

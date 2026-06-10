@@ -1,5 +1,6 @@
 package io.github.zzzyyylllty.chotentech.attribute.listener
 
+import io.github.zzzyyylllty.chotentech.attribute.data.ModifierSource
 import io.github.zzzyyylllty.chotentech.attribute.manager.AttributeManager
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerJoinEvent
@@ -19,6 +20,8 @@ object AttributeListener {
 
     @SubscribeEvent
     fun onJoin(e: PlayerJoinEvent) {
+        // 清理残留的治疗减速修饰符
+        AttributeManager.removeModifiersByAttribute(e.player.uniqueId, "movement_speed", ModifierSource.HEALING)
         // 初始化基础属性当前值
         AttributeManager.initBasicAttributeCurrentForPlayer(e.player.uniqueId)
         // 同步+缓存

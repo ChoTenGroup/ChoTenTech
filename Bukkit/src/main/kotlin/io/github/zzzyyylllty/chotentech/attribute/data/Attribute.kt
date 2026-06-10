@@ -117,5 +117,6 @@ enum class ModifierSource {
     ARMOR,
     SKILL,
     POTION,
+    HEALING,
     OTHER
 }

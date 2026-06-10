@@ -311,7 +311,7 @@ object ChoTenDataCommand {
                         }
                     }
                     suggestion<CommandSender> { _, _ ->
-                        listOf("PERFECT", "SUCCESS", "NEUTRAL", "FAIL", "FULL_FAIL")
+                        listOf("FULL_SUCCESS", "SUCCESS", "NEUTRAL", "FAIL", "FULL_FAIL")
                     }
                 }
             }

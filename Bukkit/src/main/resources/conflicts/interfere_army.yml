@@ -1,7 +1,7 @@
 interfere_army:
   name: 毛瑟兵变
   score:
-    perfect:
+    full_success:
       MEG: 100
       BNTG: 10
       UEC: -80

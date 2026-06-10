@@ -1,14 +1,21 @@
 package io.github.zzzyyylllty.chotentech.function.timer
 
+import io.github.zzzyyylllty.chotentech.ChoTenTech
 import io.github.zzzyyylllty.chotentech.ChoTenTech.levelsList
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
 import io.github.zzzyyylllty.chotentech.data.ChoTenDataHelper
 import io.github.zzzyyylllty.chotentech.data.PowerManager
 import io.github.zzzyyylllty.chotentech.event.NoclipEvent
+import io.github.zzzyyylllty.chotentech.function.noclip.ConditionResult
+import io.github.zzzyyylllty.chotentech.function.noclip.NoclipConditionChecker
+import io.github.zzzyyylllty.chotentech.data.NoclipPoint
+import io.github.zzzyyylllty.chotentech.function.noclip.RandomNoclipSelector
 import io.github.zzzyyylllty.chotentech.listener.checkPlayerIsInNoclipPoint
 import io.github.zzzyyylllty.chotentech.player.sendComponent
+import io.github.zzzyyylllty.sertraline.function.kether.evalKetherValue
 import org.bukkit.Bukkit
 import org.bukkit.Sound
+import org.bukkit.entity.Player
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.function.submit
@@ -31,9 +38,6 @@ fun noclipTime() {
                 continue
             }
 
-            val tl = data.noclipTimeEnd
-
-
             if (data.noclipping) {
 
                 if ((data.noclipTimeEnd ?: 0) > System.currentTimeMillis()) {
@@ -53,10 +57,16 @@ fun noclipTime() {
                     if ((0..100).random() <= (data.noclipPoint?.basicSuccessRate ?: 60.0)) {
 
                         data.noclipPoint?.name?.let { data.exploreredNoclips[data.activeLevelStr]?.add(it) ?: data.activeLevelStr?.let { key -> data.exploreredNoclips.put(key, hashSetOf(it)) } }
-                        NoclipEvent(player, data.activeLevel?.name, data.noclipPoint?.name, data.noclipPoint?.targetLevel).call()
+                        val selectedLocation = data.noclipPoint?.let { selectTargetLocation(player, it) }
+                        val selectedTargetLevel = selectTargetLevel(data.noclipPoint?.targetLevel)
+                        NoclipEvent(player, data.activeLevel?.name, data.noclipPoint?.name, selectedTargetLevel).call()
                         // 切出成功
+                        val npForDropbag = playerDataMap[k]?.noclipPoint
                         submit {
-                            val location = playerDataMap[k]?.noclipPoint?.targetLocation
+                            val location = selectedLocation
+                            if (npForDropbag != null) {
+                                NoclipConditionChecker.enforceDropbagOnSuccess(player, npForDropbag)
+                            }
                             location?.let { player.teleport(it) }
                             ChoTenDataHelper(player).exitNoclip()
                             PowerManager.unmarkElevatorNoclip(k)
@@ -95,9 +105,15 @@ fun autoNoclipTimer() {
             if ((data.getCooldownLeftLong() ?: 0) > 0L) continue
 
             val level = data.activeLevel ?: continue
+            val enabledNames = RandomNoclipSelector.getEnabledNoclips(player.uniqueId.toString(), level)
             for (noclipPoint in level.noclips) {
                 if (!noclipPoint.autoNoclip) continue
+                if (noclipPoint.name != null && noclipPoint.name !in enabledNames) continue
                 if (!checkPlayerIsInNoclipPoint(player, noclipPoint)) continue
+
+                // Check conditions — skip silently if not met (auto-noclip is passive)
+                val condResult = NoclipConditionChecker.checkConditions(player, noclipPoint)
+                if (condResult !is ConditionResult.Allowed) continue
 
                 // 自动开始切出
                 data.noclipPoint = noclipPoint
@@ -110,4 +126,67 @@ fun autoNoclipTimer() {
             }
         }
     }
+}
+
+@Awake(LifeCycle.ACTIVE)
+fun sharedNoclipUpdateTimer() {
+    submitAsync(period = 40L) {
+        for ((sessionKey, session) in ChoTenTech.sharedNoclipSessions) {
+            val parts = sessionKey.split("::", limit = 2)
+            if (parts.size < 2) continue
+            val levelId = parts[0]
+            val noclipName = parts[1]
+
+            val level = ChoTenTech.levelsList[levelId] ?: continue
+            val noclipPoint = level.noclips.find { it.name == noclipName } ?: continue
+
+            for (player in Bukkit.getOnlinePlayers()) {
+                val uuid = player.uniqueId.toString()
+                if (checkPlayerIsInNoclipPoint(player, noclipPoint)) {
+                    session.playersInRange.add(uuid)
+                } else {
+                    session.playersInRange.remove(uuid)
+                    session.paidBy.remove(uuid)
+                }
+            }
+
+            if (session.playersInRange.isEmpty()) {
+                session.unlocked = false
+                session.paidBy.clear()
+                ChoTenTech.sharedNoclipSessions.remove(sessionKey)
+            }
+        }
+    }
+}
+
+private fun selectTargetLocation(player: Player, noclipPoint: NoclipPoint): Location? {
+    val weighted = noclipPoint.targetLocations
+    if (weighted.isNullOrEmpty()) return noclipPoint.targetLocation
+
+    val resolved = weighted.map { w ->
+        Pair(w.location, resolveWeight(player, w.weightExpr))
+    }
+    val totalWeight = resolved.sumOf { it.second }
+    if (totalWeight <= 0) return noclipPoint.targetLocation
+
+    var random = Math.random() * totalWeight
+    for ((loc, weight) in resolved) {
+        random -= weight
+        if (random <= 0) return loc
+    }
+    return resolved.last().first
+}
+
+private fun resolveWeight(player: Player, expr: String): Double {
+    val num = expr.toDoubleOrNull()
+    if (num != null) return num.coerceAtLeast(0.0)
+    val result = expr.evalKetherValue(player)
+    return (result as? Number)?.toDouble() ?: 0.0
+}
+
+private fun selectTargetLevel(targetLevel: String?): String? {
+    if (targetLevel == null) return null
+    val parts = targetLevel.split(";").map { it.trim() }.filter { it.isNotEmpty() }
+    if (parts.size <= 1) return targetLevel
+    return parts.random()
 }

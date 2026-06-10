@@ -47,7 +47,22 @@
       "Bash(git checkout *)",
       "Bash(JAVA_HOME=E:/jdk-21 ./gradlew compileKotlin)",
       "Bash(JAVA_HOME=E:/jdk-21 ./gradlew compileKotlin --no-daemon)",
-      "Bash(JAVA_HOME=E:/jdk-21 ./gradlew compileKotlin --info)"
+      "Bash(JAVA_HOME=E:/jdk-21 ./gradlew compileKotlin --info)",
+      "Bash(cmd *)",
+      "Bash(export JAVA_HOME=\"/mnt/e/jdk-21\")",
+      "Bash(cd /mnt/e/ChoTenTechbk/Bukkit)",
+      "Bash(/mnt/e/jdk-21/bin/java -version)",
+      "Bash(JAVA_HOME=\"/e/jdk-21\" /e/jdk-21/bin/java *)",
+      "Bash(JAVA_HOME=\"/e/jdk-21\" ./gradlew compileKotlin *)",
+      "Bash(where sh *)",
+      "Bash(PATH=\"/e/jdk-21/bin:$PATH\" JAVA_HOME=\"E:\\\\\\\\jdk-21\" java *)",
+      "Bash(/c/Windows/System32/cmd.exe *)",
+      "Bash(JAVA_HOME=\"/e/jdk-21\" PATH=\"/c/Program Files/Git/usr/bin:$PATH\" ./gradlew compileKotlin *)",
+      "Bash(PATH='/c/Program Files/Git/usr/bin:__TRACKED_VAR__' JAVA_HOME=/e/jdk-21 ./gradlew build)",
+      "Bash(jar tf *)",
+      "Bash(update-java-alternatives -l)",
+      "Bash(where java *)",
+      "Bash(JAVA_HOME='E:\\\\jdk-21' PATH='E:\\\\jdk-21\\\\bin:__TRACKED_VAR__' ./gradlew compileKotlin)"
     ]
   }
 }

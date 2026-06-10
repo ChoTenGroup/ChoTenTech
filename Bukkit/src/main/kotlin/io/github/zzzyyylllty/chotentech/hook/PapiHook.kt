@@ -57,20 +57,20 @@ object ExamplePapiHook : PlaceholderExpansion {
                 return (current/max*100).toString()
             }
             "externalinjury" -> return (round((player?.getData()?.externalInjury ?: 0.0)*100)/100).toString()
-            "maxexternalinjury" -> return (round((player?.getData()?.effectiveMaxExternalInjury ?: 0.0)*100)/100).toString()
+            "maxexternalinjury" -> return (round((player?.getData()?.maxExternalInjury ?: 0.0)*100)/100).toString()
             "externalinjurypercent" -> {
                 val data = player?.getData() ?: return "100"
                 val current = data.externalInjury
-                val max = data.effectiveMaxExternalInjury
+                val max = data.maxExternalInjury
                 if (max <= 0) return "100"
                 return (current/max*100).toString()
             }
             "internalinjury" -> return (round((player?.getData()?.internalInjury ?: 0.0)*100)/100).toString()
-            "maxinternalinjury" -> return (round((player?.getData()?.effectiveMaxInternalInjury ?: 0.0)*100)/100).toString()
+            "maxinternalinjury" -> return (round((player?.getData()?.maxInternalInjury ?: 0.0)*100)/100).toString()
             "internalinjurypercent" -> {
                 val data = player?.getData() ?: return "100"
                 val current = data.internalInjury
-                val max = data.effectiveMaxInternalInjury
+                val max = data.maxInternalInjury
                 if (max <= 0) return "100"
                 return (current/max*100).toString()
             }

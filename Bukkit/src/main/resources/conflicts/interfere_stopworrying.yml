@@ -1,7 +1,7 @@
 interfere_stopworrying:
   name: 奇爱博士
   score:
-    perfect:
+    full_success:
       MEG: 85
       BNTG: -40
       UEC: -80

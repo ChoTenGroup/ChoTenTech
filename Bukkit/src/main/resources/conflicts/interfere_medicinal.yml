@@ -1,7 +1,7 @@
 interfere_medicinal:
   name: 我不是药神
   score:
-    perfect:
+    full_success:
       MEG: 60
       BNTG: -20
       UEC: 30
