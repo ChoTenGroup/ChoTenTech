@@ -1,0 +1,27 @@
+Command_Error_Player_Not_Found=<red>玩家 <yellow>{0}</yellow> 未找到或不在线。
+Command_Error_Invalid_Value=<red>无效的值：<yellow>{0}</yellow>
+Command_Error_Invalid_Type=<red>无效的类型：<yellow>{0}</yellow>，可选值：ADD/PERCENT/MULTIPLY
+Command_Manage_Add_Success=<green>成功为 <yellow>{3}</yellow> 添加修饰符：<aqua>{0}</aqua> = <white>{1}</white> (<gray>{2}</gray>)
+Command_Manage_Set_Success=<green>成功为 <yellow>{3}</yellow> 设置修饰符：<aqua>{0}</aqua> = <white>{1}</white> (<gray>{2}</gray>)
+Command_Manage_Remove_Attempt=<yellow>尝试移除 <aqua>{1}</aqua> 的修饰符：<red>{0}</red>
+Command_Manage_Update_Success=<green>成功更新 <yellow>{0}</yellow> 的属性。
+Command_Manage_List_Header=<gold>--- <yellow>{0}</yellow> 的属性列表 ---
+Command_Manage_List_Empty=<gray>无修饰符。
+Command_Manage_List_Item=<aqua>{0}</aqua> = <white>{1}</white> (<gray>{2}</gray>) [<dark_gray>{3}</dark_gray>]
+Command_Manage_Clear_Success=<green>成功清除 <yellow>{0}</yellow> 的所有修饰符。
+Command_Debug_Show_Header=<gold>--- 属性调试信息 ---
+Command_Debug_Show_Item=<aqua>{0}</aqua> = <white>{1}</white>
+Dodge_Triggered=<aqua>闪避！
+Block_Triggered=<green>格挡！
+PremiumVersion=付费版
+FreeVersion=免费版
+WelcomeSeries=欢迎使用铊科技属性系统
+DesignBy=设计者：{0}
+SpecialThanks=特别鸣谢：{0}
+PoweredBy=基于 {0}
+Welcome1=铊科技属性系统已装载
+Welcome2={0} {1} 已装载，正在运行于 {2}
+Welcome3=源码及问题反馈：{0}
+Welcome4=项目地址(源)：{0}
+Welcome5=在线文档：{0}
+PremiumVersionWelcome=感谢购买 {0}，您的支持是我们更新的动力。

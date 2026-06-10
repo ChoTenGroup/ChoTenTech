@@ -25,7 +25,7 @@ fun onUseMedicalItem(event: PlayerInteractEvent) {
     if (event.hand != EquipmentSlot.HAND) return
 
     val player = event.player
-    if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) return
+//    if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) return
 
     val item = event.item ?: return
     val tag = item.getItemTag() ?: return

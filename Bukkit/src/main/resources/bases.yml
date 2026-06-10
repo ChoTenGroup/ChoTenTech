@@ -76,10 +76,10 @@ bases:
     start: "2000积分，大量且低价的食物供给，尚可的武器和装备。"
     region: "base-ome"
     spawn:
-      world: world
-      x: 0.0
-      y: 100.0
-      z: 0.0
+      world: Area3
+      x: 39970
+      y: 55
+      z: 8
       yaw: 0.0
       pitch: 0.0
 

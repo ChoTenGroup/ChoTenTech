@@ -1,0 +1,27 @@
+Command_Error_Player_Not_Found=<red>Player <yellow>{0}</yellow> not found or offline.
+Command_Error_Invalid_Value=<red>Invalid value: <yellow>{0}</yellow>
+Command_Error_Invalid_Type=<red>Invalid type: <yellow>{0}</yellow>, allowed: ADD/PERCENT/MULTIPLY
+Command_Manage_Add_Success=<green>Successfully added modifier to <yellow>{3}</yellow>: <aqua>{0}</aqua> = <white>{1}</white> (<gray>{2}</gray>)
+Command_Manage_Set_Success=<green>Successfully set modifier for <yellow>{3}</yellow>: <aqua>{0}</aqua> = <white>{1}</white> (<gray>{2}</gray>)
+Command_Manage_Remove_Attempt=<yellow>Attempting to remove modifier <red>{0}</red> from <aqua>{1}</aqua>
+Command_Manage_Update_Success=<green>Successfully updated attributes for <yellow>{0}</yellow>.
+Command_Manage_List_Header=<gold>--- <yellow>{0}</yellow>'s Attribute List ---
+Command_Manage_List_Empty=<gray>No modifiers.
+Command_Manage_List_Item=<aqua>{0}</aqua> = <white>{1}</white> (<gray>{2}</gray>) [<dark_gray>{3}</dark_gray>]
+Command_Manage_Clear_Success=<green>Successfully cleared all modifiers for <yellow>{0}</yellow>.
+Command_Debug_Show_Header=<gold>--- Attribute Debug Info ---
+Command_Debug_Show_Item=<aqua>{0}</aqua> = <white>{1}</white>
+Dodge_Triggered=<aqua>Dodged!
+Block_Triggered=<green>Blocked!
+PremiumVersion=Premium
+FreeVersion=Free
+WelcomeSeries=Welcome to ChoTenTech Attribute System
+DesignBy=Designed by: {0}
+SpecialThanks=Special thanks to: {0}
+PoweredBy=Powered by {0}
+Welcome1=ChoTenTech Attribute System loaded
+Welcome2={0} {1} loaded, running on {2}
+Welcome3=Source & Issues: {0}
+Welcome4=Project (Source): {0}
+Welcome5=Online Docs: {0}
+PremiumVersionWelcome=Thank you for purchasing {0}. Your support drives our updates.

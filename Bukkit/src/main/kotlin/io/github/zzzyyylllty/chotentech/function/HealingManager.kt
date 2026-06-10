@@ -8,6 +8,8 @@ import io.github.zzzyyylllty.chotentech.attribute.data.ModifierType
 import io.github.zzzyyylllty.chotentech.attribute.manager.AttributeManager
 import io.github.zzzyyylllty.chotentech.data.HealConfig
 import io.github.zzzyyylllty.chotentech.util.toComponent
+import io.github.zzzyyylllty.sertraline.item.rebuildDisplay
+import io.github.zzzyyylllty.sertraline.item.rebuildName
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -57,10 +59,11 @@ object HealingManager {
         return raw.asDouble() ?: raw.asString()?.toDoubleOrNull() ?: 0.0
     }
 
-    private fun setNbtDurability(item: ItemStack, value: Double) {
+    private fun setNbtDurability(item: ItemStack, value: Double, player: Player) {
         val tag = item.getItemTag() ?: return
         tag["sertraline_data"]?.asCompound()?.put("durability", floor(value))
         tag.saveTo(item)
+        item.rebuildDisplay(player)
     }
 
     fun enter(player: Player, config: HealConfig, item: ItemStack) {
@@ -135,6 +138,7 @@ object HealingManager {
         dur: Double,
         cap: Double,
         rate: Double,
+        player: Player,
         apply: (actual: Double) -> Unit
     ): Boolean {
         if (dur <= 0 || cap <= 0) return false
@@ -147,7 +151,7 @@ object HealingManager {
             item.amount -= 1
             return true
         }
-        setNbtDurability(item, newDur)
+        setNbtDurability(item, newDur, player)
         return false
     }
 
@@ -157,8 +161,8 @@ object HealingManager {
         item: ItemStack,
         dur: Double,
         cumulativeCap: Double,
-        missing: Double,
         rate: Double,
+        player: Player,
         apply: (actual: Double) -> Unit
     ): HealResult {
         val durabilityLimit = dur / rate
@@ -171,7 +175,7 @@ object HealingManager {
             item.amount -= 1
             return HealResult(0.0, true)
         }
-        setNbtDurability(item, newDur)
+        setNbtDurability(item, newDur, player)
         return HealResult(newDur, false)
     }
 
@@ -274,7 +278,7 @@ object HealingManager {
                         val missing = maxOf(maxHP - player.health, 0.0)
                         val cap = if (config.maxHeal == -1.0) missing else minOf(config.maxHeal, missing)
                         val d = getNbtDurability(item)
-                        consumed = tryInstantHeal(item, d, cap, config.healRate) { actual ->
+                        consumed = tryInstantHeal(item, d, cap, config.healRate, player) { actual ->
                             player.health = minOf(player.health + actual, maxHP)
                             state.totalHealedHP += actual
                         }
@@ -292,7 +296,7 @@ object HealingManager {
                         val missing = data.maxInternalInjury - data.internalInjury
                         val cap = minOf(config.maxIInjury, maxOf(missing, 0.0))
                         val d = getNbtDurability(item)
-                        consumed = tryInstantHeal(item, d, cap, config.iinjuryRate) { actual ->
+                        consumed = tryInstantHeal(item, d, cap, config.iinjuryRate, player) { actual ->
                             data.internalInjury = minOf(data.internalInjury + actual, data.maxInternalInjury)
                             state.totalHealedII += actual
                         }
@@ -310,7 +314,7 @@ object HealingManager {
                         val missing = data.maxExternalInjury - data.externalInjury
                         val cap = minOf(config.maxEInjury, maxOf(missing, 0.0))
                         val d = getNbtDurability(item)
-                        consumed = tryInstantHeal(item, d, cap, config.einjuryRate) { actual ->
+                        consumed = tryInstantHeal(item, d, cap, config.einjuryRate, player) { actual ->
                             data.externalInjury = minOf(data.externalInjury + actual, data.maxExternalInjury)
                             state.totalHealedEI += actual
                         }
@@ -380,7 +384,7 @@ object HealingManager {
                         val cumulativeCap = if (config.maxHeal == -1.0) speedCap
                             else minOf(speedCap, maxOf(config.maxHeal - state.totalHealedHP, 0.0))
                         if (cumulativeCap > 0 && hpMissing > 0) {
-                            val result = tryHealTick(item, dur, cumulativeCap, hpMissing, config.healRate) { actual ->
+                            val result = tryHealTick(item, dur, cumulativeCap, config.healRate, player) { actual ->
                                 player.health = minOf(player.health + actual, maxHP)
                                 state.totalHealedHP += actual
                             }
@@ -405,7 +409,7 @@ object HealingManager {
                         val speedCap = minOf(config.iinjurySpeed, iiMissing)
                         val cumulativeCap = minOf(speedCap, maxOf(config.maxIInjury - state.totalHealedII, 0.0))
                         if (cumulativeCap > 0 && iiMissing > 0) {
-                            val result = tryHealTick(item, dur, cumulativeCap, iiMissing, config.iinjuryRate) { actual ->
+                            val result = tryHealTick(item, dur, cumulativeCap, config.iinjuryRate, player) { actual ->
                                 data.internalInjury = minOf(data.internalInjury + actual, data.maxInternalInjury)
                                 state.totalHealedII += actual
                             }
@@ -430,7 +434,7 @@ object HealingManager {
                         val speedCap = minOf(config.einjurySpeed, eiMissing)
                         val cumulativeCap = minOf(speedCap, maxOf(config.maxEInjury - state.totalHealedEI, 0.0))
                         if (cumulativeCap > 0 && eiMissing > 0) {
-                            val result = tryHealTick(item, dur, cumulativeCap, eiMissing, config.einjuryRate) { actual ->
+                            val result = tryHealTick(item, dur, cumulativeCap, config.einjuryRate, player) { actual ->
                                 data.externalInjury = minOf(data.externalInjury + actual, data.maxExternalInjury)
                                 state.totalHealedEI += actual
                             }
