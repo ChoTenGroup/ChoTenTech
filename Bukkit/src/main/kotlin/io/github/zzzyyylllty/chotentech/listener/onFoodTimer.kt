@@ -43,8 +43,8 @@ fun foodTimer() {
             }
 
             // === Injury regen ===
-            data.externalInjury = minOf(data.externalInjury + defExternalInjuryRegen, data.effectiveMaxExternalInjury)
-            data.internalInjury = minOf(data.internalInjury + defInternalInjuryRegen, data.effectiveMaxInternalInjury)
+            data.externalInjury = minOf(data.externalInjury + defExternalInjuryRegen, data.maxExternalInjury)
+            data.internalInjury = minOf(data.internalInjury + defInternalInjuryRegen, data.maxInternalInjury)
 
             // === Consumption accumulation ===
             data.consumption += 1.0

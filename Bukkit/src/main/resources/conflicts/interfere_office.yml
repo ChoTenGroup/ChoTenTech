@@ -1,7 +1,7 @@
 interfere_office:
   name: 办公室紧急状态
   score:
-    perfect:
+    full_success:
       MEG: 70
       BNTG: 15
       UEC: -50

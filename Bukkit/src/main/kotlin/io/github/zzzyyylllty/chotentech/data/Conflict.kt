@@ -7,7 +7,7 @@ import taboolib.module.configuration.Configuration
 import java.io.File
 
 enum class ResultLevel(val displayName: String, val displayColor: String) {
-    PERFECT("完美", "<dark_green>"),
+    FULL_SUCCESS("完胜", "<dark_green>"),
     SUCCESS("成功", "<green>"),
     NEUTRAL("平手", "<yellow>"),
     FAIL("失败", "<red>"),

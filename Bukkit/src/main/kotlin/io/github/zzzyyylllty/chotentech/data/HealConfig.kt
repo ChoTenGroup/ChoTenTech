@@ -16,29 +16,46 @@ data class HealSound(
     }
 
     companion object {
+        val DEFAULT_PRE = HealSound("minecraft:item.armor.equip_leather", volume = 0.3f, pitch = 0.6f)
         val DEFAULT_START = HealSound("minecraft:entity.player.levelup", volume = 0.5f, pitch = 1.2f)
-        val DEFAULT_HEAL = HealSound("minecraft:block.note_block.pling", volume = 0.3f, pitch = 1.4f)
-        val DEFAULT_END = HealSound("minecraft:block.note_block.chime", volume = 0.4f, pitch = 0.8f)
+        val DEFAULT_HEAL = HealSound("minecraft:item.armor.equip_elytra", volume = 0.3f, pitch = 1.4f)
+        val DEFAULT_COMPLETE = HealSound("minecraft:block.note_block.bell", volume = 0.4f, pitch = 0.8f)
+        val DEFAULT_CANCEL = HealSound("minecraft:block.note_block.bass", volume = 0.3f, pitch = 0.5f)
+        val DEFAULT_EXHAUST = HealSound("minecraft:block.note_block.iron_xylophone", volume = 0.3f, pitch = 0.4f)
+        val DEFAULT_END = HealSound("minecraft:item.armor.equip_chain", volume = 0.4f, pitch = 0.8f)
+        val DEFAULT_ALREADY_FULL = HealSound("minecraft:block.note_block.guitar", volume = 0.3f, pitch = 0.5f)
+        val DEFAULT_CAP_REACHED = HealSound("minecraft:entity.experience_orb.pickup", volume = 0.3f, pitch = 0.6f)
     }
 }
 
 data class HealConfig(
     val durability: Double,
-    val maxDurability: Double,   // for display only, defaults to durability
-    val maxHeal: Double,         // -1 = infinite, 0/null = can't heal HP
-    val healSpeed: Double,       // -1 = instant, 0/null = can't heal HP
-    val healRate: Double,        // default 1
-    val iinjurySpeed: Double,    // 0/null = can't heal internal injury
-    val iinjuryRate: Double,     // default 1
-    val einjurySpeed: Double,    // 0/null = can't heal external injury
-    val einjuryRate: Double,     // default 1
-    val maxIInjury: Double,      // 0/null = can't heal internal injury
-    val maxEInjury: Double,      // 0/null = can't heal external injury
-    val slow: Double,            // speed reduction percentage (0-100)
-    val cancelHeal: Set<String>, // walk, sprint, jump, attack, fall
+    val maxDurability: Double,
+    val preTime: Double,         // seconds before first heal, default 2
+    val perTime: Double,         // seconds between heals, default 1
+    val postTime: Double,        // seconds of endlag, default 2
+    val maxHeal: Double,
+    val healSpeed: Double,
+    val healRate: Double,
+    val iinjurySpeed: Double,
+    val iinjuryRate: Double,
+    val einjurySpeed: Double,
+    val einjuryRate: Double,
+    val maxIInjury: Double,
+    val maxEInjury: Double,
+    val costFood: Double,
+    val costSan: Double,
+    val slow: Double,
+    val cancelHeal: Set<String>,
+    val soundPre: HealSound,
     val soundStart: HealSound,
     val soundHeal: HealSound,
-    val soundEnd: HealSound
+    val soundComplete: HealSound,
+    val soundCancel: HealSound,
+    val soundExhaust: HealSound,
+    val soundEnd: HealSound,
+    val soundAlreadyFull: HealSound,
+    val soundCapReached: HealSound
 )
 
 val DEFAULT_CANCEL_CONDITIONS = setOf("walk", "sprint", "jump", "attack", "fall")
@@ -60,22 +77,39 @@ private fun parseSoundConfig(data: ItemTagData?): HealSound? {
 
 fun ItemTag.parseHealConfig(): HealConfig? {
     val heal = this["heal"]?.asCompound() ?: return null
+    val sData = this["sertraline_data"]?.asCompound()
 
-    val durability = heal["durability"]?.asDouble() ?: return null
-    val maxDurability = heal["maxdurability"]?.asDouble() ?: durability
+    val durability = sData?.get("durability")?.let {
+        it.asDouble() ?: it.asString()?.toDoubleOrNull()
+    } ?: return null
+    val maxDurability = sData["maxdurability"]?.let {
+        it.asDouble() ?: it.asString()?.toDoubleOrNull()
+    } ?: durability
 
     fun d(key: String, default: Double = 0.0): Double =
         heal[key]?.asDouble() ?: default
 
+    val timeCompound = heal["time"]?.asCompound()
+    val preTime = timeCompound?.get("pre")?.let { it.asDouble() ?: it.asString()?.toDoubleOrNull() } ?: 2.0
+    val perTime = timeCompound?.get("per")?.let { it.asDouble() ?: it.asString()?.toDoubleOrNull() } ?: 1.0
+    val postTime = timeCompound?.get("post")?.let { it.asDouble() ?: it.asString()?.toDoubleOrNull() } ?: 2.0
+
     val cancelHeal: Set<String> = heal["cancelheal"]?.asList()?.mapNotNull {
         it?.asString()?.lowercase()
     }?.toSet() ?: DEFAULT_CANCEL_CONDITIONS
+
+    val costCompound = heal["cost"]?.asCompound()
+    val costFood = costCompound?.get("food")?.let { it.asDouble() ?: it.asString()?.toDoubleOrNull() } ?: 0.0
+    val costSan = costCompound?.get("san")?.let { it.asDouble() ?: it.asString()?.toDoubleOrNull() } ?: 0.0
 
     val soundCompound = heal["sound"]?.asCompound()
 
     return HealConfig(
         durability = durability,
         maxDurability = maxDurability,
+        preTime = maxOf(preTime, 0.0),
+        perTime = maxOf(perTime, 1.0),
+        postTime = maxOf(postTime, 0.0),
         maxHeal = d("maxheal"),
         healSpeed = d("healspeed"),
         healRate = d("healrate", 1.0),
@@ -85,14 +119,18 @@ fun ItemTag.parseHealConfig(): HealConfig? {
         einjuryRate = d("einjuryrate", 1.0),
         maxIInjury = d("maxiinjury"),
         maxEInjury = d("maxeinjury"),
-        slow = d("slow"),
+        costFood = costFood,
+        costSan = costSan,
+        slow = d("slow", 50.0),
         cancelHeal = cancelHeal,
+        soundPre = parseSoundConfig(soundCompound?.get("pre")) ?: HealSound.DEFAULT_PRE,
         soundStart = parseSoundConfig(soundCompound?.get("start")) ?: HealSound.DEFAULT_START,
         soundHeal = parseSoundConfig(soundCompound?.get("heal")) ?: HealSound.DEFAULT_HEAL,
-        soundEnd = parseSoundConfig(soundCompound?.get("end")) ?: HealSound.DEFAULT_END
+        soundComplete = parseSoundConfig(soundCompound?.get("complete")) ?: HealSound.DEFAULT_COMPLETE,
+        soundCancel = parseSoundConfig(soundCompound?.get("cancel")) ?: HealSound.DEFAULT_CANCEL,
+        soundExhaust = parseSoundConfig(soundCompound?.get("exhaust")) ?: HealSound.DEFAULT_EXHAUST,
+        soundEnd = parseSoundConfig(soundCompound?.get("end")) ?: HealSound.DEFAULT_END,
+        soundAlreadyFull = parseSoundConfig(soundCompound?.get("alreadyfull")) ?: HealSound.DEFAULT_ALREADY_FULL,
+        soundCapReached = parseSoundConfig(soundCompound?.get("capreached")) ?: HealSound.DEFAULT_CAP_REACHED
     )
-}
-
-fun ItemTagData?.isHealItem(): Boolean {
-    return this?.asCompound()?.containsKey("heal") == true
 }

@@ -1,7 +1,7 @@
 interfere_trade:
   name: 贸易集团通商
   score:
-    perfect:
+    full_success:
       MEG: 40
       BNTG: 80
       UEC: 20

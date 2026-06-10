@@ -2,9 +2,10 @@ package io.github.zzzyyylllty.chotentech.listener
 
 import io.github.zzzyyylllty.chotentech.data.parseHealConfig
 import io.github.zzzyyylllty.chotentech.function.HealingManager
+import io.github.zzzyyylllty.chotentech.function.HealingPhase
+import io.github.zzzyyylllty.chotentech.function.PostReason
 import io.github.zzzyyylllty.chotentech.util.toComponent
 import org.bukkit.GameMode
-import org.bukkit.Material
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
@@ -38,18 +39,7 @@ fun onUseMedicalItem(event: PlayerInteractEvent) {
         return
     }
 
-    // Consume item: reduce tag durability, remove only if depleted
-    if (player.gameMode != GameMode.CREATIVE) {
-        val durability = tag["heal"]?.asCompound()?.get("durability")?.asDouble() ?: 0.0
-        if (durability > 1.0) {
-            tag["heal"]?.asCompound()?.put("durability", durability - 1.0)
-            tag.saveTo(item)
-        } else {
-            item.amount = item.amount - 1
-        }
-    }
-
-    HealingManager.enter(player, config)
+    HealingManager.enter(player, config, item)
 }
 
 // ======= Cancel conditions =======
@@ -58,35 +48,39 @@ fun onUseMedicalItem(event: PlayerInteractEvent) {
 fun onHealingMove(event: PlayerMoveEvent) {
     val player = event.player
     val state = HealingManager.getState(player.uniqueId) ?: return
+    if (state.phase == HealingPhase.POST) return
+
+    // PRE phase: only pitch-look-up cancels
+    if (state.phase == HealingPhase.PRE) {
+        if (player.pitch < -80f) {
+            HealingManager.cancel(player, PostReason.CANCELLED)
+        }
+        return
+    }
+
     val cancel = state.config.cancelHeal
 
-    // Pitch > 80 (looking up) exits healing
+    // Pitch > 80 (looking up) cancels
     if (player.pitch < -80f) {
-        HealingManager.exit(player)
-        player.sendActionBar("<green>已退出治疗模式".toComponent())
+        HealingManager.cancel(player, PostReason.CANCELLED)
         return
     }
 
     // Walk cancel
     if (cancel.contains("walk") && event.hasExplicitlyChangedPosition()) {
-        HealingManager.exit(player)
-        player.sendActionBar("<red>移动导致治疗中断".toComponent())
+        HealingManager.cancel(player, PostReason.CANCELLED)
         return
     }
 
     // Sprint cancel
     if (cancel.contains("sprint") && player.isSprinting) {
-        HealingManager.exit(player)
-        player.sendActionBar("<red>疾跑导致治疗中断".toComponent())
+        HealingManager.cancel(player, PostReason.CANCELLED)
         return
     }
 
-
-
     // Jump cancel: upward movement while not on ground
     if (cancel.contains("jump") && event.to.y > event.from.y && !player.isOnGround) {
-        HealingManager.exit(player)
-        player.sendActionBar("<red>跳跃导致治疗中断".toComponent())
+        HealingManager.cancel(player, PostReason.CANCELLED)
         return
     }
 }
@@ -96,12 +90,11 @@ fun onHealingAttacked(event: EntityDamageByEntityEvent) {
     if (event.entity !is Player) return
     val player = event.entity as Player
     val state = HealingManager.getState(player.uniqueId) ?: return
+    if (state.phase == HealingPhase.POST) return
     if (!state.config.cancelHeal.contains("attack")) return
 
-    // Only cancel if attacked by a living entity (not poison/wither/etc)
     if (event.damager is LivingEntity) {
-        HealingManager.exit(player)
-        player.sendActionBar("<red>受到攻击，治疗中断".toComponent())
+        HealingManager.cancel(player, PostReason.CANCELLED)
     }
 }
 
@@ -110,17 +103,17 @@ fun onHealingFallDamage(event: EntityDamageEvent) {
     if (event.entity !is Player) return
     val player = event.entity as Player
     val state = HealingManager.getState(player.uniqueId) ?: return
+    if (state.phase == HealingPhase.POST) return
     if (!state.config.cancelHeal.contains("fall")) return
     if (event.cause != EntityDamageEvent.DamageCause.FALL) return
 
-    HealingManager.exit(player)
-    player.sendActionBar("<red>摔落导致治疗中断".toComponent())
+    HealingManager.cancel(player, PostReason.CANCELLED)
 }
 
 @SubscribeEvent
 fun onHealingSwitchItem(event: PlayerItemHeldEvent) {
     val player = event.player
-    if (!HealingManager.isHealing(player.uniqueId)) return
-    HealingManager.exit(player)
-    player.sendActionBar("<green>已切换物品，退出治疗模式".toComponent())
+    if (!HealingManager.isInHealingOrPost(player.uniqueId)) return
+    event.isCancelled = true
+    player.sendActionBar("<red>治疗中，无法切换物品".toComponent())
 }

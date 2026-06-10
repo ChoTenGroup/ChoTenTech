@@ -1,7 +1,7 @@
 interfere_coal:
   name: 煤炭监狱
   score:
-    perfect:
+    full_success:
       MEG: 70
       BNTG: 10
       UEC: -40

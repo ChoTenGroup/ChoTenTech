@@ -1,11 +1,26 @@
 package io.github.zzzyyylllty.chotentech.listener
 
+import io.github.zzzyyylllty.chotentech.attribute.manager.AttributeManager
 import io.github.zzzyyylllty.chotentech.data.ChoTenDataHelper
 import org.bukkit.GameMode
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityDamageEvent
+import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.SubscribeEvent
 import kotlin.collections.get
+
+@SubscribeEvent(priority = EventPriority.LOW)
+fun onFallSneakProtect(event: EntityDamageEvent) {
+    if (event.entity !is Player) return
+    if (event.cause != EntityDamageEvent.DamageCause.FALL) return
+    val player = event.entity as Player
+    if (!player.isSneaking) return
+
+    val protect = AttributeManager.getAttributeValue(player, "sneak_protect").let {
+        if (it > 0) it else 20.0
+    }
+    event.damage *= (1.0 - protect / 100.0).coerceIn(0.0, 1.0)
+}
 
 @SubscribeEvent
 fun onPlayerDamage(event: EntityDamageEvent) {

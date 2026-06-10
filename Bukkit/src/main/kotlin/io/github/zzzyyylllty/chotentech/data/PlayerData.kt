@@ -76,9 +76,7 @@ data class PlayerData (
     var maxCustomSaturation: Double = defMaxCustomSaturation,
     var consumption: Double = 0.0,
     var externalInjury: Double = defExternalInjury,
-    var maxExternalInjury: Double = defMaxExternalInjury,
     var internalInjury: Double = defInternalInjury,
-    var maxInternalInjury: Double = defMaxInternalInjury,
     var sanityRegeneration: Double = defSanityRegen,
     // NPC uuid/id -> affection value
     var affection: MutableMap<String, Long> = mutableMapOf(),
@@ -100,6 +98,8 @@ data class PlayerData (
     var tape: Long = 0L,
     var goldentape: Long = 0L,
 
+    var unlockedNoclips: MutableSet<String> = mutableSetOf(),
+
     @kotlin.jvm.Transient
     var activeLevelStr: String? = null
 ) {
@@ -116,8 +116,8 @@ data class PlayerData (
     val effectiveMaxSanity: Double get() = attrMax("max_sanity", maxSanity)
     val effectiveSanityRegeneration: Double get() = attrMax("sanity_regeneration", sanityRegeneration)
     val effectiveMaxDarkness: Double get() = attrMax("max_darkness", maxDarkness)
-    val effectiveMaxExternalInjury: Double get() = attrMax("external_injury", maxExternalInjury)
-    val effectiveMaxInternalInjury: Double get() = attrMax("internal_injury", maxInternalInjury)
+    val maxExternalInjury: Double get() = attrMax("external_injury", defMaxExternalInjury)
+    val maxInternalInjury: Double get() = attrMax("internal_injury", defMaxInternalInjury)
 
     fun getCooldownLeftLong(): Long? {
         return noclipCooldownEnd?.minus(Instant.now().toEpochMilli())
@@ -126,8 +126,9 @@ data class PlayerData (
         return noclipTimeEnd?.minus(Instant.now().toEpochMilli())
     }
     fun setCooldownSec(sec: Double) {
-        val current = noclipCooldownEnd ?: Instant.now().toEpochMilli()
-        noclipCooldownEnd =  (noclipTimeEnd ?: current) + round(sec * 1000).toLong()
+        val now = Instant.now().toEpochMilli()
+        val base = maxOf(noclipCooldownEnd ?: now, now)
+        noclipCooldownEnd = maxOf((noclipTimeEnd ?: base), now) + round(sec * 1000).toLong()
     }
 }
 

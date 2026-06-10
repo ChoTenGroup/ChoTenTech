@@ -3,6 +3,7 @@ package io.github.zzzyyylllty.chotentech.data
 import io.github.zzzyyylllty.chotentech.ChoTenTech.config
 import io.github.zzzyyylllty.chotentech.ChoTenTech.loadedChunk
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
+import io.github.zzzyyylllty.chotentech.ChoTenTech.sharedNoclipSessions
 import io.github.zzzyyylllty.chotentech.data.DataManager.getDataByCID
 import io.github.zzzyyylllty.chotentech.data.DataManager.releaseData
 import io.github.zzzyyylllty.chotentech.function.player.getPlayerLevel
@@ -13,6 +14,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.key.Key as AdventureKey
 import net.kyori.adventure.sound.Sound as AdventureSound
+import net.kyori.adventure.sound.SoundStop as AdventureSoundStop
 import net.kyori.adventure.title.Title
 import org.bukkit.Bukkit
 import org.bukkit.Chunk
@@ -41,6 +43,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import kotlin.math.roundToLong
 
 fun emptyData(player: Player): PlayerData {
     return PlayerData(
@@ -559,6 +562,11 @@ object DataManager {
     fun onQuit(e: PlayerQuitEvent) {
         val player = e.player
         submitAsync {
+            val uuid = player.uniqueId.toString()
+            for (session in sharedNoclipSessions.values) {
+                session.playersInRange.remove(uuid)
+                session.paidBy.remove(uuid)
+            }
             releaseData(player)
         }
     }
@@ -680,15 +688,17 @@ class ChoTenDataHelper(val player: Player) {
     }
 
     fun exitNoclip() {
-        data.setCooldownSec(data.noclipPoint?.cooldown ?: 10.0)
+        data.noclipCooldownEnd = System.currentTimeMillis() + ((data.noclipPoint?.cooldown ?: 10.0) * 1000).roundToLong()
         data.noclipPoint = null
         data.noclipping = false
+        data.noclipTimeEnd = null
     }
 
     fun updateLevel() {
         val newLevelId = player.getPlayerLevel()?.id
         if (newLevelId == null || newLevelId == data.activeLevelStr) return
 
+        val oldLevelId = data.activeLevelStr
         val isNew = data.exploreredLevels.add(newLevelId)
         data.activeLevelStr = newLevelId
 
@@ -699,6 +709,13 @@ class ChoTenDataHelper(val player: Player) {
                 player.sendMessage("<gray>${level.generateLore()}".toComponent())
             }
         }
+
+        // Reset EACH-mode random noclip selections
+        if (oldLevelId != null) {
+            io.github.zzzyyylllty.chotentech.function.noclip.RandomNoclipSelector.resetPlayerRandom(player.uniqueId.toString(), oldLevelId)
+        }
+
+        resetAndPlayLevelMusic()
     }
 
     fun activeLevel(): Level? {
@@ -739,30 +756,37 @@ class ChoTenDataHelper(val player: Player) {
 
     // 外伤
     fun addExternalInjury(amount: Double) {
-        data.externalInjury = minOf(data.externalInjury + amount, data.effectiveMaxExternalInjury)
+        data.externalInjury = minOf(data.externalInjury + amount, data.maxExternalInjury)
     }
     fun removeExternalInjury(amount: Double) {
         data.externalInjury = maxOf(data.externalInjury - amount, 0.0)
     }
     fun setExternalInjury(amount: Double) {
-        data.externalInjury = amount.coerceIn(0.0, data.effectiveMaxExternalInjury)
+        data.externalInjury = amount.coerceIn(0.0, data.maxExternalInjury)
     }
     fun resetExternalInjury() {
-        data.externalInjury = data.effectiveMaxExternalInjury
+        data.externalInjury = data.maxExternalInjury
     }
 
     // 内伤
     fun addInternalInjury(amount: Double) {
-        data.internalInjury = minOf(data.internalInjury + amount, data.effectiveMaxInternalInjury)
+        data.internalInjury = minOf(data.internalInjury + amount, data.maxInternalInjury)
     }
     fun removeInternalInjury(amount: Double) {
         data.internalInjury = maxOf(data.internalInjury - amount, 0.0)
     }
     fun setInternalInjury(amount: Double) {
-        data.internalInjury = amount.coerceIn(0.0, data.effectiveMaxInternalInjury)
+        data.internalInjury = amount.coerceIn(0.0, data.maxInternalInjury)
     }
     fun resetInternalInjury() {
-        data.internalInjury = data.effectiveMaxInternalInjury
+        data.internalInjury = data.maxInternalInjury
+    }
+
+    fun resetAndPlayLevelMusic() {
+        data.lastMusicPlayTime = 0L
+        data.musicReplayDelay = 0L
+        player.stopSound(AdventureSoundStop.source(AdventureSound.Source.MUSIC))
+        playLevelMusic()
     }
 
     fun playLevelMusic() {
@@ -775,7 +799,8 @@ class ChoTenDataHelper(val player: Player) {
         if (now - data.lastMusicPlayTime < data.musicReplayDelay) return
         data.lastMusicPlayTime = now
         data.musicReplayDelay = (120000L..300000L).random()
-        val soundKey = if (music.contains(':')) music else "kangelsound:$music"
-        player.playSound(AdventureSound.sound(AdventureKey.key(soundKey), AdventureSound.Source.MUSIC, 1f, 1f))
+        val pitch = 0.9 + ((data.sanity / data.maxSanity) * 0.25)
+        val soundKey = if (music.contains(':')) music else "kangel:$music"
+        player.playSound(AdventureSound.sound(AdventureKey.key(soundKey), AdventureSound.Source.MUSIC, 10000f, pitch.toFloat()))
     }
 }

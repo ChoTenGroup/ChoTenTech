@@ -147,19 +147,23 @@ class ConflictMenu {
             ConflictStatus.FINISHED -> "<gray>已完成"
         }
 
-        val levelText = when {
-            conflict.level != null -> "${conflict.level!!.displayColor}${conflict.level!!.displayName}"
-            conflict.status == ConflictStatus.PENDING -> "<yellow>未开始"
-            conflict.status == ConflictStatus.ACTIVE -> "<aqua>进行中"
-            else -> "<gray>无结果"
-        }
-
         meta.displayName("<gold>${conflict.playerName} <gray>- ${conflict.name}".toComponent())
 
         val lore = mutableListOf<String>()
         lore += "<!i><dark_gray><st>${" ".repeat(40)}</st>"
         lore += "<!i><gray>状态: $statusText"
-        lore += "<!i><gray>结果: <gold>$levelText"
+        if (conflict.factionLevels.isNotEmpty()) {
+            for ((faction, level) in conflict.factionLevels) {
+                lore += "<!i><gray>  $faction: ${level.displayColor}${level.displayName}"
+            }
+        } else {
+            val noLevelText = when (conflict.status) {
+                ConflictStatus.PENDING -> "<yellow>未开始"
+                ConflictStatus.ACTIVE -> "<aqua>进行中"
+                else -> "<gray>无结果"
+            }
+            lore += "<!i><gray>结果: <gold>$noLevelText"
+        }
         lore += "<!i><gray>配置ID: <white>${conflict.configId}"
         lore += "<!i><dark_gray><st>${" ".repeat(40)}</st>"
         lore += "<!i><aqua>点击查看结果详情"

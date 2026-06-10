@@ -1,7 +1,7 @@
 interfere_power:
   name: 权力斗争
   score:
-    perfect:
+    full_success:
       MEG: 80
       BNTG: 20
       UEC: -60

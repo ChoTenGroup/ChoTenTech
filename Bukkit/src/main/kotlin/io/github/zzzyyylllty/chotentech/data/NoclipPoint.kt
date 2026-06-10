@@ -18,5 +18,6 @@ data class NoclipPoint(
     val name: String?,
     val targetLevel: String?,
     val autoNoclip: Boolean = false, // 是否自动切出（无需蹲下）
-){
-}
+    val conditions: NoclipConditions? = null,
+    val targetLocations: List<WeightedLocation>? = null, // 多个加权目标位置
+)

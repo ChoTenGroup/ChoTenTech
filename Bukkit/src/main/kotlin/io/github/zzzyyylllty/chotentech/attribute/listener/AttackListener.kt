@@ -220,12 +220,12 @@ object AttackListener {
             val victimData = playerDataMap[victim.uniqueId.toString()]
             if (victimData != null) {
                 // 内伤：0%时对方攻击伤害+100%，线性插值
-                val internalInjuryRatio = 1.0 - (victimData.internalInjury / victimData.effectiveMaxInternalInjury).coerceIn(0.0, 1.0)
+                val internalInjuryRatio = 1.0 - (victimData.internalInjury / victimData.maxInternalInjury).coerceIn(0.0, 1.0)
                 if (internalInjuryRatio > 0) {
                     modifiedDamage *= (1.0 + internalInjuryRatio)
                 }
                 // 外伤：0%时对方暴击率+100%，线性插值
-                val externalInjuryRatio = 1.0 - (victimData.externalInjury / victimData.effectiveMaxExternalInjury).coerceIn(0.0, 1.0)
+                val externalInjuryRatio = 1.0 - (victimData.externalInjury / victimData.maxExternalInjury).coerceIn(0.0, 1.0)
                 if (externalInjuryRatio > 0) {
                     val baseCritChance = AttributeManager.getAttributeValue(attacker, "crit_chance")
                     val totalCritChance = (baseCritChance + externalInjuryRatio).coerceAtMost(1.0)
