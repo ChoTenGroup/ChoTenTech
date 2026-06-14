@@ -2,6 +2,7 @@ package io.github.zzzyyylllty.chotentech.listener
 
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
 import io.github.zzzyyylllty.chotentech.data.ChoTenDataHelper
+import io.github.zzzyyylllty.chotentech.data.NutritionManager
 import io.github.zzzyyylllty.chotentech.data.cancelConsumableTasks
 import io.github.zzzyyylllty.chotentech.feature.steampipe.SteamPipeManager
 import io.github.zzzyyylllty.chotentech.function.DeathDropManager
@@ -31,6 +32,9 @@ fun onPlayerDeath(event: PlayerDeathEvent) {
     // 清除原版掉落，使用自定义死亡掉落系统
     event.drops.clear()
     DeathDropManager.handlePlayerDeath(player)
+
+    // 营养值死亡扣除
+    NutritionManager.applyDeathDeduction(player)
 
     // 重置蒸汽管道伤害计数（本条命）
     SteamPipeManager.clearPlayerHits(player)

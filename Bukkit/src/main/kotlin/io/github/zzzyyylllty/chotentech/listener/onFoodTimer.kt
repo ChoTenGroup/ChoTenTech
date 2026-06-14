@@ -14,10 +14,26 @@ import java.util.concurrent.ConcurrentHashMap
 
 private val lastLocations = ConcurrentHashMap<String, Location>()
 private val pressureTickCounters = ConcurrentHashMap<String, Int>()
+private var nutritionDecayCounter = 0
 
 @Awake(LifeCycle.ACTIVE)
 fun foodTimer() {
     submit(period = 20) {
+        // === Nutrition decay (every 10s) ===
+        nutritionDecayCounter++
+        if (nutritionDecayCounter >= 10) {
+            nutritionDecayCounter = 0
+            for (player in Bukkit.getOnlinePlayers()) {
+                if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) continue
+                val data = playerDataMap[player.uniqueId.toString()] ?: continue
+                data.grain = maxOf(data.grain - 0.1, 0.0)
+                data.vitamin = maxOf(data.vitamin - 0.1, 0.0)
+                data.protein = maxOf(data.protein - 0.1, 0.0)
+                data.fat = maxOf(data.fat - 0.1, 0.0)
+                io.github.zzzyyylllty.chotentech.data.NutritionManager.sync(player)
+            }
+        }
+
         for (player in Bukkit.getOnlinePlayers()) {
             if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) continue
 
@@ -33,16 +49,17 @@ fun foodTimer() {
             // === Hand Stamina ===
             data.handStamina = minOf(data.handStamina + 1.0, data.maxHandStamina)
 
-            // === Stamina ===
+            // === Stamina (with nutrition regen multiplier) ===
+            val staminaRegenMult = io.github.zzzyyylllty.chotentech.manager.AttributeManager.getAttributeValue(player, "stamina_regen_multiplier")
             if (player.isSprinting) {
                 data.stamina = maxOf(data.stamina - 1.0, 0.0)
             } else {
                 if (player.isSneaking) {
-                    data.stamina = minOf(data.stamina + 2.5, data.maxStamina)
+                    data.stamina = minOf(data.stamina + 2.5 * staminaRegenMult, data.maxStamina)
                 } else if (moved && player.isOnGround) {
-                    data.stamina = minOf(data.stamina + 1.0, data.maxStamina)
+                    data.stamina = minOf(data.stamina + 1.0 * staminaRegenMult, data.maxStamina)
                 } else if (!moved) {
-                    data.stamina = minOf(data.stamina + 2.0, data.maxStamina)
+                    data.stamina = minOf(data.stamina + 2.0 * staminaRegenMult, data.maxStamina)
                 }
             }
             // === Jump consumption (airborne, not sprinting) ===
