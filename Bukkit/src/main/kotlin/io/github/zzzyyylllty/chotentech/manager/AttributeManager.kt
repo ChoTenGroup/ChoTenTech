@@ -227,6 +227,9 @@ object AttributeManager {
             AttributeType("decay_defense", "衰退防御", null, 0.0),
             AttributeType("decay_extra_damage", "衰退伤害加成", null, 0.0, isPercentage = true),
             AttributeType("decay_damage", "衰退伤害", null, 0.0),
+            // 营养相关属性
+            AttributeType("stamina_regen_multiplier", "体力回复倍率", null, 1.0, minValue = 0.0),
+            AttributeType("health_regen_multiplier", "生命回复倍率", null, 1.0, minValue = 0.0),
         )
         for (type in builtins) {
             registerAttribute(type, RegistrationSource.BUILTIN)

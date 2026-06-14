@@ -39,6 +39,10 @@ default:
   external-injury-regen: 0
   internal-injury-regen: 0
   sanity-regen: 0.0
+  nutrition-grain: 50.0
+  nutrition-vitamin: 50.0
+  nutrition-protein: 50.0
+  nutrition-fat: 50.0
 
 warehouse:
   # 玩家默认仓库格数

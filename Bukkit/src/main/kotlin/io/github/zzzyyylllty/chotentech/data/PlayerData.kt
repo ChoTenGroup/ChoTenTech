@@ -30,6 +30,10 @@ val defInternalInjury by lazy { config.getDouble("default.internal-injury", 100.
 val defExternalInjuryRegen by lazy { config.getDouble("default.external-injury-regen", 0.0) }
 val defInternalInjuryRegen by lazy { config.getDouble("default.internal-injury-regen", 0.0) }
 val defSanityRegen by lazy { config.getDouble("default.sanity-regen", 0.0) }
+val defNutritionGrain by lazy { config.getDouble("default.nutrition-grain", 50.0) }
+val defNutritionVitamin by lazy { config.getDouble("default.nutrition-vitamin", 50.0) }
+val defNutritionProtein by lazy { config.getDouble("default.nutrition-protein", 50.0) }
+val defNutritionFat by lazy { config.getDouble("default.nutrition-fat", 50.0) }
 
 data class PlayerData (
     val playerName: String,
@@ -83,6 +87,11 @@ data class PlayerData (
     var consumption: Double = 0.0,
     var externalInjury: Double = defExternalInjury,
     var internalInjury: Double = defInternalInjury,
+    // nutrition
+    var grain: Double = defNutritionGrain,
+    var vitamin: Double = defNutritionVitamin,
+    var protein: Double = defNutritionProtein,
+    var fat: Double = defNutritionFat,
     // NPC uuid/id -> affection value
     var affection: MutableMap<String, Long> = mutableMapOf(),
     // faction id -> reputation value (e.g. MEG, BNTG, UEC)
