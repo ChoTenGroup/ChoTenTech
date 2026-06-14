@@ -1,5 +1,3 @@
-
-
 package io.github.zzzyyylllty.chotentech
 
 import io.github.zzzyyylllty.chotentech.ChoTenTech.sdClassList
@@ -14,12 +12,20 @@ import io.github.zzzyyylllty.chotentech.data.SharedNoclipSession
 import io.github.zzzyyylllty.chotentech.data.PowerManager.onReload
 import io.github.zzzyyylllty.chotentech.data.SurvivalDifficulty
 import io.github.zzzyyylllty.chotentech.punish.PunishManager
+import io.github.zzzyyylllty.chotentech.feature.keydoor.KeyDoorManager
+import io.github.zzzyyylllty.chotentech.feature.crossbow.CrossbowManager
+import io.github.zzzyyylllty.chotentech.feature.projectile.ProjectileManager
+import io.github.zzzyyylllty.chotentech.feature.signpass.SignPassManager
+import io.github.zzzyyylllty.chotentech.feature.steampipe.SteamPipeManager
 import io.github.zzzyyylllty.chotentech.function.AchievementManager
 import io.github.zzzyyylllty.chotentech.function.BaseManager
 import io.github.zzzyyylllty.chotentech.function.DeathDropManager
 import io.github.zzzyyylllty.chotentech.function.RankManager
 import io.github.zzzyyylllty.chotentech.function.hideout.HideoutConfig
-import io.github.zzzyyylllty.chotentech.attribute.manager.AttributeManager
+import io.github.zzzyyylllty.chotentech.data.loadMedkitConfig
+import io.github.zzzyyylllty.chotentech.data.loadConsumableConfigs
+import io.github.zzzyyylllty.chotentech.damage.DamageTypeRegistry
+import io.github.zzzyyylllty.chotentech.manager.AttributeManager
 import io.github.zzzyyylllty.chotentech.load.loadAchievementFiles
 import io.github.zzzyyylllty.chotentech.load.loadAccountTypes
 import io.github.zzzyyylllty.chotentech.data.conflictConfigs
@@ -33,9 +39,20 @@ import io.github.zzzyyylllty.chotentech.load.tempPowers
 import io.github.zzzyyylllty.chotentech.util.CurrencyUtil
 import io.github.zzzyyylllty.chotentech.util.EconomyUtil
 import io.github.zzzyyylllty.chotentech.util.devLog
+import io.github.zzzyyylllty.quetiapine.data.LevelTemplate
+import io.github.zzzyyylllty.quetiapine.data.Regen
+import io.github.zzzyyylllty.quetiapine.data.RegenBlock
+import io.github.zzzyyylllty.quetiapine.data.RegenTemplate
+import io.github.zzzyyylllty.quetiapine.data.load.loadLevelFiles as loadQuetiapineLevelFiles
+import io.github.zzzyyylllty.quetiapine.data.load.loadRegenFiles
+import io.github.zzzyyylllty.quetiapine.listener.releaseRegenBlocks
+import io.github.zzzyyylllty.quetiapine.logger.*
+import io.github.zzzyyylllty.quetiapine.util.QuetiapineLocalDependencyHelper
+import io.github.zzzyyylllty.quetiapine.util.dependencies
 import io.github.zzzyyylllty.sertraline.Sertraline
 import net.momirealms.craftengine.core.world.ChunkPos
 import org.bukkit.Bukkit
+import org.bukkit.Location
 import org.bukkit.command.CommandSender
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
@@ -43,8 +60,10 @@ import org.bukkit.generator.ChunkGenerator
 import taboolib.common.LifeCycle
 import taboolib.common.env.RuntimeDependencies
 import taboolib.common.env.RuntimeDependency
+import taboolib.common.env.RuntimeEnv
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Plugin
+import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.console
 import taboolib.common.platform.function.getDataFolder
 import taboolib.common.platform.function.info
@@ -52,8 +71,10 @@ import taboolib.common.platform.function.submit
 import taboolib.common.platform.function.submitAsync
 import taboolib.module.configuration.Config
 import taboolib.module.configuration.Configuration
-import taboolib.module.database.getHost
+import taboolib.module.kether.KetherShell
 import taboolib.module.lang.Language
+import taboolib.module.lang.event.PlayerSelectLocaleEvent
+import taboolib.module.lang.event.SystemSelectLocaleEvent
 import taboolib.module.ui.enableRawTitleInVanillaInventory
 import taboolib.module.ui.isRawTitleInVanillaInventoryEnabled
 import taboolib.platform.BukkitPlugin
@@ -61,6 +82,7 @@ import taboolib.platform.BukkitWorldGenerator
 import java.io.File
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.ConcurrentHashMap
+import javax.script.CompiledScript
 
 @RuntimeDependencies(
     RuntimeDependency(
@@ -88,8 +110,6 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
 
     val console by lazy { console() }
     val consoleSender by lazy { console.castSafely<CommandSender>()!! }
-    val host by lazy { config.getHost("database") }
-    val dataSource by lazy { host.createDataSource() }
     val sdClassList: LinkedHashMap<String, SurvivalDifficulty> = linkedMapOf()
     val levelsList: LinkedHashMap<String, Level> = linkedMapOf()
     val accountTypesList: LinkedHashMap<String, IDType> = linkedMapOf()
@@ -102,6 +122,15 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
     val sharedNoclipSessions = ConcurrentHashMap<String, SharedNoclipSession>()
     val sessionUnlockedNoclips = ConcurrentHashMap<String, Boolean>()
 
+    // Quetiapine shared data
+    val blockRegenMap = ConcurrentHashMap<Location, Regen>()
+    val regenTemplatesByBlock = ConcurrentHashMap<RegenBlock, MutableList<String>>()
+    val regenTemplates = ConcurrentHashMap<String, RegenTemplate>()
+    val levels = ConcurrentHashMap<String, LevelTemplate>()
+    val ketherScriptCache by lazy { LinkedHashMap<String, KetherShell.Cache?>() }
+    val jsScriptCache by lazy { LinkedHashMap<String, CompiledScript?>() }
+    val overrideVanilla: String? by lazy { config.getString("options.level.override-vanilla") }
+
     val dateTimeFormatter: DateTimeFormatter by lazy { DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss") }
     var devMode = true
 
@@ -112,7 +141,12 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
         info("Enable")
         Language.enableSimpleComponent = true
         EconomyUtil.setup()
+
         reloadCustomConfig()
+
+        // Initialize profile system
+        io.github.zzzyyylllty.chotentech.data.profile.ProfileManager
+        io.github.zzzyyylllty.chotentech.listener.ProfileListener
 
         // Initialize punishment system
         PunishManager.reloadConfig()
@@ -121,22 +155,27 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
         AttributeManager.registerBuiltinAttributes()
         AttributeManager.loadAttributeFiles()
         AttributeManager.loadBasicAttributes()
-//        val worlds = Bukkit.getWorlds()
-//        submitAsync {
-//            worlds.forEach { world ->
-//                devLog("开始加载世界 ${world.name}")
-//                world.loadedChunks.forEach { chunk ->
-//                    DataManager.loadChunkData(chunk)
-//                }
-//                devLog("开始加载世界 ${world.name} 完成。")
-//            }
-//            devLog("区块加载完成。")
-//        }
 
+        // Initialize damage type system
+        DamageTypeRegistry.init()
+
+        // Initialize steam pipe system
+        SteamPipeManager.startTask()
+
+        // Initialize key door system
+        KeyDoorManager.onServerStart()
+        KeyDoorManager.startAutoCloseTask()
+
+        // Initialize Area6 teleporter system
+        io.github.zzzyyylllty.chotentech.function.area6.Area6Teleporter.startTask()
     }
 
     override fun onDisable() {
         info("Disable")
+        ProjectileManager.cleanupAll()
+        SteamPipeManager.cleanup()
+        KeyDoorManager.onDisable()
+        SignPassManager.cleanup()
         DeathDropManager.removeAll()
         onReload()
         AchievementManager.unload()
@@ -149,22 +188,60 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
         loadCosmeticFiles()
         initCosmeticEffects()
     }
-    /*
-    fun compat() {
-        if (Bukkit.getPluginManager().getPlugin("Chemdah") != null) {
-            connectChemdah()
+
+    @Awake(LifeCycle.INIT)
+    fun initDependenciesInit() {
+        solveDependencies(dependencies)
+    }
+
+    fun solveDependencies(dependencies: List<String>, useTaboo: Boolean = false) {
+        for (name in dependencies) {
+            try {
+                infoS("Trying to load dependencies from file $name")
+                val resource = ChoTenTech::class.java.classLoader.getResource("META-INF/dependencies/$name.json")
+                if (resource == null) {
+                    severeS("Resource META-INF/dependencies/$name.json not found!")
+                    continue
+                }
+                if (useTaboo) RuntimeEnv.ENV_DEPENDENCY.loadFromLocalFile(resource) else QuetiapineLocalDependencyHelper().loadFromLocalFile(resource)
+                infoS("Trying to load dependencies from file $name ... DONE.")
+            } catch (e: Exception) {
+                severeS("Trying to load dependencies from file $name FAILED.")
+                severeS("Exception: $e")
+                e.printStackTrace()
+            }
         }
-    }*/
+    }
+
+    @SubscribeEvent
+    fun lang(event: PlayerSelectLocaleEvent) {
+        event.locale = config.getString("lang", "zh_CN")!!
+    }
+
+    @SubscribeEvent
+    fun lang(event: SystemSelectLocaleEvent) {
+        event.locale = config.getString("lang", "zh_CN")!!
+    }
 
     fun reloadCustomConfig(async: Boolean = true) {
         submit(async) {
-
+            releaseRegenBlocks()
             config.reload()
+            devMode = config.getBoolean("debug",false)
+            ketherScriptCache.clear()
+            jsScriptCache.clear()
+            blockRegenMap.clear()
+            regenTemplates.clear()
+            regenTemplatesByBlock.clear()
+            levels.clear()
+
+            loadRegenFiles()
+            loadQuetiapineLevelFiles()
+
             baseConfig.reload()
             hideoutConfig.reload()
             currencyConfig.reload()
             onReload()
-            devMode = config.getBoolean("debug",false)
             accountTypesList.clear()
             levelsList.clear()
             loadPowerFiles()
@@ -181,6 +258,15 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
             loadConflictFiles()
             loadCosmeticFiles()
             reloadAchievements()
+            ProjectileManager.loadProjectileFiles()
+            CrossbowManager.loadArrowConfigs()
+            CrossbowManager.loadMagazineConfigs()
+            CrossbowManager.loadCrossbowConfigs()
+            SteamPipeManager.loadConfig()
+            KeyDoorManager.loadConfig()
+            SignPassManager.loadConfig()
+            loadMedkitConfig()
+            loadConsumableConfigs()
         }
     }
 

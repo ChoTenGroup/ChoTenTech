@@ -3,7 +3,7 @@
     "value": "com.mojang:datafixerupper:8.0.16",
     "relocate": [
       "com.mojang.datafixers",
-      "io.github.zzzyyylllty.chotentech.attribute.dep.datafixers"
+      "io.github.zzzyyylllty.chotentech.dep.datafixers"
     ],
     "test": [
       "com.mojang.datafixers.DataFixerUpper"

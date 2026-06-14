@@ -3,6 +3,7 @@ package io.github.zzzyyylllty.chotentech.command
 import io.github.zzzyyylllty.chotentech.ChoTenTech
 import io.github.zzzyyylllty.chotentech.data.DataManager
 import io.github.zzzyyylllty.chotentech.data.PlayerData
+import io.github.zzzyyylllty.chotentech.data.UserDataRow
 import io.github.zzzyyylllty.chotentech.data.getData
 import io.github.zzzyyylllty.chotentech.function.BaseManager
 import io.github.zzzyyylllty.chotentech.function.player.sendComponent
@@ -166,9 +167,12 @@ object WhManageCommand {
         action(data)
 
         val json = jsonUtils.toJson(data, PlayerData::class.java)
-        DataManager.table.insert(DataManager.dataSource, "player_name", "uuid", "cid", "cid_type", "data") {
-            value(data.playerName, data.uuid, data.cid.id, data.cid.type, json)
-            onDuplicateKeyUpdate { update("data", json) }
-        }
+        DataManager.userDataMapper.insertOrUpdate(UserDataRow().also {
+            it.uuid = data.uuid
+            it.playerName = data.playerName
+            it.cid = data.cid.id.toString()
+            it.cidType = data.cid.type
+            it.data = json
+        }) { "uuid" eq data.uuid }
     }
 }

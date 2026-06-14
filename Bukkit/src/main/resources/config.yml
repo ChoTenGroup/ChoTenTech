@@ -1,6 +1,9 @@
 # chotentech Configuration
 debug: false
 
+# 语言 language (quetiapine)
+lang: zh_CN
+
 id:
   range:
     min: 100000000
@@ -8,6 +11,7 @@ id:
 
 database:
   enable: false  # true: MySQL; false: SQLite
+  filename: data # data.db for SQLite Database File.
   host: localhost
   port: 3306
   user: x_angelkawaii_x
@@ -22,6 +26,8 @@ default:
   max-darkness: 100.0
   stamina: 100.0
   max-stamina: 100.0
+  hand-stamina: 100.0
+  max-hand-stamina: 100.0
   custom-hunger: 100.0
   max-custom-hunger: 100.0
   custom-saturation: 100.0
@@ -30,8 +36,8 @@ default:
   max-external-injury: 100.0
   internal-injury: 100.0
   max-internal-injury: 100.0
-  external-injury-regen: 0.3
-  internal-injury-regen: 0.2
+  external-injury-regen: 0
+  internal-injury-regen: 0
   sanity-regen: 0.0
 
 warehouse:
@@ -137,3 +143,16 @@ punishment:
       duration: "3d"
     - reason: "广告/宣传"
       duration: "7d"
+
+# 玩家档案（Profile）系统配置
+profile:
+  # 每个玩家默认最大玩家档案数量（可通过权限 chotentech.profile.<数量> 扩展）
+  max-profiles: 3
+
+# Quetiapine 等级系统配置
+options:
+  level:
+    # 每次更新最多升级多少级，此选项可以有效避免经验配置错误带来的更新卡死
+    update-limit: 10
+    # 替换原版等级 null为不替换
+    override-vanilla: main

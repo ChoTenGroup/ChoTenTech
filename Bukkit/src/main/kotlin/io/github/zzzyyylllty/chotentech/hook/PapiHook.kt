@@ -75,7 +75,9 @@ object ExamplePapiHook : PlaceholderExpansion {
                 return (current/max*100).toString()
             }
             "formatted" -> return player?.let { "%${args.removePrefix("formatted_")}%".replacePlaceholder(it).numberFormat() } ?: "1"
-            "hunger" -> return player?.let { (floor(getPercentHunger(it)*10.0)/10.0).toString() } ?: "100"
+            "hunger" -> return player?.let { (floor(getPercentHunger(it)/* *1.0)/1.0*/ )).toString() } ?: "100"
+            "maxhunger" -> return player?.let { (floor(it.getData()?.maxHunger ?: 100.0)).toString() } ?: "100"
+            "maxsaturation" -> return player?.let { (floor(it.getData()?.maxSaturation ?: 100.0)).toString() } ?: "100"
             "level" -> {
                 if (player == null) return "Player Not Found"
                 val data = player.getData() ?: return "..."
@@ -200,6 +202,19 @@ object ExamplePapiHook : PlaceholderExpansion {
                     else -> "Error"
                 }
             }
+            "formatdata" -> {
+                if (player == null) return ""
+                val data = player.getData() ?: return ""
+                val sub = list.getOrNull(1)?.lowercase() ?: return "Error"
+                return when (sub) {
+                    "sanity" -> formatStatDisplay(player, data.sanity, data.effectiveMaxSanity, 90.0, 30.0, 10.0)
+                    "internalinjury" -> formatStatDisplay(player, data.internalInjury, data.maxInternalInjury, 99.0, 75.0, 50.0)
+                    "externalinjury" -> formatStatDisplay(player, data.externalInjury, data.maxExternalInjury, 99.0, 75.0, 50.0)
+                    "health" -> formatHealthDisplay(player)
+                    "food" -> formatFoodDisplay(player)
+                    else -> "Error"
+                }
+            }
         }
         return "Error"
     }
@@ -246,4 +261,73 @@ fun getPercentHunger(player: Player): Double {
 fun String.numberFormat(): String {
     val double = this.toDoubleOrNull() ?: return this
     return (round(double*10.0)/10.0).toString().removeSuffix(".0")
+}
+
+/**
+ * 格式化状态显示。
+ * 正常站立时显示百分比，下蹲时显示具体数值。
+ * 颜色阈值适用范围:
+ *   injury(内外伤): >=99绿 / 75白 / 50黄 / <50红
+ *   sanity(精神):  >90绿 / 30白 / 10黄 / <10红
+ */
+private fun formatStatDisplay(player: Player, current: Double, max: Double,
+                               greenMin: Double, whiteMin: Double, yellowMin: Double): String {
+    if (max <= 0) return "<green>100 <gray>%"
+    val pct = (current / max * 100).coerceIn(0.0, 100.0)
+    val showValue = player.isSneaking
+    val flash = (System.currentTimeMillis() / 500) % 2 == 0L
+    val color = when {
+        pct >= greenMin -> "<green>"
+        pct >= whiteMin -> "<white>"
+        pct >= yellowMin -> if (flash) "<yellow>" else "<gold>"
+        else -> if (flash) "<red>" else "<dark_red>"
+    }
+    val num = "%.1f".format(if (showValue) current else pct).removeSuffix(".0")
+    return if (showValue) {
+        "$color$num <gray>/${"%.1f".format(max).removeSuffix(".0")}"
+    } else {
+        "$color$num <gray>%"
+    }
+}
+
+/**
+ * 血量 —— 始终显示具体数值（不转为百分比），颜色基于 health/maxHealth 比例。
+ * 100%绿 / 60%白 / 30%黄闪 / <30%红闪
+ */
+private fun formatHealthDisplay(player: Player): String {
+    val maxHealth = player.getAttribute(Attribute.MAX_HEALTH)?.value ?: 20.0
+    val health = player.health.coerceIn(0.0, maxHealth)
+    val pct = health / maxHealth * 100
+    val flash = (System.currentTimeMillis() / 500) % 2 == 0L
+    val color = when {
+        pct >= 100.0 -> "<green>"
+        pct >= 60.0 -> "<white>"
+        pct >= 20.0 -> if (flash) "<yellow>" else "<gold>"
+        else -> if (flash) "<red>" else "<dark_red>"
+    }
+    val maxColor = if (flash && (pct < 60.0)) color else "<gray>"
+    return "$color${"%.1f".format(health).removeSuffix(".0")} $maxColor/${"%.1f".format(maxHealth).removeSuffix(".0")}"
+}
+
+/**
+ * 食物 —— 基于 getPercentHunger() 的混合值。
+ * 正常显示百分比，下蹲显示数值/100。
+ * >=90绿 / 50白 / 20黄闪 / <20红闪
+ */
+private fun formatFoodDisplay(player: Player): String {
+    val pct = getPercentHunger(player).coerceIn(0.0, 100.0)
+    val showValue = player.isSneaking
+    val flash = (System.currentTimeMillis() / 500) % 2 == 0L
+    val color = when {
+        pct >= 90.0 -> "<green>"
+        pct >= 50.0 -> "<white>"
+        pct >= 20.0 -> if (flash) "<yellow>" else "<gold>"
+        else -> if (flash) "<red>" else "<dark_red>"
+    }
+    val num = "%.1f".format(pct).removeSuffix(".0")
+    return if (showValue) {
+        "$color$num <gray>/100"
+    } else {
+        "$color$num <gray>%"
+    }
 }

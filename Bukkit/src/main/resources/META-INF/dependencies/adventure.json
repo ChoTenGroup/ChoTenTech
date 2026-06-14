@@ -3,7 +3,7 @@
     "value": "net.kyori:adventure-text-serializer-legacy:4.25.0",
     "relocate": [
       "net.kyori",
-      "io.github.zzzyyylllty.chotentech.attribute.dep.kyori"
+      "io.github.zzzyyylllty.quetiapine.library.kyori"
     ],
     "test": [
       "net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer"
@@ -21,7 +21,7 @@
     "value": "net.kyori:adventure-text-serializer-gson:4.25.0",
     "relocate": [
       "net.kyori",
-      "io.github.zzzyyylllty.chotentech.attribute.dep.kyori"
+      "io.github.zzzyyylllty.quetiapine.library.kyori"
     ],
     "test": [
       "net.kyori.adventure.text.serializer.gson.GsonComponentSerializer"
@@ -39,7 +39,7 @@
     "value": "net.kyori:adventure-api:4.25.0",
     "relocate": [
       "net.kyori",
-      "io.github.zzzyyylllty.chotentech.attribute.dep.kyori"
+      "io.github.zzzyyylllty.quetiapine.library.kyori"
     ],
     "test": [],
     "transitive": false,
@@ -55,7 +55,7 @@
     "value": "net.kyori:adventure-text-minimessage:4.25.0",
     "relocate": [
       "net.kyori",
-      "io.github.zzzyyylllty.chotentech.attribute.dep.kyori"
+      "io.github.zzzyyylllty.quetiapine.library.kyori"
     ],
     "test": [
       "net.kyori.adventure.text.minimessage.MiniMessage"

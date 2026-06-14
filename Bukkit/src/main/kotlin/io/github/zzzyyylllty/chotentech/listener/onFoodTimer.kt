@@ -1,8 +1,7 @@
 package io.github.zzzyyylllty.chotentech.listener
 
+import ink.ptms.um.Mythic
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
-import io.github.zzzyyylllty.chotentech.data.defExternalInjuryRegen
-import io.github.zzzyyylllty.chotentech.data.defInternalInjuryRegen
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Location
@@ -10,6 +9,7 @@ import org.bukkit.potion.PotionEffectType
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.function.submit
+import taboolib.common.platform.function.submitAsync
 import java.util.concurrent.ConcurrentHashMap
 
 private val lastLocations = ConcurrentHashMap<String, Location>()
@@ -30,21 +30,29 @@ fun foodTimer() {
             val moved = lastLoc != null && (currentLoc.x != lastLoc.x || currentLoc.z != lastLoc.z)
             lastLocations[uuid] = currentLoc.clone()
 
+            // === Hand Stamina ===
+            data.handStamina = minOf(data.handStamina + 1.0, data.maxHandStamina)
+
             // === Stamina ===
             if (player.isSprinting) {
                 data.stamina = maxOf(data.stamina - 1.0, 0.0)
+            } else {
+                if (player.isSneaking) {
+                    data.stamina = minOf(data.stamina + 2.5, data.maxStamina)
+                } else if (moved && player.isOnGround) {
+                    data.stamina = minOf(data.stamina + 1.0, data.maxStamina)
+                } else if (!moved) {
+                    data.stamina = minOf(data.stamina + 2.0, data.maxStamina)
+                }
             }
-            if (player.isSneaking) {
-                data.stamina = minOf(data.stamina + 1.5, data.maxStamina)
-            } else if (moved && player.isOnGround) {
-                data.stamina = minOf(data.stamina + 0.7, data.maxStamina)
-            } else if (!moved) {
-                data.stamina = minOf(data.stamina + 1.0, data.maxStamina)
+            // === Jump consumption (airborne, not sprinting) ===
+            if (!player.isOnGround && !player.isSprinting) {
+                data.stamina = maxOf(data.stamina - 0.5, 0.0)
             }
 
-            // === Injury regen ===
-            data.externalInjury = minOf(data.externalInjury + defExternalInjuryRegen, data.maxExternalInjury)
-            data.internalInjury = minOf(data.internalInjury + defInternalInjuryRegen, data.maxInternalInjury)
+            // === Injury regen (from attribute system) ===
+            data.externalInjury = minOf(data.externalInjury + data.externalInjuryRegen, data.maxExternalInjury)
+            data.internalInjury = minOf(data.internalInjury + data.internalInjuryRegen, data.maxInternalInjury)
 
             // === Consumption accumulation ===
             data.consumption += 1.0
@@ -78,6 +86,7 @@ fun foodTimer() {
             // === Pressure system (every 5 seconds) ===
             val tickCount = pressureTickCounters.getOrDefault(uuid, 0) + 1
             pressureTickCounters[uuid] = tickCount
+
             if (tickCount >= 5) {
                 pressureTickCounters[uuid] = 0
                 if (data.customSaturation > data.maxCustomSaturation * 0.5) {
@@ -101,6 +110,18 @@ fun foodTimer() {
                 player.saturation = 0f
                 player.exhaustion = 0f
             }
+
+        }
+    }
+}
+
+@Awake(LifeCycle.ACTIVE)
+fun staminaBarSync() {
+    submitAsync(period = 5) {
+        for (player in Bukkit.getOnlinePlayers()) {
+            if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) continue
+            val data = playerDataMap[player.uniqueId.toString()] ?: continue
+            player.exp = (data.stamina / data.maxStamina).toFloat().coerceIn(0f, 1f)
         }
     }
 }

@@ -12,91 +12,57 @@ import taboolib.common.platform.Awake
 import taboolib.common.platform.function.getDataFolder
 import taboolib.common.platform.function.submitAsync
 import taboolib.common.platform.function.warning
-import taboolib.module.database.ColumnOptionSQL
-import taboolib.module.database.ColumnTypeSQL
-import taboolib.module.database.Table
-import taboolib.module.database.getHost
+import taboolib.expansion.Length
+import taboolib.expansion.db
+import taboolib.expansion.mapper
+import taboolib.expansion.TableName
 import java.io.File
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
 object PunishManager {
 
-    private val host by lazy { config.getHost("database") }
-    private val dataSource by lazy { host.createDataSource() }
+    // ==================== PtcObject Data Classes & Mappers ====================
 
-    val punishmentTable = Table("punishment_records", host) {
-        add { id() }
-        add("target_uuid") {
-            type(ColumnTypeSQL.VARCHAR, 64) { options(ColumnOptionSQL.KEY, ColumnOptionSQL.NOTNULL) }
-        }
-        add("target_name") {
-            type(ColumnTypeSQL.VARCHAR, 128)
-        }
-        add("operator_uuid") {
-            type(ColumnTypeSQL.VARCHAR, 64) { options(ColumnOptionSQL.KEY) }
-        }
-        add("operator_name") {
-            type(ColumnTypeSQL.VARCHAR, 128)
-        }
-        add("type") {
-            type(ColumnTypeSQL.VARCHAR, 32) { options(ColumnOptionSQL.KEY, ColumnOptionSQL.NOTNULL) }
-        }
-        add("reason") {
-            type(ColumnTypeSQL.TEXT)
-        }
-        add("duration_ms") {
-            type(ColumnTypeSQL.BIGINT) { options(ColumnOptionSQL.NOTNULL) }
-        }
-        add("issue_time") {
-            type(ColumnTypeSQL.BIGINT) { options(ColumnOptionSQL.NOTNULL) }
-        }
-        add("expiry_time") {
-            type(ColumnTypeSQL.BIGINT) { options(ColumnOptionSQL.NOTNULL) }
-        }
-        add("active") {
-            type(ColumnTypeSQL.TINYINT) { options(ColumnOptionSQL.NOTNULL) }
-        }
-        add("silent") {
-            type(ColumnTypeSQL.TINYINT)
-        }
-        add("meta_json") {
-            type(ColumnTypeSQL.TEXT)
-        }
+    @TableName("punishment_records")
+    class PunishmentRecord {
+        // No @Id — auto-increment primary key
+        var targetUuid: String = ""
+        var targetName: String = ""
+        var operatorUuid: String = ""
+        var operatorName: String = ""
+        var type: String = ""
+        @Length(-1)
+        var reason: String = ""
+        var durationMs: Long = 0L
+        var issueTime: Long = 0L
+        var expiryTime: Long = 0L
+        var active: Boolean = false
+        var silent: Boolean = false
+        @Length(-1)
+        var metaJson: String = ""
     }
 
-    val wipeBackupTable = Table("wipe_backups", host) {
-        add { id() }
-        add("punishment_id") {
-            type(ColumnTypeSQL.BIGINT) { options(ColumnOptionSQL.NOTNULL) }
-        }
-        add("target_uuid") {
-            type(ColumnTypeSQL.VARCHAR, 64) { options(ColumnOptionSQL.KEY, ColumnOptionSQL.NOTNULL) }
-        }
-        add("target_name") {
-            type(ColumnTypeSQL.VARCHAR, 128)
-        }
-        add("scope") {
-            type(ColumnTypeSQL.VARCHAR, 255) { options(ColumnOptionSQL.NOTNULL) }
-        }
-        add("data_json") {
-            type(ColumnTypeSQL.LONGTEXT)
-        }
-        add("backup_time") {
-            type(ColumnTypeSQL.BIGINT) { options(ColumnOptionSQL.NOTNULL) }
-        }
+    @TableName("wipe_backups")
+    class WipeBackupRecord {
+        // No @Id — auto-increment primary key
+        var punishmentId: Long = 0L
+        var targetUuid: String = ""
+        var targetName: String = ""
+        var scope: String = ""
+        @Length(-1)
+        var dataJson: String = ""
+        var backupTime: Long = 0L
     }
+
+    val punishmentMapper by mapper<PunishmentRecord>(db("config.yml", "database", "chotentech.db"))
+    val wipeMapper by mapper<WipeBackupRecord>(db("config.yml", "database", "chotentech.db"))
 
     private val activeCache = ConcurrentHashMap<String, MutableList<PunishEntry>>()
 
     var maxWarnBeforeBan: Int = 5
     var muteReasons: Map<String, Long> = emptyMap()
     var durationLimits: Map<String, Long> = mapOf("default" to 2_592_000_000L)
-
-    init {
-        punishmentTable.createTable(dataSource)
-        wipeBackupTable.createTable(dataSource)
-    }
 
     fun reloadConfig() {
         val section = config.getConfigurationSection("punishment") ?: return
@@ -128,36 +94,21 @@ object PunishManager {
         val expiryTime = if (entry.durationMs == -1L) -1L else now + entry.durationMs
         val finalEntry = entry.copy(issueTime = now, expiryTime = expiryTime)
 
-        punishmentTable.insert(dataSource,
-            "target_uuid", "target_name", "operator_uuid", "operator_name",
-            "type", "reason", "duration_ms", "issue_time", "expiry_time",
-            "active", "silent", "meta_json"
-        ) {
-            value(
-                finalEntry.targetUuid,
-                finalEntry.targetName,
-                finalEntry.operatorUuid ?: "NULL",
-                finalEntry.operatorName,
-                finalEntry.type.name,
-                finalEntry.reason,
-                finalEntry.durationMs.toString(),
-                finalEntry.issueTime.toString(),
-                finalEntry.expiryTime.toString(),
-                "1",
-                if (finalEntry.silent) "1" else "0",
-                metaJson
-            )
+        val record = PunishmentRecord().also {
+            it.targetUuid = finalEntry.targetUuid
+            it.targetName = finalEntry.targetName
+            it.operatorUuid = finalEntry.operatorUuid ?: "NULL"
+            it.operatorName = finalEntry.operatorName
+            it.type = finalEntry.type.name
+            it.reason = finalEntry.reason
+            it.durationMs = finalEntry.durationMs
+            it.issueTime = finalEntry.issueTime
+            it.expiryTime = finalEntry.expiryTime
+            it.active = true
+            it.silent = finalEntry.silent
+            it.metaJson = metaJson
         }
-
-        var assignedId = 0L
-        punishmentTable.select(dataSource) {
-            rows("id")
-            where("target_uuid" eq finalEntry.targetUuid)
-            where("issue_time" eq finalEntry.issueTime.toString())
-            limit(1)
-        }.firstOrNull {
-            assignedId = getString("id")?.toLongOrNull() ?: 0L
-        }
+        val assignedId = punishmentMapper.insertAndGetKey(record)
 
         val withId = finalEntry.copy(id = assignedId)
         activeCache.getOrPut(withId.targetUuid) { mutableListOf() }.add(withId)
@@ -178,51 +129,37 @@ object PunishManager {
     }
 
     fun insertWipeBackup(entry: WipeBackupEntry): Long {
-        wipeBackupTable.insert(dataSource,
-            "punishment_id", "target_uuid", "target_name", "scope", "data_json", "backup_time"
-        ) {
-            value(
-                entry.punishmentId.toString(),
-                entry.targetUuid,
-                entry.targetName,
-                entry.scope,
-                entry.dataJson,
-                entry.backupTime.toString()
-            )
+        val record = WipeBackupRecord().also {
+            it.punishmentId = entry.punishmentId
+            it.targetUuid = entry.targetUuid
+            it.targetName = entry.targetName
+            it.scope = entry.scope
+            it.dataJson = entry.dataJson
+            it.backupTime = entry.backupTime
         }
-        var id = 0L
-        wipeBackupTable.select(dataSource) {
-            rows("id")
-            where("punishment_id" eq entry.punishmentId.toString())
-            limit(1)
-        }.firstOrNull {
-            id = getString("id")?.toLongOrNull() ?: 0L
-        }
-        return id
+        return wipeMapper.insertAndGetKey(record)
     }
 
     fun getWipeBackup(punishmentId: Long): WipeBackupEntry? {
-        return wipeBackupTable.select(dataSource) {
-            rows("id", "punishment_id", "target_uuid", "target_name", "scope", "data_json", "backup_time")
-            where("punishment_id" eq punishmentId.toString())
-            limit(1)
-        }.firstOrNull {
+        return wipeMapper.findOne {
+            "punishment_id" eq punishmentId
+        }?.let {
             WipeBackupEntry(
-                id = getString("id")?.toLongOrNull() ?: 0L,
-                punishmentId = getString("punishment_id")?.toLongOrNull() ?: 0L,
-                targetUuid = getString("target_uuid") ?: "",
-                targetName = getString("target_name") ?: "",
-                scope = getString("scope") ?: "",
-                dataJson = getString("data_json") ?: "{}",
-                backupTime = getString("backup_time")?.toLongOrNull() ?: 0L
+                id = 0L,
+                punishmentId = it.punishmentId,
+                targetUuid = it.targetUuid,
+                targetName = it.targetName,
+                scope = it.scope,
+                dataJson = it.dataJson,
+                backupTime = it.backupTime
             )
         }
     }
 
     fun deactivatePunishment(id: Long) {
-        punishmentTable.update(dataSource) {
-            set("active", "0")
-            where("id" eq id.toString())
+        punishmentMapper.findByRowId(id)?.let { record ->
+            record.active = false
+            punishmentMapper.update(record)
         }
         for ((_, entries) in activeCache) {
             entries.removeAll { it.id == id }
@@ -230,20 +167,12 @@ object PunishManager {
     }
 
     fun deactivateAllForPlayer(uuid: String, type: PunishType? = null) {
-        if (type != null) {
-            punishmentTable.update(dataSource) {
-                set("active", "0")
-                where("target_uuid" eq uuid)
-                where("type" eq type.name)
-                where("active" eq "1")
-            }
-        } else {
-            punishmentTable.update(dataSource) {
-                set("active", "0")
-                where("target_uuid" eq uuid)
-                where("active" eq "1")
-            }
+        val records = punishmentMapper.findAll {
+            "target_uuid" eq uuid
+            if (type != null) "type" eq type.name
+            "active" eq true
         }
+        records.forEach { it.active = false; punishmentMapper.update(it) }
         activeCache.remove(uuid)
     }
 
@@ -342,9 +271,11 @@ object PunishManager {
 
         deactivatePunishment(punishmentId)
 
-        wipeBackupTable.update(dataSource) {
-            set("data_json", "{\"restored\":true}")
-            where("punishment_id" eq punishmentId.toString())
+        wipeMapper.findOne {
+            "punishment_id" eq punishmentId
+        }?.let {
+            it.dataJson = "{\"restored\":true}"
+            wipeMapper.update(it)
         }
 
         return true

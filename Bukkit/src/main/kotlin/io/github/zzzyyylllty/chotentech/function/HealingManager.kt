@@ -1,11 +1,11 @@
 package io.github.zzzyyylllty.chotentech.function
 
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
-import io.github.zzzyyylllty.chotentech.attribute.data.AttributeModifier
-import io.github.zzzyyylllty.chotentech.attribute.data.AttributeSlot
-import io.github.zzzyyylllty.chotentech.attribute.data.ModifierSource
-import io.github.zzzyyylllty.chotentech.attribute.data.ModifierType
-import io.github.zzzyyylllty.chotentech.attribute.manager.AttributeManager
+import io.github.zzzyyylllty.chotentech.data.AttributeModifier
+import io.github.zzzyyylllty.chotentech.data.AttributeSlot
+import io.github.zzzyyylllty.chotentech.data.ModifierSource
+import io.github.zzzyyylllty.chotentech.data.ModifierType
+import io.github.zzzyyylllty.chotentech.manager.AttributeManager
 import io.github.zzzyyylllty.chotentech.data.HealConfig
 import io.github.zzzyyylllty.chotentech.util.toComponent
 import io.github.zzzyyylllty.sertraline.item.rebuildDisplay

@@ -1,7 +1,7 @@
 package io.github.zzzyyylllty.chotentech.command
 
 import io.github.zzzyyylllty.chotentech.ChoTenTech.reloadCustomConfig
-import io.github.zzzyyylllty.chotentech.attribute.command.ChoTenAttributeMainCommand
+import io.github.zzzyyylllty.chotentech.command.ChoTenAttributeMainCommand
 import io.github.zzzyyylllty.chotentech.player.sendComponent
 import org.bukkit.command.CommandSender
 import taboolib.common.platform.ProxyCommandSender
@@ -80,13 +80,11 @@ fun CommandComponent.createModernHelper(checkPermissions: Boolean = true) {
         var newline = false
 
         fun check(children: List<CommandComponent>): List<CommandComponent> {
-            // 检查权限
             val filterChildren = if (checkPermissions) {
                 children.filter { sender.hasPermission(it.permission) }
             } else {
                 children
             }
-            // 过滤隐藏
             return filterChildren.filter { it !is CommandComponentLiteral || !it.hidden }
         }
 
@@ -140,7 +138,6 @@ fun CommandComponent.createModernHelper(checkPermissions: Boolean = true) {
             }
             val checkedChildren = check(compound.children)
             checkedChildren.forEachIndexed { i, children ->
-                // 因 literal 产生新的行
                 if (newline) {
                     print(children, i, checkedChildren.size, offset, level + comment, end, option)
                 } else {
@@ -159,3 +156,4 @@ fun CommandComponent.createModernHelper(checkPermissions: Boolean = true) {
         }
     }
 }
+

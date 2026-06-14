@@ -5,11 +5,19 @@ import io.github.zzzyyylllty.chotentech.ChoTenTech.loadedChunk
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
 import io.github.zzzyyylllty.chotentech.ChoTenTech.sharedNoclipSessions
 import io.github.zzzyyylllty.chotentech.data.DataManager.getDataByCID
-import io.github.zzzyyylllty.chotentech.data.DataManager.releaseData
+import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager
+import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager.saveAll
+import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager.releaseAll
 import io.github.zzzyyylllty.chotentech.function.player.getPlayerLevel
 import io.github.zzzyyylllty.chotentech.function.timer.cleanupNoclipState
 import io.github.zzzyyylllty.chotentech.util.devLog
+import io.github.zzzyyylllty.chotentech.data.AttributeModifier
+import io.github.zzzyyylllty.chotentech.data.ModifierSource
+import io.github.zzzyyylllty.chotentech.data.ModifierType
+import io.github.zzzyyylllty.chotentech.manager.AttributeManager
 import io.github.zzzyyylllty.chotentech.util.jsonUtils
+import taboolib.expansion.TableName
+import java.util.UUID
 import io.github.zzzyyylllty.chotentech.util.toComponent
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor.RED
@@ -34,10 +42,10 @@ import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submit
 import taboolib.common.platform.function.submitAsync
 import taboolib.common.platform.function.warning
-import taboolib.module.database.ColumnOptionSQL
-import taboolib.module.database.ColumnTypeSQL
-import taboolib.module.database.Table
-import taboolib.module.database.getHost
+import taboolib.expansion.Id
+import taboolib.expansion.Length
+import taboolib.expansion.db
+import taboolib.expansion.mapper
 import java.util.Collections
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.ConcurrentHashMap
@@ -46,10 +54,12 @@ import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.math.roundToLong
 
-fun emptyData(player: Player): PlayerData {
+fun emptyData(player: Player, profileId: String = "1", profileName: String = "Default"): PlayerData {
     return PlayerData(
         playerName = player.name,
         uuid = player.uniqueId.toString(),
+        profileId = profileId,
+        profileName = profileName,
         cid = generateID(player)
     )
 }
@@ -81,60 +91,20 @@ fun Player.getData(): PlayerData? {
     return DataManager.getData(uniqueId.toString())
 }
 
+@TableName("user_data")
+class UserDataRow {
+    @Id
+    var uuid: String = ""
+    var playerName: String = ""
+    var cid: String = ""
+    var cidType: String = ""
+    @Length(-1)
+    var data: String = ""
+}
+
 object DataManager {
 
-    val host = config.getHost("database")
-
-    val dataSource by lazy { host.createDataSource() }
-
-    val table = Table("user_data", host) {
-        add { id() }
-        add("player_name") {
-            type(ColumnTypeSQL.VARCHAR, 128) {
-                options(ColumnOptionSQL.KEY)
-            }
-        }
-        add("uuid") {
-            type(ColumnTypeSQL.VARCHAR, 64) {
-                options(ColumnOptionSQL.UNIQUE_KEY, ColumnOptionSQL.NOTNULL)
-            }
-        }
-        add("cid") {
-            type(ColumnTypeSQL.VARCHAR, 16) {
-                options(ColumnOptionSQL.KEY, ColumnOptionSQL.NOTNULL)
-            }
-        }
-        add("cid_type") {
-            type(ColumnTypeSQL.VARCHAR, 64)
-        }
-        add("data") {
-            type(ColumnTypeSQL.LONGTEXT)
-        }
-    }
-
-//    val tableChunkData = Table("chunk_data", host) {
-//        add { id() }
-//        add("position") {
-//            type(ColumnTypeSQL.VARCHAR, 64) {
-//                options(ColumnOptionSQL.KEY, ColumnOptionSQL.NOTNULL)
-//            }
-//        }
-//        add("world") {
-//            type(ColumnTypeSQL.VARCHAR, 64) {
-//                options(ColumnOptionSQL.KEY, ColumnOptionSQL.NOTNULL)
-//            }
-//        }
-//        add("data") {
-//            type(ColumnTypeSQL.LONGTEXT)
-//        }
-//    }
-
-    init {
-        table.createTable(dataSource)
-//        tableChunkData.createTable(dataSource)
-
-        devLog("dataSource: ${dataSource}")
-    }
+    val userDataMapper by mapper<UserDataRow>(db("config.yml", "database", "chotentech.db"))
 
     // 待加载区块，改成 ChunkPos，避免持有 Bukkit Chunk 对象
     val prepareLoadChunk = Collections.synchronizedSet(HashSet<ChunkPos>())
@@ -335,23 +305,13 @@ object DataManager {
     }
 
     fun getRawDataByUUID(uuid: String): String? {
-        return table.select(dataSource) {
-            rows("data")
-            where("uuid" eq uuid)
-            limit(1)
-        }.firstOrNull {
-            getString("data")
-        }
+        return userDataMapper.findById(uuid)?.data
     }
 
     fun getRawDataByName(name: String): String? {
-        return table.select(dataSource) {
-            rows("data")
-            where("player_name" eq name)
-            limit(1)
-        }.firstOrNull {
-            getString("data")
-        }
+        return userDataMapper.findOne {
+            "player_name" eq name
+        }?.data
     }
 
     private fun PlayerData.fixDefaults(): PlayerData = copy(
@@ -359,28 +319,25 @@ object DataManager {
         exploreredLevels = exploreredLevels ?: hashSetOf(),
         exploreredNoclips = exploreredNoclips ?: linkedMapOf(),
         achievements = achievements ?: linkedMapOf(),
+        cosmetics = cosmetics ?: mutableMapOf(),
         warehouseContents = warehouseContents ?: linkedMapOf(),
         warehouseBaseSlots = warehouseBaseSlots,
         secureContainer = secureContainer ?: linkedMapOf(),
         insuredItems = insuredItems ?: linkedMapOf(),
         returnedInsuranceItems = returnedInsuranceItems ?: mutableListOf(),
         deathKeepItems = deathKeepItems ?: mutableListOf(),
+        inventoryContents = inventoryContents ?: mutableMapOf(),
         hideoutData = hideoutData ?: linkedMapOf(),
         statusEffects = statusEffects ?: mutableListOf(),
+        playTime = playTime ?: 0L,
+        activeLevelStr = activeLevelStr,
+        quetiapineData = quetiapineData ?: mutableMapOf(),
     )
 
     fun getData(uuid: String): PlayerData? {
         playerDataMap[uuid]?.let { return it }
-        val dataStr = getRawDataByUUID(uuid)
-        val data = dataStr?.let {
-            try {
-                jsonUtils.fromJson(it, PlayerData::class.java)?.fixDefaults()
-            } catch (e: Exception) {
-                warning("Failed to deserialize player data for $uuid: ${e.message}")
-                null
-            }
-        }
-        return data?.uuid?.let { playerDataMap[it] } ?: data
+        // Try loading from profile system
+        return ProfileManager.getActiveProfileData(uuid)
     }
 
     fun getDataByName(name: String): PlayerData? {
@@ -397,37 +354,13 @@ object DataManager {
     }
 
     fun getRawDataByCID(cid: String): String? {
-        return table.select(dataSource) {
-            rows("data")
-            where("cid" eq cid)
-            limit(1)
-        }.firstOrNull {
-            getString("data")
-        }
+        return userDataMapper.findOne {
+            "cid" eq cid
+        }?.data
     }
 
     fun saveData(player: Player) {
-        val data = playerDataMap[player.uniqueId.toString()] ?: run {
-            warning("玩家 ${player.name} 的数据未找到，跳过保存数据。")
-            return
-        }
-
-        val dataJson = jsonUtils.toJson(data, PlayerData::class.java)
-
-        table.insert(dataSource, "player_name", "uuid", "cid", "cid_type", "data") {
-            value(
-                player.name,
-                player.uniqueId.toString(),
-                data.cid.id,
-                data.cid.type,
-                dataJson
-            )
-            onDuplicateKeyUpdate {
-                update("cid", data.cid.id)
-                update("cid_type", data.cid.type)
-                update("data", dataJson)
-            }
-        }
+        saveAll(player)
     }
 
     fun getDataByCID(cid: String): PlayerData? {
@@ -448,11 +381,11 @@ object DataManager {
         val newData = playerData.copy(cid = userID)
         playerDataMap[uuid] = newData
 
-        table.update(dataSource) {
-            set("cid", newData.cid.id)
-            set("cid_type", newData.cid.type)
-            where("uuid" eq uuid)
-        }
+        userDataMapper.insertOrUpdate(UserDataRow().also {
+            it.uuid = uuid
+            it.cid = newData.cid.id.toString()
+            it.cidType = newData.cid.type
+        }) { "uuid" eq uuid }
     }
 
     fun modifyUserID(userID: Long, playerData: PlayerData) {
@@ -460,40 +393,38 @@ object DataManager {
         val newData = playerData.copy(cid = playerData.cid.copy(id = userID))
         playerDataMap[uuid] = newData
 
-        table.update(dataSource) {
-            set("cid", newData.cid.id)
-            set("cid_type", newData.cid.type)
-            where("uuid" eq uuid)
-        }
+        userDataMapper.insertOrUpdate(UserDataRow().also {
+            it.uuid = uuid
+            it.cid = newData.cid.id.toString()
+            it.cidType = newData.cid.type
+        }) { "uuid" eq uuid }
     }
 
     fun isIDExist(cid: String): Boolean {
-        return table.find(dataSource) {
-            rows("data")
-            where("cid" eq cid)
-            limit(1)
-        }
+        return userDataMapper.findOne {
+            "cid" eq cid
+        } != null
     }
 
     fun isUUIDExist(uuid: String): Boolean {
-        return table.find(dataSource) {
-            rows("data")
-            where("uuid" eq uuid)
-            limit(1)
-        }
+        return userDataMapper.findById(uuid) != null
     }
 
     fun initData(player: Player): PlayerData {
-        val pData = getData(player.uniqueId.toString()) ?: emptyData(player)
-        val data = pData.copy(lastLoginTime = System.currentTimeMillis())
+        // Use profile system to ensure player has a profile loaded
+        val data = ProfileManager.ensureProfile(player)
+        data.lastLoginTime = System.currentTimeMillis()
         playerDataMap[player.uniqueId.toString()] = data
+        // Increment join count
+        ProfileManager.getSharedData(player.uniqueId.toString()).joinCount++
         saveData(player)
         return data
     }
 
     fun releaseData(player: Player) {
-        saveData(player)
+        saveAll(player)
         playerDataMap.remove(player.uniqueId.toString())
+        ProfileManager.releaseAll(player.uniqueId.toString())
     }
 
     /**
@@ -564,6 +495,7 @@ object DataManager {
         val player = e.player
         val uuid = player.uniqueId.toString()
         cleanupNoclipState(uuid)
+        io.github.zzzyyylllty.chotentech.listener.ProfileListener.onPlayerQuit(uuid)
         submitAsync {
             for (session in sharedNoclipSessions.values) {
                 session.playersInRange.remove(uuid)
@@ -622,19 +554,44 @@ class ChoTenDataHelper(val player: Player) {
     }
 
     fun addSanityRegeneration(amount: Double) {
-        data.sanityRegeneration = maxOf(data.sanityRegeneration + amount, 0.0)
+        val current = getSanityRegenModifierValue()
+        setSanityRegenModifier(maxOf(current + amount, 0.0))
     }
 
     fun removeSanityRegeneration(amount: Double) {
-        data.sanityRegeneration = maxOf(data.sanityRegeneration - amount, 0.0)
+        val current = getSanityRegenModifierValue()
+        setSanityRegenModifier(maxOf(current - amount, 0.0))
     }
 
     fun setSanityRegeneration(amount: Double) {
-        data.sanityRegeneration = maxOf(amount, 0.0)
+        setSanityRegenModifier(maxOf(amount, 0.0))
     }
 
     fun resetSanityRegeneration() {
-        data.sanityRegeneration = maxOf(config.getDouble("default.sanity-regen", 0.0), 0.0)
+        setSanityRegenModifier(0.0)
+    }
+
+    private companion object {
+        private val SANITY_REGEN_MODIFIER_UUID = UUID.fromString("00000000-0000-0000-0000-000000000001")
+    }
+
+    private fun getSanityRegenModifierValue(): Double {
+        return AttributeManager.getPlayerPersistentData(player.uniqueId)
+            .modifiers.firstOrNull { it.uuid == SANITY_REGEN_MODIFIER_UUID }?.value ?: 0.0
+    }
+
+    private fun setSanityRegenModifier(value: Double) {
+        val uuid = player.uniqueId
+        AttributeManager.removeModifierByUuid(uuid, SANITY_REGEN_MODIFIER_UUID)
+        if (value > 0.0) {
+            AttributeManager.addModifier(uuid, AttributeModifier(
+                attributeId = "sanity_regeneration",
+                value = value,
+                type = ModifierType.ADD,
+                source = ModifierSource.OTHER,
+                uuid = SANITY_REGEN_MODIFIER_UUID
+            ))
+        }
     }
 
     fun addStress(amount: Double) {
@@ -784,6 +741,89 @@ class ChoTenDataHelper(val player: Player) {
         data.internalInjury = data.maxInternalInjury
     }
 
+    // === 食物（自定义饥饿值/饱和度） ===
+
+    fun addHunger(amount: Double) {
+        data.customHunger = minOf(data.customHunger + amount, data.maxCustomHunger)
+    }
+    fun removeHunger(amount: Double) {
+        data.customHunger = maxOf(data.customHunger - amount, 0.0)
+    }
+    fun setHunger(amount: Double) {
+        data.customHunger = amount.coerceIn(0.0, data.maxCustomHunger)
+    }
+    fun resetHunger() {
+        data.customHunger = minOf(defCustomHunger, data.maxCustomHunger)
+    }
+    fun fullHunger() {
+        data.customHunger = data.maxCustomHunger
+    }
+
+    fun addSaturation(amount: Double) {
+        data.customSaturation = minOf(data.customSaturation + amount, data.maxCustomSaturation)
+    }
+    fun removeSaturation(amount: Double) {
+        data.customSaturation = maxOf(data.customSaturation - amount, 0.0)
+    }
+    fun setSaturation(amount: Double) {
+        data.customSaturation = amount.coerceIn(0.0, data.maxCustomSaturation)
+    }
+    fun resetSaturation() {
+        data.customSaturation = minOf(defCustomSaturation, data.maxCustomSaturation)
+    }
+    fun fullSaturation() {
+        data.customSaturation = data.maxCustomSaturation
+    }
+
+    // === 体力 ===
+
+    fun addStamina(amount: Double) {
+        data.stamina = minOf(maxOf(data.stamina + amount, 0.0), data.maxStamina)
+    }
+
+    fun setStamina(amount: Double) {
+        data.stamina = amount.coerceIn(0.0, data.maxStamina)
+    }
+
+    fun resetStamina() {
+        data.stamina = minOf(defStamina, data.maxStamina)
+    }
+
+    fun fullStamina() {
+        data.stamina = data.maxStamina
+    }
+
+    // === 手部体力 ===
+
+    fun addHandStamina(amount: Double) {
+        data.handStamina = minOf(maxOf(data.handStamina + amount, 0.0), data.maxHandStamina)
+    }
+
+    fun setHandStamina(amount: Double) {
+        data.handStamina = amount.coerceIn(0.0, data.maxHandStamina)
+    }
+
+    fun resetHandStamina() {
+        data.handStamina = minOf(defHandStamina, data.maxHandStamina)
+    }
+
+    fun fullHandStamina() {
+        data.handStamina = data.maxHandStamina
+    }
+
+    fun addConsumption(amount: Double) {
+        data.consumption = minOf(data.consumption + amount, 100.0)
+    }
+    fun removeConsumption(amount: Double) {
+        data.consumption = maxOf(data.consumption - amount, 0.0)
+    }
+    fun setConsumption(amount: Double) {
+        data.consumption = amount.coerceIn(0.0, 100.0)
+    }
+    fun resetConsumption() {
+        data.consumption = 0.0
+    }
+
     fun resetAndPlayLevelMusic() {
         data.lastMusicPlayTime = 0L
         data.musicReplayDelay = 0L
@@ -801,7 +841,7 @@ class ChoTenDataHelper(val player: Player) {
         if (now - data.lastMusicPlayTime < data.musicReplayDelay) return
         data.lastMusicPlayTime = now
         data.musicReplayDelay = (120000L..300000L).random()
-        val pitch = 0.9 + ((data.sanity / data.maxSanity) * 0.25)
+        val pitch = 0.9 + ((data.sanity / data.effectiveMaxSanity) * 0.25)
         val soundKey = if (music.contains(':')) music else "kangel:$music"
         player.playSound(AdventureSound.sound(AdventureKey.key(soundKey), AdventureSound.Source.MUSIC, 10000f, pitch.toFloat()))
     }

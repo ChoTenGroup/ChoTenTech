@@ -6,7 +6,7 @@
     ],
     "relocate": [
       "com.google.gson",
-      "io.github.zzzyyylllty.chotentech.attribute.dep.gson"
+      "io.github.zzzyyylllty.quetiapine.library.gson"
     ],
     "transitive": true,
     "ignoreOptional": false,

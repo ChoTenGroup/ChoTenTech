@@ -10,6 +10,16 @@ class VersionHelper {
     val isUniversal: Boolean by lazy {
         MinecraftVersion.isUniversal
     }
+    val isLi2CO3Premium by lazy {
+        try {
+            val classInstance = Class.forName("io.github.zzzyyylllty.chotenattribute.premium.PremiumHelper")
+            return@lazy (classInstance != null)
+        } catch (e: ClassNotFoundException) {
+            return@lazy false
+        } catch (e: Exception) {
+            throw RuntimeException("An error occurred while enabling PremiumHelper.", e)
+        }
+    }
     fun isOrAbove12005(): Boolean{
         return versionId >= 12005
     }
