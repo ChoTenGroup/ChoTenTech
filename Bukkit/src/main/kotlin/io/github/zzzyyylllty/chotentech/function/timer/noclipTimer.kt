@@ -115,25 +115,26 @@ fun noclipTime() {
 
                 val noclipName = foundNoclip?.name
                 val lastNoclip = playerInNoclip[k]
-                if (noclipName != lastNoclip) {
-                    if (noclipName != null) {
-                        player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1F, 1.7F)
-                        player.sendComponent("<#66CCFF>已找到切出点<white>$noclipName</white>，低头下蹲确认。")
-                        playerInNoclip[k] = noclipName
-                    } else {
-                        playerInNoclip.remove(k)
-                    }
-                }
+
                 if (foundNoclip != null) {
                     val condResult = NoclipConditionChecker.checkConditions(player, foundNoclip)
-                    if (condResult !is ConditionResult.Allowed) {
+                    if (condResult is ConditionResult.Allowed) {
+                        if (noclipName != null && noclipName != lastNoclip) {
+                            player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1F, 1.7F)
+                            player.sendComponent("<#66CCFF>已找到切出点<white>$noclipName</white>，低头下蹲确认。")
+                            playerInNoclip[k] = noclipName
+                        }
+                    } else {
                         val msg = when (condResult) {
                             is ConditionResult.Blocked -> condResult.message
                             is ConditionResult.NeedsSubmission -> condResult.message
                             else -> null
                         } ?: "需要满足条件"
                         player.sendActionBar(msg.toComponent())
+                        playerInNoclip.remove(k)
                     }
+                } else if (lastNoclip != null) {
+                    playerInNoclip.remove(k)
                 }
             }
         }

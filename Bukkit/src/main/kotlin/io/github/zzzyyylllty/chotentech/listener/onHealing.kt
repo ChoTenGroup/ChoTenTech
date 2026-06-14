@@ -1,10 +1,11 @@
 package io.github.zzzyyylllty.chotentech.listener
 
-import io.github.zzzyyylllty.chotentech.data.parseHealConfig
+import io.github.zzzyyylllty.chotentech.data.getHealConfigFromYaml
 import io.github.zzzyyylllty.chotentech.function.HealingManager
 import io.github.zzzyyylllty.chotentech.function.HealingPhase
 import io.github.zzzyyylllty.chotentech.function.PostReason
 import io.github.zzzyyylllty.chotentech.util.toComponent
+import io.github.zzzyyylllty.sertraline.Sertraline
 import org.bukkit.GameMode
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
@@ -28,8 +29,16 @@ fun onUseMedicalItem(event: PlayerInteractEvent) {
 //    if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) return
 
     val item = event.item ?: return
+    val sertralineId = Sertraline.api().getId(item) ?: return
     val tag = item.getItemTag() ?: return
-    val config = tag.parseHealConfig() ?: return
+    val sData = tag["sertraline_data"]?.asCompound() ?: return
+    val durability = sData["durability"]?.let {
+        it.asDouble() ?: it.asString()?.toDoubleOrNull()
+    } ?: return
+    val maxDurability = sData["maxdurability"]?.let {
+        it.asDouble() ?: it.asString()?.toDoubleOrNull()
+    } ?: durability
+    val config = getHealConfigFromYaml(sertralineId, durability, maxDurability) ?: return
 
     event.isCancelled = true
 

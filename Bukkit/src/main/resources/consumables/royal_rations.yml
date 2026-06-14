@@ -1,0 +1,23 @@
+royal_rations:
+  id: "royal_rations"
+  effects:
+    - effect: health
+      mode: add
+      value: 50
+    - effect: stress
+      mode: set
+      value: 0
+    - effect: darkness
+      mode: set
+      value: 0
+    - effect: sanity
+      mode: add
+      value: 50
+    - effect: modifier
+      modifier: max_health
+      amount: 10.0
+      type: ADD
+      source: OTHER
+      slot: OTHER
+      uuid: royal_rations # nameduuid
+      expire: 10m

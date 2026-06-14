@@ -36,11 +36,7 @@ class CoolNumberMenu(
         }
         // async load from DB to supplement
         submitAsync {
-            val dbCids = DataManager.table.select(DataManager.dataSource) {
-                rows("cid")
-            }.map {
-                getString("cid")
-            }.filterNotNull()
+            val dbCids = DataManager.userDataMapper.listOf("cid") {}.filterNotNull()
             val all = (CoolNumberManager.getTakenCids() + dbCids).toSet()
             CoolNumberManager.refreshTakenCids(all)
         }

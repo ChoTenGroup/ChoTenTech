@@ -3,7 +3,7 @@ package io.github.zzzyyylllty.chotentech.data
 import io.github.zzzyyylllty.chotentech.ChoTenTech.config
 import io.github.zzzyyylllty.chotentech.ChoTenTech.levelsList
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerHudMap
-import io.github.zzzyyylllty.chotentech.attribute.manager.AttributeManager
+import io.github.zzzyyylllty.chotentech.manager.AttributeManager
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
@@ -17,6 +17,8 @@ val defMaxSanity by lazy { config.getDouble("default.max-sanity", 100.0) }
 val defSanity by lazy { config.getDouble("default.sanity", 40.0) }
 val defMaxStamina by lazy { config.getDouble("default.max-stamina", 100.0) }
 val defStamina by lazy { config.getDouble("default.stamina", 100.0) }
+val defMaxHandStamina by lazy { config.getDouble("default.max-hand-stamina", 100.0) }
+val defHandStamina by lazy { config.getDouble("default.hand-stamina", 100.0) }
 val defMaxCustomHunger by lazy { config.getDouble("default.max-custom-hunger", 100.0) }
 val defCustomHunger by lazy { config.getDouble("default.custom-hunger", 100.0) }
 val defMaxCustomSaturation by lazy { config.getDouble("default.max-custom-saturation", 100.0) }
@@ -25,13 +27,15 @@ val defMaxExternalInjury by lazy { config.getDouble("default.max-external-injury
 val defExternalInjury by lazy { config.getDouble("default.external-injury", 100.0) }
 val defMaxInternalInjury by lazy { config.getDouble("default.max-internal-injury", 100.0) }
 val defInternalInjury by lazy { config.getDouble("default.internal-injury", 100.0) }
-val defExternalInjuryRegen by lazy { config.getDouble("default.external-injury-regen", 0.3) }
-val defInternalInjuryRegen by lazy { config.getDouble("default.internal-injury-regen", 0.2) }
+val defExternalInjuryRegen by lazy { config.getDouble("default.external-injury-regen", 0.0) }
+val defInternalInjuryRegen by lazy { config.getDouble("default.internal-injury-regen", 0.0) }
 val defSanityRegen by lazy { config.getDouble("default.sanity-regen", 0.0) }
 
 data class PlayerData (
     val playerName: String,
     val uuid: String,
+    var profileId: String = "1",
+    var profileName: String = "Default",
     var cid: IDData,
     var noclipCooldownEnd: Long? = null,
     var noclipPoint: NoclipPoint? = null,
@@ -55,6 +59,8 @@ data class PlayerData (
     var warehouseContents: LinkedHashMap<String, LinkedHashMap<Int, String>> = linkedMapOf(),
     // 安全箱 (塔科夫式)：slot -> serialized item，死亡不掉落
     var secureContainer: LinkedHashMap<Int, String> = linkedMapOf(),
+    // 背包物品：slot -> serialized item（profile独立）
+    var inventoryContents: MutableMap<Int, String> = mutableMapOf(),
     // 投保物品：uuid -> InsuredItem
     var insuredItems: LinkedHashMap<String, InsuredItem> = linkedMapOf(),
     // 死亡后返还的投保物品（序列化）
@@ -69,24 +75,29 @@ data class PlayerData (
     var activeRanks: LinkedHashMap<String, String> = linkedMapOf(),
 
     var stamina: Double = defStamina,
-    var maxStamina: Double = defMaxStamina,
+    var handStamina: Double = defHandStamina,
+    var maxHunger: Double = 100.0,
+    var maxSaturation: Double = 100.0,
     var customHunger: Double = defCustomHunger,
-    var maxCustomHunger: Double = defMaxCustomHunger,
     var customSaturation: Double = defCustomSaturation,
-    var maxCustomSaturation: Double = defMaxCustomSaturation,
     var consumption: Double = 0.0,
     var externalInjury: Double = defExternalInjury,
     var internalInjury: Double = defInternalInjury,
-    var sanityRegeneration: Double = defSanityRegen,
     // NPC uuid/id -> affection value
     var affection: MutableMap<String, Long> = mutableMapOf(),
     // faction id -> reputation value (e.g. MEG, BNTG, UEC)
     var reputation: MutableMap<String, Long> = mutableMapOf(),
-    // cosmetic slot -> cosmetic id (e.g. AURA -> flame_aura)
+    // Shared field — cosmetic slot -> cosmetic id (synced from SharedData)
     var cosmetics: MutableMap<String, String> = mutableMapOf(),
+
+    // chemdah 任务数据（persistentDataContainer JSON）
+    var chemdahProfileData: String? = null,
+    // chemdah 活跃任务数据（quest_id -> quest DataContainer JSON）
+    var chemdahQuestData: String? = null,
 
     // pvp mode toggle
     var pvpEnabled: Boolean = false,
+
 
     // music replay tracking
     var lastMusicPlayTime: Long = 0L,
@@ -95,13 +106,24 @@ data class PlayerData (
     // currencies (use Long to avoid floating-point errors)
     var money: Long = 0L,
     var point: Long = 0L,
+    // Shared fields — synced from SharedData by ProfileManager
     var tape: Long = 0L,
     var goldentape: Long = 0L,
 
+    var playTime: Long = 0L,        // this profile's accumulated play time (ms)
+
     var unlockedNoclips: MutableSet<String> = mutableSetOf(),
 
+    var activeLevelStr: String? = null,
+
+    // Last logout / profile-switch location — used to teleport when re-selecting this profile
+    var profileLocation: RespawnPoint? = null,
+
+    // Quetiapine integration: per-profile key-value data (levels, exp, cooldowns, etc.)
+    var quetiapineData: MutableMap<String, String> = mutableMapOf(),
+
     @kotlin.jvm.Transient
-    var activeLevelStr: String? = null
+    var sessionStart: Long = 0L     // set when profile is loaded, used to accumulate playTime
 ) {
     val activeLevel: Level?
         get() = levelsList[activeLevelStr]
@@ -114,10 +136,17 @@ data class PlayerData (
     }
 
     val effectiveMaxSanity: Double get() = attrMax("max_sanity", maxSanity)
-    val effectiveSanityRegeneration: Double get() = attrMax("sanity_regeneration", sanityRegeneration)
+    val sanityRegeneration: Double get() = attrMax("sanity_regeneration", defSanityRegen)
+    val effectiveSanityRegeneration: Double get() = sanityRegeneration
     val effectiveMaxDarkness: Double get() = attrMax("max_darkness", maxDarkness)
     val maxExternalInjury: Double get() = attrMax("external_injury", defMaxExternalInjury)
     val maxInternalInjury: Double get() = attrMax("internal_injury", defMaxInternalInjury)
+    val externalInjuryRegen: Double get() = attrMax("external_injury_regen", defExternalInjuryRegen)
+    val internalInjuryRegen: Double get() = attrMax("internal_injury_regen", defInternalInjuryRegen)
+    val maxStamina: Double get() = attrMax("stamina_max", defMaxStamina)
+    val maxHandStamina: Double get() = attrMax("hand_stamina_max", defMaxHandStamina)
+    val maxCustomHunger: Double get() = attrMax("max_custom_hunger", defMaxCustomHunger)
+    val maxCustomSaturation: Double get() = attrMax("max_custom_saturation", defMaxCustomSaturation)
 
     fun getCooldownLeftLong(): Long? {
         return noclipCooldownEnd?.minus(Instant.now().toEpochMilli())

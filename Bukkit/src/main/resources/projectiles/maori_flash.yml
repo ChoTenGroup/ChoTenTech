@@ -1,0 +1,69 @@
+maori_flash:
+  fuse: 2.5
+  impact: false
+  sounds:
+    throw: { sound: minecraft:entity.arrow.shoot, volume: 1.2, pitch: 0.7 }
+    bounce: { sound: minecraft:entity.item.break, volume: 0.6, pitch: 1.6 }
+    fuse: { sound: minecraft:entity.creeper.primed, volume: 1.0, pitch: 2.0 }
+  particles:
+    throw: { particle: cloud, count: 20, speed: 0.3 }
+    bounce: { particle: smoke, count: 10, speed: 0.2 }
+    fuse: { particle: electric_spark, count: 8, offset_x: 0.3, offset_y: 0.3, offset_z: 0.3, speed: 0.15 }
+  effects:
+    - type: blindness
+      range: 4
+      seconds: 12
+      sound: { sound: minecraft:entity.firework_rocket.large_blast, volume: 5.0, pitch: 0.4 }
+      particle: { particle: flash, count: 1 }
+      shockwave: { particle: glow, count: 60, speed: 1.5, rings: 4 }
+    - type: blindness
+      range: 10
+      seconds: 5
+      particle: { particle: explosion, count: 25, speed: 0.8 }
+    - type: blindness
+      range: 15
+      seconds: 2
+      particle: { particle: explosion, count: 15, speed: 0.5 }
+    - type: potion
+      effect: NAUSEA
+      seconds: 8
+      range: 10
+      particle: { particle: ring, count: 1 }
+    - type: potion
+      effect: BLINDNESS
+      seconds: 4
+      range: 7
+      particle: { particle: large_smoke, count: 80, offset_x: 1.2, offset_y: 0.6, offset_z: 1.2, speed: 0.1 }
+    - type: potion
+      effect: SLOWNESS
+      seconds: 4
+      range: 12
+      level: 2
+      particle: { particle: vibration, count: 5 }
+
+m67_grenade:
+  fuse: 2.8~4.9
+  impact: false
+  sounds:
+    throw: { sound: minecraft:entity.arrow.shoot, volume: 1.2, pitch: 0.6 }
+    bounce: { sound: minecraft:entity.item.break, volume: 0.7, pitch: 1.7 }
+    fuse: { sound: minecraft:entity.creeper.primed, volume: 1.0, pitch: 1.0 }
+  particles:
+    throw: { particle: cloud, count: 20, speed: 0.3 }
+    bounce: { particle: smoke, count: 10, speed: 0.2 }
+    fuse: { particle: smoke, count: 6, offset_x: 0.2, offset_y: 0.2, offset_z: 0.2, speed: 0.08 }
+  effects:
+    - type: explosion
+      power: 4
+      sound: { sound: minecraft:entity.firework_rocket.large_blast, volume: 6.0, pitch: 0.5 }
+      particle: { particle: explosion_emitter, count: 1 }
+      shockwave: { particle: flame, count: 48, speed: 1.2, rings: 4 }
+    - type: fragment
+      range: 30
+      amount: 30
+      damage:
+        physical: 10
+        externalInjury: 2
+        internalInjury: 2
+      sound: { sound: minecraft:entity.item.break, volume: 4.0, pitch: 1.9 }
+      particle: { particle: cloud, count: 40, speed: 0.6 }

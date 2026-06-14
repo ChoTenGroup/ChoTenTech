@@ -3,7 +3,10 @@
     "value": "com.github.ben-manes.caffeine:caffeine:3.2.3",
     "relocate": [
       "com.github.benmanes.caffeine",
-      "io.github.zzzyyylllty.chotentech.attribute.dep.caffeine"
+      "io.github.zzzyyylllty.quetiapine.library.caffeine"
+    ],
+    "test": [
+      "com.github.benmanes.caffeine.cache.Caffeine"
     ],
     "transitive": true,
     "ignoreOptional": false,

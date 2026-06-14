@@ -1,9 +1,10 @@
 package io.github.zzzyyylllty.chotentech.listener
 
+import io.github.zzzyyylllty.chotentech.data.getConsumableConfig
 import io.github.zzzyyylllty.chotentech.data.getData
+import io.github.zzzyyylllty.sertraline.Sertraline
 import io.papermc.paper.datacomponent.DataComponentTypes
 import org.bukkit.GameMode
-import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerItemConsumeEvent
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.module.nms.getItemTag
@@ -14,7 +15,16 @@ fun onPlayerEat(event: PlayerItemConsumeEvent) {
     if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) return
 
     val item = event.item
-    event.isCancelled = true
+
+    // Check consumable config by sertraline_id first
+    val sertralineId = Sertraline.api().getId(item)
+    if (sertralineId != null) {
+        val consumable = getConsumableConfig(sertralineId)
+        if (consumable != null) {
+            consumable.apply(player)
+            return
+        }
+    }
 
     val data = player.getData() ?: return
 
@@ -39,6 +49,5 @@ fun onPlayerEat(event: PlayerItemConsumeEvent) {
         data.customSaturation = minOf(data.customSaturation + saturation * 5.0, data.maxCustomHunger, data.customHunger)
     }
 
-    // Remove the consumed item from hand
-    item.amount -= 1
+    // Vanilla-like items without sertraline id also get consumed by server, no extra handling needed
 }

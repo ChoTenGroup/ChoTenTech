@@ -1,5 +1,9 @@
 package io.github.zzzyyylllty.chotentech.command
 
+import io.github.zzzyyylllty.chotentech.data.AttributeModifier
+import io.github.zzzyyylllty.chotentech.data.ModifierSource
+import io.github.zzzyyylllty.chotentech.data.ModifierType
+import io.github.zzzyyylllty.chotentech.manager.AttributeManager
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
 import io.github.zzzyyylllty.chotentech.data.HUDManager
 import io.github.zzzyyylllty.chotentech.data.ResultLevel
@@ -10,13 +14,9 @@ import io.github.zzzyyylllty.chotentech.player.sendComponent
 import org.bukkit.command.CommandSender
 import org.bukkit.command.ConsoleCommandSender
 import org.bukkit.entity.Player
-import taboolib.common.platform.command.CommandBody
-import taboolib.common.platform.command.CommandHeader
-import taboolib.common.platform.command.PermissionDefault
-import taboolib.common.platform.command.mainCommand
-import taboolib.common.platform.command.player
-import taboolib.common.platform.command.subCommand
+import taboolib.common.platform.command.*
 import taboolib.common.platform.function.submitAsync
+import java.util.UUID
 
 @CommandHeader(
     name = "chotentech-data",
@@ -119,7 +119,20 @@ object ChoTenDataCommand {
                                 when (context["type"]) {
                                     "SANITY" -> data.sanity = minOf(maxOf(finalValue, 0.0), data.effectiveMaxSanity)
                                     "MAXSANITY" -> data.maxSanity = maxOf(finalValue, 0.0)
-                                    "SANITYREGEN" -> data.sanityRegeneration = maxOf(finalValue, 0.0)
+                                    "SANITYREGEN" -> {
+                                        val modUuid = UUID.fromString("00000000-0000-0000-0000-000000000001")
+                                        AttributeManager.removeModifierByUuid(player.uniqueId, modUuid)
+                                        val v = maxOf(finalValue, 0.0)
+                                        if (v > 0.0) {
+                                            AttributeManager.addModifier(player.uniqueId, AttributeModifier(
+                                                attributeId = "sanity_regeneration",
+                                                value = v,
+                                                type = ModifierType.ADD,
+                                                source = ModifierSource.OTHER,
+                                                uuid = modUuid
+                                            ))
+                                        }
+                                    }
                                     "STRESS" -> data.stress = minOf(maxOf(finalValue, 0.0), 100.0)
                                     "DARKNESS" -> data.darkness = minOf(maxOf(finalValue, 0.0), data.effectiveMaxDarkness)
                                     "MAXDARKNESS" -> data.maxDarkness = maxOf(finalValue, 0.0)

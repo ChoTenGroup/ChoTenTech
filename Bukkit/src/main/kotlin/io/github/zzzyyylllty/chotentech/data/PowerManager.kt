@@ -546,11 +546,17 @@ object PowerManager {
                     isExternal && powerActive && elevator.state != ElevatorState.IDLE -> {
                         player.sendMessage("§c电梯正在运行中，请稍后再试。")
                     }
-                    isInternal && powerActive && elevator.state == ElevatorState.DOORS_OPEN -> {
-                        triggerElevatorNoclip(runtime, obstacle, player)
+                    isInternal && powerActive && elevator.state == ElevatorState.IDLE -> {
+                        // 门已关闭，从内部切出
+                        if (isPlayerInElevatorArea(player, obstacle)) {
+                            triggerElevatorNoclip(runtime, obstacle, player)
+                        } else {
+                            player.sendMessage("§c请在电梯内使用此按钮。")
+                        }
                     }
-                    isInternal && powerActive && elevator.state != ElevatorState.DOORS_OPEN -> {
-                        player.sendMessage("§c电梯门未开启，无法切出。")
+                    isInternal && powerActive && elevator.state == ElevatorState.DOORS_OPEN -> {
+                        // 门开着，按内部按钮关门
+                        closeElevatorDoors(runtime, obstacle) {}
                     }
                     isInternal && !powerActive -> {
                         if (isPlayerInElevatorArea(player, obstacle)) {

@@ -51,6 +51,9 @@ taboolib {
         install(Kether)
         install(BukkitNMSEntityAI)
         install(PtcObject)
+        install(JavaScript)
+        install(Jexl)
+        install(DatabasePlayer)
     }
     version {
         taboolib = "6.3.0-0e96352"
@@ -174,18 +177,22 @@ dependencies {
     implementation("net.kyori:adventure-text-minimessage:4.19.0")
     compileOnly("com.google.code.gson:gson:2.10.1")
     implementation("me.clip:placeholderapi:2.11.6")
+    taboo("ink.ptms:um:1.2.1")
     // Jackson (compileOnly — loaded at runtime via TabooLib META-INF/dependencies)
-    compileOnly("com.fasterxml.jackson.core:jackson-databind:2.16.1")
-    compileOnly("com.fasterxml.jackson.core:jackson-annotations:2.16.1")
-    compileOnly("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.16.1")
-    compileOnly("com.fasterxml.jackson.dataformat:jackson-dataformat-toml:2.16.1")
-    compileOnly("com.fasterxml.jackson.module:jackson-module-kotlin:2.16.1")
+    taboo("com.fasterxml.jackson.core:jackson-databind:2.16.1")
+    taboo("com.fasterxml.jackson.core:jackson-annotations:2.16.1")
+    taboo("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.16.1")
+    taboo("com.fasterxml.jackson.dataformat:jackson-dataformat-toml:2.16.1")
+    taboo("com.fasterxml.jackson.module:jackson-module-kotlin:2.16.1")
     // ItemBridge (optional)
     compileOnly("cn.gtemc:itembridge:1.0.17")
     implementation("com.sk89q.worldguard:worldguard-bukkit:7.0.10-SNAPSHOT")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7") { isTransitive = false }
     compileOnly(kotlin("stdlib"))
     compileOnly(fileTree("libs"))
+    // Quetiapine merge dependencies
+    taboo("io.github.zzzyyylllty:EmbianComponent:1.0.5")
+    compileOnly("org.tabooproject.fluxon:core:1.5.4")
 }
 
 java {

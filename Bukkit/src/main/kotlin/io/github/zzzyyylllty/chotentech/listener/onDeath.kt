@@ -2,6 +2,8 @@ package io.github.zzzyyylllty.chotentech.listener
 
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
 import io.github.zzzyyylllty.chotentech.data.ChoTenDataHelper
+import io.github.zzzyyylllty.chotentech.data.cancelConsumableTasks
+import io.github.zzzyyylllty.chotentech.feature.steampipe.SteamPipeManager
 import io.github.zzzyyylllty.chotentech.function.DeathDropManager
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -17,6 +19,9 @@ private val DEFAULT_SPAWN by lazy {
 fun onPlayerDeath(event: PlayerDeathEvent) {
     val player = event.player
 
+    // 取消 consumable 延时任务
+    cancelConsumableTasks(player.uniqueId.toString())
+
     // 重置状态
     ChoTenDataHelper(player).resetSanity()
     ChoTenDataHelper(player).resetDarkness()
@@ -26,6 +31,12 @@ fun onPlayerDeath(event: PlayerDeathEvent) {
     // 清除原版掉落，使用自定义死亡掉落系统
     event.drops.clear()
     DeathDropManager.handlePlayerDeath(player)
+
+    // 重置蒸汽管道伤害计数（本条命）
+    SteamPipeManager.clearPlayerHits(player)
+
+    // Increment total deaths (shared across profiles)
+    io.github.zzzyyylllty.chotentech.data.profile.ProfileManager.getSharedData(player.uniqueId.toString()).totalDeaths++
 }
 
 @SubscribeEvent

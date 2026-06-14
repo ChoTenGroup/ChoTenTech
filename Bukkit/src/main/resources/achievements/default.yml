@@ -96,7 +96,7 @@ achievements:
         value: "%chotentech_maxsanity%"
 
   darkness_full:
-    name: "暗影缠身"
+    name: "阴暗缠身"
     description:
       - "黑暗值达到 100"
     icon: "BLACK_CONCRETE"
