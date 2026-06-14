@@ -1,0 +1,34 @@
+pipes:
+  level-2:
+    blocks:
+      - DEEPSLATE_TILE_WALL
+    center_range: "5-40"
+    max_searches: 4
+    max_native: 2
+    warning: 7.0
+    warning_native: 4.0
+    eruption: "5-10"
+    end: 1.0
+    end_native: 2.0
+    first_hit: 35.0
+    first_hit_native: 60.0
+    first_hit_min_hp: 1.0
+    second_hit: 50.0
+    second_hit_native: 65.0
+  level-3:
+    blocks:
+      - DEEPSLATE_TILE_WALL
+      - STONE_BRICK_WALL
+    center_range: "0-30"
+    max_searches: 8
+    max_native: 4
+    warning: 4.0
+    warning_native: 2.0
+    eruption: "5-15"
+    end: 2.0
+    end_native: 3.0
+    first_hit: 75.0
+    first_hit_native: 100.0
+    first_hit_min_hp: 1.0
+    second_hit: 80.0
+    second_hit_native: 95.0

@@ -1,0 +1,33 @@
+# do not use underline in registry name, this may have issues when using placeholders.
+main:
+  display:
+    raw: "Main" # for command outputs
+    default: "<yellow>Main</yellow>" # %quetiapine_levelname%
+    legacy: "&aMain" # %quetiapine_levelname_legacy%
+    # ...
+  level:
+    # min level
+    min: 0
+    # start level
+    start: 0
+    # null for unlimited
+    max: 1000
+    # Dynamic max level
+    # max: '{{ if perm "group.svip" then 1000 else if perm "group.vip" then 500 else 100 }}'
+    display:
+      0:
+        default: "<white>Level <yellow>%level%"
+      20:
+        default: "<yellow>Level <yellow>%level%"
+      40:
+        default: "<red>Level <yellow>%level%"
+    exp:
+      0:
+        type: calculator
+        value: "%level% * 5 + 100"
+  agents:
+    onUpgrade:
+      js: |
+        player.sendMessage(mmUtil.deserialize("<gold>[Quetiapine] <yellow><bold>LEVEL UP!</bold></yellow> <gray>You reached level <yellow>" + event.targetLevel))
+        player.addPotionEffect(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.SLOWNESS, 300, 1))
+        PlayerUtil.showTitle(player, mmUtil.deserialize("<gradient:yellow:gold>[ LEVEL UP ]"), mmUtil.deserialize("<gray>" + event.sourceLevel + " -> " + event.targetLevel), 20, 100, 20);

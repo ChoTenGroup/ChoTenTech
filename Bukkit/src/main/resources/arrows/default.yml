@@ -1,0 +1,29 @@
+standard_arrow:
+  id: "standard_arrow"
+  velocity: 1.0
+  damage: 10.0
+  penetrate: 1.0
+
+piercing_arrow:
+  id: "piercing_arrow"
+  velocity: 1.2
+  damage: 8.0
+  penetrate: 3.0
+
+bodkin_arrow:
+  id: "bodkin_arrow"
+  velocity: 1.0
+  damage: 6.0
+  penetrate: 5.0
+
+broadhead_arrow:
+  id: "broadhead_arrow"
+  velocity: 0.9
+  damage: 15.0
+  penetrate: 0.5
+
+explosive_arrow:
+  id: "explosive_arrow"
+  velocity: 0.8
+  damage: 20.0
+  penetrate: 2.0

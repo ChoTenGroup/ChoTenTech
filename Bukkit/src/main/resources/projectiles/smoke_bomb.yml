@@ -1,0 +1,18 @@
+smoke_bomb:
+  id: "smoke_bomb"
+  fuse: 1.5~2.5
+  impact: true
+  sounds:
+    throw: { sound: minecraft:entity.snowball.throw, volume: 0.8, pitch: 0.9 }
+    bounce: { sound: minecraft:entity.item.break, volume: 0.3, pitch: 0.3 }
+    fuse: { sound: minecraft:block.fire.ambient, volume: 0.4, pitch: 0.3 }
+  particles:
+    throw: { particle: campfire_cosy_smoke, count: 8, speed: 0.1 }
+    bounce: { particle: smoke, count: 4, speed: 0.1 }
+    fuse: { particle: campfire_signal_smoke, count: 3, offset_x: 0.2, offset_y: 0.2, offset_z: 0.2, speed: 0.02 }
+  effects:
+    - type: smokescreen
+      range: 6
+      seconds: 10
+      amount: 200
+      sound: { sound: minecraft:entity.firework_rocket.blast, volume: 2.0, pitch: 0.3 }

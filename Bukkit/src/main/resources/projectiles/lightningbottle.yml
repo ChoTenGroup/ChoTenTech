@@ -1,0 +1,80 @@
+lightningbottle_humanmade:
+  fuse: 2.0~3.0
+  impact: false
+  sounds:
+    throw: { sound: minecraft:entity.snowball.throw, volume: 1.0, pitch: 1.2 }
+    bounce: { sound: minecraft:entity.item.break, volume: 0.5, pitch: 1.8 }
+    fuse: { sound: minecraft:block.fire.ambient, volume: 0.8, pitch: 1.5 }
+  particles:
+    throw: { particle: electric_spark, count: 12, speed: 0.2 }
+    bounce: { particle: smoke, count: 6, speed: 0.1 }
+    fuse: { particle: electric_spark, count: 4, offset_x: 0.2, offset_y: 0.2, offset_z: 0.2, speed: 0.05 }
+  bounce:
+    max: 2
+    factor: 0.5
+    upward: 0.1
+  effects:
+    - type: lightning_strike
+      range: 10
+      amount: 3
+      power: 3
+      damage:
+        shock: 8
+        burn: 4
+      sound: { sound: minecraft:entity.lightning_bolt.thunder, volume: 3.0, pitch: 0.8 }
+      particle: { particle: electric_spark, count: 30, speed: 0.5 }
+      shockwave: { particle: electric_spark, count: 24, speed: 1.0, rings: 3 }
+
+lightningbottle_blue:
+  fuse: 2.5~3.5
+  impact: false
+  sounds:
+    throw: { sound: minecraft:entity.snowball.throw, volume: 1.0, pitch: 1.0 }
+    bounce: { sound: minecraft:entity.item.break, volume: 0.5, pitch: 1.6 }
+    fuse: { sound: minecraft:block.fire.ambient, volume: 1.0, pitch: 1.2 }
+  particles:
+    throw: { particle: electric_spark, count: 18, speed: 0.3 }
+    bounce: { particle: smoke, count: 8, speed: 0.15 }
+    fuse: { particle: electric_spark, count: 6, offset_x: 0.3, offset_y: 0.3, offset_z: 0.3, speed: 0.08 }
+  bounce:
+    max: 1
+    factor: 0.4
+    upward: 0.1
+  effects:
+    - type: lightning_strike
+      range: 15
+      amount: 6
+      power: 4
+      damage:
+        shock: 20
+        burn: 12
+      sound: { sound: minecraft:entity.lightning_bolt.thunder, volume: 4.0, pitch: 0.7 }
+      particle: { particle: electric_spark, count: 50, speed: 0.6 }
+      shockwave: { particle: electric_spark, count: 36, speed: 1.2, rings: 4 }
+
+lightningbottle_black:
+  fuse: 3.0~4.0
+  impact: false
+  sounds:
+    throw: { sound: minecraft:entity.snowball.throw, volume: 1.0, pitch: 0.8 }
+    bounce: { sound: minecraft:entity.item.break, volume: 0.4, pitch: 1.4 }
+    fuse: { sound: minecraft:block.fire.ambient, volume: 1.2, pitch: 0.8 }
+  particles:
+    throw: { particle: electric_spark, count: 24, speed: 0.4 }
+    bounce: { particle: smoke, count: 10, speed: 0.2 }
+    fuse: { particle: electric_spark, count: 8, offset_x: 0.4, offset_y: 0.4, offset_z: 0.4, speed: 0.1 }
+  bounce:
+    max: 1
+    factor: 0.3
+    upward: 0.05
+  effects:
+    - type: lightning_strike
+      range: 20
+      amount: 12
+      power: 6
+      damage:
+        shock: 40
+        burn: 25
+      sound: { sound: minecraft:entity.lightning_bolt.thunder, volume: 5.0, pitch: 0.5 }
+      particle: { particle: electric_spark, count: 80, speed: 0.8 }
+      shockwave: { particle: electric_spark, count: 48, speed: 1.5, rings: 5 }
