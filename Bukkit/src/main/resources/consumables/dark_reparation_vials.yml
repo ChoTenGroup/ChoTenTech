@@ -1,0 +1,78 @@
+dark_reparation_vials_navy:
+  id: "dark_reparation_vials_navy"
+  effects:
+    - effect: potion
+      potion: REGENERATION
+      duration: 3600
+      amplifier: 4
+    - effect: modifier
+      modifier: sanity_regeneration
+      amount: 1.0
+      type: ADD
+      source: OTHER
+      slot: OTHER
+      uuid: navy_sanity_regen
+      expire: 3m
+
+dark_reparation_vials_amethyst:
+  id: "dark_reparation_vials_amethyst"
+  effects:
+    - effect: internal_injury
+      mode: set
+      value: 0
+
+dark_reparation_vials_ruby:
+  id: "dark_reparation_vials_ruby"
+  effects:
+    - effect: tick_task
+      period: 20
+      repeats: 300
+      effects:
+        - effect: stamina
+          mode: add
+          value: 3
+
+dark_reparation_vials_onyx:
+  id: "dark_reparation_vials_onyx"
+  effects:
+    - effect: tick_task
+      delay: 0
+      period: 20
+      repeats: 10
+      effects:
+        - effect: health
+          mode: add
+          value: -2
+    - effect: tick_task
+      delay: 200
+      period: 20
+      repeats: 100
+      effects:
+        - effect: health
+          mode: add
+          value: -20
+
+dark_reparation_vials_turquoise:
+  id: "dark_reparation_vials_turquoise"
+  effects:
+    - effect: potion
+      potion: NAUSEA
+      duration: 600
+      amplifier: 0
+
+dark_reparation_vials_quartz:
+  id: "dark_reparation_vials_quartz"
+  effects:
+    - effect: particle
+      particle: white_ash
+      count: 100
+      value: 3.0
+      speed: 1
+    - effect: tick_task
+      delay: 100
+      period: 20
+      repeats: 100
+      effects:
+        - effect: health
+          mode: add
+          value: -20

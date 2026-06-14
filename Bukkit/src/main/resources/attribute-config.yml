@@ -1,0 +1,129 @@
+# attribute Configuration
+# 大部分设置需要重启以应用更改
+# MOST SETTINGS REQUIRED RESTART TO APPLY CHANGES
+# 大部分设置需要重启以应用更改
+# MOST SETTINGS REQUIRED RESTART TO APPLY CHANGES
+# 大部分设置需要重启以应用更改
+# MOST SETTINGS REQUIRED RESTART TO APPLY CHANGES
+# 大部分设置需要重启以应用更改
+# MOST SETTINGS REQUIRED RESTART TO APPLY CHANGES
+
+# 调试模式 debug
+# Debug mode
+debug: false
+
+# 语言 language
+lang: en_US
+
+# 格挡闪避设置
+block-dodge-settings:
+  # 是否启用格挡与闪避系统
+  enabled: true
+
+# 弩箭机制设置（默认启用）
+crossbow-mechanism:
+  # 穿透溢出时耐久度损耗倍率
+  penetration-durability-ratio: 1.0
+
+# 高耐久度模式（默认禁用）
+high-durability-mode:
+  # 是否启用
+  enabled: false
+  # 按护甲defense分布额外扣除耐久度的比例
+  ratio: 1.0
+
+# 基本值属性配置
+basic-attributes:
+  stamina:
+
+    default:
+      min: 0
+      max: 100
+      regeneration: 1
+
+# ===== 伤害类型系统 =====
+damage-system:
+  # 是否启用伤害类型系统
+  enabled: true
+
+  # 通用防御公式分母（defense/(defense+denominator)），默认 defense=100 时减伤 50%
+  defense-denominator: 100.0
+  # 属性防御公式分母（specific_defense/(specific_defense+denominator)），默认 50 时减伤 50%
+  specific-denominator: 50.0
+
+  # 精神/侵蚀：精神转化比率（removeSanity = damage * ratio / 100）
+  sanity-conversion-ratio: 10.0
+
+  # 霜寒叠加窗口（tick）
+  frost-window-ticks: 100
+  # 霜寒中量/大量/极大量伤害阈值
+  frost-medium-threshold: 15.0
+  frost-high-threshold: 30.0
+  frost-extreme-threshold: 50.0
+
+  # 电击基础禁锢概率
+  shock-base-chance: 0.2
+  # 电击每点伤害额外概率
+  shock-damage-chance-ratio: 0.005
+  # 电击禁锢最短/最长秒数
+  shock-min-duration: 1
+  shock-max-duration: 5
+
+  # 衰退最大百分比（一次最多扣当前血量的百分比）
+  decay-max-percent: 0.5
+
+  # 伤害类型启用/禁用（默认全启用）
+  types:
+    physical:
+      enabled: true
+    burn:
+      enabled: true
+    frost:
+      enabled: true
+    shock:
+      enabled: true
+    psychic:
+      enabled: true
+    erosion:
+      enabled: true
+    decay:
+      enabled: true
+
+  # 原版伤害原因 → 伤害类型映射
+  # 可选值：physical / burn / frost / shock / psychic / erosion / decay / none（跳过）
+  vanilla-mapping:
+    # 物理
+    ENTITY_ATTACK: physical
+    ENTITY_SWEEP_ATTACK: physical
+    PROJECTILE: physical
+    CONTACT: physical
+    SUFFOCATION: physical
+    FALL: physical
+    FLY_INTO_WALL: physical
+    FALLING_BLOCK: physical
+    CRAMMING: physical
+    THORNS: physical
+    BLOCK_EXPLOSION: physical
+    ENTITY_EXPLOSION: physical
+    # 灼烧
+    FIRE: burn
+    FIRE_TICK: burn
+    LAVA: burn
+    HOT_FLOOR: burn
+    MELTING: burn
+    # 电击
+    LIGHTNING: shock
+    SONIC_BOOM: shock
+    # 霜寒
+    FREEZE: frost
+    # 侵蚀
+    DROWNING: erosion
+    DRAGON_BREATH: erosion
+    # 衰退
+    POISON: decay
+    WITHER: decay
+    STARVATION: decay
+    # 精神
+    VOID: psychic
+    WORLD_BORDER: psychic
+    MAGIC: psychic

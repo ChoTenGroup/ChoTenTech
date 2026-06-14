@@ -1,0 +1,13 @@
+signs:
+  - location:
+      world: "Area2"
+      x: 30051
+      y: 2
+      z: 88
+    password: "2312"
+    actions:
+      - type: door
+        world: "Area2"
+        x: 30050
+        y: 1
+        z: 87

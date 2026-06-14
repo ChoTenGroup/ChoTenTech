@@ -1,0 +1,110 @@
+candy_almond_mints:
+  id: "candy_almond_mints"
+  effects:
+    - effect: sound
+      sound: ENTITY_EXPERIENCE_ORB_PICKUP
+      volume: 0.5
+      pitch: 0.7
+    - effect: potion
+      potion: SPEED
+      duration: 50
+      amplifier: 1
+    - effect: potion
+      potion: BLINDNESS
+      duration: 10
+      amplifier: 2
+
+candy_biting_bullets:
+  id: "candy_biting_bullets"
+  effects:
+    - effect: sound
+      sound: ENTITY_ITEM_BREAK
+      volume: 0.5
+      pitch: 0.7
+    - effect: potion
+      potion: RESISTANCE
+      duration: 50
+      amplifier: 3
+    - effect: potion
+      potion: BLINDNESS
+      duration: 50
+      amplifier: 2
+
+candy_brainiacs:
+  id: "candy_brainiacs"
+  effects:
+    - effect: sound
+      sound: BLOCK_BEACON_AMBIENT
+      volume: 0.5
+      pitch: 2.0
+    - effect: potion
+      potion: SPEED
+      duration: 500
+      amplifier: 0
+    - effect: potion
+      potion: BLINDNESS
+      duration: 10
+      amplifier: 2
+
+candy_guns:
+  id: "candy_guns"
+  effects:
+    - effect: sound
+      sound: BLOCK_BEACON_ACTIVATE
+      volume: 0.5
+      pitch: 1.6
+    - effect: mm_skill
+      skill: "CandyGunAmmo"
+      power: 1.5
+
+candy_hazardous_waste:
+  id: "candy_hazardous_waste"
+  effects:
+    - effect: sound
+      sound: ENTITY_GENERIC_BURN
+      volume: 0.5
+      pitch: 0.7
+    - effect: potion
+      potion: BLINDNESS
+      duration: 40
+      amplifier: 2
+    - effect: potion
+      potion: WITHER
+      duration: 200
+      amplifier: 2
+
+candy_silver_tongues:
+  id: "candy_silver_tongues"
+  effects:
+    - effect: sound
+      sound: BLOCK_ANVIL_PLACE
+      volume: 0.5
+      pitch: 0.7
+    - effect: potion
+      potion: BLINDNESS
+      duration: 40
+      amplifier: 2
+    - effect: potion
+      potion: WITHER
+      duration: 40
+      amplifier: 2
+    - effect: potion
+      potion: SLOWNESS
+      duration: 40
+      amplifier: 2
+
+candy_stanleys:
+  id: "candy_stanleys"
+  effects:
+    - effect: sound
+      sound: BLOCK_BEACON_ACTIVATE
+      volume: 0.5
+      pitch: 1.6
+    - effect: potion
+      potion: SPEED
+      duration: 400
+      amplifier: 2
+    - effect: potion
+      potion: INVISIBILITY
+      duration: 400
+      amplifier: 2
