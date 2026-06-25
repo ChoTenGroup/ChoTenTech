@@ -1,0 +1,22 @@
+name: "灯光"
+description: "基地照明系统基础"
+material: "GLOWSTONE"
+item_model: "kangelitem:hideout/lighting"
+slot: 13
+max_level: 1
+usage: 0.0
+levels:
+  1:
+    upgrade_time: 60
+    upgrade_cost:
+      - sertraline_id: "glowstone_dust"
+        amount: 4
+      - sertraline_id: "copper_wire"
+        amount: 2
+      - sertraline_id: "light_bulb"
+        amount: 2
+      - sertraline_id: "glowstone_bulb"
+        amount: 1
+    currency_cost:
+      - currency: "point"
+        amount: 200

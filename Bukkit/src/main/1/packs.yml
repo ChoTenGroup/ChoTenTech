@@ -1,0 +1,352 @@
+ice_medkit:
+  xbuilder:
+    name: “<!i><red>”冰块”医疗盒<reset> (${var:durabilityAsIn}$/${var:maxdurability}$)”
+    material: PAPER
+    item-model: “kangelitem:ice_medkit”
+  sertraline:
+    tier: C
+    lore-format: default
+    vals:
+      lore: |
+        “冰块”医疗盒是冰块委员会研发的临时医疗物品。
+        虽然它对内外伤无能为力，但是胜在便宜和普及。
+        一个在被抛弃路上而设计的物品。提供最最基础的保障。
+        很快的使用、很快的恢复、很快的抛弃。亦如当初的命运。
+
+        <!i><red>无法治疗内伤、外伤伤势。
+        <!i>单次治疗 <dark_green>血量</dark_green> <red>30</red>
+        <!i>治疗速度 <dark_green>血量</dark_green> <yellow>10</yellow>
+        <!i>耐久消耗 <dark_green>血量</dark_green> <green>1.0x</green>
+        <!i>启用 <green>1秒</green> - 使用 <yellow>1秒</yellow> - 收起 <green>1秒</green>
+        <!i>消耗食物 <red>4</red>
+    vars:
+      maxdurability: 50
+      durability: 50
+  # custom_data:
+  #   heal:
+  #     maxheal: 30
+  #     healspeed: 10
+  #     healrate: 1
+  #     iinjuryspeed: 0
+  #     einjuryspeed: 0
+  #     iinjuryrate: 0
+  #     einjuryrate: 0
+  #     maxiinjury: 0
+  #     maxeinjury: 0
+  #     fracturecost: 0
+  #     time:
+  #       pre: 1
+  #       per: 1
+  #       post: 1
+  #     cost:
+  #       food: 4
+  #       san: 0
+  # custom_data:
+  #   heal:
+  #     maxheal: 30
+  #     healspeed: 10
+  #     healrate: 1
+  #     iinjuryspeed: 0
+  #     einjuryspeed: 0
+  #     iinjuryrate: 0
+  #     einjuryrate: 0
+  #     maxiinjury: 0
+  #     maxeinjury: 0
+  #     time:
+  #       pre: 1
+  #       per: 1
+  #       post: 1
+  #     cost:
+  #       food: 4
+  #       san: 0
+
+tianlong_medkit:
+  xbuilder:
+    name: "<!i><red>“天龙”医疗袋<reset> (${var:durabilityAsIn}$/${var:maxdurability}$)"
+    material: PAPER
+    item-model: "kangelitem:tianlong_medkit"
+  sertraline:
+    tier: B
+    lore-format: default
+    vals:
+      lore: |
+        天龙二十四军急救袋是最大化的延续系列，提供相对更好的医疗保障。
+        允许你治疗常规伤害以及少量外伤。由于它本身不专对外伤，将会消耗更多耐久。
+        然而，完成它应尽的使命后，会面对着更严重的伤害手足无措。
+
+        <!i><red>无法治疗内伤伤势。
+        <!i>单次治疗 <dark_green>血量</dark_green> <yellow>56</yellow> | <dark_aqua>外伤</dark_aqua> <red>20</red>
+        <!i>治疗速度 <dark_green>血量</dark_green> <yellow>8</yellow> | <dark_aqua>外伤</dark_aqua> <red>5</red>
+        <!i>耐久消耗 <dark_green>血量</dark_green> <green>1.0x</green> | <dark_aqua>外伤</dark_aqua> <red>3.0x</red>
+        <!i>启用 <green>1秒</green> - 使用 <yellow>1秒</yellow> - 收起 <green>1秒</green>
+        <!i>消耗食物 <red>4</red>
+    vars:
+      maxdurability: 180
+      durability: 180
+  # custom_data:
+  #   heal:
+  #     maxheal: 56
+  #     healspeed: 8
+  #     healrate: 1
+  #     iinjuryspeed: 0
+  #     einjuryspeed: 5
+  #     iinjuryrate: 0
+  #     einjuryrate: 3
+  #     maxiinjury: 0
+  #     maxeinjury: 20
+  #     fracturecost: 70
+  #     time:
+  #       pre: 1
+  #       per: 1
+  #       post: 1
+  #     cost:
+  #       food: 4
+  #       san: 0
+
+pumpkin_medkit:
+  xbuilder:
+    name: "<!i><red>“Pumpkin”南瓜派医疗袋<reset> (${var:durabilityAsIn}$/${var:maxdurability}$)"
+    material: PAPER
+    item-model: "kangelitem:pumpkin_medkit"
+  sertraline:
+    tier: A
+    lore-format: default
+    vals:
+      lore: |
+        Pumpkin四十集团军群5675型急救袋。相比二十四军的好了很多。
+        在之前的基础上新增了一些绷带和简易创伤治疗物品，可用于外伤。
+
+        <!i><red>无法治疗内伤伤势。
+        <!i>单次治疗 <dark_green>血量</dark_green> <yellow>72</yellow> | <dark_aqua>外伤</dark_aqua> <yellow>40</yellow>
+        <!i>治疗速度 <dark_green>血量</dark_green> <yellow>8</yellow> | <dark_aqua>外伤</dark_aqua> <yellow>8</yellow>
+        <!i>耐久消耗 <dark_green>血量</dark_green> <green>1.0x</green> | <dark_aqua>外伤</dark_aqua> <yellow>2.0x</yellow>
+        <!i>启用 <yellow>2秒</yellow> - 使用 <yellow>1秒</yellow> - 收起 <yellow>2秒</yellow>
+        <!i>消耗食物 <red>2</red> / 消耗精神 <red>0.05</red>
+    vars:
+      maxdurability: 300
+      durability: 300
+  # custom_data:
+  #   heal:
+  #     maxheal: 72
+  #     healspeed: 8
+  #     healrate: 1
+  #     iinjuryspeed: 0
+  #     einjuryspeed: 8
+  #     iinjuryrate: 0
+  #     einjuryrate: 2
+  #     maxiinjury: 0
+  #     maxeinjury: 40
+  #     fracturecost: 60
+  #     time:
+  #       pre: 2
+  #       per: 1
+  #       post: 2
+  #     cost:
+  #       food: 2
+  #       san: 0.05
+
+fanxing_medkit:
+  xbuilder:
+    name: "<!i><red>“繁星”医疗包<reset> (${var:durabilityAsIn}$/${var:maxdurability}$)"
+    material: PAPER
+    item-model: "kangelitem:fanxing_medkit"
+  sertraline:
+    tier: S
+    lore-format: default
+    vals:
+      lore: |
+        繁星边防区医疗包是商人之家内“繁星”博士研发的医疗物品。
+        专供边防士兵使用。第三代繁星是设计最为合理、内容物最多的版本。
+        它能出色应对外伤和少量<blue>内伤</blue>，代价是更长的启用时间。
+
+        <!i>单次治疗 <dark_green>血量</dark_green> <green>100</green> | <dark_aqua>外伤</dark_aqua> <yellow>40</yellow> | <blue>内伤</blue> <yellow>40</yellow>
+        <!i>治疗速度 <dark_green>血量</dark_green> <yellow>10</yellow> | <dark_aqua>外伤</dark_aqua> <green>10</green> | <blue>内伤</blue> <green>10</green>
+        <!i>耐久消耗 <dark_green>血量</dark_green> <green>1.0x</green> | <dark_aqua>外伤</dark_aqua> <green>1.0x</green> | <blue>内伤</blue> <red>4.0x</red>
+        <!i>启用 <red>3秒</red> - 使用 <yellow>1秒</yellow> - 收起 <red>3秒</red>
+        <!i>消耗食物 <red>2</red> / 消耗精神 <red>0.25</red>
+    vars:
+      maxdurability: 400
+      durability: 400
+  # custom_data:
+  #   heal:
+  #     maxheal: 100
+  #     healspeed: 10
+  #     healrate: 1
+  #     iinjuryspeed: 10
+  #     einjuryspeed: 10
+  #     iinjuryrate: 4
+  #     einjuryrate: 1
+  #     maxiinjury: 40
+  #     maxeinjury: 40
+  #     fracturecost: 40
+  #     time:
+  #       pre: 3
+  #       per: 1
+  #       post: 3
+  #     cost:
+  #       food: 2
+  #       san: 0.25
+
+onefirst_medkit:
+  xbuilder:
+    name: "<!i><red>“OneFirst” 医疗包<reset> (${var:durabilityAsIn}$/${var:maxdurability}$)"
+    material: PAPER
+    item-model: "kangelitem:onefirst_medkit"
+  sertraline:
+    tier: A
+    lore-format: default
+    vals:
+      lore: |
+        OneFirst医疗包是由Omega基地的阿初研发的产物。
+        有别于繁星医疗包，它专针对各种内外伤，而不是只侧重一种。
+
+        <!i>单次治疗 <dark_green>血量</dark_green> <yellow>72</yellow> | <dark_aqua>外伤</dark_aqua> <yellow>40</yellow> | <blue>内伤</blue> <yellow>40</yellow>
+        <!i>治疗速度 <dark_green>血量</dark_green> <green>12</green> | <dark_aqua>外伤</dark_aqua> <red>5</red> | <blue>内伤</blue> <red>5</red>
+        <!i>耐久消耗 <dark_green>血量</dark_green> <green>1.0x</green> | <dark_aqua>外伤</dark_aqua> <green>1.0x</green> | <blue>内伤</blue> <green>1.0x</green>
+        <!i>启用 <yellow>2秒</yellow> - 使用 <yellow>1秒</yellow> - 收起 <yellow>2秒</yellow>
+        <!i>消耗食物 <red>3</red>
+    vars:
+      maxdurability: 395
+      durability: 395
+  # custom_data:
+  #   heal:
+  #     maxheal: 72
+  #     healspeed: 12
+  #     healrate: 1
+  #     iinjuryspeed: 5
+  #     einjuryspeed: 5
+  #     iinjuryrate: 1
+  #     einjuryrate: 1
+  #     maxiinjury: 40
+  #     maxeinjury: 40
+  #     fracturecost: 50
+  #     time:
+  #       pre: 2
+  #       per: 1
+  #       post: 2
+  #     cost:
+  #       food: 3
+  #       san: 0
+
+xingchen_medkit:
+  xbuilder:
+    name: "<!i><red>“XingChen's” 医疗箱<reset> (${var:durabilityAsIn}$/${var:maxdurability}$)"
+    material: PAPER
+    item-model: "kangelitem:xingchen_medkit"
+  sertraline:
+    tier: S
+    lore-format: default
+    vals:
+      lore: |
+        在紧急情况下，没有任何东西能比快速启用的医疗包更能解燃眉之急。
+        它的创始人 NK_XingChen 对此有着切身体验。
+        星辰系列医疗箱通过更便捷的设计布局，大大缩短了使用时间。
+
+        <!i>单次治疗 <dark_green>血量</dark_green> <green>105</green> | <dark_aqua>外伤</dark_aqua> <yellow>40</yellow> | <blue>内伤</blue> <yellow>40</yellow>
+        <!i>治疗速度 <dark_green>血量</dark_green> <green>15</green> | <dark_aqua>外伤</dark_aqua> <red>5</red> | <blue>内伤</blue> <red>5</red>
+        <!i>耐久消耗 <dark_green>血量</dark_green> <green>1.0x</green> | <dark_aqua>外伤</dark_aqua> <yellow>2.0x</yellow> | <blue>内伤</blue> <yellow>2.0x</yellow>
+        <!i>启用 <green>0.5秒</green> - 使用 <green>0.5秒</green> - 收起 <green>0.5秒</green>
+        <!i>消耗食物 <red>4</red> / 消耗精神 <red>0.5</red>
+    vars:
+      maxdurability: 800
+      durability: 800
+  # custom_data:
+  #   heal:
+  #     maxheal: 105
+  #     healspeed: 15
+  #     healrate: 1
+  #     iinjuryspeed: 5
+  #     einjuryspeed: 5
+  #     iinjuryrate: 2
+  #     einjuryrate: 2
+  #     maxiinjury: 40
+  #     maxeinjury: 40
+  #     fracturecost: 35
+  #     time:
+  #       pre: 0.5
+  #       per: 0.5
+  #       post: 0.5
+  #     cost:
+  #       food: 4
+  #       san: 0.5
+
+mosoon_medkit:
+  xbuilder:
+    name: "<!i><red>“mosoon” 特别医疗箱<reset> (${var:durabilityAsIn}$/${var:maxdurability}$)"
+    material: PAPER
+    item-model: "kangelitem:mosoon_medkit"
+  sertraline:
+    tier: P
+    lore-format: default
+    vals:
+      lore: |
+        mosoon 特别医疗箱系列是由 Jesuzi 一手创建的。
+        尽管使用时间非常长，但它的耐久、治疗能力无与伦比。
+
+        <!i>单次治疗 <dark_green>血量</dark_green> <green>256</green> | <dark_aqua>外伤</dark_aqua> <green>128</green> | <blue>内伤</blue> <green>128</green>
+        <!i>治疗速度 <dark_green>血量</dark_green> <green>32</green> | <dark_aqua>外伤</dark_aqua> <yellow>8</yellow> | <blue>内伤</blue> <yellow>8</yellow>
+        <!i>耐久消耗 <dark_green>血量</dark_green> <green>1.0x</green> | <dark_aqua>外伤</dark_aqua> <green>1.0x</green> | <blue>内伤</blue> <green>1.0x</green>
+        <!i>启用 <red>5秒</red> - 使用 <red>1.5秒</red> - 收起 <yellow>2秒</yellow>
+        <!i>消耗食物 <red>2</red>
+    vars:
+      maxdurability: 960
+      durability: 960
+  # custom_data:
+  #   heal:
+  #     maxheal: 256
+  #     healspeed: 32
+  #     healrate: 1
+  #     iinjuryspeed: 8
+  #     einjuryspeed: 8
+  #     iinjuryrate: 1
+  #     einjuryrate: 1
+  #     maxiinjury: 128
+  #     maxeinjury: 128
+  #     fracturecost: 30
+  #     time:
+  #       pre: 5
+  #       per: 1.5
+  #       post: 2
+  #     cost:
+  #       food: 2
+  #       san: 0
+
+akacandy_medkit:
+  xbuilder:
+    name: "<!i><red>“AkaCandy's” 专业医疗箱<reset> (${var:durabilityAsIn}$/${var:maxdurability}$)"
+    material: PAPER
+    item-model: "kangelitem:akacandy_medkit"
+  sertraline:
+    tier: P
+    lore-format: default
+    vals:
+      lore: |
+        AkaCandy 系列医疗箱被认为是最好的家用至战斗用医疗物品之一。
+        它包含了任何情况下所需要的一切医疗用品。
+
+        <!i>单次治疗 <dark_green>血量</dark_green> <green>200</green> | <dark_aqua>外伤</dark_aqua> <green>100</green> | <blue>内伤</blue> <green>100</green>
+        <!i>治疗速度 <dark_green>血量</dark_green> <green>25</green> | <dark_aqua>外伤</dark_aqua> <green>10</green> | <blue>内伤</blue> <green>10</green>
+        <!i>耐久消耗 <dark_green>血量</dark_green> <green>1.0x</green> | <dark_aqua>外伤</dark_aqua> <yellow>2.0x</yellow> | <blue>内伤</blue> <yellow>2.0x</yellow>
+        <!i>启用 <red>3秒</red> - 使用 <yellow>1秒</yellow> - 收起 <yellow>1.5秒</yellow>
+    vars:
+      maxdurability: 1660
+      durability: 1660
+  # custom_data:
+  #   heal:
+  #     maxheal: 200
+  #     healspeed: 25
+  #     healrate: 1
+  #     iinjuryspeed: 10
+  #     einjuryspeed: 10
+  #     iinjuryrate: 2
+  #     einjuryrate: 2
+  #     maxiinjury: 100
+  #     maxeinjury: 100
+  #     fracturecost: 30
+  #     time:
+  #       pre: 3
+  #       per: 1
+  #       post: 1.5
+  #     cost:
+  #       food: 0
+  #       san: 0

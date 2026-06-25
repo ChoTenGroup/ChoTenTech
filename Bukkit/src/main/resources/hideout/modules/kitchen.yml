@@ -1,0 +1,48 @@
+name: "厨房"
+description: "自动生产食物"
+material: "SMOKER"
+item_model: "kangelitem:hideout/kitchen"
+slot: 16
+max_level: 3
+usage: 2.0
+levels:
+  1:
+    upgrade_time: 60
+    production_rate: 0.015
+    production_item: "bread"
+    upgrade_cost:
+      - sertraline_id: "iron_ingot"
+        amount: 8
+      - sertraline_id: "plank"
+        amount: 16
+      - sertraline_id: "gear"
+        amount: 2
+    currency_cost:
+      - currency: "point"
+        amount: 400
+  2:
+    upgrade_time: 300
+    production_rate: 0.025
+    production_item: "barbecue"
+    upgrade_cost:
+      - sertraline_id: "steel_ingot"
+        amount: 4
+      - sertraline_id: "silver_ingot"
+        amount: 2
+    currency_cost:
+      - currency: "point"
+        amount: 1500
+  3:
+    upgrade_time: 600
+    production_rate: 0.04
+    production_item: "pizza"
+    upgrade_cost:
+      - sertraline_id: "steel_ingot"
+        amount: 8
+      - sertraline_id: "glowstone_ingot"
+        amount: 2
+      - sertraline_id: "basic_ai_core"
+        amount: 1
+    currency_cost:
+      - currency: "point"
+        amount: 4000

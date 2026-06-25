@@ -1,0 +1,58 @@
+name: "矿场"
+description: "生产 CitCoin，放入显卡可加速生产"
+material: "PISTON"
+item_model: "kangelitem:hideout/mine"
+slot: 41
+max_level: 3
+usage: 6.0
+levels:
+  1:
+    upgrade_time: 60
+    production_rate: 0.03
+    gpu_slots: 3
+    upgrade_cost:
+      - sertraline_id: "copper_ingot"
+        amount: 16
+      - sertraline_id: "red_board"
+        amount: 4
+      - sertraline_id: "copper_wire"
+        amount: 8
+      - sertraline_id: "gear"
+        amount: 2
+    currency_cost:
+      - currency: "point"
+        amount: 1000
+  2:
+    upgrade_time: 300
+    production_rate: 0.06
+    gpu_slots: 5
+    upgrade_cost:
+      - sertraline_id: "gold_ingot_medium"
+        amount: 8
+      - sertraline_id: "green_board"
+        amount: 4
+      - sertraline_id: "battery_set"
+        amount: 2
+      - sertraline_id: "advanced_ai_core"
+        amount: 1
+    currency_cost:
+      - currency: "point"
+        amount: 4000
+  3:
+    upgrade_time: 600
+    production_rate: 0.1
+    gpu_slots: 8
+    upgrade_cost:
+      - sertraline_id: "gold_ingot_high"
+        amount: 4
+      - sertraline_id: "advanced_ai_core"
+        amount: 1
+      - sertraline_id: "black_diamond"
+        amount: 2
+      - sertraline_id: "battery_set"
+        amount: 4
+      - sertraline_id: "pro_ai_core"
+        amount: 1
+    currency_cost:
+      - currency: "point"
+        amount: 10000

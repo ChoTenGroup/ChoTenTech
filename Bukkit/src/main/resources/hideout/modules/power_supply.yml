@@ -1,0 +1,68 @@
+name: "供能机"
+description: "减少整体燃料消耗"
+material: "BLAST_FURNACE"
+item_model: "kangelitem:hideout/powersupply"
+slot: 40
+max_level: 4
+usage: 2.0
+levels:
+  1:
+    upgrade_time: 60
+    fuel_save_percent: 15
+    upgrade_cost:
+      - sertraline_id: "copper_ingot"
+        amount: 16
+      - sertraline_id: "battery"
+        amount: 4
+      - sertraline_id: "copper_wire"
+        amount: 8
+      - sertraline_id: "gear"
+        amount: 2
+    currency_cost:
+      - currency: "point"
+        amount: 1000
+  2:
+    upgrade_time: 300
+    fuel_save_percent: 25
+    upgrade_cost:
+      - sertraline_id: "steel_ingot"
+        amount: 6
+      - sertraline_id: "battery_set"
+        amount: 2
+      - sertraline_id: "precision_parts"
+        amount: 4
+      - sertraline_id: "motor"
+        amount: 1
+    currency_cost:
+      - currency: "point"
+        amount: 3000
+  3:
+    upgrade_time: 600
+    fuel_save_percent: 35
+    upgrade_cost:
+      - sertraline_id: "gold_ingot_medium"
+        amount: 6
+      - sertraline_id: "glowstone_ingot"
+        amount: 2
+      - sertraline_id: "advanced_ai_core"
+        amount: 1
+      - sertraline_id: "pro_ai_core"
+        amount: 1
+    currency_cost:
+      - currency: "point"
+        amount: 8000
+  4:
+    upgrade_time: 1200
+    fuel_save_percent: 45
+    upgrade_cost:
+      - sertraline_id: "gold_ingot_high"
+        amount: 2
+      - sertraline_id: "plasma_ingot"
+        amount: 2
+      - sertraline_id: "black_diamond"
+        amount: 2
+      - sertraline_id: "ultra_alloy_ingot"
+        amount: 1
+    currency_cost:
+      - currency: "point"
+        amount: 20000

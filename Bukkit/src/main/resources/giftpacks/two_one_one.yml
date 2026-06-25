@@ -1,0 +1,46 @@
+# 2+1+1 随心配礼包
+# 任选2个钻石护甲 + 1个钻石战斧/战锤 + 1个Mosoon医疗箱
+# 价格: 149 贸易点 (选择钻石护甲时额外+30)
+two_one_one:
+  name: "2+1+1 随心配礼包"
+  price: 149
+  currency: point
+
+  categories:
+    armor:
+      display_name: "<aqua>钻石护甲"
+      max_select: 2
+      items:
+        helmet:
+          id: sertraline:diamond_helmet
+          display_name: "<white>钻石头盔"
+        chestplate:
+          id: sertraline:diamond_chestplate
+          display_name: "<white>钻石护甲"
+        leggings:
+          id: sertraline:diamond_leggings
+          display_name: "<white>钻石护腿"
+        boots:
+          id: sertraline:diamond_boots
+          display_name: "<white>钻石靴子"
+    weapon:
+      display_name: "<gold>钻石战斧/战锤"
+      max_select: 1
+      items:
+        combataxe:
+          id: sertraline:diamond_combataxe
+          display_name: "<white>钻石战斧"
+        hammer:
+          id: sertraline:diamond_hammer
+          display_name: "<white>钻石战锤"
+    medical:
+      display_name: "<green>医疗包"
+      max_select: 1
+      items:
+        medkit:
+          id: sertraline:mosoon_medkit
+          display_name: "<green>Mosoon特别医疗箱"
+
+  # 价格调整: 选择特定物品时加价
+  price_modifiers:
+    sertraline:diamond_chestplate: 30

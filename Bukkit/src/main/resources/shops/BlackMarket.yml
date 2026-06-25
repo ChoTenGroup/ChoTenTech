@@ -1,0 +1,195 @@
+BlackMarket:
+  name: "<black>黑市"
+
+  gui:
+    buy: |-
+      MMM---<>O
+      IIIIIIIII
+      IIIIIIIII
+      IIIIIIIII
+      IIIIIIIII
+      N-----CCC
+    sell: |-
+      MMM---<>O
+      IIIIIIIII
+      IIIIIIIII
+      IIIIIIIII
+      IIIIIIIII
+      N-----CCC
+
+  gui-item:
+    mode-buy:
+      material: "BOOK"
+      name: "<white><b>购买模式"
+      lore: "当前为购买模式\n点击切换到出售模式"
+    mode-sell:
+      material: "BOOK"
+      name: "<white><b>出售模式"
+      lore: "当前为出售模式\n点击切换到购买模式"
+    previous:
+      have:
+        name: "<white><b>上一页"
+        lore: "点击切换到上一页。\n第 %page% / %total_pages% 页"
+      not:
+        name: "<white><b>第 1 / 1 页"
+        lore: "已是第一页。"
+    next:
+      have:
+        name: "<white><b>下一页"
+        lore: "点击切换到下一页。\n第 %page% / %total_pages% 页"
+      not:
+        name: "<white><b>第 1 / 1 页"
+        lore: "已是最后一页。"
+    knowledge:
+      material: "KNOWLEDGE_BOOK"
+      name: "<gold><b>信息"
+      lore: |-
+        点击查看您的货币信息。
+    confirm-buy:
+      have:
+        material: "GREEN_CONCRETE"
+        name: "<green><b>确认购买"
+        lore: "点击确认购买。"
+      not-enough:
+        material: "RED_CONCRETE"
+        name: "<red><b>货币不足"
+        lore: "您的货币不足以购买所选物品。"
+      not:
+        material: "GRAY_CONCRETE"
+        name: "<gray><b>确认购买"
+        lore: "您还没有选定任何物品。"
+    confirm-sell:
+      have:
+        material: "GREEN_CONCRETE"
+        name: "<green><b>确认出售"
+        lore: "点击确认出售。"
+      not:
+        material: "GRAY_CONCRETE"
+        name: "<gray><b>确认出售"
+        lore: "您还没有选定任何物品。"
+
+  level:
+    1:
+      - type: level
+        level: main
+        value: 5
+      - type: affection
+        affection: BlackMarket
+        value: 5
+    2:
+      - type: level
+        level: main
+        value: 15
+      - type: affection
+        affection: BlackMarket
+        value: 10
+      - type: quota
+        balance: point
+        value: 5000
+
+  items:
+    # 使用PAPI占位符作为lore的商品
+    vip_pass:
+      id: sertraline:vip_pass
+      requirements:
+        - mode: papi
+          papi: "%player_level%"
+          value: ">=10"
+          display: 玩家等级>=10
+      buy:
+        - currency: point
+          amount: 500
+        - currency: money
+          amount: 1000
+      sell:
+        - currency: tape
+          amount: 50
+
+    # 纯以物易物：用5个木头换1个石头
+    refined_stone:
+      id: sertraline:refined_stone
+      buy:
+        - item: "sertraline:wood"
+          amount: 5
+      sell:
+        - item: "sertraline:wood"
+          amount: 2
+
+    # 多货币购买 + 动态定价
+    energy_drink:
+      id: sertraline:energy_drink
+      buy:
+        - currency: money
+          amount: 200
+          dynamic-pricing:
+            max: 300
+            min: 100
+        - currency: tape
+          amount: 2
+      sell:
+        - currency: money
+          amount: 50
+      limit:
+        global: 100
+        player: 10
+        global-reset: 24h
+        player-reset: 1h
+
+    # 仅出售模式（玩家卖东西给商店）
+    scrap_metal:
+      id: sertraline:scrap_metal
+      sell:
+        - currency: money
+          amount: 30
+        - currency: point
+          amount: 5
+
+    # 限购 + 混合支付（货币+物品）
+    ancient_relic:
+      id: sertraline:ancient_relic
+      requirements:
+        - mode: papi
+          papi: "%player_health%"
+          value: ">=20"
+          display: 血量>=20
+      buy:
+        - currency: point
+          amount: 1000
+        - item: "sertraline:wood"
+          amount: 10
+      limit:
+        global: 50
+        player: 1
+        global-reset: 24h
+        player-reset: 24h
+
+    # 磁带购买
+    classified_doc:
+      id: sertraline:classified_doc
+      buy:
+        - currency: tape
+          amount: 100
+      sell:
+        - currency: point
+          amount: 200
+
+    # 纯出售物品（无购买价格）
+    rotten_flesh:
+      id: sertraline:rotten_flesh
+      sell:
+        - currency: money
+          amount: 5
+
+    # ════════════════════════════════════════
+    # 礼包类商品
+    # ════════════════════════════════════════
+
+    # 2+1+1 随心配礼包
+    two_one_one_pack:
+      id: sertraline:diamond
+      name: "<gold>2+1+1 随心配礼包"
+      type: giftpack
+      gift-pack: two_one_one
+      buy:
+        - currency: point
+          amount: 149

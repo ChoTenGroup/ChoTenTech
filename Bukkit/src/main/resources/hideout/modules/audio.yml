@@ -1,0 +1,20 @@
+name: "音频"
+description: "基地广播与通讯系统基础"
+material: "NOTE_BLOCK"
+item_model: "kangelitem:hideout/audio"
+slot: 10
+max_level: 1
+usage: 0.0
+levels:
+  1:
+    upgrade_time: 60
+    upgrade_cost:
+      - sertraline_id: "plank"
+        amount: 8
+      - sertraline_id: "copper_wire"
+        amount: 2
+      - sertraline_id: "nail"
+        amount: 4
+    currency_cost:
+      - currency: "point"
+        amount: 100

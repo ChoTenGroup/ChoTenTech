@@ -1,0 +1,34 @@
+name: "炼油机"
+description: "将粗碳等材料精炼为桶装燃料"
+material: "BREWING_STAND"
+item_model: "kangelitem:hideout/oil"
+slot: 22
+max_level: 2
+usage: 3.0
+levels:
+  1:
+    upgrade_time: 60
+    upgrade_cost:
+      - sertraline_id: "copper_ingot"
+        amount: 12
+      - sertraline_id: "copper_wire"
+        amount: 6
+      - sertraline_id: "iron_ingot"
+        amount: 4
+      - sertraline_id: "gear"
+        amount: 2
+    currency_cost:
+      - currency: "point"
+        amount: 500
+  2:
+    upgrade_time: 300
+    upgrade_cost:
+      - sertraline_id: "steel_ingot"
+        amount: 4
+      - sertraline_id: "precision_parts"
+        amount: 4
+      - sertraline_id: "motor"
+        amount: 1
+    currency_cost:
+      - currency: "point"
+        amount: 2000

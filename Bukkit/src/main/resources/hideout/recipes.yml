@@ -1,0 +1,1865 @@
+# ═══════════════════════════════════════════════════
+# 合成站 - 基础 (Level 1)
+# ═══════════════════════════════════════════════════
+
+craft_rag:
+  module: "crafting_station"
+  min_level: 1
+  craft_time: 15
+  usage_cost: 2.0
+  input:
+    in_1:
+      sertraline_id: "fibre"
+      amount: 3
+    in_2:
+      sertraline_id: "vine"
+      amount: 2
+  output:
+    out_1:
+      sertraline_id: "rag"
+      amount: 3
+
+craft_baked_potato:
+  module: "crafting_station"
+  min_level: 1
+  craft_time: 15
+  usage_cost: 2.0
+  input:
+    in_1:
+      sertraline_id: "potato"
+      amount: 3
+  output:
+    out_1:
+      sertraline_id: "baked_potato"
+      amount: 3
+
+craft_bread:
+  module: "crafting_station"
+  min_level: 1
+  craft_time: 25
+  usage_cost: 3.0
+  input:
+    in_1:
+      sertraline_id: "berry"
+      amount: 5
+    in_2:
+      sertraline_id: "plum"
+      amount: 3
+  output:
+    out_1:
+      sertraline_id: "bread"
+      amount: 3
+
+craft_healing_pills:
+  module: "crafting_station"
+  min_level: 1
+  craft_time: 20
+  usage_cost: 3.0
+  input:
+    in_1:
+      sertraline_id: "rag"
+      amount: 2
+    in_2:
+      sertraline_id: "plastic"
+      amount: 1
+    in_3:
+      sertraline_id: "berry"
+      amount: 3
+  output:
+    out_1:
+      sertraline_id: "sql_pills_aqua"
+      amount: 2
+
+craft_almond_water:
+  module: "crafting_station"
+  min_level: 1
+  craft_time: 20
+  usage_cost: 3.0
+  input:
+    in_1:
+      sertraline_id: "almond_water_gray"
+      amount: 2
+    in_2:
+      sertraline_id: "glass_material"
+      amount: 2
+  output:
+    out_1:
+      sertraline_id: "almond_water_blue"
+      amount: 2
+
+wood_to_plank:
+  module: "crafting_station"
+  min_level: 1
+  craft_time: 10
+  usage_cost: 1.0
+  input:
+    in_1:
+      sertraline_id: "wood"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "plank"
+      amount: 2
+
+wood_to_charcoal:
+  module: "crafting_station"
+  min_level: 1
+  craft_time: 15
+  usage_cost: 2.0
+  input:
+    in_1:
+      sertraline_id: "wood"
+      amount: 2
+  output:
+    out_1:
+      sertraline_id: "charcoal"
+      amount: 1
+
+iron_to_nail:
+  module: "crafting_station"
+  min_level: 1
+  craft_time: 12
+  usage_cost: 1.5
+  input:
+    in_1:
+      sertraline_id: "iron_ingot"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "nail"
+      amount: 4
+
+iron_to_gear:
+  module: "crafting_station"
+  min_level: 1
+  craft_time: 15
+  usage_cost: 2.0
+  input:
+    in_1:
+      sertraline_id: "iron_ingot"
+      amount: 2
+  output:
+    out_1:
+      sertraline_id: "gear"
+      amount: 1
+
+copper_to_wire:
+  module: "crafting_station"
+  min_level: 1
+  craft_time: 10
+  usage_cost: 1.0
+  input:
+    in_1:
+      sertraline_id: "copper_ingot"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "copper_wire"
+      amount: 4
+
+silver_to_wire:
+  module: "crafting_station"
+  min_level: 1
+  craft_time: 10
+  usage_cost: 1.0
+  input:
+    in_1:
+      sertraline_id: "silver_ingot"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "silver_wire"
+      amount: 4
+
+raw_iron_smelt:
+  module: "crafting_station"
+  min_level: 1
+  craft_time: 25
+  usage_cost: 3.0
+  input:
+    in_1:
+      sertraline_id: "raw_iron"
+      amount: 3
+  output:
+    out_1:
+      sertraline_id: "iron_ingot"
+      amount: 1
+
+raw_copper_smelt:
+  module: "crafting_station"
+  min_level: 1
+  craft_time: 25
+  usage_cost: 3.0
+  input:
+    in_1:
+      sertraline_id: "raw_copper"
+      amount: 3
+  output:
+    out_1:
+      sertraline_id: "copper_ingot"
+      amount: 1
+
+raw_gold_smelt:
+  module: "crafting_station"
+  min_level: 1
+  craft_time: 25
+  usage_cost: 3.0
+  input:
+    in_1:
+      sertraline_id: "raw_gold"
+      amount: 3
+  output:
+    out_1:
+      sertraline_id: "gold_ingot_low"
+      amount: 1
+
+coal_to_compressed:
+  module: "crafting_station"
+  min_level: 1
+  craft_time: 20
+  usage_cost: 2.0
+  input:
+    in_1:
+      sertraline_id: "coal"
+      amount: 2
+  output:
+    out_1:
+      sertraline_id: "compressed_carbon"
+      amount: 1
+
+stone_to_flat:
+  module: "crafting_station"
+  min_level: 1
+  craft_time: 15
+  usage_cost: 1.5
+  input:
+    in_1:
+      sertraline_id: "stone"
+      amount: 2
+  output:
+    out_1:
+      sertraline_id: "flat_stone"
+      amount: 1
+
+flint_to_sharp:
+  module: "crafting_station"
+  min_level: 1
+  craft_time: 10
+  usage_cost: 1.0
+  input:
+    in_1:
+      sertraline_id: "flint"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "flint_sharp"
+      amount: 2
+
+plastic_to_tape:
+  module: "crafting_station"
+  min_level: 1
+  craft_time: 10
+  usage_cost: 1.0
+  input:
+    in_1:
+      sertraline_id: "plastic"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "tape"
+      amount: 2
+
+plastic_to_hard:
+  module: "crafting_station"
+  min_level: 1
+  craft_time: 15
+  usage_cost: 2.0
+  input:
+    in_1:
+      sertraline_id: "plastic"
+      amount: 2
+  output:
+    out_1:
+      sertraline_id: "hard_plastic"
+      amount: 1
+
+screw_craft:
+  module: "crafting_station"
+  min_level: 1
+  craft_time: 12
+  usage_cost: 1.5
+  input:
+    in_1:
+      sertraline_id: "iron_ingot"
+      amount: 1
+    in_2:
+      sertraline_id: "copper_wire"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "screw"
+      amount: 4
+
+light_bulb_craft:
+  module: "crafting_station"
+  min_level: 1
+  craft_time: 15
+  usage_cost: 2.0
+  input:
+    in_1:
+      sertraline_id: "glass_material"
+      amount: 2
+    in_2:
+      sertraline_id: "copper_wire"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "light_bulb"
+      amount: 2
+
+rag_to_fabric:
+  module: "crafting_station"
+  min_level: 1
+  craft_time: 15
+  usage_cost: 2.0
+  input:
+    in_1:
+      sertraline_id: "rag"
+      amount: 2
+    in_2:
+      sertraline_id: "plastic"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "fabric_skin"
+      amount: 1
+
+potato_chips:
+  module: "crafting_station"
+  min_level: 1
+  craft_time: 15
+  usage_cost: 2.0
+  input:
+    in_1:
+      sertraline_id: "potato"
+      amount: 2
+    in_2:
+      sertraline_id: "olive_oil"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "potato_chips"
+      amount: 1
+
+jam:
+  module: "crafting_station"
+  min_level: 1
+  craft_time: 20
+  usage_cost: 2.5
+  input:
+    in_1:
+      sertraline_id: "berry"
+      amount: 5
+    in_2:
+      sertraline_id: "sugar_cube"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "jam"
+      amount: 1
+
+waffle:
+  module: "crafting_station"
+  min_level: 1
+  craft_time: 15
+  usage_cost: 2.0
+  input:
+    in_1:
+      sertraline_id: "bread"
+      amount: 2
+    in_2:
+      sertraline_id: "sugar_cube"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "waffle"
+      amount: 1
+
+muffin:
+  module: "crafting_station"
+  min_level: 1
+  craft_time: 18
+  usage_cost: 2.5
+  input:
+    in_1:
+      sertraline_id: "bread"
+      amount: 2
+    in_2:
+      sertraline_id: "berry"
+      amount: 3
+  output:
+    out_1:
+      sertraline_id: "muffin"
+      amount: 1
+
+honey:
+  module: "crafting_station"
+  min_level: 1
+  craft_time: 20
+  usage_cost: 2.5
+  input:
+    in_1:
+      sertraline_id: "berry"
+      amount: 3
+    in_2:
+      sertraline_id: "sugar_cube"
+      amount: 2
+  output:
+    out_1:
+      sertraline_id: "honey"
+      amount: 1
+
+royal_jelly:
+  module: "crafting_station"
+  min_level: 1
+  craft_time: 25
+  usage_cost: 3.0
+  input:
+    in_1:
+      sertraline_id: "honey"
+      amount: 2
+    in_2:
+      sertraline_id: "glowstone_dust"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "royal_jelly"
+      amount: 1
+
+chocolate:
+  module: "crafting_station"
+  min_level: 1
+  craft_time: 15
+  usage_cost: 2.0
+  input:
+    in_1:
+      sertraline_id: "sugar_cube"
+      amount: 2
+    in_2:
+      sertraline_id: "milk"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "chocolate"
+      amount: 4
+
+# ═══════════════════════════════════════════════════
+# 合成站 - 中级 (Level 2)
+# ═══════════════════════════════════════════════════
+
+craft_steel_ingot:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 60
+  usage_cost: 8.0
+  input:
+    in_1:
+      sertraline_id: "iron_ingot"
+      amount: 3
+    in_2:
+      sertraline_id: "raw_coal"
+      amount: 2
+  output:
+    out_1:
+      sertraline_id: "steel_ingot"
+      amount: 2
+
+craft_silver_ingot:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 45
+  usage_cost: 6.0
+  input:
+    in_1:
+      sertraline_id: "copper_ingot"
+      amount: 3
+    in_2:
+      sertraline_id: "glowstone_dust"
+      amount: 2
+  output:
+    out_1:
+      sertraline_id: "silver_ingot"
+      amount: 1
+
+craft_barbecue:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 35
+  usage_cost: 5.0
+  input:
+    in_1:
+      sertraline_id: "beef_can"
+      amount: 1
+    in_2:
+      sertraline_id: "potato"
+      amount: 2
+    in_3:
+      sertraline_id: "berry"
+      amount: 3
+  output:
+    out_1:
+      sertraline_id: "barbecue"
+      amount: 2
+
+# ---- 合金 ----
+
+basic_alloy:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 40
+  usage_cost: 5.0
+  input:
+    in_1:
+      sertraline_id: "iron_ingot"
+      amount: 2
+    in_2:
+      sertraline_id: "copper_ingot"
+      amount: 2
+  output:
+    out_1:
+      sertraline_id: "basic_alloy_ingot"
+      amount: 2
+
+bronze_alloy:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 40
+  usage_cost: 5.0
+  input:
+    in_1:
+      sertraline_id: "copper_ingot"
+      amount: 2
+    in_2:
+      sertraline_id: "iron_ingot"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "bronze_ingot"
+      amount: 2
+
+billon_alloy:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 40
+  usage_cost: 5.0
+  input:
+    in_1:
+      sertraline_id: "copper_ingot"
+      amount: 2
+    in_2:
+      sertraline_id: "silver_ingot"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "billon_ingot"
+      amount: 2
+
+gold_silver_alloy:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 35
+  usage_cost: 4.0
+  input:
+    in_1:
+      sertraline_id: "silver_ingot"
+      amount: 1
+    in_2:
+      sertraline_id: "gold_ingot_low"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "gold_silver_ingot"
+      amount: 2
+
+damascus_steel:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 55
+  usage_cost: 7.0
+  input:
+    in_1:
+      sertraline_id: "iron_ingot"
+      amount: 3
+    in_2:
+      sertraline_id: "coal"
+      amount: 2
+  output:
+    out_1:
+      sertraline_id: "damascus_steel_ingot"
+      amount: 1
+
+gold_medium:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 45
+  usage_cost: 5.0
+  input:
+    in_1:
+      sertraline_id: "gold_ingot_low"
+      amount: 2
+    in_2:
+      sertraline_id: "silver_ingot"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "gold_ingot_medium"
+      amount: 1
+
+# ---- 电路板 ----
+
+red_board:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 30
+  usage_cost: 4.0
+  input:
+    in_1:
+      sertraline_id: "copper_wire"
+      amount: 4
+    in_2:
+      sertraline_id: "plastic"
+      amount: 2
+    in_3:
+      sertraline_id: "iron_ingot"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "red_board"
+      amount: 1
+
+green_board:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 30
+  usage_cost: 4.0
+  input:
+    in_1:
+      sertraline_id: "silver_wire"
+      amount: 4
+    in_2:
+      sertraline_id: "plastic"
+      amount: 2
+    in_3:
+      sertraline_id: "copper_ingot"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "green_board"
+      amount: 1
+
+blue_board:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 35
+  usage_cost: 5.0
+  input:
+    in_1:
+      sertraline_id: "copper_wire"
+      amount: 4
+    in_2:
+      sertraline_id: "green_board"
+      amount: 1
+    in_3:
+      sertraline_id: "silver_ingot"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "blue_board"
+      amount: 1
+
+white_board:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 35
+  usage_cost: 5.0
+  input:
+    in_1:
+      sertraline_id: "silver_wire"
+      amount: 4
+    in_2:
+      sertraline_id: "blue_board"
+      amount: 1
+    in_3:
+      sertraline_id: "gold_ingot_low"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "white_board"
+      amount: 1
+
+rainbow_board:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 50
+  usage_cost: 6.0
+  input:
+    in_1:
+      sertraline_id: "red_board"
+      amount: 1
+    in_2:
+      sertraline_id: "green_board"
+      amount: 1
+    in_3:
+      sertraline_id: "blue_board"
+      amount: 1
+    in_4:
+      sertraline_id: "white_board"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "rainbow_board"
+      amount: 1
+
+# ---- 电子元件 ----
+
+capacitor:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 20
+  usage_cost: 3.0
+  input:
+    in_1:
+      sertraline_id: "copper_wire"
+      amount: 2
+    in_2:
+      sertraline_id: "plastic"
+      amount: 1
+    in_3:
+      sertraline_id: "iron_ingot"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "capacitor"
+      amount: 1
+
+resistor_simple:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 15
+  usage_cost: 2.0
+  input:
+    in_1:
+      sertraline_id: "copper_wire"
+      amount: 1
+    in_2:
+      sertraline_id: "plastic"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "resistor_simple"
+      amount: 4
+
+pcb:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 30
+  usage_cost: 4.0
+  input:
+    in_1:
+      sertraline_id: "resistor_simple"
+      amount: 4
+    in_2:
+      sertraline_id: "copper_wire"
+      amount: 2
+    in_3:
+      sertraline_id: "red_board"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "pcb"
+      amount: 1
+
+basic_ai_core:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 45
+  usage_cost: 6.0
+  input:
+    in_1:
+      sertraline_id: "cpu"
+      amount: 1
+    in_2:
+      sertraline_id: "ram_stick"
+      amount: 1
+    in_3:
+      sertraline_id: "red_board"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "basic_ai_core"
+      amount: 1
+
+battery_set_craft:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 25
+  usage_cost: 3.0
+  input:
+    in_1:
+      sertraline_id: "battery"
+      amount: 3
+    in_2:
+      sertraline_id: "copper_wire"
+      amount: 2
+  output:
+    out_1:
+      sertraline_id: "battery_set"
+      amount: 1
+
+motor:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 30
+  usage_cost: 4.0
+  input:
+    in_1:
+      sertraline_id: "iron_ingot"
+      amount: 2
+    in_2:
+      sertraline_id: "copper_wire"
+      amount: 4
+  output:
+    out_1:
+      sertraline_id: "motor"
+      amount: 1
+
+glowstone_bulb:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 15
+  usage_cost: 2.0
+  input:
+    in_1:
+      sertraline_id: "light_bulb"
+      amount: 1
+    in_2:
+      sertraline_id: "glowstone_dust"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "glowstone_bulb"
+      amount: 1
+
+led:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 15
+  usage_cost: 2.0
+  input:
+    in_1:
+      sertraline_id: "glowstone_bulb"
+      amount: 1
+    in_2:
+      sertraline_id: "copper_wire"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "led"
+      amount: 4
+
+# ---- 人造宝石 ----
+
+synthetic_diamond:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 40
+  usage_cost: 5.0
+  input:
+    in_1:
+      sertraline_id: "compressed_carbon"
+      amount: 4
+    in_2:
+      sertraline_id: "iron_ingot"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "synthetic_diamond"
+      amount: 1
+
+synthetic_emerald:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 35
+  usage_cost: 4.0
+  input:
+    in_1:
+      sertraline_id: "coal"
+      amount: 3
+    in_2:
+      sertraline_id: "copper_ingot"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "synthetic_emerald"
+      amount: 1
+
+synthetic_ruby:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 35
+  usage_cost: 4.0
+  input:
+    in_1:
+      sertraline_id: "compressed_carbon"
+      amount: 3
+    in_2:
+      sertraline_id: "copper_ingot"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "synthetic_ruby"
+      amount: 1
+
+synthetic_sapphire:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 35
+  usage_cost: 4.0
+  input:
+    in_1:
+      sertraline_id: "coal"
+      amount: 3
+    in_2:
+      sertraline_id: "iron_ingot"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "synthetic_sapphire"
+      amount: 1
+
+# ---- 武器·基础合金 ----
+
+basic_alloy_sword:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 50
+  usage_cost: 6.0
+  input:
+    in_1:
+      sertraline_id: "basic_alloy_ingot"
+      amount: 4
+    in_2:
+      sertraline_id: "plank"
+      amount: 2
+    in_3:
+      sertraline_id: "rag"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "basic_alloy_sword"
+      amount: 1
+
+basic_alloy_pickaxe:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 45
+  usage_cost: 5.0
+  input:
+    in_1:
+      sertraline_id: "basic_alloy_ingot"
+      amount: 3
+    in_2:
+      sertraline_id: "plank"
+      amount: 2
+  output:
+    out_1:
+      sertraline_id: "basic_alloy_pickaxe"
+      amount: 1
+
+basic_alloy_axe:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 45
+  usage_cost: 5.0
+  input:
+    in_1:
+      sertraline_id: "basic_alloy_ingot"
+      amount: 3
+    in_2:
+      sertraline_id: "plank"
+      amount: 2
+  output:
+    out_1:
+      sertraline_id: "basic_alloy_axe"
+      amount: 1
+
+basic_alloy_shovel:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 30
+  usage_cost: 3.0
+  input:
+    in_1:
+      sertraline_id: "basic_alloy_ingot"
+      amount: 1
+    in_2:
+      sertraline_id: "plank"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "basic_alloy_shovel"
+      amount: 1
+
+# ---- 武器·青铜 ----
+
+bronze_sword:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 50
+  usage_cost: 6.0
+  input:
+    in_1:
+      sertraline_id: "bronze_ingot"
+      amount: 4
+    in_2:
+      sertraline_id: "plank"
+      amount: 2
+    in_3:
+      sertraline_id: "rag"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "bronze_sword"
+      amount: 1
+
+# ---- 武器·钢 ----
+
+craft_iron_sword:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 55
+  usage_cost: 7.0
+  input:
+    in_1:
+      sertraline_id: "iron_ingot"
+      amount: 4
+    in_2:
+      sertraline_id: "plank"
+      amount: 2
+    in_3:
+      sertraline_id: "rag"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "iron_sword"
+      amount: 1
+
+steel_sword:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 55
+  usage_cost: 7.0
+  input:
+    in_1:
+      sertraline_id: "steel_ingot"
+      amount: 4
+    in_2:
+      sertraline_id: "plank"
+      amount: 2
+    in_3:
+      sertraline_id: "rag"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "steel_sword"
+      amount: 1
+
+steel_pickaxe:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 50
+  usage_cost: 6.0
+  input:
+    in_1:
+      sertraline_id: "steel_ingot"
+      amount: 3
+    in_2:
+      sertraline_id: "plank"
+      amount: 2
+  output:
+    out_1:
+      sertraline_id: "steel_pickaxe"
+      amount: 1
+
+steel_axe:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 50
+  usage_cost: 6.0
+  input:
+    in_1:
+      sertraline_id: "steel_ingot"
+      amount: 3
+    in_2:
+      sertraline_id: "plank"
+      amount: 2
+  output:
+    out_1:
+      sertraline_id: "steel_axe"
+      amount: 1
+
+steel_shovel:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 30
+  usage_cost: 3.0
+  input:
+    in_1:
+      sertraline_id: "steel_ingot"
+      amount: 1
+    in_2:
+      sertraline_id: "plank"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "steel_shovel"
+      amount: 1
+
+# ---- 防具·基础合金 ----
+
+basic_alloy_helmet:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 40
+  usage_cost: 5.0
+  input:
+    in_1:
+      sertraline_id: "basic_alloy_ingot"
+      amount: 5
+  output:
+    out_1:
+      sertraline_id: "basic_alloy_helmet"
+      amount: 1
+
+basic_alloy_chestplate:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 55
+  usage_cost: 7.0
+  input:
+    in_1:
+      sertraline_id: "basic_alloy_ingot"
+      amount: 8
+  output:
+    out_1:
+      sertraline_id: "basic_alloy_chestplate"
+      amount: 1
+
+basic_alloy_leggings:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 50
+  usage_cost: 6.0
+  input:
+    in_1:
+      sertraline_id: "basic_alloy_ingot"
+      amount: 7
+  output:
+    out_1:
+      sertraline_id: "basic_alloy_leggings"
+      amount: 1
+
+basic_alloy_boots:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 35
+  usage_cost: 4.0
+  input:
+    in_1:
+      sertraline_id: "basic_alloy_ingot"
+      amount: 4
+  output:
+    out_1:
+      sertraline_id: "basic_alloy_boots"
+      amount: 1
+
+# ---- 防具·钢 ----
+
+steel_helmet:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 45
+  usage_cost: 5.0
+  input:
+    in_1:
+      sertraline_id: "steel_ingot"
+      amount: 5
+  output:
+    out_1:
+      sertraline_id: "steel_helmet"
+      amount: 1
+
+steel_chestplate:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 60
+  usage_cost: 8.0
+  input:
+    in_1:
+      sertraline_id: "steel_ingot"
+      amount: 8
+  output:
+    out_1:
+      sertraline_id: "steel_chestplate"
+      amount: 1
+
+steel_leggings:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 55
+  usage_cost: 7.0
+  input:
+    in_1:
+      sertraline_id: "steel_ingot"
+      amount: 7
+  output:
+    out_1:
+      sertraline_id: "steel_leggings"
+      amount: 1
+
+steel_boots:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 35
+  usage_cost: 4.0
+  input:
+    in_1:
+      sertraline_id: "steel_ingot"
+      amount: 4
+  output:
+    out_1:
+      sertraline_id: "steel_boots"
+      amount: 1
+
+# ---- 中级食品 ----
+
+mre:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 30
+  usage_cost: 4.0
+  input:
+    in_1:
+      sertraline_id: "bread"
+      amount: 2
+    in_2:
+      sertraline_id: "beef_can"
+      amount: 1
+    in_3:
+      sertraline_id: "bean_can"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "mre"
+      amount: 2
+
+corned_beef:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 40
+  usage_cost: 5.0
+  input:
+    in_1:
+      sertraline_id: "beef_can"
+      amount: 2
+  output:
+    out_1:
+      sertraline_id: "corned_beef"
+      amount: 1
+
+jerky:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 35
+  usage_cost: 4.0
+  input:
+    in_1:
+      sertraline_id: "beef_can"
+      amount: 2
+  output:
+    out_1:
+      sertraline_id: "jerky"
+      amount: 2
+
+fried_rice:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 25
+  usage_cost: 3.0
+  input:
+    in_1:
+      sertraline_id: "bread"
+      amount: 2
+    in_2:
+      sertraline_id: "berry"
+      amount: 1
+    in_3:
+      sertraline_id: "olive_oil"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "fried_rice"
+      amount: 1
+
+taco:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 25
+  usage_cost: 3.0
+  input:
+    in_1:
+      sertraline_id: "bread"
+      amount: 2
+    in_2:
+      sertraline_id: "beef_can"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "taco"
+      amount: 2
+
+pie:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 30
+  usage_cost: 4.0
+  input:
+    in_1:
+      sertraline_id: "bread"
+      amount: 2
+    in_2:
+      sertraline_id: "berry"
+      amount: 3
+  output:
+    out_1:
+      sertraline_id: "pie"
+      amount: 1
+
+# ---- 工具 ----
+
+hammer:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 30
+  usage_cost: 4.0
+  input:
+    in_1:
+      sertraline_id: "iron_ingot"
+      amount: 2
+    in_2:
+      sertraline_id: "nail"
+      amount: 2
+  output:
+    out_1:
+      sertraline_id: "hammer"
+      amount: 1
+
+screwdriver:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 20
+  usage_cost: 2.5
+  input:
+    in_1:
+      sertraline_id: "iron_ingot"
+      amount: 1
+    in_2:
+      sertraline_id: "screw"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "screwdriver"
+      amount: 1
+
+wrench:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 25
+  usage_cost: 3.0
+  input:
+    in_1:
+      sertraline_id: "iron_ingot"
+      amount: 2
+    in_2:
+      sertraline_id: "gear"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "wrench"
+      amount: 1
+
+drill:
+  module: "crafting_station"
+  min_level: 2
+  craft_time: 35
+  usage_cost: 5.0
+  input:
+    in_1:
+      sertraline_id: "motor"
+      amount: 1
+    in_2:
+      sertraline_id: "plastic"
+      amount: 2
+    in_3:
+      sertraline_id: "screw"
+      amount: 2
+  output:
+    out_1:
+      sertraline_id: "drill"
+      amount: 1
+
+# ═══════════════════════════════════════════════════
+# 合成站 - 高级 (Level 3)
+# ═══════════════════════════════════════════════════
+
+craft_gold_high:
+  module: "crafting_station"
+  min_level: 3
+  craft_time: 80
+  usage_cost: 10.0
+  input:
+    in_1:
+      sertraline_id: "gold_ingot_low"
+      amount: 2
+    in_2:
+      sertraline_id: "gold_ingot_medium"
+      amount: 2
+  output:
+    out_1:
+      sertraline_id: "gold_ingot_high"
+      amount: 1
+
+craft_glowstone_ingot:
+  module: "crafting_station"
+  min_level: 3
+  craft_time: 50
+  usage_cost: 7.0
+  input:
+    in_1:
+      sertraline_id: "glowstone_dust"
+      amount: 4
+    in_2:
+      sertraline_id: "silver_ingot"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "glowstone_ingot"
+      amount: 1
+
+craft_plasma_ingot:
+  module: "crafting_station"
+  min_level: 3
+  craft_time: 120
+  usage_cost: 15.0
+  input:
+    in_1:
+      sertraline_id: "glowstone_ingot"
+      amount: 2
+    in_2:
+      sertraline_id: "steel_ingot"
+      amount: 2
+    in_3:
+      sertraline_id: "battery_set"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "plasma_ingot"
+      amount: 1
+
+craft_advanced_ai:
+  module: "crafting_station"
+  min_level: 3
+  craft_time: 150
+  usage_cost: 18.0
+  input:
+    in_1:
+      sertraline_id: "basic_ai_core"
+      amount: 1
+    in_2:
+      sertraline_id: "cpu"
+      amount: 2
+    in_3:
+      sertraline_id: "graphics_card"
+      amount: 1
+    in_4:
+      sertraline_id: "ram_stick"
+      amount: 2
+  output:
+    out_1:
+      sertraline_id: "advanced_ai_core"
+      amount: 1
+
+craft_diamond_sword:
+  module: "crafting_station"
+  min_level: 3
+  craft_time: 120
+  usage_cost: 15.0
+  input:
+    in_1:
+      sertraline_id: "steel_ingot"
+      amount: 3
+    in_2:
+      sertraline_id: "black_diamond"
+      amount: 2
+    in_3:
+      sertraline_id: "ruby"
+      amount: 2
+    in_4:
+      sertraline_id: "gear"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "diamond_sword"
+      amount: 1
+
+mythril_ingot:
+  module: "crafting_station"
+  min_level: 3
+  craft_time: 90
+  usage_cost: 12.0
+  input:
+    in_1:
+      sertraline_id: "steel_ingot"
+      amount: 2
+    in_2:
+      sertraline_id: "glowstone_ingot"
+      amount: 1
+    in_3:
+      sertraline_id: "silver_ingot"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "mythril_ingot"
+      amount: 1
+
+ultra_alloy_ingot:
+  module: "crafting_station"
+  min_level: 3
+  craft_time: 100
+  usage_cost: 15.0
+  input:
+    in_1:
+      sertraline_id: "steel_ingot"
+      amount: 2
+    in_2:
+      sertraline_id: "glowstone_ingot"
+      amount: 1
+    in_3:
+      sertraline_id: "black_diamond"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "ultra_alloy_ingot"
+      amount: 1
+
+pro_ai_core:
+  module: "crafting_station"
+  min_level: 3
+  craft_time: 120
+  usage_cost: 15.0
+  input:
+    in_1:
+      sertraline_id: "advanced_ai_core"
+      amount: 1
+    in_2:
+      sertraline_id: "cpu"
+      amount: 1
+    in_3:
+      sertraline_id: "basic_ai_core"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "pro_ai_core"
+      amount: 1
+
+black_diamond_sword:
+  module: "crafting_station"
+  min_level: 3
+  craft_time: 130
+  usage_cost: 16.0
+  input:
+    in_1:
+      sertraline_id: "black_diamond"
+      amount: 3
+    in_2:
+      sertraline_id: "plank"
+      amount: 2
+    in_3:
+      sertraline_id: "rag"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "black_diamond_sword"
+      amount: 1
+
+mythril_sword:
+  module: "crafting_station"
+  min_level: 3
+  craft_time: 130
+  usage_cost: 16.0
+  input:
+    in_1:
+      sertraline_id: "mythril_ingot"
+      amount: 4
+    in_2:
+      sertraline_id: "plank"
+      amount: 2
+    in_3:
+      sertraline_id: "rag"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "mythril_sword"
+      amount: 1
+
+ultra_alloy_sword:
+  module: "crafting_station"
+  min_level: 3
+  craft_time: 150
+  usage_cost: 18.0
+  input:
+    in_1:
+      sertraline_id: "ultra_alloy_ingot"
+      amount: 4
+    in_2:
+      sertraline_id: "plank"
+      amount: 2
+    in_3:
+      sertraline_id: "rag"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "ultra_alloy_sword"
+      amount: 1
+
+# ═══════════════════════════════════════════════════
+# 饮料站 (Level 1)
+# ═══════════════════════════════════════════════════
+
+craft_apple_can:
+  module: "drink_station"
+  min_level: 1
+  craft_time: 25
+  usage_cost: 3.0
+  input:
+    in_1:
+      sertraline_id: "strawberry"
+      amount: 3
+    in_2:
+      sertraline_id: "berry"
+      amount: 5
+    in_3:
+      sertraline_id: "glass_material"
+      amount: 2
+  output:
+    out_1:
+      sertraline_id: "apple_can"
+      amount: 2
+
+craft_ice_tea:
+  module: "drink_station"
+  min_level: 1
+  craft_time: 30
+  usage_cost: 3.0
+  input:
+    in_1:
+      sertraline_id: "berry"
+      amount: 3
+    in_2:
+      sertraline_id: "ice"
+      amount: 2
+    in_3:
+      sertraline_id: "glass_material"
+      amount: 2
+  output:
+    out_1:
+      sertraline_id: "ice_tea"
+      amount: 2
+
+craft_cola:
+  module: "drink_station"
+  min_level: 1
+  craft_time: 35
+  usage_cost: 4.0
+  input:
+    in_1:
+      sertraline_id: "sugar_cube"
+      amount: 2
+    in_2:
+      sertraline_id: "glass_material"
+      amount: 2
+    in_3:
+      sertraline_id: "plum"
+      amount: 3
+  output:
+    out_1:
+      sertraline_id: "cola"
+      amount: 2
+
+almond_water_green:
+  module: "drink_station"
+  min_level: 1
+  craft_time: 25
+  usage_cost: 3.0
+  input:
+    in_1:
+      sertraline_id: "almond_water_blue"
+      amount: 2
+    in_2:
+      sertraline_id: "glowstone_dust"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "almond_water_green"
+      amount: 2
+
+almond_water_red:
+  module: "drink_station"
+  min_level: 1
+  craft_time: 25
+  usage_cost: 3.0
+  input:
+    in_1:
+      sertraline_id: "almond_water_blue"
+      amount: 2
+    in_2:
+      sertraline_id: "berry"
+      amount: 2
+  output:
+    out_1:
+      sertraline_id: "almond_water_red"
+      amount: 2
+
+mongolia_tea:
+  module: "drink_station"
+  min_level: 1
+  craft_time: 25
+  usage_cost: 3.0
+  input:
+    in_1:
+      sertraline_id: "milk"
+      amount: 2
+    in_2:
+      sertraline_id: "sugar_cube"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "mongolia_tea"
+      amount: 2
+
+# ═══════════════════════════════════════════════════
+# 饮料站 (Level 2)
+# ═══════════════════════════════════════════════════
+
+vodka:
+  module: "drink_station"
+  min_level: 2
+  craft_time: 45
+  usage_cost: 6.0
+  input:
+    in_1:
+      sertraline_id: "potato"
+      amount: 2
+    in_2:
+      sertraline_id: "coal"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "vodka"
+      amount: 1
+
+beer:
+  module: "drink_station"
+  min_level: 2
+  craft_time: 50
+  usage_cost: 6.0
+  input:
+    in_1:
+      sertraline_id: "bread"
+      amount: 2
+    in_2:
+      sertraline_id: "berry"
+      amount: 3
+  output:
+    out_1:
+      sertraline_id: "beer"
+      amount: 2
+
+suntory_whisky:
+  module: "drink_station"
+  min_level: 2
+  craft_time: 60
+  usage_cost: 8.0
+  input:
+    in_1:
+      sertraline_id: "vodka"
+      amount: 2
+    in_2:
+      sertraline_id: "wood"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "suntory_whisky"
+      amount: 1
+
+rio:
+  module: "drink_station"
+  min_level: 2
+  craft_time: 40
+  usage_cost: 5.0
+  input:
+    in_1:
+      sertraline_id: "vodka"
+      amount: 1
+    in_2:
+      sertraline_id: "berry"
+      amount: 2
+  output:
+    out_1:
+      sertraline_id: "rio"
+      amount: 2
+
+# ═══════════════════════════════════════════════════
+# 炼油机
+# ═══════════════════════════════════════════════════
+
+refine_fuel:
+  module: "oil_refinery"
+  min_level: 1
+  craft_time: 40
+  usage_cost: 5.0
+  input:
+    in_1:
+      sertraline_id: "raw_coal"
+      amount: 4
+  output:
+    out_1:
+      sertraline_id: "fuel"
+      amount: 1
+
+refine_fuel_batch:
+  module: "oil_refinery"
+  min_level: 2
+  craft_time: 90
+  usage_cost: 8.0
+  input:
+    in_1:
+      sertraline_id: "raw_coal"
+      amount: 12
+    in_2:
+      sertraline_id: "engine_lubricating_oil"
+      amount: 1
+  output:
+    out_1:
+      sertraline_id: "fuel"
+      amount: 4

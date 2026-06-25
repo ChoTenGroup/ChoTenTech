@@ -1,0 +1,122 @@
+almond_bandage:
+  xbuilder:
+    name: "<!i><#AAAAAA>杏仁绷带<reset> (${var:durabilityAsIn}$/${var:maxdurability}$)"
+    material: BEETROOT
+    item-model: "kangelitem:almond_bandage"
+  sertraline:
+    tier: C
+    type: food
+    lore-format: default
+    vals:
+      lore: |
+        浸润杏仁水的绷带，相比未经处理的绷带疗效更佳。
+      graylore: |
+        如果实在没吃的也可以试试吃这个?
+        好吧，别想了，吃不了的。
+
+        <!i><gray>治疗10%血量，20%外伤，5%内伤。
+        <!i><gray>最高治疗至最大外伤的95%，最大内伤的80%。
+    vars:
+      maxdurability: 1
+      durability: 1
+sterile_bandage:
+  xbuilder:
+    name: "<!i><#AAAAAA>军用消毒绷带<reset> (${var:durabilityAsIn}$/${var:maxdurability}$)"
+    material: BEETROOT
+    item-model: "kangelitem:bandage"
+  sertraline:
+    tier: B
+    type: food
+    lore-format: default
+    vals:
+      lore: |
+        军用的纱布绷带，经过了高温灭菌处理。
+        用于治疗较弱的伤势。
+        可使用三次。
+
+        <!i><gray>治疗15%外伤。
+        <!i><gray>最高治疗至最大外伤的85%。
+      graylore: |
+        味道很好闻。
+    vars:
+      maxdurability: 3
+      durability: 3
+bandage:
+  xbuilder:
+    name: "<!i><#AAAAAA>绷带<reset> (${var:durabilityAsIn}$/${var:maxdurability}$)"
+    material: BEETROOT
+    item-model: "kangelitem:bandage"
+  sertraline:
+    tier: B
+    type: food
+    lore-format: default
+    vals:
+      lore: |
+        简易的绷带。
+        请不要将绷带在身上缠满。
+
+        <!i><gray>治疗10%外伤。
+        <!i><gray>最高治疗至最大外伤的85%。
+      graylore: |
+        这些绳子...
+    vars:
+      maxdurability: 1
+      durability: 1
+sanity_salt:
+  xbuilder:
+    name: "<!i><#FF55FF>锂盐<reset> (${var:durabilityAsIn}$/${var:maxdurability}$)"
+    material: BEETROOT
+    item-model: "kangelitem:sanity_salt"
+  sertraline:
+    tier: B
+    type: food
+    lore-format: default
+    actions:
+      onConsume:
+        - async: false
+          js: |
+    vals:
+      lore: |
+        锂盐可用于精神方面医疗，也可用于治疗兴奋冲动、攻击行为。
+        只在紧急情况下使用，严禁滥用药物。
+        立即恢复12精神，精神恢复+0.2/s，药效持续40秒。
+        精神恢复效果不叠加。
+      graylore: |
+        我闭上眼睛就可以养神....
+    vars:
+      maxdurability: 5
+      durability: 5
+hermes_madicinal:
+  xbuilder:
+    name: "<!i><#AA0000>“赫尔墨斯”<reset> (${var:durabilityAsIn}$/${var:maxdurability}$)"
+    material: BEETROOT
+    item-model: "kangelitem:hermes_madicinal"
+  sertraline:
+    tier: S
+    type: food
+    lore-format: default
+    vals:
+      lore: |
+        一小罐贴着深红色标签的液体。
+        可显著提升使用者对方向的辨识能力。
+      graylore: |
+        据喝过的人表示不会再想喝第二次...
+hermes_madicinal:
+  xbuilder:
+    name: "<!i><#AA0000><reset> (${var:durabilityAsIn}$/${var:maxdurability}$)"
+    material: BEETROOT
+    item-model: "kangelitem:hermes_madicinal"
+  sertraline:
+    tier: C
+    type: food
+    lore-format: default
+    actions:
+      onConsume:
+        - async: false
+          js: |
+    vals:
+      lore: |
+        一小罐贴着深红色标签的液体。
+        可显著提升使用者对方向的辨识能力。
+      graylore: |
+        据喝过的人表示不会再想喝第二次...

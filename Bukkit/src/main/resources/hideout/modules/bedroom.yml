@@ -1,0 +1,52 @@
+name: "卧室"
+description: "休息获得增益效果，每8小时可点击一次"
+material: "RED_BED"
+item_model: "kangelitem:hideout/bedroom"
+slot: 21
+max_level: 3
+usage: 0.0
+levels:
+  1:
+    upgrade_time: 60
+    buff_duration: 120
+    buff_amplifier: 0
+    upgrade_cost:
+      - sertraline_id: "plank"
+        amount: 16
+      - sertraline_id: "rag"
+        amount: 8
+    currency_cost:
+      - currency: "point"
+        amount: 300
+  2:
+    upgrade_time: 300
+    buff_duration: 240
+    buff_amplifier: 0
+    upgrade_cost:
+      - sertraline_id: "plank"
+        amount: 24
+      - sertraline_id: "rag"
+        amount: 16
+      - sertraline_id: "iron_ingot"
+        amount: 4
+      - sertraline_id: "fabric_skin"
+        amount: 4
+    currency_cost:
+      - currency: "point"
+        amount: 1200
+  3:
+    upgrade_time: 600
+    buff_duration: 480
+    buff_amplifier: 1
+    upgrade_cost:
+      - sertraline_id: "hard_plastic"
+        amount: 8
+      - sertraline_id: "glowstone_ingot"
+        amount: 2
+      - sertraline_id: "ruby"
+        amount: 2
+      - sertraline_id: "basic_ai_core"
+        amount: 1
+    currency_cost:
+      - currency: "point"
+        amount: 4000

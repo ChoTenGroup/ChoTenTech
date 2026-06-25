@@ -1,0 +1,54 @@
+name: "杏仁集水器"
+description: "从环境中收集杏仁水，高级可产出变种"
+material: "CAULDRON"
+item_model: "kangelitem:hideout/water"
+slot: 23
+max_level: 3
+usage: 3.0
+levels:
+  1:
+    upgrade_time: 60
+    production_rate: 0.02
+    production_item: "almond_water_gray"
+    upgrade_cost:
+      - sertraline_id: "plastic"
+        amount: 8
+      - sertraline_id: "copper_ingot"
+        amount: 6
+      - sertraline_id: "glass_material"
+        amount: 4
+    currency_cost:
+      - currency: "point"
+        amount: 400
+  2:
+    upgrade_time: 300
+    production_rate: 0.03
+    production_item: "almond_water_blue"
+    upgrade_cost:
+      - sertraline_id: "steel_ingot"
+        amount: 4
+      - sertraline_id: "silver_ingot"
+        amount: 2
+      - sertraline_id: "glass_material"
+        amount: 8
+      - sertraline_id: "hard_plastic"
+        amount: 4
+    currency_cost:
+      - currency: "point"
+        amount: 1500
+  3:
+    upgrade_time: 600
+    production_rate: 0.04
+    production_item: "luck_milk_original"
+    upgrade_cost:
+      - sertraline_id: "steel_ingot"
+        amount: 6
+      - sertraline_id: "glowstone_ingot"
+        amount: 2
+      - sertraline_id: "synthetic_ruby"
+        amount: 2
+      - sertraline_id: "advanced_ai_core"
+        amount: 1
+    currency_cost:
+      - currency: "point"
+        amount: 4000

@@ -1,0 +1,51 @@
+name: "医疗站"
+description: "产出医疗点数，可兑换治疗与药品"
+material: "ENCHANTING_TABLE"
+item_model: "kangelitem:hideout/medical"
+slot: 31
+max_level: 3
+usage: 5.0
+levels:
+  1:
+    upgrade_time: 60
+    production_rate: 0.05
+    upgrade_cost:
+      - sertraline_id: "iron_ingot"
+        amount: 8
+      - sertraline_id: "plastic"
+        amount: 8
+      - sertraline_id: "rag"
+        amount: 4
+    currency_cost:
+      - currency: "point"
+        amount: 500
+  2:
+    upgrade_time: 300
+    production_rate: 0.1
+    upgrade_cost:
+      - sertraline_id: "steel_ingot"
+        amount: 4
+      - sertraline_id: "silver_ingot"
+        amount: 2
+      - sertraline_id: "green_board"
+        amount: 2
+      - sertraline_id: "basic_ai_core"
+        amount: 1
+    currency_cost:
+      - currency: "point"
+        amount: 2000
+  3:
+    upgrade_time: 600
+    production_rate: 0.2
+    upgrade_cost:
+      - sertraline_id: "glowstone_ingot"
+        amount: 2
+      - sertraline_id: "advanced_ai_core"
+        amount: 1
+      - sertraline_id: "black_diamond"
+        amount: 1
+      - sertraline_id: "mythril_ingot"
+        amount: 1
+    currency_cost:
+      - currency: "point"
+        amount: 5000

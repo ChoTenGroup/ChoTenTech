@@ -1,0 +1,29 @@
+# 镐挖掘等级配置
+# 使用 itemoutputnames.yml 中的物品 ID 来定义镐的挖掘等级
+# 等级越高，可以挖掘需要更高等级的矿物
+# 原版镐默认: 木/石/金=1, 铁=2, 钻石=3, 下界合金=4
+
+# 基础等级
+wooden_pickaxe: 1
+stone_pickaxe: 1
+flint_pickaxe: 1
+bronze_pickaxe: 1
+basic_alloy_pickaxe: 1
+gold_pickaxe: 1
+golden_pickaxe: 1
+
+# 中等等级
+iron_pickaxe: 2
+steel_pickaxe: 2
+sapphire_pickaxe: 2
+
+# 高等级
+diamond_pickaxe: 3
+black_diamond_pickaxe: 3
+emerald_pickaxe: 3
+ruby_pickaxe: 3
+
+# 顶级
+mythril_pickaxe: 4
+netherite_pickaxe: 4
+ultra_alloy_pickaxe: 5

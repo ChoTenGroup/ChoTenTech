@@ -1,0 +1,164 @@
+6ch_vaseline:
+  id: "6ch_vaseline"
+  effects:
+    - effect: status_effect
+      status_effect: pain_relief
+      level: 2
+      duration: 180
+    - effect: hunger
+      mode: add
+      value: -10
+
+antibiotic:
+  id: "antibiotic"
+  effects:
+    - effect: status_effect
+      status_effect: immunity
+      level: 1
+      duration: 150
+    - effect: status_effect
+      status_effect: pain_relief
+      level: 2
+      duration: 40
+    - effect: hunger
+      mode: add
+      value: -10
+
+zaped:
+  id: "zaped"
+  effects:
+    - effect: sanity_by_darkness
+      thresholds: "19:12;39:4;59:2;:1"
+    - effect: potion
+      potion: SLOWNESS
+      duration: 400
+      amplifier: 1
+    - effect: status_effect
+      status_effect: pain_relief
+      level: 1
+      duration: 200
+    - effect: darkness
+      mode: add
+      value: 6
+
+epsilon_pills:
+  id: "epsilon_pills"
+  effects:
+    - effect: potion
+      potion: BLINDNESS
+      duration: 100
+      amplifier: 1
+    - effect: potion
+      potion: SLOWNESS
+      duration: 400
+      amplifier: 1
+    - effect: sanity_by_darkness
+      thresholds: "49:36;:12"
+    - effect: status_effect
+      status_effect: pain_relief
+      level: 3
+      duration: 40
+    - effect: hunger
+      mode: add
+      value: -16
+    - effect: darkness
+      mode: add
+      value: 6
+
+painkiller_pills:
+  id: "painkiller_pills"
+  effects:
+    - effect: status_effect
+      status_effect: pain_relief
+      level: 2
+      duration: 60
+    - effect: hunger
+      mode: add
+      value: -16
+    - effect: darkness
+      mode: add
+      value: 5
+
+almond_bandage:
+  id: "almond_bandage"
+  effects:
+    - effect: health
+      mode: percent
+      value: 10
+    - effect: external_injury
+      mode: percent
+      value: 20
+    - effect: internal_injury
+      mode: percent
+      value: 5
+
+sterile_bandage:
+  id: "sterile_bandage"
+  effects:
+    - effect: external_injury
+      mode: percent
+      value: 15
+
+bandage:
+  id: "bandage"
+  effects:
+    - effect: external_injury
+      mode: percent
+      value: 10
+
+sanity_salt:
+  id: "sanity_salt"
+  effects:
+    - effect: sound
+      sound: BLOCK_SAND_PLACE
+      volume: 0.5
+      pitch: 1.2
+    - effect: sanity
+      mode: add
+      value: 12
+    - effect: status_effect
+      status_effect: sanity_regen
+      level: 1
+      duration: 80
+
+sql_pills_purple:
+  id: "sql_pills_purple"
+  effects:
+    - effect: status_effect
+      status_effect: pain_relief
+      level: 2
+      duration: 300
+    - effect: hunger
+      mode: add
+      value: -15
+    - effect: darkness
+      mode: add
+      value: 2
+    - effect: sanity
+      mode: add
+      value: 20
+    - effect: status_effect
+      status_effect: sanity_regen
+      level: 2
+      duration: 80
+
+sql_pills_aqua:
+  id: "sql_pills_aqua"
+  effects:
+    - effect: status_effect
+      status_effect: pain_relief
+      level: 2
+      duration: 300
+    - effect: hunger
+      mode: add
+      value: -15
+    - effect: darkness
+      mode: add
+      value: 2
+    - effect: sanity
+      mode: add
+      value: 20
+    - effect: status_effect
+      status_effect: sanity_regen
+      level: 2
+      duration: 80
