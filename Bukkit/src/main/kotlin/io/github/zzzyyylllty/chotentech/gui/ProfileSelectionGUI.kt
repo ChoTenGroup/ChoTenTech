@@ -2,6 +2,8 @@ package io.github.zzzyyylllty.chotentech.gui
 
 import io.github.zzzyyylllty.chotentech.ChoTenTech.dateTimeFormatter
 import io.github.zzzyyylllty.chotentech.ChoTenTech.levelsList
+import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
+import io.github.zzzyyylllty.chotentech.data.RespawnPoint
 import io.github.zzzyyylllty.chotentech.data.profile.ProfileInfo
 import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager
 import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager.getMaxProfiles
@@ -10,8 +12,11 @@ import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager.createProfil
 import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager.deleteProfile
 import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager.getProfileInfos
 import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager.loadProfileData
+import io.github.zzzyyylllty.chotentech.listener.ProfileListener.releaseFromPending
 import io.github.zzzyyylllty.chotentech.util.toComponent
 import io.github.zzzyyylllty.chotentech.util.minimessage.mmJsonUtil
+import org.bukkit.Bukkit
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.entity.Player
@@ -161,6 +166,7 @@ class ProfileSelectionGUI {
                         // Click to switch
                         clicker.closeInventory()
                         switchProfile(clicker, info.profileId)
+                        releaseFromPending(clicker)
                         clicker.sendMessage("<green>已切换到玩家档案: <yellow>${info.profileName}".toComponent())
                         clicker.playSound(clicker.location, Sound.BLOCK_RESPAWN_ANCHOR_SET_SPAWN, 1f, 1f)
                     } else if (infos.size > 1) {
@@ -188,8 +194,26 @@ class ProfileSelectionGUI {
 
                 clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
                 ProfileCreationPending.register(clicker) { name ->
+                    val uuid = clicker.uniqueId.toString()
+                    val existing = ProfileManager.getProfileInfos(uuid)
+                    if (existing.any { it.profileName == name }) {
+                        clicker.sendMessage("<red>玩家档案名 <yellow>$name <red>已存在".toComponent())
+                        open(clicker)
+                        return@register
+                    }
                     val result = createProfile(clicker, name)
                     if (result != null) {
+                        releaseFromPending(clicker)
+                        val world = Bukkit.getWorld("Area0") ?: clicker.world
+                        val spawnLoc = Location(world, -6.0, 14.0, 5.0)
+                        clicker.teleport(spawnLoc)
+                        clicker.setRespawnLocation(spawnLoc, true)
+                        val uuid = clicker.uniqueId.toString()
+                        val data = playerDataMap[uuid]
+                        if (data != null) {
+                            data.profileLocation = RespawnPoint.fromLocation(spawnLoc)
+                            ProfileManager.saveProfileData(uuid, data.profileId, ProfileManager.stripSharedFields(data))
+                        }
                         clicker.sendMessage("<green>玩家档案 <yellow>$name <green>创建成功！".toComponent())
                         clicker.sendMessage("<green>已切换到新玩家档案".toComponent())
                         clicker.playSound(clicker.location, Sound.BLOCK_RESPAWN_ANCHOR_SET_SPAWN, 1f, 1f)

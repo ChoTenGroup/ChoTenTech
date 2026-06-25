@@ -1,7 +1,8 @@
 package io.github.zzzyyylllty.chotentech.command
 
 import io.github.zzzyyylllty.chotentech.logger.sendStringAsComponent
-import io.github.zzzyyylllty.chotentech.api.ChoTenAttributeAPI
+import io.github.zzzyyylllty.chotentech.attribute.api.ChoTenAttributeAPI
+import io.github.zzzyyylllty.chotentech.manager.AttributeManager.getAttributeDisplayName
 import org.bukkit.entity.Player
 import taboolib.common.platform.command.*
 import taboolib.platform.util.asLangText
@@ -27,7 +28,8 @@ object ChoTenAttributeDebugCommand {
             val all = ChoTenAttributeAPI.instance.getAllAttributes(player)
             player.sendStringAsComponent(player.asLangText("Command_Debug_Show_Header"))
             all.forEach { (id, value) ->
-                player.sendStringAsComponent(player.asLangText("Command_Debug_Show_Item", id, value))
+                val displayName = getAttributeDisplayName(player, id)
+                player.sendStringAsComponent(player.asLangText("Command_Debug_Show_Item", displayName, value))
             }
         }
     }

@@ -12,6 +12,7 @@ import io.github.zzzyyylllty.chotentech.data.Level
 import io.github.zzzyyylllty.chotentech.data.NoclipPoint
 import io.github.zzzyyylllty.chotentech.data.PlayerData
 import io.github.zzzyyylllty.chotentech.data.PowerManager
+import io.github.zzzyyylllty.chotentech.event.NoclipEnterEvent
 import io.github.zzzyyylllty.chotentech.function.noclip.ConditionResult
 import io.github.zzzyyylllty.chotentech.function.noclip.NoclipConditionChecker
 import io.github.zzzyyylllty.chotentech.function.noclip.RandomNoclipSelector
@@ -99,6 +100,7 @@ fun checkPlayerRegion(
 
         for (noclipPoint in levels) {
             if (noclipPoint.autoNoclip) continue
+            if (noclipPoint.elevatorOnly) continue
             if (noclipPoint.name != null && noclipPoint.name !in enabledNames) continue
 
             val isInNoclipPoint = checkPlayerIsInNoclipPoint(player, noclipPoint)
@@ -114,7 +116,9 @@ fun checkPlayerRegion(
                         noclipTimeEnd = System.currentTimeMillis() + (noclipPoint.noclippingTime * 1000).roundToLong(),
                         noclipCooldownEnd = System.currentTimeMillis() + (noclipPoint.cooldown * 1000).roundToLong(),
                         noclipping = true
-                    ), true)
+                    ), true).also {
+                        NoclipEnterEvent(player, playerLevel.id, noclipPoint.name).call()
+                    }
                 }
                 is ConditionResult.NeedsSubmission -> {
                     NoclipConditionChecker.trySubmitItems(player, noclipPoint)
@@ -127,7 +131,9 @@ fun checkPlayerRegion(
                                 noclipTimeEnd = System.currentTimeMillis() + (noclipPoint.noclippingTime * 1000).roundToLong(),
                                 noclipCooldownEnd = System.currentTimeMillis() + (noclipPoint.cooldown * 1000).roundToLong(),
                                 noclipping = true
-                            ), true)
+                            ), true).also {
+                                NoclipEnterEvent(player, playerLevel.id, noclipPoint.name).call()
+                            }
                         }
                         is ConditionResult.Blocked -> {
                             player.sendActionBar((finalCheck.message ?: "需要满足条件").toComponent())

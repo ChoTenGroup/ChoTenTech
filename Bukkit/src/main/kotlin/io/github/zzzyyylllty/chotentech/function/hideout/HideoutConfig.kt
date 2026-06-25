@@ -5,6 +5,7 @@ import taboolib.library.configuration.ConfigurationSection
 import taboolib.common.platform.function.warning
 import taboolib.library.xseries.XMaterial
 import taboolib.module.configuration.Configuration
+import java.io.File
 
 object HideoutConfig {
 
@@ -13,63 +14,82 @@ object HideoutConfig {
     val recipes = linkedMapOf<String, HideoutRecipe>()
     val recipeListByModule = linkedMapOf<String, MutableList<String>>()
 
-    fun load(config: Configuration) {
+    fun load(dataFolder: File) {
         modules.clear()
         fuelTypes.clear()
         recipes.clear()
         recipeListByModule.clear()
 
-        loadModules(config.getConfigurationSection("modules"))
-        loadFuelTypes(config.getConfigurationSection("fuel_types"))
-        loadRecipes(config.getConfigurationSection("recipes"))
-    }
-
-    private fun loadModules(section: ConfigurationSection?) {
-        if (section == null) return
-        for (id in section.getKeys(false)) {
-            try {
-                val sec = section.getConfigurationSection(id) ?: continue
-                val levelSecs = sec.getConfigurationSection("levels") ?: continue
-                val levels = linkedMapOf<Int, HideoutModuleLevel>()
-
-                for (lvStr in levelSecs.getKeys(false)) {
-                    val lv = lvStr.toIntOrNull() ?: continue
-                    val lvSec = levelSecs.getConfigurationSection(lvStr) ?: continue
-
-                    val upgradeTime = lvSec.getInt("upgrade_time", 0)
-
-                    levels[lv] = HideoutModuleLevel(
-                        fuelCapacity = lvSec.getDouble("fuel_capacity", 0.0),
-                        fuelEfficiency = lvSec.getDouble("fuel_efficiency", 1.0),
-                        craftSpeed = lvSec.getDouble("craft_speed", 1.0),
-                        productionRate = lvSec.getDouble("production_rate", 0.0),
-                        productionItem = lvSec.getString("production_item"),
-                        fuelSavePercent = lvSec.getInt("fuel_save_percent", 0),
-                        gpuSlots = lvSec.getInt("gpu_slots", 0),
-                        buffDuration = lvSec.getInt("buff_duration", 0),
-                        buffAmplifier = lvSec.getInt("buff_amplifier", 0),
-                        upgradeCost = loadCostList(lvSec, "upgrade_cost"),
-                        currencyCost = loadCurrencyCostList(lvSec, "upgrade_cost"),
-                        upgradeTime = upgradeTime,
-                    )
+        // Load modules from individual files in modules/
+        val modulesDir = File(dataFolder, "modules")
+        if (modulesDir.isDirectory) {
+            modulesDir.listFiles { f -> f.name.endsWith(".yml", ignoreCase = true) }?.forEach { file ->
+                val id = file.nameWithoutExtension
+                try {
+                    loadSingleModule(id, Configuration.loadFromFile(file))
+                } catch (e: Exception) {
+                    warning("加载模块 $id 失败: ${e.message}")
                 }
-
-                val module = HideoutModule(
-                    id = id,
-                    name = sec.getString("name") ?: id,
-                    description = sec.getString("description") ?: "",
-                    material = sec.getString("material") ?: "STONE",
-                    itemModel = sec.getString("item_model"),
-                    slot = sec.getInt("slot", 0),
-                    maxLevel = sec.getInt("max_level", 1),
-                    usage = sec.getDouble("usage", 0.0),
-                    levels = levels,
-                )
-                modules[id] = module
-            } catch (e: Exception) {
-                warning("加载模块 $id 失败: ${e.message}")
             }
         }
+
+        // Load fuel_types.yml
+        val fuelFile = File(dataFolder, "fuel_types.yml")
+        if (fuelFile.exists()) {
+            try {
+                loadFuelTypes(Configuration.loadFromFile(fuelFile))
+            } catch (e: Exception) {
+                warning("加载燃料类型失败: ${e.message}")
+            }
+        }
+
+        // Load recipes.yml
+        val recipesFile = File(dataFolder, "recipes.yml")
+        if (recipesFile.exists()) {
+            try {
+                loadRecipes(Configuration.loadFromFile(recipesFile))
+            } catch (e: Exception) {
+                warning("加载配方失败: ${e.message}")
+            }
+        }
+    }
+
+    private fun loadSingleModule(id: String, sec: ConfigurationSection) {
+        val levelSecs = sec.getConfigurationSection("levels") ?: return
+        val levels = linkedMapOf<Int, HideoutModuleLevel>()
+
+        for (lvStr in levelSecs.getKeys(false)) {
+            val lv = lvStr.toIntOrNull() ?: continue
+            val lvSec = levelSecs.getConfigurationSection(lvStr) ?: continue
+
+            levels[lv] = HideoutModuleLevel(
+                fuelCapacity = lvSec.getDouble("fuel_capacity", 0.0),
+                fuelEfficiency = lvSec.getDouble("fuel_efficiency", 1.0),
+                craftSpeed = lvSec.getDouble("craft_speed", 1.0),
+                productionRate = lvSec.getDouble("production_rate", 0.0),
+                productionItem = lvSec.getString("production_item"),
+                fuelSavePercent = lvSec.getInt("fuel_save_percent", 0),
+                gpuSlots = lvSec.getInt("gpu_slots", 0),
+                buffDuration = lvSec.getInt("buff_duration", 0),
+                buffAmplifier = lvSec.getInt("buff_amplifier", 0),
+                upgradeCost = loadCostList(lvSec, "upgrade_cost"),
+                currencyCost = loadCurrencyCostList(lvSec, "currency_cost"),
+                upgradeTime = lvSec.getInt("upgrade_time", 0),
+            )
+        }
+
+        val module = HideoutModule(
+            id = id,
+            name = sec.getString("name") ?: id,
+            description = sec.getString("description") ?: "",
+            material = sec.getString("material") ?: "STONE",
+            itemModel = sec.getString("item_model"),
+            slot = sec.getInt("slot", 0),
+            maxLevel = sec.getInt("max_level", 1),
+            usage = sec.getDouble("usage", 0.0),
+            levels = levels,
+        )
+        modules[id] = module
     }
 
     private fun loadFuelTypes(section: ConfigurationSection?) {

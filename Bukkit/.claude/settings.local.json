@@ -93,7 +93,8 @@
       "Bash(grep 'mmUtil\\\\|mmJson' __TRACKED_VAR__/damage/handlers/ShockHandler.kt)",
       "Bash(grep 'mmUtil\\\\|mmJson' __TRACKED_VAR__/feature/crossbow/CrossbowManager.kt)",
       "Bash(JAVA_HOME=\"E:\\\\jdk-21\" \"E:\\\\jdk-21\\\\bin\\\\java\" -jar \"C:/Program Files/Gradle/gradle-8.10/bin/gradle-launcher-8.10.jar\" build)",
-      "Bash(JAVA_HOME=\"E:\\\\jdk-21\" ./gradlew build)"
+      "Bash(JAVA_HOME=\"E:\\\\jdk-21\" ./gradlew build)",
+      "Bash(\"E:\\\\jdk-21\\\\bin\\\\javac\" --version)"
     ]
   }
 }

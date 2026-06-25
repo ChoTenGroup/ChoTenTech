@@ -2,15 +2,23 @@ package io.github.zzzyyylllty.chotentech.listener
 
 import ink.ptms.um.Mythic
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
+import net.kyori.adventure.audience.Audience
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Location
+import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerToggleSprintEvent
 import org.bukkit.potion.PotionEffectType
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
+import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submit
 import taboolib.common.platform.function.submitAsync
 import java.util.concurrent.ConcurrentHashMap
+
+private val mm = MiniMessage.miniMessage()
+private const val NO_STAMINA_MSG = "<red>耐力不足，请稍作休息..."
 
 private val lastLocations = ConcurrentHashMap<String, Location>()
 private val pressureTickCounters = ConcurrentHashMap<String, Int>()
@@ -26,10 +34,10 @@ fun foodTimer() {
             for (player in Bukkit.getOnlinePlayers()) {
                 if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) continue
                 val data = playerDataMap[player.uniqueId.toString()] ?: continue
-                data.grain = maxOf(data.grain - 0.1, 0.0)
-                data.vitamin = maxOf(data.vitamin - 0.1, 0.0)
-                data.protein = maxOf(data.protein - 0.1, 0.0)
-                data.fat = maxOf(data.fat - 0.1, 0.0)
+                data.grain = maxOf(data.grain - (if (data.grain > 50) 0.2 else 0.1), 0.0)
+                data.vitamin = maxOf(data.vitamin - (if (data.vitamin > 50) 0.2 else 0.1), 0.0)
+                data.protein = maxOf(data.protein - (if (data.protein > 50) 0.2 else 0.1), 0.0)
+                data.fat = maxOf(data.fat - (if (data.fat > 50) 0.2 else 0.1), 0.0)
                 io.github.zzzyyylllty.chotentech.data.NutritionManager.sync(player)
             }
         }
@@ -53,13 +61,18 @@ fun foodTimer() {
             val staminaRegenMult = io.github.zzzyyylllty.chotentech.manager.AttributeManager.getAttributeValue(player, "stamina_regen_multiplier")
             if (player.isSprinting) {
                 data.stamina = maxOf(data.stamina - 1.0, 0.0)
+                // 体力耗尽时停止奔跑并提示
+                if (data.stamina <= 0.0) {
+                    player.isSprinting = false
+                    (player as Audience).sendActionBar(mm.deserialize(NO_STAMINA_MSG))
+                }
             } else {
                 if (player.isSneaking) {
-                    data.stamina = minOf(data.stamina + 2.5 * staminaRegenMult, data.maxStamina)
+                    data.stamina = minOf(data.stamina + 5.0 * staminaRegenMult, data.maxStamina)
                 } else if (moved && player.isOnGround) {
-                    data.stamina = minOf(data.stamina + 1.0 * staminaRegenMult, data.maxStamina)
-                } else if (!moved) {
                     data.stamina = minOf(data.stamina + 2.0 * staminaRegenMult, data.maxStamina)
+                } else if (!moved) {
+                    data.stamina = minOf(data.stamina + 4.0 * staminaRegenMult, data.maxStamina)
                 }
             }
             // === Jump consumption (airborne, not sprinting) ===
@@ -140,5 +153,17 @@ fun staminaBarSync() {
             val data = playerDataMap[player.uniqueId.toString()] ?: continue
             player.exp = (data.stamina / data.maxStamina).toFloat().coerceIn(0f, 1f)
         }
+    }
+}
+
+@SubscribeEvent
+fun onPlayerToggleSprint(event: PlayerToggleSprintEvent) {
+    if (!event.isSprinting) return
+    val player = event.player
+    if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) return
+    val data = playerDataMap[player.uniqueId.toString()] ?: return
+    if (data.stamina <= 0.0) {
+        event.isCancelled = true
+        (player as Audience).sendActionBar(mm.deserialize(NO_STAMINA_MSG))
     }
 }

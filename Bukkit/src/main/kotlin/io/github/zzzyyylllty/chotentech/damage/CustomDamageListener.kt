@@ -174,8 +174,7 @@ object CustomDamageListener {
             val chotenatbData = tag["chotenatb"] ?: return null
             for (entryTag in chotenatbData.asList()) {
                 val compound = entryTag.asCompound() ?: continue
-                val attr = compound["attribute"]?.asCompound() ?: continue
-                val typeId = attr["damage_type"]?.asString() ?: continue
+                val typeId = compound["damage_type"]?.asString() ?: continue
                 DamageType.fromId(typeId)
             }
             null

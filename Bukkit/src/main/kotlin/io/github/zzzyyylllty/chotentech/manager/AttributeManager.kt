@@ -14,9 +14,11 @@ import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
 import org.bukkit.Registry
 import org.bukkit.attribute.AttributeModifier as BukkitAttributeModifier
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import taboolib.platform.util.asLangText
 import taboolib.module.nms.ItemTag
 import taboolib.module.nms.getItemTag
 import taboolib.common.LifeCycle
@@ -230,6 +232,8 @@ object AttributeManager {
             // 营养相关属性
             AttributeType("stamina_regen_multiplier", "体力回复倍率", null, 1.0, minValue = 0.0),
             AttributeType("health_regen_multiplier", "生命回复倍率", null, 1.0, minValue = 0.0),
+            // 防御韧性：高伤害时防御效果打折，韧性减少折扣
+            AttributeType("defense_toughness", "防御韧性", null, 0.0, minValue = 0.0),
         )
         for (type in builtins) {
             registerAttribute(type, RegistrationSource.BUILTIN)
@@ -311,6 +315,32 @@ object AttributeManager {
      */
     fun getRegisteredAttributes(): Collection<AttributeType> {
         return attributeRegistry.values.toList()
+    }
+
+    /**
+     * 获取属性的本地化显示名称
+     * @param sender 用于确定语言的发送者，null 则返回硬编码名称
+     * @param attributeId 属性 ID
+     */
+    fun getAttributeDisplayName(sender: CommandSender?, attributeId: String): String {
+        val type = attributeRegistry[attributeId] ?: return attributeId
+        if (sender == null) return type.name
+        val key = "Attribute_${attributeId}_Name"
+        val localized = sender.asLangText(key)
+        return localized
+    }
+
+    /**
+     * 获取属性的本地化描述
+     * @param sender 用于确定语言的发送者，null 则返回硬编码描述
+     * @param attributeId 属性 ID
+     */
+    fun getAttributeDescription(sender: CommandSender?, attributeId: String): String {
+        val type = attributeRegistry[attributeId] ?: return ""
+        if (sender == null) return type.description
+        val key = "Attribute_${attributeId}_Description"
+        val localized = sender.asLangText(key)
+        return localized
     }
 
     /**
@@ -560,7 +590,6 @@ object AttributeManager {
             if (modified) {
                 data.modifiers = modifiers
                 savePlayerData(data)
-                // 更新玩家属性缓存
                 updatePlayer(player, async = true)
             }
         }
@@ -733,7 +762,10 @@ object AttributeManager {
             val attributeId = type.id
 
             // 目标值：优先使用计算值，否则使用默认值
-            val targetValue = values[attributeId] ?: type.defaultValue
+            val rawTarget = values[attributeId] ?: type.defaultValue
+            val targetValue = if (io.github.zzzyyylllty.chotentech.damage.DamageTypeRegistry.removeVanillaArmor &&
+                (attributeId == "armor" || attributeId == "armor_toughness")
+            ) 0.0 else rawTarget
 
             taboolib.common.platform.function.debug("AttributeManager: processing $attributeId ($vanillaName) target=$targetValue from values=${values[attributeId] != null}, default=${type.defaultValue}")
 
@@ -865,8 +897,54 @@ object AttributeManager {
 
     @Suppress("UNUSED_PARAMETER")
     private fun getEquipmentModifiers(player: Player): List<AttributeModifier> {
-        // 留待后续对接
-        return emptyList()
+        val modifiers = mutableListOf<AttributeModifier>()
+        val equipment = player.equipment ?: return modifiers
+
+        val slotItems = listOfNotNull(
+            "HEAD" to equipment.helmet,
+            "CHEST" to equipment.chestplate,
+            "LEGS" to equipment.leggings,
+            "FEET" to equipment.boots,
+            "MAIN_HAND" to equipment.itemInMainHand.takeIf { !it.type.isAir },
+            "OFF_HAND" to equipment.itemInOffHand.takeIf { !it.type.isAir }
+        ).mapNotNull { (slot, item) ->
+            val actual = item?.takeIf { !it.type.isAir } ?: return@mapNotNull null
+            slot to actual
+        }
+
+        val sourceBySlot = mapOf(
+            "HEAD" to ModifierSource.ARMOR,
+            "CHEST" to ModifierSource.ARMOR,
+            "LEGS" to ModifierSource.ARMOR,
+            "FEET" to ModifierSource.ARMOR,
+            "MAIN_HAND" to ModifierSource.MAINHAND,
+            "OFF_HAND" to ModifierSource.OFFHAND
+        )
+
+        for ((actualSlot, item) in slotItems) {
+            val chotenatb = readChotenatbTag(item) ?: continue
+            val source = sourceBySlot[actualSlot] ?: ModifierSource.OTHER
+            for (entry in chotenatb) {
+                if (!entry.matchesSlot(actualSlot)) continue
+                if (entry.fixAttackSpeed && actualSlot == "MAIN_HAND") {
+                    modifiers.add(AttributeModifier(
+                        attributeId = "attack_speed",
+                        value = -4.0,
+                        type = ModifierType.ADD,
+                        source = source
+                    ))
+                }
+                for ((attrId, attrValue) in entry.attributes) {
+                    modifiers.add(AttributeModifier(
+                        attributeId = attrId,
+                        value = attrValue,
+                        type = ModifierType.ADD,
+                        source = source
+                    ))
+                }
+            }
+        }
+        return modifiers
     }
 
     fun getAttributeValue(player: Player, attributeId: String): Double {
@@ -908,9 +986,11 @@ object AttributeManager {
      *
      * NBT 格式：
      * chotenatb: [
-     *   {attribute: {defense: 30, attack_damage: 10}, slot: ANY_HAND},
-     *   {attribute: {defense: 5}, slot: HEAD}
+     *   {attack_damage: 8, attack_speed: 1.6, slot: "MAIN_HAND", allowed: ["hand"]},
+     *   {defense: 5, slot: "HEAD"}
      * ]
+     * 其中 slot、allowed 和 fix_attack_speed 为保留键名，
+     * fix_attack_speed 为标记位，存在时主手攻击速度 -4。
      */
     private fun computeAndCacheEntityAttributes(entity: LivingEntity) {
         val uuid = entity.uniqueId
@@ -946,6 +1026,9 @@ object AttributeManager {
             val chotenatb = readChotenatbTag(item) ?: continue
             for (entry in chotenatb) {
                 if (!entry.matchesSlot(actualSlot)) continue
+                if (entry.fixAttackSpeed && actualSlot == "MAIN_HAND") {
+                    values["attack_speed"] = (values["attack_speed"] ?: 4.0) - 4.0
+                }
                 for ((attrId, attrValue) in entry.attributes) {
                     values[attrId] = (values[attrId] ?: 0.0) + attrValue
                 }
@@ -964,9 +1047,17 @@ object AttributeManager {
      */
     private data class ChotenatbEntry(
         val attributes: Map<String, Double>,
-        val slot: String
+        val slot: String,
+        val allowed: List<String> = emptyList(),
+        val fixAttackSpeed: Boolean = false
     ) {
         fun matchesSlot(actualSlot: String): Boolean {
+            if (!matchesSlotInternal(actualSlot)) return false
+            if (allowed.isNotEmpty()) return matchesAllowed(actualSlot)
+            return true
+        }
+
+        private fun matchesSlotInternal(actualSlot: String): Boolean {
             return when (slot) {
                 "ANY", "ALL" -> true
                 "ANY_HAND", "HAND" -> actualSlot in listOf("MAIN_HAND", "OFF_HAND")
@@ -979,10 +1070,31 @@ object AttributeManager {
                 else -> slot == actualSlot
             }
         }
+
+        private fun matchesAllowed(actualSlot: String): Boolean {
+            return allowed.any {
+                when (it.uppercase()) {
+                    "ANY", "ALL" -> true
+                    "HAND", "ANY_HAND" -> actualSlot in listOf("MAIN_HAND", "OFF_HAND")
+                    "MAIN_HAND", "MAINHAND" -> actualSlot == "MAIN_HAND"
+                    "OFF_HAND", "OFFHAND" -> actualSlot == "OFF_HAND"
+                    "HEAD", "HELMET" -> actualSlot == "HEAD"
+                    "CHEST", "CHESTPLATE" -> actualSlot == "CHEST"
+                    "LEGS", "LEGGINGS" -> actualSlot == "LEGS"
+                    "FEET", "BOOTS" -> actualSlot == "FEET"
+                    else -> it.uppercase() == actualSlot
+                }
+            }
+        }
     }
 
     /**
-     * 从物品读取 chotenatb 标签
+     * 从物品读取 chotenatb 标签，支持多种数值类型
+     *
+     * NBT 格式（getItemTag 已返回 custom_data 内容）：
+     * {attack_damage: 8, slot: "MAIN_HAND", allowed: ["hand"]}
+     * slot、allowed 和 fix_attack_speed 为保留键，其余直接作为属性 ID。
+     * 数值可以是 int / long / float / double / byte / short / string。
      */
     private fun readChotenatbTag(item: ItemStack): List<ChotenatbEntry>? {
         return try {
@@ -991,17 +1103,25 @@ object AttributeManager {
             val list = chotenatbData.asList()
             list.mapNotNull { entryTag ->
                 val compound = entryTag.asCompound() ?: return@mapNotNull null
-                val attrCompound = compound["attribute"]?.asCompound() ?: return@mapNotNull null
                 val attrs = mutableMapOf<String, Double>()
-                for (attrEntry in attrCompound.entries) {
-                    val value = attrEntry.value.asDouble()
+                var fixAttackSpeed = false
+                for (entry in compound.entries) {
+                    val key = entry.key
+                    if (key == "slot" || key == "allowed") continue
+                    if (key == "fix_attack_speed") {
+                        fixAttackSpeed = true
+                        continue
+                    }
+                    val value = entry.value.asDouble() ?: entry.value.asString()?.toDoubleOrNull()
                     if (value != null) {
-                        attrs[attrEntry.key] = value
+                        attrs[key] = value
                     }
                 }
-                if (attrs.isEmpty()) return@mapNotNull null
-                val slot = compound["slot"]?.asString() ?: "ANY"
-                ChotenatbEntry(attrs, slot)
+                if (attrs.isEmpty() && !fixAttackSpeed) return@mapNotNull null
+                val slot = (compound["slot"]?.asString() ?: "ANY").uppercase()
+                val allowed = compound["allowed"]?.asList()?.mapNotNull { it.asString() }
+                    ?: listOfNotNull(compound["allowed"]?.asString())
+                ChotenatbEntry(attrs, slot, allowed, fixAttackSpeed)
             }.takeIf { it.isNotEmpty() }
         } catch (_: Exception) {
             null

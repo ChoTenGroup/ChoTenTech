@@ -3,6 +3,7 @@ package io.github.zzzyyylllty.chotentech.damage.handlers
 import io.github.zzzyyylllty.chotentech.damage.DamageType
 import io.github.zzzyyylllty.chotentech.damage.DamageTypeRegistry
 import io.github.zzzyyylllty.chotentech.data.ChoTenDataHelper
+import io.github.zzzyyylllty.chotentech.data.PAIN_RELIEF
 import org.bukkit.entity.Player
 
 /**
@@ -24,6 +25,10 @@ class PsychicHandler : SpecialDamageHandler(DamageType.PSYCHIC) {
         if (healthDamage > 0) player.damage(healthDamage)
 
         val sanityLoss = finalDamage * (DamageTypeRegistry.sanityConversionRatio / 100.0)
-        helper.removeSanity(sanityLoss)
+
+        // 止痛效果：减少精神损失
+        val painReliefLevel = helper.getStatusEffectLevel(PAIN_RELIEF)
+        val sanityReduction = (painReliefLevel * 0.4).coerceIn(0.0, 1.0)
+        helper.removeSanity(sanityLoss * (1.0 - sanityReduction))
     }
 }

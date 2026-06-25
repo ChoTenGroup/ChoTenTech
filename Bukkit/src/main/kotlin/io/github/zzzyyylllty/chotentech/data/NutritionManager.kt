@@ -2,6 +2,7 @@ package io.github.zzzyyylllty.chotentech.data
 
 import io.github.zzzyyylllty.chotentech.ChoTenTech
 import io.github.zzzyyylllty.chotentech.manager.AttributeManager
+import kotlin.math.floor
 import org.bukkit.entity.Player
 import java.util.UUID
 
@@ -42,33 +43,35 @@ object NutritionManager {
 
     /**
      * 清除所有营养修饰符并重新计算
+     *
+     * 性能优化：直接操作 modifiers 列表，只做一次 DB 写入 + 一次属性重算
      */
     fun sync(player: Player) {
         val data = ChoTenTech.playerDataMap[player.uniqueId.toString()] ?: return
 
-        // 1. 移除旧的营养修饰符
-        for (uuid in allNutritionUuids) {
-            AttributeManager.removeModifierByUuid(player.uniqueId, uuid)
-        }
+        // 1. 读取持久化数据，直接操作 modifiers 列表
+        val attrData = AttributeManager.getPlayerPersistentData(player.uniqueId)
+        val mods = attrData.modifiers.toMutableList()
 
-        // 2. 计算并添加新的
-        val modifiers = mutableListOf<AttributeModifier>()
+        // 2. 移除旧的营养修饰符
+        mods.removeAll { it.uuid in allNutritionUuids }
 
+        // 3. 计算并添加新的
         // —— grain ——
         if (data.grain > 50) {
             val pts = data.grain - 50
-            modifiers += AttributeModifier(
+            mods += AttributeModifier(
                 uuid = UUID_GRAIN_ABOVE,
                 attributeId = "attack_damage",
-                value = pts * 0.1,   // 0.1% per point → PERCENT treats value as %
+                value = pts * 0.001,   // +0.1% per point → (1.0 + percent)
                 type = ModifierType.PERCENT,
                 source = ModifierSource.OTHER
             )
         } else if (data.grain < 10) {
-            modifiers += AttributeModifier(
+            mods += AttributeModifier(
                 uuid = UUID_GRAIN_BELOW,
                 attributeId = "attack_damage",
-                value = -25.0,        // -25%
+                value = -0.25,         // -25% → (1.0 + (-0.25)) = 0.75
                 type = ModifierType.PERCENT,
                 source = ModifierSource.OTHER
             )
@@ -77,18 +80,18 @@ object NutritionManager {
         // —— vitamin ——
         if (data.vitamin > 50) {
             val pts = data.vitamin - 50
-            modifiers += AttributeModifier(
+            mods += AttributeModifier(
                 uuid = UUID_VITAMIN_ABOVE,
                 attributeId = "stamina_max",
-                value = pts,          // +1 per point
+                value = pts,           // +1 per point (ADD)
                 type = ModifierType.ADD,
                 source = ModifierSource.OTHER
             )
         } else if (data.vitamin < 10) {
-            modifiers += AttributeModifier(
+            mods += AttributeModifier(
                 uuid = UUID_VITAMIN_BELOW,
                 attributeId = "stamina_regen_multiplier",
-                value = -25.0,        // -25%
+                value = -0.25,         // -25% → (1.0 + (-0.25)) = 0.75
                 type = ModifierType.PERCENT,
                 source = ModifierSource.OTHER
             )
@@ -97,18 +100,18 @@ object NutritionManager {
         // —— protein ——
         if (data.protein > 50) {
             val pts = data.protein - 50
-            modifiers += AttributeModifier(
+            mods += AttributeModifier(
                 uuid = UUID_PROTEIN_ABOVE,
                 attributeId = "max_health",
-                value = pts,          // +1 per point
+                value = floor(pts / 2),     // +0.5 per point, 取整避免频繁改最大血量 (ADD)
                 type = ModifierType.ADD,
                 source = ModifierSource.OTHER
             )
         } else if (data.protein < 10) {
-            modifiers += AttributeModifier(
+            mods += AttributeModifier(
                 uuid = UUID_PROTEIN_BELOW,
                 attributeId = "health_regen_multiplier",
-                value = -25.0,        // -25%
+                value = -0.25,         // -25% → (1.0 + (-0.25)) = 0.75
                 type = ModifierType.PERCENT,
                 source = ModifierSource.OTHER
             )
@@ -117,24 +120,25 @@ object NutritionManager {
         // —— fat ——
         if (data.fat > 50) {
             val pts = data.fat - 50
-            modifiers += AttributeModifier(
+            mods += AttributeModifier(
                 uuid = UUID_FAT_ABOVE,
                 attributeId = "movement_speed",
-                value = pts * -0.2,   // -0.2% per point
+                value = pts * -0.002,  // -0.2% per point → (1.0 + (-0.002*pts))
                 type = ModifierType.PERCENT,
                 source = ModifierSource.OTHER
             )
         }
 
-        for (mod in modifiers) {
-            AttributeManager.addModifier(player.uniqueId, mod)
-        }
+        // 4. 一次性写入并重算
+        attrData.modifiers = mods
+        AttributeManager.savePlayerData(attrData)
+        AttributeManager.updatePlayer(player)
     }
 
     /**
      * 死亡扣除：fat 不参与
-     *   < 10 → 补到 10
-     *   ≥ 10 → 损失 (value - 10) / 2
+     *   < 20 → 补到 20
+     *   ≥ 20 → 损失 (value - 20) / 2
      */
     fun applyDeathDeduction(player: Player) {
         val data = ChoTenTech.playerDataMap[player.uniqueId.toString()] ?: return
@@ -146,6 +150,6 @@ object NutritionManager {
     }
 
     private fun deathDeduct(value: Double): Double {
-        return if (value < 10) 10.0 else 10.0 + (value - 10.0) / 2.0
+        return if (value < 20) 20.0 else 20.0 + (value - 20.0) / 2.0
     }
 }

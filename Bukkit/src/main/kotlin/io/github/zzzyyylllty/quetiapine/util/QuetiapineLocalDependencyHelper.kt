@@ -241,7 +241,6 @@ fun replaceTestTexts(str: String): String {
         .replaceUnrelocated("!com.alibaba", "!io.github.zzzyyylllty.quetiapine.library.alibaba")
         .replaceUnrelocated("!kotlinx.serialization", "!kotlinx.serialization170")
         .replaceUnrelocated("!io.github.projectunified.uniitem","!io.github.zzzyyylllty.quetiapine.library.uniitem")
-        .replaceUnrelocated("!com.fasterxml.jackson","!io.github.zzzyyylllty.quetiapine.library.jackson")
         .replaceUnrelocated("!com.mojang.datafixers","!io.github.zzzyyylllty.quetiapine.library.datafixers")
         .replaceUnrelocated("!io.netty.handler.codec.http", "!io.github.zzzyyylllty.quetiapine.library.http")
         .replaceUnrelocated("!io.netty.handler.codec.rtsp", "!io.github.zzzyyylllty.quetiapine.library.rtsp")

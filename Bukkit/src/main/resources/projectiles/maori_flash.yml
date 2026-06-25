@@ -61,6 +61,13 @@ m67_grenade:
     - type: fragment
       range: 30
       amount: 30
+      penetration: 3.0
+      falloff:
+        enabled: true
+        start: 0.0
+        end: 30.0
+        minMult: 0.1
+        formula: linear
       damage:
         physical: 10
         externalInjury: 2

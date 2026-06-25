@@ -160,3 +160,19 @@ options:
     update-limit: 10
     # 替换原版等级 null为不替换
     override-vanilla: main
+
+# 伤害类型系统配置（详细参数见 attribute-config.yml）
+damage-system:
+  enabled: false
+  # 开启后强制将玩家原版盔甲和盔甲韧性设为0（避免双层减免）
+  remove-vanilla-armor: true
+
+# 组队系统配置
+team:
+  # 默认队伍上限（无权限玩家）
+  default-size: 4
+  # 权限节点对应的队伍上限（从大到小排列，取最高权限）
+  permission-sizes:
+    chotentech.team.size.10: 10
+    chotentech.team.size.8: 8
+    chotentech.team.size.6: 6

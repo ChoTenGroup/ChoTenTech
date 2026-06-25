@@ -10,7 +10,6 @@ val dependencies = listOf(
     // "fluxon",
     // "graaljs",
     "gson",
-    "jackson",
     // "kotlincrypto",
 )
 

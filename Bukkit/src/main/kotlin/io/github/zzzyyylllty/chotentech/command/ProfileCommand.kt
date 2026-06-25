@@ -14,7 +14,7 @@ import taboolib.common.platform.command.subCommand
     permission = "chotentech.command.profile",
     description = "打开玩家档案管理菜单",
     permissionMessage = "",
-    permissionDefault = PermissionDefault.TRUE,
+    permissionDefault = PermissionDefault.OP,
     newParser = false,
 )
 object ProfileCommand {
