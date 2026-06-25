@@ -1,0 +1,12 @@
+raw_coal:
+  sertraline_id: "raw_coal"
+  burn_time: 80.0
+fuel:
+  sertraline_id: "fuel"
+  burn_time: 240.0
+battery:
+  sertraline_id: "battery"
+  burn_time: 120.0
+battery_set:
+  sertraline_id: "battery_set"
+  burn_time: 500.0

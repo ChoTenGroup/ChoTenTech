@@ -1,0 +1,206 @@
+# 矿石再生配置 — 所有原版矿石
+coal:
+  block: coal_ore
+  period: 30
+  strength: 30
+  category: MINERAL
+  min-level: 1
+  temp-block: stone
+  items:
+    - item: sertraline:coal
+
+deepslate_coal:
+  block:
+    adapter: minecraft
+    block: deepslate_coal_ore
+  period: 30
+  strength: 35
+  category: MINERAL
+  min-level: 1
+  temp-block: deepslate
+  items:
+    - item: sertraline:coal
+
+iron:
+  block: iron_ore
+  period: 30
+  strength: 50
+  category: MINERAL
+  min-level: 2
+  temp-block: stone
+  items:
+    - item: sertraline:raw_iron
+
+deepslate_iron:
+  block:
+    adapter: minecraft
+    block: deepslate_iron_ore
+  period: 30
+  strength: 55
+  category: MINERAL
+  min-level: 2
+  temp-block: deepslate
+  items:
+    - item: sertraline:raw_iron
+
+copper:
+  block: copper_ore
+  period: 30
+  strength: 35
+  category: MINERAL
+  min-level: 1
+  temp-block: stone
+  items:
+    - item: sertraline:raw_copper
+
+deepslate_copper:
+  block:
+    adapter: minecraft
+    block: deepslate_copper_ore
+  period: 30
+  strength: 40
+  category: MINERAL
+  min-level: 1
+  temp-block: deepslate
+  items:
+    - item: sertraline:raw_copper
+
+gold:
+  block: gold_ore
+  period: 30
+  strength: 40
+  category: MINERAL
+  min-level: 2
+  temp-block: stone
+  items:
+    - item: sertraline:raw_gold
+
+deepslate_gold:
+  block:
+    adapter: minecraft
+    block: deepslate_gold_ore
+  period: 30
+  strength: 45
+  category: MINERAL
+  min-level: 2
+  temp-block: deepslate
+  items:
+    - item: sertraline:raw_gold
+
+redstone:
+  block: redstone_ore
+  period: 30
+  strength: 40
+  category: MINERAL
+  min-level: 2
+  temp-block: stone
+  items:
+    - item: sertraline:ruby
+
+deepslate_redstone:
+  block:
+    adapter: minecraft
+    block: deepslate_redstone_ore
+  period: 30
+  strength: 45
+  category: MINERAL
+  min-level: 2
+  temp-block: deepslate
+  items:
+    - item: sertraline:ruby
+
+lapis:
+  block: lapis_ore
+  period: 30
+  strength: 45
+  category: MINERAL
+  min-level: 2
+  temp-block: stone
+  items:
+    - item: sertraline:sapphire
+
+deepslate_lapis:
+  block:
+    adapter: minecraft
+    block: deepslate_lapis_ore
+  period: 30
+  strength: 50
+  category: MINERAL
+  min-level: 2
+  temp-block: deepslate
+  items:
+    - item: sertraline:sapphire
+
+diamond:
+  block: diamond_ore
+  period: 45
+  strength: 150
+  category: MINERAL
+  min-level: 2
+  temp-block: stone
+  items:
+    - item: sertraline:diamond
+
+deepslate_diamond:
+  block:
+    adapter: minecraft
+    block: deepslate_diamond_ore
+  period: 45
+  strength: 170
+  category: MINERAL
+  min-level: 2
+  temp-block: deepslate
+  items:
+    - item: sertraline:diamond
+
+emerald:
+  block: emerald_ore
+  period: 45
+  strength: 120
+  category: MINERAL
+  min-level: 2
+  temp-block: stone
+  items:
+    - item: sertraline:emerald
+
+deepslate_emerald:
+  block:
+    adapter: minecraft
+    block: deepslate_emerald_ore
+  period: 45
+  strength: 140
+  category: MINERAL
+  min-level: 2
+  temp-block: deepslate
+  items:
+    - item: sertraline:emerald
+
+nether_quartz:
+  block: nether_quartz_ore
+  period: 25
+  strength: 30
+  category: MINERAL
+  min-level: 1
+  temp-block: netherrack
+  items:
+    - item: sertraline:quartz
+
+nether_gold:
+  block: nether_gold_ore
+  period: 25
+  strength: 30
+  category: MINERAL
+  min-level: 1
+  temp-block: netherrack
+  items:
+    - item: sertraline:gold_nugget
+
+#ancient_debris:
+#  block: ancient_debris
+#  period: 60
+#  strength: 200
+#  category: MINERAL
+#  min-level: 4
+#  temp-block: netherrack
+#  items:
+#    - item: sertraline:ancient_debris

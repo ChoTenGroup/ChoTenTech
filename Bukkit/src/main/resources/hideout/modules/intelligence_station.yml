@@ -1,0 +1,40 @@
+name: "情报站"
+description: "生产情报文件（需雷达站）"
+material: "LECTERN"
+item_model: "kangelitem:hideout/intel"
+slot: 33
+max_level: 2
+usage: 4.0
+levels:
+  1:
+    upgrade_time: 60
+    production_rate: 0.01
+    production_item: "paper"
+    upgrade_cost:
+      - sertraline_id: "iron_ingot"
+        amount: 8
+      - sertraline_id: "red_board"
+        amount: 2
+      - sertraline_id: "cpu"
+        amount: 1
+      - sertraline_id: "pcb"
+        amount: 1
+    currency_cost:
+      - currency: "point"
+        amount: 800
+  2:
+    upgrade_time: 300
+    production_rate: 0.02
+    production_item: "intelligence_folder"
+    upgrade_cost:
+      - sertraline_id: "steel_ingot"
+        amount: 4
+      - sertraline_id: "green_board"
+        amount: 2
+      - sertraline_id: "blue_board"
+        amount: 1
+      - sertraline_id: "advanced_ai_core"
+        amount: 1
+    currency_cost:
+      - currency: "point"
+        amount: 3000

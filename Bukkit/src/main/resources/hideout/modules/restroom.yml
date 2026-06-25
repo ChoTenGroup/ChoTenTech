@@ -1,0 +1,36 @@
+name: "卫生间"
+description: "生产卫生用品"
+material: "DISPENSER"
+item_model: "kangelitem:hideout/restroom"
+slot: 15
+max_level: 2
+usage: 1.0
+levels:
+  1:
+    upgrade_time: 60
+    production_rate: 0.02
+    production_item: "paper"
+    upgrade_cost:
+      - sertraline_id: "plank"
+        amount: 16
+      - sertraline_id: "iron_ingot"
+        amount: 4
+      - sertraline_id: "gear"
+        amount: 2
+    currency_cost:
+      - currency: "point"
+        amount: 300
+  2:
+    upgrade_time: 300
+    production_rate: 0.04
+    production_item: "rag"
+    upgrade_cost:
+      - sertraline_id: "iron_ingot"
+        amount: 8
+      - sertraline_id: "plastic"
+        amount: 6
+      - sertraline_id: "fabric_skin"
+        amount: 2
+    currency_cost:
+      - currency: "point"
+        amount: 1000

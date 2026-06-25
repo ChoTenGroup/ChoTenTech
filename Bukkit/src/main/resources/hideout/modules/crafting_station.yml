@@ -1,0 +1,51 @@
+name: "合成站"
+description: "合成各类生存物资与装备"
+material: "CRAFTING_TABLE"
+item_model: "kangelitem:hideout/crafting"
+slot: 30
+max_level: 3
+usage: 3.0
+levels:
+  1:
+    upgrade_time: 60
+    craft_speed: 1.0
+    upgrade_cost:
+      - sertraline_id: "iron_ingot"
+        amount: 8
+      - sertraline_id: "plank"
+        amount: 16
+      - sertraline_id: "gear"
+        amount: 2
+    currency_cost:
+      - currency: "point"
+        amount: 500
+  2:
+    upgrade_time: 300
+    craft_speed: 1.5
+    upgrade_cost:
+      - sertraline_id: "iron_ingot"
+        amount: 12
+      - sertraline_id: "plank"
+        amount: 16
+      - sertraline_id: "screw"
+        amount: 8
+      - sertraline_id: "red_board"
+        amount: 2
+    currency_cost:
+      - currency: "point"
+        amount: 2000
+  3:
+    upgrade_time: 600
+    craft_speed: 2.0
+    upgrade_cost:
+      - sertraline_id: "steel_ingot"
+        amount: 6
+      - sertraline_id: "silver_ingot"
+        amount: 4
+      - sertraline_id: "cpu"
+        amount: 2
+      - sertraline_id: "glowstone_ingot"
+        amount: 1
+    currency_cost:
+      - currency: "point"
+        amount: 5000

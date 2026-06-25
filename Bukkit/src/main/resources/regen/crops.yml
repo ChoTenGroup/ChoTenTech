@@ -1,0 +1,29 @@
+# 作物再生配置
+wheat:
+  block: wheat
+  crop: wheat
+  period: 60
+  temp-block: farmland
+  items:
+    - item: wheat
+      amount: 1
+    - item: wheat
+      amount: 1
+
+carrot:
+  block: carrots
+  crop: carrots
+  period: 60
+  temp-block: farmland
+  items:
+    - item: carrot
+      amount: 1
+
+potato:
+  block: potatoes
+  crop: potatoes
+  period: 60
+  temp-block: farmland
+  items:
+    - item: potato
+      amount: 1

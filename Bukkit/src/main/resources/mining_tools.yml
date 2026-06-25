@@ -1,0 +1,172 @@
+# 工具挖掘伤害配置
+# 每个工具条目按后缀匹配（如 _pickaxe 匹配所有以 _pickaxe 结尾的工具）
+# 精确匹配优先于后缀匹配
+
+# ========== 镐 - 矿物专精 ==========
+_pickaxe:
+  MINERAL: 5
+wooden_pickaxe:
+  MINERAL: 4
+stone_pickaxe:
+  MINERAL: 6
+iron_pickaxe:
+  MINERAL: 8
+golden_pickaxe:
+  MINERAL: 6
+diamond_pickaxe:
+  MINERAL: 15
+netherite_pickaxe:
+  MINERAL: 18
+black_diamond_pickaxe:
+  MINERAL: 16
+mythril_pickaxe:
+  MINERAL: 18
+ultra_alloy_pickaxe:
+  MINERAL: 25
+emerald_pickaxe:
+  MINERAL: 12
+ruby_pickaxe:
+  MINERAL: 12
+sapphire_pickaxe:
+  MINERAL: 8
+steel_pickaxe:
+  MINERAL: 7
+
+# ========== 鹤嘴锄 - 多功能但较低效 ==========
+_mattock:
+  MINERAL: 3
+  WOOD: 3
+  CROP: 3
+iron_mattock:
+  MINERAL: 5
+  WOOD: 5
+  CROP: 5
+diamond_mattock:
+  MINERAL: 6
+  WOOD: 6
+  CROP: 6
+black_diamond_mattock:
+  MINERAL: 7
+  WOOD: 7
+  CROP: 7
+mythril_mattock:
+  MINERAL: 8
+  WOOD: 8
+  CROP: 8
+ultra_alloy_mattock:
+  MINERAL: 10
+  WOOD: 10
+  CROP: 10
+
+# ========== 战锤 - 矿物+木材 ==========
+_hammer:
+  MINERAL: 4
+  WOOD: 2
+iron_hammer:
+  MINERAL: 7
+  WOOD: 4
+diamond_hammer:
+  MINERAL: 10
+  WOOD: 5
+black_diamond_hammer:
+  MINERAL: 11
+  WOOD: 6
+mythril_hammer:
+  MINERAL: 13
+  WOOD: 7
+ultra_alloy_hammer:
+  MINERAL: 16
+  WOOD: 8
+
+# ========== 斧 - 木材专精 ==========
+_axe:
+  WOOD: 8
+iron_axe:
+  WOOD: 12
+golden_axe:
+  WOOD: 9
+diamond_axe:
+  WOOD: 16
+netherite_axe:
+  WOOD: 20
+black_diamond_axe:
+  WOOD: 18
+mythril_axe:
+  WOOD: 20
+ultra_alloy_axe:
+  WOOD: 28
+
+# ========== 战斧 - 木材+作物（战斗向） ==========
+_combataxe:
+  WOOD: 4
+  CROP: 3
+iron_combataxe:
+  WOOD: 6
+  CROP: 5
+diamond_combataxe:
+  WOOD: 8
+  CROP: 6
+black_diamond_combataxe:
+  WOOD: 9
+  CROP: 7
+mythril_combataxe:
+  WOOD: 11
+  CROP: 8
+ultra_alloy_combataxe:
+  WOOD: 14
+  CROP: 10
+
+# ========== 锄 - 作物专精 ==========
+_hoe:
+  CROP: 8
+iron_hoe:
+  CROP: 12
+golden_hoe:
+  CROP: 9
+diamond_hoe:
+  CROP: 16
+netherite_hoe:
+  CROP: 20
+black_diamond_hoe:
+  CROP: 18
+ultra_alloy_hoe:
+  CROP: 28
+
+# ========== 锹 - 泥土专精 ==========
+_shovel:
+  EARTH: 8
+iron_shovel:
+  EARTH: 12
+golden_shovel:
+  EARTH: 9
+diamond_shovel:
+  EARTH: 16
+netherite_shovel:
+  EARTH: 20
+black_diamond_shovel:
+  EARTH: 18
+ultra_alloy_shovel:
+  EARTH: 28
+
+# ========== 手斧 - 木材 ==========
+_handaxe:
+  WOOD: 3
+
+# ========== 匕首/小刀 - 基础挖掘（极低效率） ==========
+_dagger:
+  MINERAL: 0.5
+  WOOD: 0.5
+  CROP: 0.5
+_knife:
+  MINERAL: 0.5
+  WOOD: 0.5
+  CROP: 0.5
+
+# ========== 剑 - 极低效率挖掘 ==========
+_sword:
+  MINERAL: 0.5
+  WOOD: 0.5
+  CROP: 0.5
+
+# ========== 空手 - 最低效率 ==========
+# 不匹配任何后缀时的默认值

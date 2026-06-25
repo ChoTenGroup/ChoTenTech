@@ -1,0 +1,36 @@
+name: "配件站"
+description: "生产装备配件（暂未开放配方）"
+material: "SMITHING_TABLE"
+item_model: "kangelitem:hideout/accessory"
+slot: 34
+max_level: 2
+usage: 3.0
+levels:
+  1:
+    upgrade_time: 60
+    upgrade_cost:
+      - sertraline_id: "iron_ingot"
+        amount: 12
+      - sertraline_id: "gear"
+        amount: 4
+      - sertraline_id: "precision_parts"
+        amount: 2
+      - sertraline_id: "screw"
+        amount: 4
+    currency_cost:
+      - currency: "point"
+        amount: 500
+  2:
+    upgrade_time: 300
+    upgrade_cost:
+      - sertraline_id: "steel_ingot"
+        amount: 6
+      - sertraline_id: "silver_ingot"
+        amount: 4
+      - sertraline_id: "cpu"
+        amount: 2
+      - sertraline_id: "motor"
+        amount: 1
+    currency_cost:
+      - currency: "point"
+        amount: 2000
