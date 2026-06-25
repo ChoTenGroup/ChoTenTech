@@ -148,6 +148,7 @@ fun loadLevel(root: String, config: Configuration) {
             name = map["name"],
             targetLevel = map["target"],
             autoNoclip = map["autoNoclip"]?.equals("true", ignoreCase = true) == true,
+            elevatorOnly = map["elevatorOnly"]?.equals("true", ignoreCase = true) == true,
             conditions = conditions,
             targetLocations = targetLocations,
         ))

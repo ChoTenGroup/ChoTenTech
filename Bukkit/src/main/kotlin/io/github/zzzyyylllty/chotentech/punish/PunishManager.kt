@@ -13,6 +13,7 @@ import taboolib.common.platform.function.getDataFolder
 import taboolib.common.platform.function.submitAsync
 import taboolib.common.platform.function.warning
 import taboolib.expansion.Length
+import taboolib.expansion.Id
 import taboolib.expansion.db
 import taboolib.expansion.mapper
 import taboolib.expansion.TableName
@@ -26,7 +27,8 @@ object PunishManager {
 
     @TableName("punishment_records")
     class PunishmentRecord {
-        // No @Id — auto-increment primary key
+        @Id
+        var id: Long = 0
         var targetUuid: String = ""
         var targetName: String = ""
         var operatorUuid: String = ""
@@ -158,6 +160,7 @@ object PunishManager {
 
     fun deactivatePunishment(id: Long) {
         punishmentMapper.findByRowId(id)?.let { record ->
+            record.id = id  // populate @Id for old records that don't have it set
             record.active = false
             punishmentMapper.update(record)
         }

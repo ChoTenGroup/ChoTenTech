@@ -176,6 +176,19 @@ object ProjectileManager {
                             )
                         }
 
+                        val penetration = (map["penetration"] as? Number)?.toDouble() ?: 0.0
+
+                        val falloffSection = map["falloff"] as? Map<*, *>
+                        val falloff = falloffSection?.let { fo ->
+                            FalloffConfig(
+                                enabled = (fo["enabled"] as? Boolean) ?: true,
+                                start = (fo["start"] as? Number)?.toDouble() ?: 0.0,
+                                end = (fo["end"] as? Number)?.toDouble() ?: (map["range"] as? Number)?.toDouble() ?: 30.0,
+                                minMult = (fo["min_mult"] as? Number)?.toDouble() ?: 0.1,
+                                formula = (fo["formula"] as? String) ?: "linear"
+                            )
+                        }
+
                         effectsList.add(
                             ProjectileEffect(
                                 type = type,
@@ -189,7 +202,9 @@ object ProjectileManager {
                                 sound = effectSound,
                                 particle = effectParticle,
                                 check = (map["check"] as? Boolean) ?: false,
-                                shockwave = shockwave
+                                shockwave = shockwave,
+                                penetration = penetration,
+                                falloff = falloff
                             )
                         )
                     }
@@ -385,11 +400,18 @@ object ProjectileManager {
                             hitEntities.add(hit)
                         }
                         for (entity in hitEntities) {
-                            if (physicalDmg > 0) entity.damage(physicalDmg, thrower)
+                            val distance = location.distance(entity.location)
+                            val mult = effect.falloff?.multiplier(distance) ?: 1.0
+
+                            if (physicalDmg > 0) entity.damage(physicalDmg * mult, thrower)
+                            if (effect.penetration > 0) {
+                                val penetrationDmg = effect.penetration * mult
+                                entity.health = maxOf(0.0, entity.health - penetrationDmg)
+                            }
                             if (entity is Player) {
                                 val pData = ChoTenTech.playerDataMap[entity.uniqueId.toString()] ?: continue
-                                if (externalInjuryDmg > 0) pData.externalInjury = maxOf(0.0, pData.externalInjury - externalInjuryDmg)
-                                if (internalInjuryDmg > 0) pData.internalInjury = maxOf(0.0, pData.internalInjury - internalInjuryDmg)
+                                if (externalInjuryDmg > 0) pData.externalInjury = maxOf(0.0, pData.externalInjury - externalInjuryDmg * mult)
+                                if (internalInjuryDmg > 0) pData.internalInjury = maxOf(0.0, pData.internalInjury - internalInjuryDmg * mult)
                             }
                         }
                     }

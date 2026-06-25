@@ -363,6 +363,17 @@ object DataManager {
         saveAll(player)
     }
 
+    /** Save PlayerData by UUID — works for both online and offline players */
+    fun persistPlayerData(data: PlayerData) {
+        if (playerDataMap.containsKey(data.uuid)) return // online — already tracked, saved on quit
+        try {
+            val shared = ProfileManager.getSharedData(data.uuid)
+            ProfileManager.saveProfileData(data.uuid, shared.activeProfileId, ProfileManager.stripSharedFields(data))
+        } catch (e: Exception) {
+            warning("Failed to persist player data for ${data.playerName}: ${e.message}")
+        }
+    }
+
     fun getDataByCID(cid: String): PlayerData? {
         val dataStr = getRawDataByCID(cid)
         val data = dataStr?.let {
@@ -456,19 +467,24 @@ object DataManager {
 
         submitAsync {
             Thread.sleep(2000)
-            sendLoadingTips(player, "载入中...")
-            sendLoadingTips(player, "正在拉取数据...")
+            submit { sendLoadingTips(player, "载入中...") }
+            submit { sendLoadingTips(player, "正在拉取数据...") }
             initData(player)
-            sendLoadingTips(player, "完成.")
-            player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, SoundCategory.MASTER, 1f, 1.7f)
-            player.showTitle(
-                Title.title(
-                    "<yellow>阈限<aqua>天际<dark_blue>服务器".toComponent(),
-                    "<green>${player.name}".toComponent()
+            submit {
+                io.github.zzzyyylllty.chotentech.listener.ProfileListener.setPending(player)
+            }
+            submit {
+                sendLoadingTips(player, "完成.")
+                player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, SoundCategory.MASTER, 1f, 1.7f)
+                player.showTitle(
+                    Title.title(
+                        "<yellow>阈限<aqua>天际<dark_blue>服务器".toComponent(),
+                        "<green>${player.name}".toComponent()
+                    )
                 )
-            )
+            }
             Thread.sleep(400)
-            player.playSound(player, Sound.ENTITY_ELDER_GUARDIAN_CURSE, SoundCategory.MASTER, 1f, 1.7f)
+            submit { player.playSound(player, Sound.ENTITY_ELDER_GUARDIAN_CURSE, SoundCategory.MASTER, 1f, 1.7f) }
         }
     }
 
@@ -495,7 +511,7 @@ object DataManager {
         val player = e.player
         val uuid = player.uniqueId.toString()
         cleanupNoclipState(uuid)
-        io.github.zzzyyylllty.chotentech.listener.ProfileListener.onPlayerQuit(uuid)
+        io.github.zzzyyylllty.chotentech.listener.ProfileListener.onPlayerQuit(e)
         submitAsync {
             for (session in sharedNoclipSessions.values) {
                 session.playersInRange.remove(uuid)

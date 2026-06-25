@@ -2,7 +2,7 @@ package io.github.zzzyyylllty.quetiapine.data
 
 import io.github.zzzyyylllty.chotentech.ChoTenTech.regenTemplates
 import io.github.zzzyyylllty.quetiapine.function.kether.parseKether
-import io.github.zzzyyylllty.quetiapine.listener.blockAdapters
+import io.github.zzzyyylllty.chotentech.listener.blockAdapters
 import io.github.zzzyyylllty.quetiapine.util.loc
 import net.momirealms.craftengine.bukkit.api.CraftEngineBlocks
 import org.bukkit.Bukkit
@@ -39,7 +39,11 @@ data class RegenTemplate(
     val tempBlock: RegenBlock?,
     val vanilla: Boolean,
     val items: List<RegenItem>,
-    val agents: Agents?
+    val agents: Agents?,
+    val minLevel: Int = 0,
+    val cropType: CropType? = null,
+    val strength: Double = 1.0,
+    val category: BlockCategory = BlockCategory.MINERAL
 )
 
 data class RegenBlock(
@@ -55,5 +59,23 @@ data class RegenItem(
     fun build(player: Player): ItemStack? {
         val nAmount = if (amount is Int || amount is Double) amount.toInt() else amount.toString().parseKether(player)
         return if (condition?.validate(mapOf("item" to item, "amount" to nAmount), player) ?: true) item.build(player) else null
+    }
+}
+
+/** 作物类型及最大生长阶段 */
+enum class CropType(val blockName: String, val maxAge: Int) {
+    WHEAT("wheat", 7),
+    CARROTS("carrots", 7),
+    POTATOES("potatoes", 7),
+    BEETROOTS("beetroots", 3),
+    NETHER_WART("nether_wart", 3),
+    PITCHER_CROP("pitcher_crop", 4),
+    TORCHFLOWER_CROP("torchflower_crop", 1),
+    SWEET_BERRY_BUSH("sweet_berry_bush", 3);
+
+    companion object {
+        fun fromString(s: String): CropType? = entries.find {
+            it.name.equals(s, ignoreCase = true) || it.blockName.equals(s, ignoreCase = true)
+        }
     }
 }

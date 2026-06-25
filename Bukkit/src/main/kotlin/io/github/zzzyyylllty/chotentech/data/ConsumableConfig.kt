@@ -20,11 +20,11 @@ import java.util.concurrent.ConcurrentHashMap
 
 data class ConsumableEffect(
     val effect: String,
-    val mode: String,           // "add" or "set"
+    val mode: String,           // "add", "set", or "percent"
     val value: Double = 0.0,
     // potion-specific
     val potionId: String? = null,
-    val duration: Int = 0,      // ticks
+    val duration: Int = 0,      // ticks (potion) or seconds (status_effect)
     val amplifier: Int = 0,
     // sound-specific
     val sound: String? = null,
@@ -42,7 +42,12 @@ data class ConsumableEffect(
     val modifierSource: ModifierSource = ModifierSource.OTHER,
     val modifierSlot: AttributeSlot = AttributeSlot.OTHER,
     val modifierUuid: String? = null,
-    val modifierExpire: Long? = null  // millis, -1 = permanent
+    val modifierExpire: Long? = null,  // millis, -1 = permanent
+    // status_effect-specific
+    val statusEffectId: String? = null,
+    val statusEffectLevel: Int = 0,
+    // conditional effects
+    val thresholds: String = ""
 )
 
 /** Track active tick_task PlatformTask references per player UUID. Cancelled on death. */
@@ -74,6 +79,7 @@ data class ConsumableConfig(
                     when (ef.mode) {
                         "add" -> player.health = minOf(hp + ef.value, maxHp)
                         "set" -> player.health = ef.value.coerceIn(0.0, maxHp)
+                        "percent" -> player.health = minOf(hp + maxHp * (ef.value / 100.0), maxHp)
                     }
                 }
                 "hunger" -> {
@@ -110,12 +116,14 @@ data class ConsumableConfig(
                     when (ef.mode) {
                         "add" -> helper.addExternalInjury(ef.value)
                         "set" -> helper.setExternalInjury(ef.value)
+                        "percent" -> helper.addExternalInjury(helper.data.maxExternalInjury * (ef.value / 100.0))
                     }
                 }
                 "internal_injury", "internalinjury" -> {
                     when (ef.mode) {
                         "add" -> helper.addInternalInjury(ef.value)
                         "set" -> helper.setInternalInjury(ef.value)
+                        "percent" -> helper.addInternalInjury(helper.data.maxInternalInjury * (ef.value / 100.0))
                     }
                 }
                 "stress" -> {
@@ -134,6 +142,18 @@ data class ConsumableConfig(
                     when (ef.mode) {
                         "add" -> helper.addHandStamina(ef.value)
                         "set" -> helper.setHandStamina(ef.value)
+                    }
+                }
+                "status_effect" -> {
+                    val seId = ef.statusEffectId ?: return
+                    if (ef.duration > 0) {
+                        helper.addStatusEffect(seId, ef.statusEffectLevel, ef.duration * 1000L)
+                    }
+                }
+                "sanity_by_darkness" -> {
+                    if (ef.thresholds.isNotBlank()) {
+                        val amount = parseSanityByDarknessThresholds(ef.thresholds, helper.data.darkness)
+                        if (amount != null) helper.addSanity(amount)
                     }
                 }
                 "potion" -> {
@@ -303,6 +323,23 @@ private fun loadConsumableFile(file: File) {
                             modifierUuid = modUuid, modifierExpire = expireMs
                         ))
                     }
+                    "status_effect" -> {
+                        val seId = map["status_effect"]?.toString()
+                        val level = (map["level"]?.toString()?.toIntOrNull()) ?: 0
+                        val durationSec = (map["duration"]?.toString()?.toIntOrNull()) ?: 0
+                        effects.add(ConsumableEffect(
+                            effect = effectType, mode = mode, value = value,
+                            statusEffectId = seId, statusEffectLevel = level,
+                            duration = durationSec
+                        ))
+                    }
+                    "sanity_by_darkness" -> {
+                        val thresholds = map["thresholds"]?.toString() ?: ""
+                        effects.add(ConsumableEffect(
+                            effect = effectType, mode = mode, value = value,
+                            thresholds = thresholds
+                        ))
+                    }
                     else -> effects.add(ConsumableEffect(
                         effect = effectType, mode = mode, value = value
                     ))
@@ -327,6 +364,16 @@ private fun parseSingleEffect(map: Map<*, *>): ConsumableEffect? {
         "stress", "stamina", "hand_stamina", "handstamina",
         "external_injury", "externalinjury", "internal_injury", "internalinjury" ->
             ConsumableEffect(effect = type, mode = mode, value = value)
+        "status_effect" -> ConsumableEffect(
+            effect = type, mode = mode, value = value,
+            statusEffectId = map["status_effect"]?.toString(),
+            statusEffectLevel = (map["level"]?.toString()?.toIntOrNull()) ?: 0,
+            duration = (map["duration"]?.toString()?.toIntOrNull()) ?: 0
+        )
+        "sanity_by_darkness" -> ConsumableEffect(
+            effect = type, mode = mode, value = value,
+            thresholds = map["thresholds"]?.toString() ?: ""
+        )
         "potion" -> ConsumableEffect(
             effect = type, mode = mode, value = value,
             potionId = map["potion"]?.toString(),
@@ -382,4 +429,24 @@ private fun parseDuration(s: String?): Long? {
         "d" -> amount * 86_400_000L
         else -> null
     }
+}
+
+/**
+ * Parse sanity_by_darkness thresholds string.
+ * Format: "max:value;max:value;...;:default"
+ * Example: "19:12;39:4;59:2;:1" means:
+ *   darkness≤19→+12, 20-39→+4, 40-59→+2, 60+→+1
+ */
+private fun parseSanityByDarknessThresholds(thresholds: String, darkness: Double): Double? {
+    val segments = thresholds.split(";")
+    var prevMax = -1.0
+    for (segment in segments) {
+        val parts = segment.split(":")
+        if (parts.size != 2) continue
+        val value = parts[1].toDoubleOrNull() ?: continue
+        val max = if (parts[0].isBlank()) Double.MAX_VALUE else parts[0].toDoubleOrNull() ?: continue
+        if (darkness <= max && darkness > prevMax) return value
+        prevMax = max
+    }
+    return null
 }

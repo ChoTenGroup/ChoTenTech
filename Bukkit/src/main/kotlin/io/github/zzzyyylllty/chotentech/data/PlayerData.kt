@@ -3,6 +3,7 @@ package io.github.zzzyyylllty.chotentech.data
 import io.github.zzzyyylllty.chotentech.ChoTenTech.config
 import io.github.zzzyyylllty.chotentech.ChoTenTech.levelsList
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerHudMap
+import io.github.zzzyyylllty.chotentech.function.hideout.HideoutPlayerData
 import io.github.zzzyyylllty.chotentech.manager.AttributeManager
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -122,6 +123,7 @@ data class PlayerData (
     var playTime: Long = 0L,        // this profile's accumulated play time (ms)
 
     var unlockedNoclips: MutableSet<String> = mutableSetOf(),
+    var unlockedShopItems: MutableSet<String> = mutableSetOf(),
 
     var activeLevelStr: String? = null,
 
@@ -131,15 +133,50 @@ data class PlayerData (
     // Quetiapine integration: per-profile key-value data (levels, exp, cooldowns, etc.)
     var quetiapineData: MutableMap<String, String> = mutableMapOf(),
 
+    // Per-profile attribute modifiers — null means "not yet migrated" (will be seeded from shared attributes.db)
+    var attributeModifiers: List<AttributeModifier>? = null,
+
     @kotlin.jvm.Transient
     var sessionStart: Long = 0L     // set when profile is loaded, used to accumulate playTime
 ) {
+    /** Fill in null collection fields that result from Gson deserializing old data */
+    fun normalize(): PlayerData {
+        if (discoveredBases == null) discoveredBases = hashSetOf()
+        if (exploreredLevels == null) exploreredLevels = hashSetOf()
+        if (exploreredNoclips == null) exploreredNoclips = linkedMapOf()
+        if (achievements == null) achievements = linkedMapOf()
+        if (warehouseContents == null) warehouseContents = linkedMapOf()
+        if (secureContainer == null) secureContainer = linkedMapOf()
+        if (inventoryContents == null) inventoryContents = mutableMapOf()
+        if (insuredItems == null) insuredItems = linkedMapOf()
+        if (returnedInsuranceItems == null) returnedInsuranceItems = mutableListOf()
+        if (deathKeepItems == null) deathKeepItems = mutableListOf()
+        if (hideoutData == null) hideoutData = linkedMapOf()
+        if (statusEffects == null) statusEffects = mutableListOf()
+        if (activeRanks == null) activeRanks = linkedMapOf()
+        if (affection == null) affection = mutableMapOf()
+        if (reputation == null) reputation = mutableMapOf()
+        if (cosmetics == null) cosmetics = mutableMapOf()
+        if (unlockedNoclips == null) unlockedNoclips = mutableSetOf()
+        if (unlockedShopItems == null) unlockedShopItems = mutableSetOf()
+        if (quetiapineData == null) quetiapineData = mutableMapOf()
+        return this
+    }
+
     val activeLevel: Level?
         get() = levelsList[activeLevelStr]
 
+    @kotlin.jvm.Transient
+    private var _cachedUuid: UUID? = null
+
     // Effective max values — resolve from attribute system when player is online
     private fun attrMax(attrId: String, fallback: Double): Double {
-        val p = Bukkit.getPlayer(UUID.fromString(uuid)) ?: return fallback
+        var puid = _cachedUuid
+        if (puid == null) {
+            puid = UUID.fromString(uuid)
+            _cachedUuid = puid
+        }
+        val p = Bukkit.getPlayer(puid) ?: return fallback
         val v = AttributeManager.getAttributeValue(p, attrId)
         return if (v > 0.0) v else fallback
     }

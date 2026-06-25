@@ -1,21 +1,21 @@
 package io.github.zzzyyylllty.chotentech.hook
 import io.github.zzzyyylllty.chotentech.ChoTenTech.config
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerRegions
-import io.github.zzzyyylllty.chotentech.data.HUDManager
-import io.github.zzzyyylllty.chotentech.data.PlayerData
-import io.github.zzzyyylllty.chotentech.data.DataManager
-import io.github.zzzyyylllty.chotentech.data.getData
+import io.github.zzzyyylllty.chotentech.data.*
 import io.github.zzzyyylllty.chotentech.util.replacePlaceholderSafety
 import org.bukkit.OfflinePlayer
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
+import org.bukkit.potion.PotionEffectType
 import io.github.zzzyyylllty.chotentech.function.AchievementManager
 import io.github.zzzyyylllty.chotentech.function.BaseManager
+import io.github.zzzyyylllty.chotentech.function.CurrencyManager
 import io.github.zzzyyylllty.chotentech.function.RankManager
 import taboolib.platform.compat.PlaceholderExpansion
 import taboolib.platform.compat.replacePlaceholder
 import kotlin.math.floor
 import kotlin.math.round
+import kotlin.math.roundToInt
 
 object ExamplePapiHook : PlaceholderExpansion {
 
@@ -78,6 +78,35 @@ object ExamplePapiHook : PlaceholderExpansion {
             "hunger" -> return player?.let { (floor(getPercentHunger(it)/* *1.0)/1.0*/ )).toString() } ?: "100"
             "maxhunger" -> return player?.let { (floor(it.getData()?.maxHunger ?: 100.0)).toString() } ?: "100"
             "maxsaturation" -> return player?.let { (floor(it.getData()?.maxSaturation ?: 100.0)).toString() } ?: "100"
+            "grain" -> return (round((player?.getData()?.grain ?: 0.0)*100)/100).toString()
+            "vitamin" -> return (round((player?.getData()?.vitamin ?: 0.0)*100)/100).toString()
+            "protein" -> return (round((player?.getData()?.protein ?: 0.0)*100)/100).toString()
+            "fat" -> return (round((player?.getData()?.fat ?: 0.0)*100)/100).toString()
+            "nutrition" -> {
+                val data = player?.getData() ?: return "0"
+                val grain = data.grain
+                val vitamin = data.vitamin
+                val protein = data.protein
+                val fat = data.fat
+                val lowest = minOf(grain, vitamin, protein, fat)
+                val avg = (grain + vitamin + protein + fat) / 4.0
+                when (list.getOrNull(1)?.lowercase()) {
+                    "lowest" -> return "%.1f".format(lowest).removeSuffix(".0")
+                    "avg" -> return "%.1f".format(avg).removeSuffix(".0")
+                    "malnutrition" -> return (lowest < 20.0).toString()
+                    "deficient" -> return listOfNotNull(
+                        if (grain < 20) "谷物" else null,
+                        if (vitamin < 20) "维生素" else null,
+                        if (protein < 20) "蛋白质" else null,
+                        if (fat < 20) "脂肪" else null
+                    ).joinToString(",").ifEmpty { "正常" }
+                    "grain" -> return "%.1f".format(grain).removeSuffix(".0")
+                    "vitamin" -> return "%.1f".format(vitamin).removeSuffix(".0")
+                    "protein" -> return "%.1f".format(protein).removeSuffix(".0")
+                    "fat" -> return "%.1f".format(fat).removeSuffix(".0")
+                    else -> return "%.1f".format(lowest).removeSuffix(".0")
+                }
+            }
             "level" -> {
                 if (player == null) return "Player Not Found"
                 val data = player.getData() ?: return "..."
@@ -184,10 +213,105 @@ object ExamplePapiHook : PlaceholderExpansion {
                 val base = BaseManager.getBaseByRegion(baseRegion) ?: return "?"
                 return base.idef.uppercase()
             }
+            "balance" -> {
+                if (player == null) return "0"
+                val currency = list.getOrNull(1)?.lowercase() ?: return "0"
+                return CurrencyManager.getBalance(player, currency).toString()
+            }
             "effect" -> {
                 val sub = list.getOrNull(1)?.lowercase()
-                val type = list.drop(2).joinToString("_") // 支持 heavy_bleeding 等多词ID
-                when (sub) {
+                val type = list.drop(2).joinToString("_") // 支持 poison 等多词ID
+                return when (sub) {
+                    null, "display" -> {
+                        if (player == null) return ""
+                        val data = player.getData() ?: return ""
+                        val customEffects = data.statusEffects
+
+                        val coveredVanilla = customEffects.flatMap {
+                            CUSTOM_COVERED_VANILLA[it.type] ?: emptySet()
+                        }.toSet()
+
+                        val groupedCustom = customEffects
+                            .groupBy { it.type }
+                            .mapValues { (_, list) -> list.maxBy { it.level } }
+                            .values
+
+                        val activeVanilla = player.activePotionEffects
+                            .filter { it.type !in coveredVanilla }
+
+                        val hasMalnutrition = data.grain < 20 || data.vitamin < 20 || data.protein < 20 || data.fat < 20
+
+                        if (groupedCustom.isEmpty() && activeVanilla.isEmpty() && !hasMalnutrition) return "无效果"
+
+                        val parts = mutableListOf<String>()
+
+                        for (effect in groupedCustom) {
+                            val name = STATUS_EFFECT_DISPLAY[effect.type] ?: effect.type
+                            val color = EFFECT_COLOR[effect.type] ?: "<white>"
+                            val levelStr = if (effect.level > 1) " ${effect.level.toRoman()}" else ""
+                            val timeStr = if (effect.remainingDuration >= 1000) "${effect.remainingDuration / 1000}s" else ""
+                            parts += "$color$name$levelStr${if (timeStr.isNotEmpty()) " <#AAAAAA>$timeStr" else ""}"
+                        }
+
+                        if (hasMalnutrition) {
+                            parts += "<#FFAA00>营养不良"
+                        }
+
+                        for (effect in activeVanilla) {
+                            val name = VANILLA_EFFECT_DISPLAY[effect.type] ?: effect.type.key.value()
+                            val color = VANILLA_EFFECT_COLOR[effect.type] ?: "<white>"
+                            val levelStr = if (effect.amplifier > 0) " ${(effect.amplifier + 1).toRoman()}" else ""
+                            val timeStr = if (effect.duration >= 20) "${effect.duration / 20}s" else ""
+                            parts += "$color$name$levelStr${if (timeStr.isNotEmpty()) " $timeStr" else ""}"
+                        }
+
+                        parts.joinToString(", ")
+                    }
+                    "multiline" -> {
+                        if (player == null) return ""
+                        val data = player.getData() ?: return ""
+                        val customEffects = data.statusEffects
+
+                        val coveredVanilla = customEffects.flatMap {
+                            CUSTOM_COVERED_VANILLA[it.type] ?: emptySet()
+                        }.toSet()
+
+                        val groupedCustom = customEffects
+                            .groupBy { it.type }
+                            .mapValues { (_, list) -> list.maxBy { it.level } }
+                            .values
+
+                        val activeVanilla = player.activePotionEffects
+                            .filter { it.type !in coveredVanilla }
+
+                        val hasMalnutrition = data.grain < 20 || data.vitamin < 20 || data.protein < 20 || data.fat < 20
+
+                        if (groupedCustom.isEmpty() && activeVanilla.isEmpty() && !hasMalnutrition) return ""
+
+                        val parts = mutableListOf<String>()
+
+                        for (effect in groupedCustom) {
+                            val name = STATUS_EFFECT_DISPLAY[effect.type] ?: effect.type
+                            val color = EFFECT_COLOR[effect.type] ?: "<white>"
+                            val levelStr = if (effect.level > 1) " ${effect.level.toRoman()}" else ""
+                            val timeStr = if (effect.remainingDuration >= 1000) "${effect.remainingDuration / 1000}s" else ""
+                            parts += "$color$name$levelStr${if (timeStr.isNotEmpty()) " <#AAAAAA>$timeStr" else ""}"
+                        }
+
+                        if (hasMalnutrition) {
+                            parts += "<#FFAA00>营养不良"
+                        }
+
+                        for (effect in activeVanilla) {
+                            val name = VANILLA_EFFECT_DISPLAY[effect.type] ?: effect.type.key.value()
+                            val color = VANILLA_EFFECT_COLOR[effect.type] ?: "<white>"
+                            val levelStr = if (effect.amplifier > 0) " ${(effect.amplifier + 1).toRoman()}" else ""
+                            val timeStr = if (effect.duration >= 20) "${effect.duration / 20}s" else ""
+                            parts += "$color$name$levelStr${if (timeStr.isNotEmpty()) " $timeStr" else ""}"
+                        }
+
+                        parts.joinToString("\n")
+                    }
                     "list" -> {
                         player?.getData()?.statusEffects?.joinToString(", ") {
                             "${it.type}:${it.level}(${it.remainingDuration / 1000}s)"
@@ -255,7 +379,7 @@ fun getPercentHunger(player: Player): Double {
         consumptionRatio * data.consumption * 0.014
     }
 
-    return (base - penalty).coerceIn(0.0, 100.0)
+    return (base - penalty).coerceIn(0.0, 100.0).roundToInt().toDouble()
 }
 
 fun String.numberFormat(): String {
@@ -330,4 +454,130 @@ private fun formatFoodDisplay(player: Player): String {
     } else {
         "$color$num <gray>%"
     }
+}
+
+/** 自定义状态效果中文显示名 */
+private val STATUS_EFFECT_DISPLAY = mapOf(
+    SANITY_REGEN to "精神恢复",
+    SANITY_DRAIN to "精神流失",
+    STRESS_RESISTANCE to "抗压",
+    STRESS_IMMUNITY to "压力免疫",
+    FRACTURE to "骨折",
+    PAIN to "疼痛",
+    MUSCLE_WEAKNESS to "肌肉无力",
+    PAIN_RELIEF to "止痛",
+    HOUND_VIRUS to "猎犬病毒",
+    IMMUNITY to "免疫",
+    STAMINA_REGEN to "体力恢复"
+)
+
+/** 自定义状态效果颜色 */
+private val EFFECT_COLOR = mapOf(
+    SANITY_REGEN to "<#55FF55>",
+    SANITY_DRAIN to "<#FF5555>",
+    STRESS_RESISTANCE to "<#55FF55>",
+    STRESS_IMMUNITY to "<#55FF55>",
+    FRACTURE to "<#FFAA00>",
+    PAIN to "<#FF5555>",
+    MUSCLE_WEAKNESS to "<#AAAAAA>",
+    PAIN_RELIEF to "<#55FF55>",
+    HOUND_VIRUS to "<#FF55FF>",
+    IMMUNITY to "<#55FF55>",
+    STAMINA_REGEN to "<#55FF55>"
+)
+
+/** 原版药水效果中文显示名 */
+private val VANILLA_EFFECT_DISPLAY = mapOf(
+    PotionEffectType.SPEED to "速度",
+    PotionEffectType.SLOWNESS to "缓慢",
+    PotionEffectType.HASTE to "急迫",
+    PotionEffectType.MINING_FATIGUE to "挖掘疲劳",
+    PotionEffectType.STRENGTH to "力量",
+    PotionEffectType.INSTANT_HEALTH to "瞬间治疗",
+    PotionEffectType.INSTANT_DAMAGE to "瞬间伤害",
+    PotionEffectType.JUMP_BOOST to "跳跃提升",
+    PotionEffectType.NAUSEA to "反胃",
+    PotionEffectType.REGENERATION to "生命恢复",
+    PotionEffectType.RESISTANCE to "抗性",
+    PotionEffectType.FIRE_RESISTANCE to "防火",
+    PotionEffectType.WATER_BREATHING to "水下呼吸",
+    PotionEffectType.INVISIBILITY to "隐身",
+    PotionEffectType.BLINDNESS to "失明",
+    PotionEffectType.NIGHT_VISION to "夜视",
+    PotionEffectType.HUNGER to "饥饿",
+    PotionEffectType.WEAKNESS to "虚弱",
+    PotionEffectType.POISON to "中毒",
+    PotionEffectType.WITHER to "凋零",
+    PotionEffectType.HEALTH_BOOST to "生命提升",
+    PotionEffectType.ABSORPTION to "伤害吸收",
+    PotionEffectType.SATURATION to "饱和",
+    PotionEffectType.GLOWING to "发光",
+    PotionEffectType.LEVITATION to "飘浮",
+    PotionEffectType.LUCK to "幸运",
+    PotionEffectType.UNLUCK to "霉运",
+    PotionEffectType.SLOW_FALLING to "缓降",
+    PotionEffectType.CONDUIT_POWER to "潮涌能量",
+    PotionEffectType.DOLPHINS_GRACE to "海豚的恩惠",
+    PotionEffectType.BAD_OMEN to "不祥之兆",
+    PotionEffectType.HERO_OF_THE_VILLAGE to "村庄英雄",
+    PotionEffectType.DARKNESS to "黑暗"
+)
+
+/** 原版药水效果颜色 */
+private val VANILLA_EFFECT_COLOR = mapOf(
+    PotionEffectType.SPEED to "<#55FF55>",
+    PotionEffectType.SLOWNESS to "<#AAAAAA>",
+    PotionEffectType.HASTE to "<#55FF55>",
+    PotionEffectType.MINING_FATIGUE to "<#AAAAAA>",
+    PotionEffectType.STRENGTH to "<#FF5555>",
+    PotionEffectType.INSTANT_HEALTH to "<#55FF55>",
+    PotionEffectType.INSTANT_DAMAGE to "<#FF5555>",
+    PotionEffectType.JUMP_BOOST to "<#55FF55>",
+    PotionEffectType.NAUSEA to "<#AA00AA>",
+    PotionEffectType.REGENERATION to "<#FF55FF>",
+    PotionEffectType.RESISTANCE to "<#55FF55>",
+    PotionEffectType.FIRE_RESISTANCE to "<#FFAA00>",
+    PotionEffectType.WATER_BREATHING to "<#55FFFF>",
+    PotionEffectType.INVISIBILITY to "<#AAAAAA>",
+    PotionEffectType.BLINDNESS to "<#555555>",
+    PotionEffectType.NIGHT_VISION to "<#55FFFF>",
+    PotionEffectType.HUNGER to "<#FF5555>",
+    PotionEffectType.WEAKNESS to "<#AAAAAA>",
+    PotionEffectType.POISON to "<#55FF55>",
+    PotionEffectType.WITHER to "<#555555>",
+    PotionEffectType.HEALTH_BOOST to "<#FF55FF>",
+    PotionEffectType.ABSORPTION to "<#FFAA00>",
+    PotionEffectType.SATURATION to "<#FF5555>",
+    PotionEffectType.GLOWING to "<#FFFF55>",
+    PotionEffectType.LEVITATION to "<#FFFF55>",
+    PotionEffectType.LUCK to "<#55FF55>",
+    PotionEffectType.UNLUCK to "<#FF5555>",
+    PotionEffectType.SLOW_FALLING to "<#55FFFF>",
+    PotionEffectType.CONDUIT_POWER to "<#55FFFF>",
+    PotionEffectType.DOLPHINS_GRACE to "<#55FFFF>",
+    PotionEffectType.BAD_OMEN to "<#FF5555>",
+    PotionEffectType.HERO_OF_THE_VILLAGE to "<#55FF55>",
+    PotionEffectType.DARKNESS to "<#555555>"
+)
+
+/** 自定义效果覆盖的原版效果（避免重复显示） */
+private val CUSTOM_COVERED_VANILLA = mapOf(
+    PAIN to setOf(PotionEffectType.SLOWNESS, PotionEffectType.MINING_FATIGUE),
+    MUSCLE_WEAKNESS to setOf(PotionEffectType.WEAKNESS)
+)
+
+/** 整数转罗马数字（用于效果等级显示） */
+private fun Int.toRoman(): String {
+    if (this <= 0) return ""
+    val values = intArrayOf(1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1)
+    val symbols = arrayOf("M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I")
+    val sb = StringBuilder()
+    var remaining = this
+    for (i in values.indices) {
+        while (remaining >= values[i]) {
+            sb.append(symbols[i])
+            remaining -= values[i]
+        }
+    }
+    return sb.toString()
 }

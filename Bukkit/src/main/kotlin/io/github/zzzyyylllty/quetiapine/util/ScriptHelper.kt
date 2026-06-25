@@ -14,7 +14,7 @@ object ScriptHelper {
     val engineManager by lazy { ScriptEngineManager(this::class.java.classLoader) }
 
     @Awake(LifeCycle.INIT)
-    private fun initDependency() {
+    fun initDependency() {
         loadDependencies("graaljs")
     }
 

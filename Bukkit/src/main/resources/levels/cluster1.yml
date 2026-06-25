@@ -592,6 +592,7 @@ level-8:
   number: 8
   author: AkaCandyKAngel
   tip: '一个巨大的岩洞系统。'
+  placeable: true
   guiMaterial: STONE
   noclips:
     - target: 'level-6'

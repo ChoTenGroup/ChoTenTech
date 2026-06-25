@@ -1,10 +1,11 @@
 package io.github.zzzyyylllty.chotentech.command
 
-import io.github.zzzyyylllty.chotentech.api.ChoTenAttributeAPI
+import io.github.zzzyyylllty.chotentech.attribute.api.ChoTenAttributeAPI
 import io.github.zzzyyylllty.chotentech.data.AttributeModifier
 import io.github.zzzyyylllty.chotentech.data.ModifierSource
 import io.github.zzzyyylllty.chotentech.data.ModifierType
 import io.github.zzzyyylllty.chotentech.manager.AttributeManager
+import io.github.zzzyyylllty.chotentech.manager.AttributeManager.getAttributeDisplayName
 import io.github.zzzyyylllty.chotentech.logger.sendStringAsComponent
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
@@ -50,7 +51,8 @@ object ChoTenAttributeManageCommand {
                             )
 
                             ChoTenAttributeAPI.instance.addModifier(player.uniqueId, modifier)
-                            sender.sendStringAsComponent(sender.asLangText("Command_Manage_Add_Success", attrId, value, type.name, player.name))
+                            val displayName = getAttributeDisplayName(sender, attrId)
+                            sender.sendStringAsComponent(sender.asLangText("Command_Manage_Add_Success", displayName, value, type.name, player.name))
                         }
                     }
                 }
@@ -89,7 +91,8 @@ object ChoTenAttributeManageCommand {
                             AttributeManager.savePlayerData(data)
 
                             Bukkit.getPlayer(player.uniqueId)?.let { AttributeManager.updatePlayer(it) }
-                            sender.sendStringAsComponent(sender.asLangText("Command_Manage_Set_Success", attrId, value, type.name, player.name ?: "Unknown"))
+                            val displayName = getAttributeDisplayName(sender, attrId)
+                            sender.sendStringAsComponent(sender.asLangText("Command_Manage_Set_Success", displayName, value, type.name, player.name ?: "Unknown"))
                         }
                     }
                 }
@@ -140,7 +143,8 @@ object ChoTenAttributeManageCommand {
                     sender.sendStringAsComponent(sender.asLangText("Command_Manage_List_Empty"))
                 } else {
                     data.modifiers.filterIsInstance<AttributeModifier>().forEach {
-                        sender.sendStringAsComponent(sender.asLangText("Command_Manage_List_Item", it.attributeId, it.value, it.type.name, it.uuid.toString()))
+                        val displayName = getAttributeDisplayName(sender, it.attributeId)
+                        sender.sendStringAsComponent(sender.asLangText("Command_Manage_List_Item", displayName, it.value, it.type.name, it.uuid.toString()))
                     }
                 }
             }

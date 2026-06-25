@@ -45,6 +45,8 @@ basic-attributes:
 damage-system:
   # 是否启用伤害类型系统
   enabled: true
+  # 开启后强制将玩家的原版盔甲和盔甲韧性设为0，避免与自定义防御双层减免
+  remove-vanilla-armor: true
 
   # 通用防御公式分母（defense/(defense+denominator)），默认 defense=100 时减伤 50%
   defense-denominator: 100.0

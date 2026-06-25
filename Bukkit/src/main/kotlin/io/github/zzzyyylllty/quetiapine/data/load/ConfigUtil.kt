@@ -42,12 +42,12 @@ object ConfigUtil {
     fun getBlock(input: Any?): RegenBlock? {
         val input = input as? LinkedHashMap<String, Any?>? ?: (input as? String?)?.let {
 
-            return RegenBlock("minecraft", it)
+            return RegenBlock("minecraft", it.uppercase())
         } ?: return null
 
         val adapter = input["adapter"]?.toString() ?: "minecraft"
         val block = input["block"]?.toString() ?: "diamond_block"
-        return RegenBlock("minecraft", block)
+        return RegenBlock(adapter, if (adapter == "minecraft") block.uppercase() else block)
 
     }
     fun getItem(input: Any?): OmniItem? {

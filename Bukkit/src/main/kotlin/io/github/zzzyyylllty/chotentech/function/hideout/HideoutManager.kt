@@ -1,9 +1,6 @@
 package io.github.zzzyyylllty.chotentech.function.hideout
 
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
-import io.github.zzzyyylllty.chotentech.data.CraftingQueueItem
-import io.github.zzzyyylllty.chotentech.data.PendingUpgrade
-import io.github.zzzyyylllty.chotentech.data.HideoutPlayerData
 import io.github.zzzyyylllty.chotentech.data.PlayerData
 import io.github.zzzyyylllty.chotentech.data.getData
 import io.github.zzzyyylllty.chotentech.function.BaseManager
@@ -269,7 +266,7 @@ object HideoutManager {
 
         for (req in recipe.inputs) {
             if (!hasRequiredItem(player, req)) {
-                player.sendComponent("<red>缺少材料: ${req.sertralineId ?: req.material} x${req.amount}")
+                player.sendComponent("<red>缺少材料: ${req.sertralineId?.let { ItemNameHelper.getDisplayName(it) } ?: req.material} x${req.amount}")
                 return false
             }
         }
@@ -402,7 +399,7 @@ object HideoutManager {
         for (cost in levelCfg.upgradeCost) {
             val req = ItemRequirement(cost.material, cost.sertralineId, cost.amount)
             if (!hasRequiredItem(player, req)) {
-                player.sendComponent("<red>缺少升级材料: ${cost.sertralineId ?: cost.material} x${cost.amount}")
+                player.sendComponent("<red>缺少升级材料: ${cost.sertralineId?.let { ItemNameHelper.getDisplayName(it) } ?: cost.material} x${cost.amount}")
                 return false
             }
         }

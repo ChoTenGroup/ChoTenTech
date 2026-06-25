@@ -25,7 +25,7 @@ object AttributeListener {
         // 初始化基础属性当前值
         AttributeManager.initBasicAttributeCurrentForPlayer(e.player.uniqueId)
         // 同步+缓存
-        AttributeManager.updatePlayer(e.player, async = false)
+        AttributeManager.updatePlayer(e.player, async = true)
     }
 
     @SubscribeEvent
@@ -41,18 +41,18 @@ object AttributeListener {
     fun onInventoryClose(e: InventoryCloseEvent) {
         val player = e.player
         if (player is Player) {
-            AttributeManager.updatePlayer(player)
+            AttributeManager.updatePlayer(player, async = true)
         }
     }
 
     @SubscribeEvent
     fun onItemHeld(e: PlayerItemHeldEvent) {
-        AttributeManager.updatePlayer(e.player)
+        AttributeManager.updatePlayer(e.player, async = true)
     }
 
     @SubscribeEvent
     fun onSwapHand(e: PlayerSwapHandItemsEvent) {
-        AttributeManager.updatePlayer(e.player)
+        AttributeManager.updatePlayer(e.player, async = false)
     }
 
     @SubscribeEvent

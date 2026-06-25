@@ -22,6 +22,7 @@ import io.github.zzzyyylllty.chotentech.function.BaseManager
 import io.github.zzzyyylllty.chotentech.function.DeathDropManager
 import io.github.zzzyyylllty.chotentech.function.RankManager
 import io.github.zzzyyylllty.chotentech.function.hideout.HideoutConfig
+import io.github.zzzyyylllty.chotentech.function.hideout.ItemNameHelper
 import io.github.zzzyyylllty.chotentech.data.loadMedkitConfig
 import io.github.zzzyyylllty.chotentech.data.loadConsumableConfigs
 import io.github.zzzyyylllty.chotentech.damage.DamageTypeRegistry
@@ -45,7 +46,7 @@ import io.github.zzzyyylllty.quetiapine.data.RegenBlock
 import io.github.zzzyyylllty.quetiapine.data.RegenTemplate
 import io.github.zzzyyylllty.quetiapine.data.load.loadLevelFiles as loadQuetiapineLevelFiles
 import io.github.zzzyyylllty.quetiapine.data.load.loadRegenFiles
-import io.github.zzzyyylllty.quetiapine.listener.releaseRegenBlocks
+import io.github.zzzyyylllty.chotentech.listener.releaseRegenBlocks
 import io.github.zzzyyylllty.quetiapine.logger.*
 import io.github.zzzyyylllty.quetiapine.util.QuetiapineLocalDependencyHelper
 import io.github.zzzyyylllty.quetiapine.util.dependencies
@@ -67,6 +68,7 @@ import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.console
 import taboolib.common.platform.function.getDataFolder
 import taboolib.common.platform.function.info
+import taboolib.common.platform.function.releaseResourceFolder
 import taboolib.common.platform.function.submit
 import taboolib.common.platform.function.submitAsync
 import taboolib.module.configuration.Config
@@ -101,9 +103,6 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
 
     @Config("bases.yml")
     lateinit var baseConfig: Configuration
-
-    @Config("hideout.yml")
-    lateinit var hideoutConfig: Configuration
 
     @Config("currency.yml")
     lateinit var currencyConfig: Configuration
@@ -239,7 +238,6 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
             loadQuetiapineLevelFiles()
 
             baseConfig.reload()
-            hideoutConfig.reload()
             currencyConfig.reload()
             onReload()
             accountTypesList.clear()
@@ -249,7 +247,10 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
             loadAccountTypes()
             loadLevelFiles()
             BaseManager.loadBases(baseConfig)
-            HideoutConfig.load(hideoutConfig)
+            val hideoutDir = File(getDataFolder(), "hideout")
+            if (!hideoutDir.exists()) releaseResourceFolder("hideout")
+            HideoutConfig.load(hideoutDir)
+            ItemNameHelper.load()
             CurrencyUtil.load(currencyConfig)
             RankManager.load()
             PunishManager.reloadConfig()
@@ -267,6 +268,9 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
             SignPassManager.loadConfig()
             loadMedkitConfig()
             loadConsumableConfigs()
+            io.github.zzzyyylllty.chotentech.shop.ShopManager.loadAll()
+            io.github.zzzyyylllty.chotentech.shop.GiftPackManager.loadAll()
+            io.github.zzzyyylllty.chotentech.shop.ShopMenu.loadItemOutputNames()
         }
     }
 

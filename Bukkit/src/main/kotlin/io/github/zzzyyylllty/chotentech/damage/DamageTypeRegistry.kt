@@ -108,6 +108,9 @@ object DamageTypeRegistry {
     /** 衰退最大百分比 */
     var decayMaxPercent: Double = 0.5
         private set
+    /** 移除原版护甲 */
+    var removeVanillaArmor: Boolean = true
+        private set
 
     // ==================== 配置加载 ====================
 
@@ -128,6 +131,7 @@ object DamageTypeRegistry {
         shockMinDuration = section.getInt("shock-min-duration", 1)
         shockMaxDuration = section.getInt("shock-max-duration", 5)
         decayMaxPercent = section.getDouble("decay-max-percent", 0.5)
+        removeVanillaArmor = section.getBoolean("remove-vanilla-armor", true)
 
         // 加载类型启用/禁用
         val typeSection = section.getConfigurationSection("types")

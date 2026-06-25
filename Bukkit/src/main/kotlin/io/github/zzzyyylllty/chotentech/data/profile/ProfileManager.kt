@@ -5,8 +5,10 @@ import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
 import io.github.zzzyyylllty.chotentech.data.IDData
 import io.github.zzzyyylllty.chotentech.data.PlayerData
 import io.github.zzzyyylllty.chotentech.data.RespawnPoint
+import io.github.zzzyyylllty.chotentech.manager.AttributeManager
 import io.github.zzzyyylllty.chotentech.util.ItemSerializer
 import io.github.zzzyyylllty.chotentech.util.devLog
+import org.bukkit.Location
 import io.github.zzzyyylllty.chotentech.util.jsonUtils
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -17,6 +19,7 @@ import taboolib.expansion.Key
 import taboolib.expansion.Length
 import taboolib.expansion.db
 import taboolib.expansion.mapper
+import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
 data class ProfileInfo(
@@ -129,6 +132,7 @@ object ProfileManager {
             })
 
             migrated.add(uuid)
+            refreshProfileInfos(uuid)
             devLog("[ProfileManager] Data migrated for $uuid")
         } catch (e: Exception) {
             devLog("[ProfileManager] Migration failed for $uuid: ${e.message}")
@@ -261,12 +265,18 @@ object ProfileManager {
         // Accumulate play time for current session before saving
         accumulatePlayTime(player)
 
-        // Save current profile data first (including inventory + location)
+        // Save current profile data first (including inventory + location + attributes)
+        // Skip if no active profile (player in forced-selection state)
         val currentData = playerDataMap[uuid]
-        if (currentData != null) {
+        val currentActiveId = getSharedData(uuid).activeProfileId
+        if (currentData != null && currentActiveId.isNotEmpty()) {
             currentData.profileLocation = RespawnPoint.fromLocation(player.location)
             captureInventory(player)
-            saveProfileData(uuid, getSharedData(uuid).activeProfileId, stripSharedFields(currentData))
+            // Save per-profile attribute modifiers before switching away
+            val uuidObj = UUID.fromString(uuid)
+            val attrData = AttributeManager.getPlayerPersistentData(uuidObj)
+            currentData.attributeModifiers = attrData.modifiers
+            saveProfileData(uuid, currentActiveId, stripSharedFields(currentData))
         }
 
         // Load new profile
@@ -274,6 +284,19 @@ object ProfileManager {
         val shared = getSharedData(uuid)
         shared.activeProfileId = profileId
         saveSharedData(uuid)
+
+        // Restore per-profile attribute modifiers for the incoming profile
+        val uuidObj = UUID.fromString(uuid)
+        val attrData = AttributeManager.getPlayerPersistentData(uuidObj)
+        if (newData.attributeModifiers != null) {
+            attrData.modifiers = newData.attributeModifiers!!
+        } else {
+            // First access / migration: seed from current attributes.db
+            newData.attributeModifiers = attrData.modifiers
+            saveProfileData(uuid, profileId, stripSharedFields(newData))
+        }
+        AttributeManager.savePlayerData(attrData)
+        AttributeManager.updatePlayer(player, async = true)
 
         val merged = mergeSharedFields(newData, shared)
         playerDataMap[uuid] = merged
@@ -297,6 +320,7 @@ object ProfileManager {
         val maxProfiles = getMaxProfiles(player)
 
         if (infos.size >= maxProfiles) return null
+        if (infos.any { it.profileName == profileName }) return null
 
         // Find next available profile ID
         val existingIds: Set<Int> = infos.map { it.profileId.toIntOrNull() ?: 0 }.toSet()
@@ -453,7 +477,12 @@ object ProfileManager {
      *  Must run on main thread (uses Bukkit inventory API). */
     fun captureInventory(player: Player) {
         if (!Bukkit.isPrimaryThread()) {
-            submit { captureInventory(player) }
+            val latch = java.util.concurrent.CountDownLatch(1)
+            submit {
+                try { captureInventory(player) }
+                finally { latch.countDown() }
+            }
+            latch.await()
             return
         }
         val uuid = player.uniqueId.toString()
@@ -473,7 +502,12 @@ object ProfileManager {
      *  Must run on main thread (uses Bukkit inventory API). */
     fun applyInventory(player: Player) {
         if (!Bukkit.isPrimaryThread()) {
-            submit { applyInventory(player) }
+            val latch = java.util.concurrent.CountDownLatch(1)
+            submit {
+                try { applyInventory(player) }
+                finally { latch.countDown() }
+            }
+            latch.await()
             return
         }
         val uuid = player.uniqueId.toString()
@@ -509,10 +543,19 @@ object ProfileManager {
 
     /** Teleport the player to their profile's saved location, if any. */
     fun teleportToProfileLocation(player: Player) {
+        if (!Bukkit.isPrimaryThread()) {
+            submit { teleportToProfileLocation(player) }
+            return
+        }
         val uuid = player.uniqueId.toString()
         val data = playerDataMap[uuid] ?: return
-        val loc = data.profileLocation?.toLocation() ?: return
-        player.teleport(loc)
+        data.profileLocation?.toLocation()?.let { player.teleport(it); return }
+        // Fallback: no saved location — use Area0 spawn or world spawn
+        val world = Bukkit.getWorld("Area0") ?: Bukkit.getWorlds().first()
+        val fallback = if (world.name == "Area0") Location(world, -6.0, 14.0, 5.0)
+            else Location(world, 0.5, 1.0, 0.5)
+        data.profileLocation = RespawnPoint.fromLocation(fallback)
+        player.teleport(fallback)
     }
 
     /** Save all profile data and shared data for a player */
@@ -536,6 +579,13 @@ object ProfileManager {
         // Save shared data
         saveSharedData(uuid)
 
+        // Capture current attribute modifiers into the profile
+        if (profileId.isNotEmpty()) {
+            val uuidObj = UUID.fromString(uuid)
+            val attrData = AttributeManager.getPlayerPersistentData(uuidObj)
+            data.attributeModifiers = attrData.modifiers
+        }
+
         // Save profile data (without shared fields)
         saveProfileData(uuid, profileId, stripSharedFields(data))
     }
@@ -558,13 +608,19 @@ object ProfileManager {
             // Create default profile
             val now = System.currentTimeMillis()
             val cid = generateProfileID(uuid)
+            val defaultLoc = if (Bukkit.getWorld("Area0") != null) {
+                Location(Bukkit.getWorld("Area0")!!, -6.0, 14.0, 5.0)
+            } else {
+                Location(Bukkit.getWorlds().first(), 0.5, 1.0, 0.5)
+            }
             val profileData = PlayerData(
                 playerName = player.name,
                 uuid = uuid,
                 profileId = "1",
                 profileName = "Default",
                 cid = cid,
-                createTime = now
+                createTime = now,
+                profileLocation = RespawnPoint.fromLocation(defaultLoc)
             )
             saveProfileData(uuid, "1", profileData)
             refreshProfileInfos(uuid)
@@ -587,6 +643,17 @@ object ProfileManager {
                 if (fallbackData != null) {
                     val merged = mergeSharedFields(fallbackData, shared)
                     playerDataMap[uuid] = merged
+                    // Load profile-specific attribute modifiers
+                    val uuidObj = UUID.fromString(uuid)
+                    val attrData = AttributeManager.getPlayerPersistentData(uuidObj)
+                    if (fallbackData.attributeModifiers != null) {
+                        attrData.modifiers = fallbackData.attributeModifiers!!
+                        AttributeManager.savePlayerData(attrData)
+                    } else {
+                        fallbackData.attributeModifiers = attrData.modifiers
+                        saveProfileData(uuid, first.profileId, stripSharedFields(fallbackData))
+                    }
+                    AttributeManager.updatePlayer(player, async = true)
                     applyInventory(player)
                     teleportToProfileLocation(player)
                     return merged
@@ -602,6 +669,18 @@ object ProfileManager {
 
         val merged = mergeSharedFields(data, shared)
         playerDataMap[uuid] = merged
+
+        // Load profile-specific attribute modifiers (seed from shared on first access)
+        val uuidObj = UUID.fromString(uuid)
+        val attrData = AttributeManager.getPlayerPersistentData(uuidObj)
+        if (data.attributeModifiers != null) {
+            attrData.modifiers = data.attributeModifiers!!
+            AttributeManager.savePlayerData(attrData)
+        } else {
+            data.attributeModifiers = attrData.modifiers
+            saveProfileData(uuid, shared.activeProfileId, stripSharedFields(data))
+        }
+        AttributeManager.updatePlayer(player, async = true)
 
         // Restore inventory for this profile
         applyInventory(player)

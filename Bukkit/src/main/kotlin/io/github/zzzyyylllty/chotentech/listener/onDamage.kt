@@ -1,6 +1,7 @@
 package io.github.zzzyyylllty.chotentech.listener
 
 import io.github.zzzyyylllty.chotentech.data.ChoTenDataHelper
+import io.github.zzzyyylllty.chotentech.data.PAIN_RELIEF
 import io.github.zzzyyylllty.chotentech.damage.DamageType
 import io.github.zzzyyylllty.chotentech.damage.getDamageTypeTag
 import io.github.zzzyyylllty.chotentech.manager.AttributeManager
@@ -122,13 +123,19 @@ fun onPlayerDamage(event: EntityDamageEvent) {
 
     val helper = ChoTenDataHelper(player)
 
+    // 止痛效果：每一级免疫40%精神损失，最高100%
+    val painReliefLevel = helper.getStatusEffectLevel(PAIN_RELIEF)
+    val sanityReduction = (painReliefLevel * 0.4).coerceIn(0.0, 1.0)
+    val sanityReductionPct = (sanityReduction * 100).toInt()
+
     // 主路径：从 PDC 标签读取伤害类型（由 CustomDamageListener 在 LOWEST 设置）
     val damageTypeId = event.getDamageTypeTag()
     val damageType = damageTypeId?.let { DamageType.fromId(it) }
 
     if (damageType != null) {
         val mapping = damageTypeInjury[damageType] ?: InjurySanity(0.3, 0.2, 0.1)
-        if (mapping.sanityLoss > 0) helper.removeSanity(mapping.sanityLoss)
+        val actualSanityLoss = mapping.sanityLoss * (1.0 - sanityReduction)
+        if (actualSanityLoss > 0) helper.removeSanity(actualSanityLoss)
         val extLoss = damage * mapping.externalRatio
         val intLoss = damage * mapping.internalRatio
         if (extLoss > 0) helper.removeExternalInjury(extLoss)
@@ -136,22 +143,25 @@ fun onPlayerDamage(event: EntityDamageEvent) {
 
         devLog("<gray>[伤害] ${player.name} <red>${damage}💥</red> " +
                 "<gold>${damageType.displayName}</gold> " +
-                "<white>精神-${"%.2f".format(mapping.sanityLoss)}</white> " +
-                "<green>外伤-${"%.1f".format(extLoss)}</green> " +
+                "<white>精神-${"%.2f".format(actualSanityLoss)}</white>" +
+                if (sanityReduction > 0) "<dark_gray>(止痛-${sanityReductionPct}%)</dark_gray>" else "" +
+                "<green> 外伤-${"%.1f".format(extLoss)}</green> " +
                 "<blue>内伤-${"%.1f".format(intLoss)}</blue></gray>")
     } else {
         // 回退：基于 DamageCause 的原始映射
         val ratios = damageRatios[event.cause] ?: InjuryRatios(0.3, 0.2)
         val sanityLoss = getSanityLoss(event.cause)
-        if (sanityLoss > 0) helper.removeSanity(sanityLoss)
+        val actualSanityLoss = sanityLoss * (1.0 - sanityReduction)
+        if (actualSanityLoss > 0) helper.removeSanity(actualSanityLoss)
         val extLoss = damage * ratios.externalRatio
         val intLoss = damage * ratios.internalRatio
         if (extLoss > 0) helper.removeExternalInjury(extLoss)
         if (intLoss > 0) helper.removeInternalInjury(intLoss)
 
         devLog("<gray>[伤害] ${player.name} <red>${damage}💥</red> <gold>${event.cause.name}</gold> " +
-                "<white>精神-${"%.2f".format(sanityLoss)}</white> " +
-                "<green>外伤-${"%.1f".format(extLoss)}</green> " +
+                "<white>精神-${"%.2f".format(actualSanityLoss)}</white>" +
+                if (sanityReduction > 0) "<dark_gray>(止痛-${sanityReductionPct}%)</dark_gray>" else "" +
+                "<green> 外伤-${"%.1f".format(extLoss)}</green> " +
                 "<blue>内伤-${"%.1f".format(intLoss)}</blue></gray>")
     }
 }

@@ -1,27 +1,41 @@
 package io.github.zzzyyylllty.chotentech.util
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
-import com.fasterxml.jackson.dataformat.toml.TomlFactory
-// import com.fasterxml.jackson.dataformat.hocon.HoconFactory
-import com.fasterxml.jackson.module.kotlin.*
-import com.fasterxml.jackson.core.JsonFactory
-import com.fasterxml.jackson.core.type.TypeReference
+import com.google.gson.Gson
+import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.configuration.file.YamlConfiguration
+import java.io.StringReader
 
 fun parseToMap(data: String, format: String): Map<String, Any?>? {
-    val factory: JsonFactory = when (format.lowercase()) {
-        "json" -> null // Use default JsonFactory
-        "yaml" -> YAMLFactory()
-        "toml" -> TomlFactory()
-        // "hocon" -> HoconFactory()
-        else -> throw IllegalArgumentException("Unsupported format: $format")
-    } ?: JsonFactory() // Default to JSON if format is not specified
-
     return try {
-        val mapper = ObjectMapper(factory).registerKotlinModule()
-        mapper.readValue(data, object : TypeReference<Map<String, Any?>>() {})
+        @Suppress("UNCHECKED_CAST")
+        when (format.lowercase()) {
+            "yaml", "yml" -> yamlToMap(data)
+            "json" -> Gson().fromJson(data, Map::class.java) as? Map<String, Any?>
+            else -> throw IllegalArgumentException("Unsupported format: $format")
+        }
     } catch (e: Exception) {
         println("Error parsing $format: ${e.message}")
         null
     }
+}
+
+private fun yamlToMap(data: String): Map<String, Any?> {
+    val config = YamlConfiguration.loadConfiguration(StringReader(data))
+    return configToMap(config)
+}
+
+@Suppress("UNCHECKED_CAST")
+private fun configToMap(section: ConfigurationSection): Map<String, Any?> {
+    val result = LinkedHashMap<String, Any?>()
+    for (key in section.getKeys(false)) {
+        val value = section[key]
+        result[key] = when (value) {
+            is ConfigurationSection -> configToMap(value)
+            is List<*> -> value.map { item ->
+                if (item is ConfigurationSection) configToMap(item) else item
+            }
+            else -> value
+        }
+    }
+    return result
 }

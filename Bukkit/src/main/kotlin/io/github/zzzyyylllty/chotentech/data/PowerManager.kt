@@ -1,5 +1,6 @@
 package io.github.zzzyyylllty.chotentech.data
 
+import io.github.zzzyyylllty.chotentech.event.NoclipEnterEvent
 import io.github.zzzyyylllty.chotentech.util.devLog
 import io.github.zzzyyylllty.sertraline.logger.warningS
 import org.bukkit.Bukkit
@@ -843,6 +844,7 @@ object PowerManager {
         data.noclipTimeEnd = System.currentTimeMillis() + (noclipPoint.noclippingTime * 1000).toLong()
         data.noclipCooldownEnd = System.currentTimeMillis() + (noclipPoint.cooldown * 1000).toLong()
         data.noclipping = true
+        NoclipEnterEvent(player, level.name, noclipPoint.name).call()
         markElevatorNoclip(player.uniqueId.toString())
         player.sendMessage("§a电梯门已关闭，正在开始切出...")
         devLog("[PowerManager] Started noclip for ${player.name} → ${noclipPoint.name}")

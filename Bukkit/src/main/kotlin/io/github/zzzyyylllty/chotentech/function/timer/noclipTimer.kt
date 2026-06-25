@@ -5,6 +5,7 @@ import io.github.zzzyyylllty.chotentech.ChoTenTech.levelsList
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
 import io.github.zzzyyylllty.chotentech.data.ChoTenDataHelper
 import io.github.zzzyyylllty.chotentech.data.PowerManager
+import io.github.zzzyyylllty.chotentech.event.NoclipEnterEvent
 import io.github.zzzyyylllty.chotentech.event.NoclipEvent
 import io.github.zzzyyylllty.chotentech.function.noclip.ConditionResult
 import io.github.zzzyyylllty.chotentech.function.noclip.NoclipConditionChecker
@@ -107,6 +108,7 @@ fun noclipTime() {
                 var foundNoclip: NoclipPoint? = null
                 for (noclipPoint in level.noclips) {
                     if (noclipPoint.autoNoclip) continue
+                    if (noclipPoint.elevatorOnly) continue
                     if (noclipPoint.name != null && noclipPoint.name !in enabledNames) continue
                     if (!checkPlayerIsInNoclipPoint(player, noclipPoint)) continue
                     foundNoclip = noclipPoint
@@ -156,6 +158,7 @@ fun autoNoclipTimer() {
             val enabledNames = RandomNoclipSelector.getEnabledNoclips(player.uniqueId.toString(), level)
             for (noclipPoint in level.noclips) {
                 if (!noclipPoint.autoNoclip) continue
+                if (noclipPoint.elevatorOnly) continue
                 if (noclipPoint.name != null && noclipPoint.name !in enabledNames) continue
                 if (!checkPlayerIsInNoclipPoint(player, noclipPoint)) continue
 
@@ -175,6 +178,7 @@ fun autoNoclipTimer() {
                 data.noclipTimeEnd = System.currentTimeMillis() + (noclipPoint.noclippingTime * 1000).roundToLong()
                 data.noclipCooldownEnd = System.currentTimeMillis() + (noclipPoint.cooldown * 1000).roundToLong()
                 data.noclipping = true
+                NoclipEnterEvent(player, level.id, noclipPoint.name).call()
                 player.playSound(player, Sound.ENTITY_ENDER_EYE_LAUNCH, 1F, 0.5F)
                 player.sendActionBar("<green>保持在切出点内".toComponent())
                 break

@@ -51,6 +51,7 @@ data class HealConfig(
     val costSan: Double,
     val slow: Double,
     val cancelHeal: Set<String>,
+    val fractureCost: Double = 0.0,
     val soundPre: HealSound,
     val soundStart: HealSound,
     val soundHeal: HealSound,
@@ -82,7 +83,8 @@ data class MedkitYamlConfig(
     val perTime: Double,
     val postTime: Double,
     val costFood: Double,
-    val costSan: Double
+    val costSan: Double,
+    val fractureCost: Double = 0.0
 )
 
 fun loadMedkitConfig() {
@@ -109,7 +111,8 @@ fun loadMedkitConfig() {
                 perTime = time?.getDouble("per") ?: 1.0,
                 postTime = time?.getDouble("post") ?: 2.0,
                 costFood = cost?.getDouble("food") ?: 0.0,
-                costSan = cost?.getDouble("san") ?: 0.0
+                costSan = cost?.getDouble("san") ?: 0.0,
+                fractureCost = sec.getDouble("fracturecost", 0.0)
             )
         } catch (_: Exception) { /* skip */ }
     }
@@ -134,6 +137,7 @@ fun getHealConfigFromYaml(sertralineId: String, durability: Double, maxDurabilit
         maxEInjury = yaml.maxeinjury,
         costFood = yaml.costFood,
         costSan = yaml.costSan,
+        fractureCost = yaml.fractureCost,
         slow = 50.0,
         cancelHeal = DEFAULT_CANCEL_CONDITIONS,
         soundPre = HealSound.DEFAULT_PRE,
