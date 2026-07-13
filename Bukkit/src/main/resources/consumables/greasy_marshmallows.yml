@@ -1,0 +1,49 @@
+greasy_marshmallows:
+  id: "greasy_marshmallows"
+  effects:
+    - effect: hunger
+      mode: add
+      value: 50
+    - effect: nutrition_fat
+      mode: add
+      value: 10
+    - effect: counter_marshmallow
+      mode: add
+      value: 24XI
+    - effect: potion
+      potion: SLOWNESS
+      duration: 600
+      amplifier: 1
+    - effect: potion
+      potion: WEAKNESS
+      duration: 600
+      amplifier: 0
+    - effect: potion
+      potion: NAUSEA
+      duration: 300
+      amplifier: 0
+    - effect: potion
+      potion: HUNGER
+      duration: 600
+      amplifier: 1
+
+melted_greasy_marshmallows:
+  id: "melted_greasy_marshmallows"
+  effects:
+    - effect: hunger
+      mode: add
+      value: 50
+    - effect: nutrition_fat
+      mode: add
+      value: 5
+    - effect: counter_marshmallow
+      mode: add
+      value: 12
+    - effect: potion
+      potion: REGENERATION
+      duration: 100
+      amplifier: 0
+    - effect: potion
+      potion: SPEED
+      duration: 200
+      amplifier: 0

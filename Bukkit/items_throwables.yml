@@ -1,0 +1,224 @@
+# 投掷物物品配置 — 投掷物配置文件位于 projectiles/throwables.yml
+# 对应的 Sertraline 技能效果配置需另行在 sertraline 技能配置中绑定
+
+nizxc_flash:
+  xbuilder:
+    name: '<!i><#ff6b6b>"Nizxc" 闪光弹'
+    material: PAPER
+    item-model: "kangelitem:nizxc_flash"
+  sertraline:
+    tier: A
+    lore-format: default
+    vals:
+      lore: |
+        Nizxc 闪光弹采用新型高亮配方。
+        瞬间释放强光，让敌人无处遁形。
+      graylore: |
+        去闪瞎敌人的眼！
+
+        <gray><!i>爆炸延迟: 2.0~3.0秒 <!i>致盲范围: 5 / 12 / 18米
+        <gray><!i>致盲时长: 14 / 6 / 3秒 <!i>附带效果: 反胃 10秒
+
+zx_stun:
+  xbuilder:
+    name: '<!i><#ffd93d>"ZX" "和平建服" 震撼弹'
+    material: PAPER
+    item-model: "kangelitem:zx_stun"
+  sertraline:
+    tier: A
+    lore-format: default
+    vals:
+      lore: |
+        ZX 和平建服军专用震撼弹。
+        出于去军事化武装要求，伤害被极大减弱。
+        非致命武器，用于控制局势。
+      graylore: |
+        地上涌起了和平之呼声。
+
+        <gray><!i>爆炸延迟: 2.5~4.0秒 <!i>致盲范围: 4 / 10米
+        <gray><!i>致盲时长: 8 / 4秒 <!i>缓慢III 4秒 / 虚弱II 3秒
+
+ice_stun:
+  xbuilder:
+    name: '<!i><#74b9ff>"ICEGame" "冰块" 震撼弹'
+    material: PAPER
+    item-model: "kangelitem:ice_stun"
+  sertraline:
+    tier: A
+    lore-format: default
+    vals:
+      lore: |
+        ICEGame 冰块震撼弹。
+      graylore: |
+        冷静一下，朋友。
+
+        <gray><!i>爆炸延迟: 2.0~3.5秒 <!i>冰冻范围: 8 / 12米
+        <gray><!i>缓慢IV: 10秒 / 缓慢II: 6秒 <!i>挖掘疲劳III 8秒
+
+frontroad_grenade:
+  xbuilder:
+    name: '<!i><#55efc4>"FrontRoad" "前路" 手榴弹'
+    material: PAPER
+    item-model: "kangelitem:frontroad_grenade"
+  sertraline:
+    tier: A
+    lore-format: default
+    vals:
+      lore: |
+        FrontRoad 前路牌手榴弹。
+        内部写了黑色的四个数字，没人知道是什么意思。
+      graylore: |
+        开辟前进的道路，扫清一切障碍。
+
+        <gray><!i>爆炸延迟: 2.8~4.8秒 <!i>爆炸范围: 3
+        <gray><!i>破片数量: 20个 <!i>破片范围: 20米
+        <gray><!i>破片威力: 较小
+
+endroad_grenade:
+  xbuilder:
+    name: '<!i><#fd79a8>"EndRoad" "末路" 手榴弹'
+    material: PAPER
+    item-model: "kangelitem:endroad_grenade"
+  sertraline:
+    tier: A
+    lore-format: default
+    vals:
+      lore: |
+        EndRoad 末路手榴弹。
+        拆除部分引信与自毁装置后加装了一个短引信。
+        相当致命的武器。
+      graylore: |
+        你的终点到了。
+
+        <gray><!i>爆炸延迟: 1.5~3.0秒 <!i>爆炸范围: 5
+        <gray><!i>破片数量: 40个 <!i>破片范围: 35米
+        <gray><!i>破片威力: 极大
+
+6ch_grenade:
+  xbuilder:
+    name: '<!i><#a29bfe>"6CHM" "遗母" 手榴弹'
+    material: PAPER
+    item-model: "kangelitem:6ch_grenade"
+  sertraline:
+    tier: A
+    lore-format: default
+    vals:
+      lore: |
+        6CHM-"遗母" 手榴弹。
+        用以进行火力压制。
+      graylore: |
+        说话说一半啊。
+
+        <gray><!i>爆炸延迟: 3.0~5.0秒 <!i>爆炸范围: 3
+        <gray><!i>破片数量: 25个 <!i>破片范围: 25米
+        <gray><!i>破片威力: 中等
+
+shakalaka_grenade:
+  xbuilder:
+    name: '<!i><#fdcb6e>"Shakalaka" 手榴弹'
+    material: PAPER
+    item-model: "kangelitem:shakalaka_grenade"
+  sertraline:
+    tier: A
+    lore-format: default
+    vals:
+      lore: |
+        Shakalaka 经典高爆手榴弹。
+        爆炸伴随着独特的声响。
+        某学园侦探社第三季的开端。
+      graylore: |
+        咻咔咔，轰！
+
+        <gray><!i>爆炸延迟: 2.8~4.8秒 <!i>破片数量: 30个
+        <gray><!i>破片威力: 较大
+
+b_shakalaka_grenade:
+  xbuilder:
+    name: '<!i><#e17055>"B-Shakalaka" 手榴弹'
+    material: PAPER
+    item-model: "kangelitem:b_shakalaka_grenade"
+  sertraline:
+    tier: A
+    lore-format: default
+    vals:
+      lore: |
+        Boom! Shakalaka 强化版手榴弹。
+        更大的爆炸范围和更猛的威力。
+      graylore: |
+        双重咻咔咔，加倍快乐。
+
+        <gray><!i>爆炸延迟: 2.0~3.5秒 <!i>爆炸范围: 6
+        <gray><!i>破片数量: 50个 <!i>破片范围: 40米
+        <gray><!i>破片威力: 毁灭性
+
+shengguang_grenade:
+  xbuilder:
+    name: '<!i><#ffeaa7>"圣光" 荧光标记手榴弹'
+    material: PAPER
+    item-model: "kangelitem:shengguang_grenade"
+  sertraline:
+    tier: A
+    lore-format: default
+    vals:
+      lore: |
+        "圣光" 荧光标记手榴弹。
+        命中后标记敌人位置，使其发光，无所遁形。
+      graylore: |
+        圣光指引着你。始于二四年。
+
+        <gray><!i>爆炸延迟: 1.0~2.0秒 <!i>标记范围: 8 / 15米
+        <gray><!i>标记时长: 20 / 12秒 <!i>效果: 发光
+
+hqlm_petrol:
+  xbuilder:
+    name: '<!i><#e17055>"火钳刘明" 燃烧瓶'
+    material: PAPER
+    item-model: "kangelitem:hqlm_petrol"
+  sertraline:
+    tier: A
+    lore-format: default
+    vals:
+      lore: |
+        "火钳刘明" 特制燃烧瓶。
+        留下炽热的火焰，铭记敌人的恐惧。
+      graylore: |
+        火钳在手，天下我有。
+
+        <gray><!i>类型: 触地即燃 <!i>火焰范围: 5米
+        <gray><!i>燃烧时长: 8秒 <!i>燃烧伤害: 中等
+
+firesalt_petrol:
+  xbuilder:
+    name: '<!i><#e17055>火盐燃烧瓶'
+    material: PAPER
+    item-model: "kangelitem:firesalt_petrol"
+  sertraline:
+    tier: A
+    lore-format: default
+    vals:
+      lore: |
+        简易的火盐燃烧瓶，含特殊盐类助燃剂。
+        火焰附着后难以扑灭。
+      graylore: |
+        撒盐，火上浇油。
+
+        <gray><!i>类型: 触地即燃 <!i>火焰范围: 6米
+        <gray><!i>燃烧时长: 10秒 <!i>燃烧伤害: 较大
+
+strong_firesalt_petrol:
+  xbuilder:
+    name: '<!i><#d63031>强火盐燃烧瓶'
+    material: PAPER
+    item-model: "kangelitem:strong_firesalt_petrol"
+  sertraline:
+    tier: A
+    lore-format: default
+    vals:
+      lore: |
+        强火盐燃烧瓶，威力加强版。
+        地狱般的烈焰，焚烧一切。
+      graylore: |
+        这盐有点猛啊。
+
+        <gray><!i>类型: 触地即燃 <!i>火焰范围: 9米
+        <gray><!i>燃烧时长: 15秒 <!i>燃烧伤害: 致命

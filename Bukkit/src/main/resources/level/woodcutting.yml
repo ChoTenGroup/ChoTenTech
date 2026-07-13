@@ -1,0 +1,19 @@
+woodcutting:
+  display:
+    raw: "Woodcutting"
+    default: "<dark_green>伐木</dark_green>"
+    legacy: "&2伐木"
+  level:
+    min: 0
+    start: 0
+    max: 100
+    display:
+      0:
+        default: "<gray>Lv.%level%</gray>"
+    exp:
+      0:
+        type: calculator
+        value: "%level% * 10 + 50"
+  agents:
+    onUpgrade:
+      js: |

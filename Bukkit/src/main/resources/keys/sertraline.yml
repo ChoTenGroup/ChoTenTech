@@ -1,0 +1,14 @@
+# Sertraline 钥匙房配置
+# 玩家手持对应 sertraline_id 的物品右击铁门时开门
+#
+# samplekey:
+#   name: "二楼水房"           # 显示名称（用于 actionbar 提示）
+#   pos: "world x y z"       # 铁门下半部分坐标
+#   id: "sample_key"          # 匹配物品的 sertraline_id
+#   durability: 1             # 每次扣除的耐久度（可选，默认 1）
+
+samplekey:
+  name: "二楼水房"
+  pos: "world 0 60 0"
+  id: "sample_key"
+  durability: 1

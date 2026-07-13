@@ -1,0 +1,44 @@
+chocobytes_classic:
+  id: "chocobytes_classic"
+  effects:
+    - effect: hunger
+      mode: add
+      value: 40
+    - effect: saturation
+      mode: add
+      value: 40
+    - effect: counter_choco
+      value: 4
+      min: 2
+      type: classic
+
+chocobytes_red:
+  id: "chocobytes_red"
+  effects:
+    - effect: hunger
+      mode: add
+      value: 40
+    - effect: saturation
+      mode: add
+      value: 40
+    - effect: counter_choco
+      value: 9
+      min: 6
+      type: red
+    - effect: potion
+      potion: NIGHT_VISION
+      duration: 6000
+      amplifier: 0
+
+chocobytes_white:
+  id: "chocobytes_white"
+  effects:
+    - effect: hunger
+      mode: add
+      value: 40
+    - effect: saturation
+      mode: add
+      value: 40
+    - effect: counter_choco
+      value: 1
+      type: white

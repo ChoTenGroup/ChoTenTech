@@ -1,0 +1,168 @@
+YiChan:
+  name: "<light_purple>遗产"
+  gui:
+    buy: |-
+      MMM---<>O
+      IIIIIIIII
+      IIIIIIIII
+      IIIIIIIII
+      IIIIIIIII
+      N-----CCC
+    sell: |-
+      MMM---<>O
+      IIIIIIIII
+      IIIIIIIII
+      IIIIIIIII
+      IIIIIIIII
+      N-----CCC
+  gui-item:
+    mode-buy:
+      material: "BOOK"
+      name: "<white><b>购买模式"
+      lore: "当前为购买模式\n点击切换到出售模式"
+    mode-sell:
+      material: "BOOK"
+      name: "<white><b>出售模式"
+      lore: "当前为出售模式\n点击切换到购买模式"
+    previous:
+      have:
+        name: "<white><b>上一页"
+        lore: "点击切换到上一页。\n第 %page% / %total_pages% 页"
+      not:
+        name: "<white><b>第 1 / 1 页"
+        lore: "已是第一页。"
+    next:
+      have:
+        name: "<white><b>下一页"
+        lore: "点击切换到下一页。\n第 %page% / %total_pages% 页"
+      not:
+        name: "<white><b>第 1 / 1 页"
+        lore: "已是最后一页。"
+    knowledge:
+      material: "KNOWLEDGE_BOOK"
+      name: "<gold><b>信息"
+      lore: |-
+        点击查看您的货币信息。
+    confirm-buy:
+      have:
+        material: "GREEN_CONCRETE"
+        name: "<green><b>确认购买"
+        lore: "点击确认购买。"
+      not-enough:
+        material: "RED_CONCRETE"
+        name: "<red><b>货币不足"
+        lore: "您的货币不足以购买所选物品。"
+      not:
+        material: "GRAY_CONCRETE"
+        name: "<gray><b>确认购买"
+        lore: "您还没有选定任何物品。"
+    confirm-sell:
+      have:
+        material: "GREEN_CONCRETE"
+        name: "<green><b>确认出售"
+        lore: "点击确认出售。"
+      not:
+        material: "GRAY_CONCRETE"
+        name: "<gray><b>确认出售"
+        lore: "您还没有选定任何物品。"
+  level:
+    1:
+      - type: level
+        level: main
+        value: 5
+      - type: affection
+        affection: YiChan
+        value: 5
+    2:
+      - type: level
+        level: main
+        value: 15
+      - type: affection
+        affection: YiChan
+        value: 10
+      - type: quota
+        balance: money
+        value: 5000
+    3:
+      - type: level
+        level: main
+        value: 25
+      - type: affection
+        affection: YiChan
+        value: 15
+      - type: quota
+        balance: money
+        value: 20000
+  items:
+    # Lv.1 - 基础零件
+    copper_wire:
+      id: sertraline:copper_wire
+      name: "<white>铜线"
+      buy: money:150
+      sell: money:45
+    capacitor:
+      id: sertraline:capacitor
+      name: "<white>电容器"
+      buy: money:200
+      sell: money:60
+    tape:
+      id: sertraline:tape
+      name: "<white>胶带"
+      buy: money:30
+      sell: money:8
+    # Lv.2 - 中级配件
+    cpu:
+      id: sertraline:cpu
+      name: "<white>CPU"
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:500
+      sell: money:150
+    power_supply:
+      id: sertraline:power_supply
+      name: "<white>电源"
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:400
+      sell: money:120
+    ram_stick:
+      id: sertraline:ram_stick
+      name: "<white>内存条"
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:300
+      sell: money:90
+    # Lv.3 - 高级配件
+    vpx:
+      id: sertraline:vpx
+      name: "<white>VPX板"
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:800
+      sell: money:240
+    cpufan:
+      id: sertraline:cpufan
+      name: "<white>CPU风扇"
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:200
+      sell: money:60
+    disk:
+      id: sertraline:disk
+      name: "<white>硬盘"
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:350
+      sell: money:100
