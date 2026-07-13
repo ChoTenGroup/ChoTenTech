@@ -1,0 +1,162 @@
+Lefty:
+  name: "<green>小左"
+  gui:
+    buy: |-
+      MMM---<>O
+      IIIIIIIII
+      IIIIIIIII
+      IIIIIIIII
+      IIIIIIIII
+      N-----CCC
+    sell: |-
+      MMM---<>O
+      IIIIIIIII
+      IIIIIIIII
+      IIIIIIIII
+      IIIIIIIII
+      N-----CCC
+  gui-item:
+    mode-buy:
+      material: "BOOK"
+      name: "<white><b>购买模式"
+      lore: "当前为购买模式\n点击切换到出售模式"
+    mode-sell:
+      material: "BOOK"
+      name: "<white><b>出售模式"
+      lore: "当前为出售模式\n点击切换到购买模式"
+    previous:
+      have:
+        name: "<white><b>上一页"
+        lore: "点击切换到上一页。\n第 %page% / %total_pages% 页"
+      not:
+        name: "<white><b>第 1 / 1 页"
+        lore: "已是第一页。"
+    next:
+      have:
+        name: "<white><b>下一页"
+        lore: "点击切换到下一页。\n第 %page% / %total_pages% 页"
+      not:
+        name: "<white><b>第 1 / 1 页"
+        lore: "已是最后一页。"
+    knowledge:
+      material: "KNOWLEDGE_BOOK"
+      name: "<gold><b>信息"
+      lore: |-
+        点击查看您的货币信息。
+    confirm-buy:
+      have:
+        material: "GREEN_CONCRETE"
+        name: "<green><b>确认购买"
+        lore: "点击确认购买。"
+      not-enough:
+        material: "RED_CONCRETE"
+        name: "<red><b>货币不足"
+        lore: "您的货币不足以购买所选物品。"
+      not:
+        material: "GRAY_CONCRETE"
+        name: "<gray><b>确认购买"
+        lore: "您还没有选定任何物品。"
+    confirm-sell:
+      have:
+        material: "GREEN_CONCRETE"
+        name: "<green><b>确认出售"
+        lore: "点击确认出售。"
+      not:
+        material: "GRAY_CONCRETE"
+        name: "<gray><b>确认出售"
+        lore: "您还没有选定任何物品。"
+  level:
+    1:
+      - type: level
+        level: main
+        value: 5
+      - type: affection
+        affection: Lefty
+        value: 5
+    2:
+      - type: level
+        level: main
+        value: 15
+      - type: affection
+        affection: Lefty
+        value: 10
+      - type: quota
+        balance: money
+        value: 5000
+    3:
+      - type: level
+        level: main
+        value: 25
+      - type: affection
+        affection: Lefty
+        value: 15
+      - type: quota
+        balance: money
+        value: 20000
+  items:
+    # Lv.1 - 基础补给
+    bread:
+      id: sertraline:bread
+      name: "<white>面包"
+      buy: money:50
+      sell: money:12
+    bandage:
+      id: sertraline:bandage
+      name: "<white>绷带"
+      buy: money:80
+      sell: money:20
+    wood:
+      id: sertraline:wood
+      name: "<white>木材"
+      buy: money:25
+      sell: money:6
+    # Lv.2 - 中级装备
+    iron_sword:
+      id: sertraline:iron_sword
+      name: "<white>铁剑"
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:600
+      sell: money:180
+      limit:
+        player: 1
+        player-reset: 24h
+    almond_water_gray:
+      id: sertraline:almond_water_gray
+      name: "<white>灰色杏仁水"
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:100
+      sell: money:30
+    cola:
+      id: sertraline:cola
+      name: "<white>可乐"
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:100
+      sell: money:30
+    # Lv.3 - 高级物资
+    mre:
+      id: sertraline:mre
+      name: "<white>MRE口粮"
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:300
+      sell: money:90
+    iron_pickaxe:
+      id: sertraline:iron_pickaxe
+      name: "<white>铁镐"
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:500
+      sell: money:150

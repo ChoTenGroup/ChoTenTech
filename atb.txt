@@ -1,0 +1,142 @@
+========================================
+ ChoTenTech 属性列表 (Attribute Registry)
+========================================
+
+========== Minecraft 原生属性 (覆盖原版11+) ==========
+
+  max_health                     | 生命上限              | vanilla: max_health              | 默认: 100.0
+  max_absorption                 | 伤害吸收上限          | vanilla: max_absorption          | 默认: 0.0
+  movement_speed                 | 移动速度              | vanilla: movement_speed          | 默认: 0.1
+  attack_damage                  | 攻击力                | vanilla: attack_damage           | 默认: 1.0
+  attack_speed                   | 攻击速度              | vanilla: attack_speed            | 默认: 4.0
+  armor                          | 护甲值                | vanilla: armor                   | 默认: 0.0
+  armor_toughness                | 护甲韧性              | vanilla: armor_toughness         | 默认: 0.0
+  attack_knockback               | 攻击击退              | vanilla: attack_knockback        | 默认: 0.0
+  knockback_resistance           | 击退抗性              | vanilla: knockback_resistance    | 默认: 0.0
+  luck                           | 幸运                  | vanilla: luck                    | 默认: 0.0
+  fall_damage_multiplier         | 跌落伤害倍率          | vanilla: fall_damage_multiplier  | 默认: 1.0
+  burning_time                   | 燃烧时间              | vanilla: burning_time            | 默认: 1.0
+  explosion_knockback_resistance | 爆炸击退抗性          | vanilla: explosion_knockback_resistance | 默认: 0.0
+  mining_efficiency              | 挖掘效率              | vanilla: mining_efficiency       | 默认: 0.0
+  mining_power                   | 挖掘强度              | 自定义                           | 默认: 1.0  (min=0.0)
+  movement_efficiency            | 移动效率              | vanilla: movement_efficiency     | 默认: 0.0
+  oxygen_bonus                   | 氧气加成              | vanilla: oxygen_bonus            | 默认: 0.0
+  player_block_break_speed       | 方块破坏速度          | vanilla: player_block_break_speed | 默认: 1.0
+  player_block_interaction_range | 方块交互距离          | vanilla: player_block_interaction_range | 默认: 4.5
+  player_entity_interaction_range| 实体交互距离          | vanilla: player_entity_interaction_range | 默认: 3.0
+  player_submerged_mining_speed  | 水下挖掘速度          | vanilla: player_submerged_mining_speed | 默认: 0.2
+  player_mining_speed            | 挖掘速度              | vanilla: player_mining_speed      | 默认: 1.0
+  gravity                        | 重力                  | vanilla: gravity                 | 默认: 0.08
+  safe_fall_distance             | 安全跌落距离          | vanilla: safe_fall_distance      | 默认: 3.0
+  scale                          | 缩放                  | vanilla: scale                   | 默认: 1.0
+  step_height                    | 台阶高度              | vanilla: step_height             | 默认: 0.6
+  spawn_reinforcements           | 僵尸增援概率          | vanilla: spawn_reinforcements    | 默认: 0.0
+
+========== 状态/资源上限属性 ==========
+
+  max_sanity                     | 精神上限              | 自定义                           | 默认: 100.0 (min=0.0, max=1000.0)
+  sanity_regeneration            | 精神回复              | 自定义                           | 默认: 0.0
+  max_darkness                   | 阴暗上限              | 自定义                           | 默认: 100.0 (min=0.0, max=1000.0)
+  max_custom_hunger              | 饱食度上限            | 自定义                           | 默认: 100.0 (min=0.0, max=1000.0)
+  max_custom_saturation          | 饱和度上限            | 自定义                           | 默认: 100.0 (min=0.0, max=1000.0)
+  external_injury                | 外伤                  | 自定义                           | 默认: 100.0 (min=0.0, max=100.0)
+  internal_injury                | 内伤                  | 自定义                           | 默认: 100.0 (min=0.0, max=100.0)
+  external_injury_regen          | 外伤恢复              | 自定义                           | 默认: 0.0
+  internal_injury_regen          | 内伤恢复              | 自定义                           | 默认: 0.0
+
+========== 战斗属性 ==========
+
+  defense                        | 综合防御              | 自定义                           | 默认: 0.0
+  defense_toughness              | 防御韧性              | 自定义                           | 默认: 0.0 (min=0.0)
+  crit_chance                    | 暴击率                | 自定义                           | 默认: 0.0 [百分比]
+  crit_damage                    | 暴击伤害              | 自定义                           | 默认: 0.0 [百分比]
+  lifesteal                      | 生命偷取              | 自定义                           | 默认: 0.0 [百分比]
+  dodge_chance                   | 闪避率                | 自定义                           | 默认: 0.0 [百分比]
+
+========== 格挡属性 ==========
+
+  block_chance                   | 格挡概率              | 自定义                           | 默认: 0.0 [百分比]
+  block_defense                  | 格挡防御              | 自定义                           | 默认: 0.0
+  block_defense_percent          | 格挡防御百分比        | 自定义                           | 默认: 0.0 [百分比]
+
+========== 攻击类型属性 ==========
+
+  ranged_damage                  | 远程伤害              | 自定义                           | 默认: 0.0
+  ranged_attack_damage           | 远程攻击伤害          | 自定义                           | 默认: 0.0 [百分比]
+  magic_attack_damage            | 魔法攻击伤害          | 自定义                           | 默认: 0.0 [百分比]
+  magic_damage                   | 魔法伤害              | 自定义                           | 默认: 0.0
+  fire_attack_damage             | 火焰攻击伤害          | 自定义                           | 默认: 0.0 [百分比]
+  fire_attack_chance             | 火焰攻击几率          | 自定义                           | 默认: 0.0 [百分比]
+
+========== 伤害加成属性 (攻击者) ==========
+
+  physical_extra_damage          | 物理伤害加成          | 自定义                           | 默认: 0.0 [百分比]
+  ranged_extra_damage            | 远程伤害加成          | 自定义                           | 默认: 0.0 [百分比]
+  magic_extra_damage             | 魔法伤害加成          | 自定义                           | 默认: 0.0 [百分比]
+  fire_extra_damage              | 火焰伤害加成          | 自定义                           | 默认: 0.0 [百分比]
+
+========== 伤害减免属性 (受害者) ==========
+
+  physical_damage_reduction      | 物理伤害减免          | 自定义                           | 默认: 0.0 [百分比]
+  ranged_damage_reduction        | 远程伤害减免          | 自定义                           | 默认: 0.0 [百分比]
+  bow_extra_damage               | 弓伤害加成            | 自定义                           | 默认: 0.0 [百分比]
+  crossbow_extra_damage          | 弩伤害加成            | 自定义                           | 默认: 0.0 [百分比]
+  bow_damage_reduction           | 弓伤害减免            | 自定义                           | 默认: 0.0 [百分比]
+  crossbow_damage_reduction      | 弩伤害减免            | 自定义                           | 默认: 0.0 [百分比]
+  magic_damage_reduction         | 魔法伤害减免          | 自定义                           | 默认: 0.0 [百分比]
+  fire_damage_reduction          | 火焰伤害减免          | 自定义                           | 默认: 0.0 [百分比]
+  all_damage_reduction           | 全伤害减免            | 自定义                           | 默认: 0.0 [百分比]
+
+========== 伤害类型系统属性 (7种类型) ==========
+
+--- 物理 ---
+  physical_defense               | 物理防御              | 自定义                           | 默认: 0.0
+  physical_damage                | 物理伤害              | 自定义                           | 默认: 0.0
+
+--- 灼烧 ---
+  burn_defense                   | 灼烧防御              | 自定义                           | 默认: 0.0
+  burn_extra_damage              | 灼烧伤害加成          | 自定义                           | 默认: 0.0 [百分比]
+  burn_damage                    | 灼烧伤害              | 自定义                           | 默认: 0.0
+
+--- 霜寒 ---
+  frost_defense                  | 霜寒防御              | 自定义                           | 默认: 0.0
+  frost_extra_damage             | 霜寒伤害加成          | 自定义                           | 默认: 0.0 [百分比]
+  frost_damage                   | 霜寒伤害              | 自定义                           | 默认: 0.0
+
+--- 电击 ---
+  shock_defense                  | 电击防御              | 自定义                           | 默认: 0.0
+  shock_extra_damage             | 电击伤害加成          | 自定义                           | 默认: 0.0 [百分比]
+  shock_damage                   | 电击伤害              | 自定义                           | 默认: 0.0
+
+--- 精神 ---
+  psychic_defense                | 精神防御              | 自定义                           | 默认: 0.0
+  psychic_extra_damage           | 精神伤害加成          | 自定义                           | 默认: 0.0 [百分比]
+  psychic_damage                 | 精神伤害              | 自定义                           | 默认: 0.0
+
+--- 侵蚀 ---
+  erosion_defense                | 侵蚀防御              | 自定义                           | 默认: 0.0
+  erosion_extra_damage           | 侵蚀伤害加成          | 自定义                           | 默认: 0.0 [百分比]
+  erosion_damage                 | 侵蚀伤害              | 自定义                           | 默认: 0.0
+
+--- 衰退 ---
+  decay_defense                  | 衰退防御              | 自定义                           | 默认: 0.0
+  decay_extra_damage             | 衰退伤害加成          | 自定义                           | 默认: 0.0 [百分比]
+  decay_damage                   | 衰退伤害              | 自定义                           | 默认: 0.0
+
+========== 体力与恢复相关属性 ==========
+
+  stamina_max                    | 体力上限              | 自定义                           | 默认: 100.0 (min=0.0, max=10000.0)
+  stamina_regen_multiplier       | 体力回复倍率          | 自定义                           | 默认: 1.0 (min=0.0)
+  health_regen_multiplier        | 生命回复倍率          | 自定义                           | 默认: 1.0 (min=0.0)
+
+========== 基础值属性 (从配置加载) ==========
+
+--- stamina ---
+  stamina_min                    | stamina最小值         | 自定义                           | 默认: 0.0
+  stamina_max                    | stamina最大值         | 自定义                           | 默认: 100.0
+  stamina_regeneration           | stamina恢复速度       | 自定义                           | 默认: 1.0
+  stamina_current                | stamina当前值         | 自定义                           | 默认: 0.0
+
+========================================
+ 总计: 107 个属性
+========================================

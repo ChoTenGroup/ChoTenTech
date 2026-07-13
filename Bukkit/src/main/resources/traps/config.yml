@@ -1,0 +1,54 @@
+# 陷阱系统配置
+# 支持三种类型: blower(吹风机), laser(激光), rocket(火箭)
+
+# ========== 吹风机 ==========
+blower_01:
+  type: blower
+  world: world
+  enabled: true
+  # 检测间隔（tick）
+  interval: 10
+  # 区域对角坐标
+  pos1: { x: 0, y: 60, z: 0 }
+  pos2: { x: 10, y: 65, z: 10 }
+  # 推动方向
+  direction: { x: 0, y: 0.3, z: -1 }
+  # 推动力度
+  force: 1.5
+  particle: { particle: cloud, count: 5, speed: 0.1 }
+  sound: { sound: minecraft:entity.ender_dragon.flap, volume: 1.0, pitch: 0.5 }
+
+# ========== 激光 ==========
+laser_01:
+  type: laser
+  world: world
+  enabled: true
+  interval: 20
+  pos1: { x: 100, y: 50, z: 200 }
+  pos2: { x: 100, y: 52, z: 210 }
+  # 每次触发造成的伤害
+  damage: 5.0
+  particle: { particle: electric_spark, count: 3, speed: 0.0 }
+  sound: { sound: minecraft:block.beacon.activate, volume: 1.0, pitch: 1.0 }
+
+# ========== 火箭 ==========
+rocket_01:
+  type: rocket
+  world: world
+  enabled: true
+  # 发射间隔（tick）
+  interval: 100
+  # 发射位置
+  launch: { x: 200, y: 60, z: 300 }
+  # 飞行方向
+  direction: { x: 0, y: 0, z: -1 }
+  # 飞行速度
+  speed: 2.0
+  # 最大飞行距离（超过后爆炸）
+  max_distance: 30.0
+  # 爆炸威力
+  explosion_power: 3
+  # 爆炸伤害
+  damage: 20.0
+  # 飞行轨迹粒子
+  particle: { particle: flame, count: 5, speed: 0.1 }

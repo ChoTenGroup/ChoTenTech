@@ -1,0 +1,14 @@
+# 全球市场配置
+global-market:
+  # 上架手续费（百分比，0=免费）
+  listing-fee: 0
+  # 交易税（百分比，0=免税）
+  sales-tax: 0
+  # 上架有效期（天，0=永不过期）
+  listing-expiry-days: 30
+  # 最大上架数量（每个玩家）
+  max-listings-per-player: 10
+  # 默认货币
+  default-currency: money
+  # 自动过期检查间隔（秒）
+  expiry-check-interval: 300

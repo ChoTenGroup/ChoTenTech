@@ -1,0 +1,428 @@
+nizxc_flash:
+  fuse: 2.0~3.0
+  impact: false
+  bounce:
+    max: 3
+    factor: 0.5
+    upward: 0.15
+  sounds:
+    throw: { sound: minecraft:entity.arrow.shoot, volume: 1.2, pitch: 0.6 }
+    bounce: { sound: minecraft:entity.item.break, volume: 0.5, pitch: 1.5 }
+    fuse: { sound: minecraft:entity.creeper.primed, volume: 1.2, pitch: 1.8 }
+  particles:
+    throw: { particle: cloud, count: 24, speed: 0.35 }
+    bounce: { particle: smoke, count: 12, speed: 0.2 }
+    fuse: { particle: electric_spark, count: 10, offset_x: 0.3, offset_y: 0.3, offset_z: 0.3, speed: 0.18 }
+    trail: { particle: glow, count: 1, speed: 0.08 }
+    cook: { particle: smoke, count: 20, speed: 0.35 }
+  effects:
+    - type: blindness
+      range: 5
+      seconds: 14
+      sound: { sound: minecraft:entity.firework_rocket.large_blast, volume: 6.0, pitch: 0.3 }
+      particle: { particle: flash, count: 1 }
+      shockwave: { particle: glow, count: 80, speed: 2.0, rings: 5 }
+    - type: blindness
+      range: 12
+      seconds: 6
+      particle: { particle: explosion, count: 40, speed: 1.0 }
+    - type: blindness
+      range: 18
+      seconds: 3
+      particle: { particle: explosion, count: 25, speed: 0.6 }
+    - type: potion
+      effect: NAUSEA
+      seconds: 10
+      range: 12
+      particle: { particle: ring, count: 1 }
+    - type: potion
+      effect: BLINDNESS
+      seconds: 6
+      range: 8
+      particle: { particle: large_smoke, count: 120, offset_x: 1.5, offset_y: 0.8, offset_z: 1.5, speed: 0.15 }
+    - type: potion
+      effect: SLOWNESS
+      seconds: 5
+      range: 14
+      level: 2
+      particle: { particle: vibration, count: 8 }
+
+zx_stun:
+  fuse: 2.5~4.0
+  impact: false
+  bounce:
+    max: 3
+    factor: 0.5
+    upward: 0.15
+  sounds:
+    throw: { sound: minecraft:entity.arrow.shoot, volume: 1.0, pitch: 0.8 }
+    bounce: { sound: minecraft:entity.item.break, volume: 0.6, pitch: 1.6 }
+    fuse: { sound: minecraft:entity.creeper.primed, volume: 0.8, pitch: 1.5 }
+  particles:
+    throw: { particle: cloud, count: 18, speed: 0.3 }
+    bounce: { particle: smoke, count: 8, speed: 0.15 }
+    fuse: { particle: electric_spark, count: 6, offset_x: 0.2, offset_y: 0.2, offset_z: 0.2, speed: 0.12 }
+    trail: { particle: glow, count: 1, speed: 0.06 }
+    cook: { particle: smoke, count: 14, speed: 0.3 }
+  effects:
+    - type: blindness
+      range: 4
+      seconds: 8
+      sound: { sound: minecraft:entity.firework_rocket.blast, volume: 4.0, pitch: 0.5 }
+      particle: { particle: flash, count: 1 }
+      shockwave: { particle: glow, count: 48, speed: 1.5, rings: 4 }
+    - type: blindness
+      range: 10
+      seconds: 4
+      particle: { particle: explosion, count: 30, speed: 0.8 }
+    - type: potion
+      effect: NAUSEA
+      seconds: 6
+      range: 8
+      particle: { particle: ring, count: 1 }
+    - type: potion
+      effect: SLOWNESS
+      seconds: 4
+      range: 10
+      level: 3
+      particle: { particle: vibration, count: 6 }
+    - type: potion
+      effect: WEAKNESS
+      seconds: 3
+      range: 8
+      level: 2
+      particle: { particle: smoke, count: 20, offset_x: 0.5, offset_y: 0.5, offset_z: 0.5, speed: 0.05 }
+
+ice_stun:
+  fuse: 2.0~3.5
+  impact: false
+  bounce:
+    max: 3
+    factor: 0.5
+    upward: 0.15
+  sounds:
+    throw: { sound: minecraft:entity.snowball.throw, volume: 1.0, pitch: 0.7 }
+    bounce: { sound: minecraft:block.glass.break, volume: 0.8, pitch: 1.8 }
+    fuse: { sound: minecraft:block.powder_snow.fall, volume: 0.6, pitch: 0.5 }
+  particles:
+    throw: { particle: snowflake, count: 24, speed: 0.3 }
+    bounce: { particle: snowflake, count: 16, speed: 0.5 }
+    fuse: { particle: gust, count: 6, offset_x: 0.2, offset_y: 0.2, offset_z: 0.2, speed: 0.1 }
+    trail: { particle: snowflake, count: 2, speed: 0.04 }
+    cook: { particle: gust, count: 12, speed: 0.2 }
+  effects:
+    - type: potion
+      effect: SLOWNESS
+      seconds: 10
+      range: 8
+      level: 4
+      sound: { sound: minecraft:block.glass.break, volume: 3.0, pitch: 1.2 }
+      particle: { particle: snowflake, count: 80, offset_x: 1.0, offset_y: 0.5, offset_z: 1.0, speed: 0.3 }
+      shockwave: { particle: gust, count: 48, speed: 0.8, rings: 4 }
+    - type: blindness
+      range: 6
+      seconds: 4
+      particle: { particle: item_snowball, count: 50, speed: 0.4 }
+    - type: potion
+      effect: SLOWNESS
+      seconds: 6
+      range: 12
+      level: 2
+      particle: { particle: gust, count: 30, offset_x: 0.5, offset_y: 0.3, offset_z: 0.5, speed: 0.1 }
+    - type: potion
+      effect: MINING_FATIGUE
+      seconds: 8
+      range: 10
+      level: 3
+      particle: { particle: snowflake, count: 20, speed: 0.15 }
+
+frontroad_grenade:
+  fuse: 2.8~4.8
+  impact: false
+  bounce:
+    max: 3
+    factor: 0.5
+    upward: 0.15
+  sounds:
+    throw: { sound: minecraft:entity.arrow.shoot, volume: 1.2, pitch: 0.6 }
+    bounce: { sound: minecraft:entity.item.break, volume: 0.7, pitch: 1.7 }
+    fuse: { sound: minecraft:entity.creeper.primed, volume: 1.0, pitch: 1.0 }
+  particles:
+    throw: { particle: cloud, count: 20, speed: 0.3 }
+    bounce: { particle: smoke, count: 10, speed: 0.2 }
+    fuse: { particle: smoke, count: 6, offset_x: 0.2, offset_y: 0.2, offset_z: 0.2, speed: 0.08 }
+    trail: { particle: smoke, count: 1, speed: 0.05 }
+    cook: { particle: flame, count: 12, speed: 0.3 }
+  effects:
+    - type: explosion
+      power: 3
+      sound: { sound: minecraft:entity.firework_rocket.large_blast, volume: 5.0, pitch: 0.6 }
+      particle: { particle: explosion_emitter, count: 1 }
+      shockwave: { particle: flame, count: 36, speed: 1.2, rings: 4 }
+    - type: fragment
+      range: 35
+      amount: 50
+      penetration: 2.0
+      falloff:
+        enabled: true
+        start: 8.0
+        end: 35.0
+        minMult: 0.15
+        formula: linear
+      damage:
+        physical: 8
+        externalInjury: 1.5
+        internalInjury: 1.5
+      sound: { sound: minecraft:entity.item.break, volume: 3.0, pitch: 1.8 }
+      particle: { particle: cloud, count: 30, speed: 0.5 }
+
+endroad_grenade:
+  fuse: 1.5~3.0
+  impact: false
+  bounce:
+    max: 3
+    factor: 0.5
+    upward: 0.15
+  sounds:
+    throw: { sound: minecraft:entity.arrow.shoot, volume: 1.4, pitch: 0.5 }
+    bounce: { sound: minecraft:entity.item.break, volume: 0.8, pitch: 1.8 }
+    fuse: { sound: minecraft:entity.creeper.primed, volume: 1.2, pitch: 0.7 }
+  particles:
+    throw: { particle: cloud, count: 28, speed: 0.4 }
+    bounce: { particle: smoke, count: 14, speed: 0.25 }
+    fuse: { particle: smoke, count: 8, offset_x: 0.3, offset_y: 0.3, offset_z: 0.3, speed: 0.1 }
+    trail: { particle: flame, count: 1, speed: 0.06 }
+    cook: { particle: flame, count: 16, speed: 0.35 }
+  effects:
+    - type: explosion
+      power: 5
+      sound: { sound: minecraft:entity.firework_rocket.large_blast, volume: 7.0, pitch: 0.4 }
+      particle: { particle: explosion_emitter, count: 1 }
+      shockwave: { particle: flame, count: 60, speed: 1.5, rings: 5 }
+    - type: fragment
+      range: 35
+      amount: 100
+      penetration: 5.0
+      falloff:
+        enabled: true
+        start: 0.0
+        end: 35.0
+        minMult: 0.05
+        formula: exponential
+      damage:
+        physical: 15
+        externalInjury: 3
+        internalInjury: 3
+      sound: { sound: minecraft:entity.item.break, volume: 5.0, pitch: 2.0 }
+      particle: { particle: cloud, count: 60, speed: 0.8 }
+
+6ch_grenade:
+  fuse: 3.0~5.0
+  impact: false
+  bounce:
+    max: 3
+    factor: 0.5
+    upward: 0.15
+  sounds:
+    throw: { sound: minecraft:entity.arrow.shoot, volume: 1.0, pitch: 0.7 }
+    bounce: { sound: minecraft:entity.item.break, volume: 0.6, pitch: 1.6 }
+    fuse: { sound: minecraft:entity.creeper.primed, volume: 0.9, pitch: 1.2 }
+  particles:
+    throw: { particle: cloud, count: 18, speed: 0.3 }
+    bounce: { particle: smoke, count: 8, speed: 0.15 }
+    fuse: { particle: smoke, count: 5, offset_x: 0.2, offset_y: 0.2, offset_z: 0.2, speed: 0.06 }
+    trail: { particle: smoke, count: 1, speed: 0.04 }
+    cook: { particle: flame, count: 10, speed: 0.25 }
+  effects:
+    - type: explosion
+      power: 3
+      sound: { sound: minecraft:entity.firework_rocket.blast, volume: 4.0, pitch: 0.7 }
+      particle: { particle: explosion_emitter, count: 1 }
+      shockwave: { particle: flame, count: 30, speed: 1.0, rings: 3 }
+    - type: fragment
+      range: 25
+      amount: 60
+      penetration: 2.5
+      falloff:
+        enabled: true
+        start: 0.0
+        end: 25.0
+        minMult: 0.1
+        formula: linear
+      damage:
+        physical: 8
+        internalInjury: 2
+      sound: { sound: minecraft:entity.item.break, volume: 3.0, pitch: 1.7 }
+      particle: { particle: cloud, count: 35, speed: 0.5 }
+
+shakalaka_grenade:
+  fuse: 2.8~4.8
+  impact: false
+  bounce:
+    max: 3
+    factor: 0.5
+    upward: 0.15
+  sounds:
+    throw: { sound: minecraft:entity.arrow.shoot, volume: 1.2, pitch: 0.6 }
+    bounce: { sound: minecraft:entity.item.break, volume: 0.7, pitch: 1.7 }
+    fuse: { sound: minecraft:entity.creeper.primed, volume: 1.0, pitch: 1.0 }
+  particles:
+    throw: { particle: cloud, count: 24, speed: 0.35 }
+    bounce: { particle: smoke, count: 12, speed: 0.2 }
+    fuse: { particle: smoke, count: 6, offset_x: 0.2, offset_y: 0.2, offset_z: 0.2, speed: 0.08 }
+    trail: { particle: smoke, count: 1, speed: 0.05 }
+    cook: { particle: flame, count: 14, speed: 0.3 }
+  effects:
+    - type: explosion
+      power: 4
+      sound: { sound: minecraft:entity.firework_rocket.large_blast, volume: 5.5, pitch: 0.5 }
+      particle: { particle: explosion_emitter, count: 1 }
+      shockwave: { particle: flame, count: 48, speed: 1.2, rings: 4 }
+    - type: fragment
+      range: 30
+      amount: 75
+      penetration: 3.0
+      falloff:
+        enabled: true
+        start: 0.0
+        end: 30.0
+        minMult: 0.1
+        formula: linear
+      damage:
+        physical: 10
+        externalInjury: 2
+        internalInjury: 2
+      sound: { sound: minecraft:entity.item.break, volume: 4.0, pitch: 1.9 }
+      particle: { particle: cloud, count: 40, speed: 0.6 }
+
+b_shakalaka_grenade:
+  fuse: 2.0~3.5
+  impact: false
+  bounce:
+    max: 3
+    factor: 0.5
+    upward: 0.15
+  sounds:
+    throw: { sound: minecraft:entity.arrow.shoot, volume: 1.5, pitch: 0.4 }
+    bounce: { sound: minecraft:entity.item.break, volume: 0.9, pitch: 1.9 }
+    fuse: { sound: minecraft:entity.creeper.primed, volume: 1.3, pitch: 0.6 }
+  particles:
+    throw: { particle: cloud, count: 32, speed: 0.45 }
+    bounce: { particle: large_smoke, count: 16, speed: 0.3 }
+    fuse: { particle: smoke, count: 10, offset_x: 0.4, offset_y: 0.4, offset_z: 0.4, speed: 0.12 }
+    trail: { particle: flame, count: 2, speed: 0.08 }
+    cook: { particle: flame, count: 20, speed: 0.4 }
+  effects:
+    - type: explosion
+      power: 6
+      sound: { sound: minecraft:entity.firework_rocket.large_blast, volume: 8.0, pitch: 0.3 }
+      particle: { particle: explosion_emitter, count: 1 }
+      shockwave: { particle: flame, count: 72, speed: 1.8, rings: 5 }
+    - type: fragment
+      range: 40
+      amount: 125
+      penetration: 6.0
+      falloff:
+        enabled: true
+        start: 0.0
+        end: 40.0
+        minMult: 0.05
+        formula: exponential
+      damage:
+        physical: 20
+        externalInjury: 4
+        internalInjury: 4
+      sound: { sound: minecraft:entity.item.break, volume: 6.0, pitch: 2.0 }
+      particle: { particle: cloud, count: 80, speed: 1.0 }
+
+shengguang_grenade:
+  fuse: 1.0~2.0
+  impact: true
+  sounds:
+    throw: { sound: minecraft:entity.snowball.throw, volume: 0.8, pitch: 1.0 }
+    bounce: { sound: minecraft:entity.item.break, volume: 0.3, pitch: 1.8 }
+    fuse: { sound: minecraft:block.note_block.bit, volume: 0.5, pitch: 2.0 }
+  particles:
+    throw: { particle: glow, count: 16, speed: 0.2 }
+    bounce: { particle: glow, count: 8, speed: 0.1 }
+    fuse: { particle: glow, count: 4, offset_x: 0.2, offset_y: 0.2, offset_z: 0.2, speed: 0.05 }
+    trail: { particle: glow, count: 2, speed: 0.06 }
+    cook: { particle: glow, count: 12, speed: 0.2 }
+  effects:
+    - type: potion
+      effect: GLOWING
+      seconds: 20
+      range: 8
+      level: 1
+      sound: { sound: minecraft:entity.firework_rocket.twinkle, volume: 2.0, pitch: 1.5 }
+      particle: { particle: glow, count: 60, offset_x: 1.0, offset_y: 0.5, offset_z: 1.0, speed: 0.3 }
+      shockwave: { particle: glow, count: 36, speed: 1.0, rings: 3 }
+    - type: potion
+      effect: GLOWING
+      seconds: 12
+      range: 15
+      level: 1
+      particle: { particle: glow, count: 40, offset_x: 0.8, offset_y: 0.4, offset_z: 0.8, speed: 0.2 }
+
+hqlm_petrol:
+  fuse: 3.0~4.0
+  impact: true
+  sounds:
+    throw: { sound: minecraft:entity.snowball.throw, volume: 0.8, pitch: 0.7 }
+    fuse: { sound: minecraft:block.fire.ambient, volume: 0.5, pitch: 2.0 }
+  particles:
+    throw: { particle: flame, count: 20, speed: 0.25 }
+    fuse: { particle: small_flame, count: 4, offset_x: 0.2, offset_y: 0.2, offset_z: 0.2, speed: 0.06 }
+    trail: { particle: small_flame, count: 1, speed: 0.05 }
+    cook: { particle: flame, count: 14, speed: 0.3 }
+  effects:
+    - type: fireburst
+      range: 5
+      amount: 15
+      damage:
+        burn: 10
+      sound: { sound: minecraft:entity.firework_rocket.blast, volume: 3.0, pitch: 0.6 }
+      particle: { particle: flame, count: 100, speed: 0.6 }
+      shockwave: { particle: flame, count: 48, speed: 1.2, rings: 3 }
+
+firesalt_petrol:
+  fuse: 3.0~4.0
+  impact: true
+  sounds:
+    throw: { sound: minecraft:entity.snowball.throw, volume: 0.9, pitch: 0.6 }
+    fuse: { sound: minecraft:block.fire.ambient, volume: 0.6, pitch: 1.5 }
+  particles:
+    throw: { particle: flame, count: 22, speed: 0.3 }
+    fuse: { particle: small_flame, count: 5, offset_x: 0.25, offset_y: 0.25, offset_z: 0.25, speed: 0.08 }
+    trail: { particle: small_flame, count: 1, speed: 0.06 }
+    cook: { particle: flame, count: 16, speed: 0.35 }
+  effects:
+    - type: fireburst
+      range: 6
+      amount: 15
+      damage:
+        burn: 14
+      sound: { sound: minecraft:entity.firework_rocket.large_blast, volume: 4.0, pitch: 0.5 }
+      particle: { particle: flame, count: 130, speed: 0.7 }
+      shockwave: { particle: flame, count: 54, speed: 1.3, rings: 4 }
+
+strong_firesalt_petrol:
+  fuse: 3.0~4.0
+  impact: true
+  sounds:
+    throw: { sound: minecraft:entity.snowball.throw, volume: 1.0, pitch: 0.5 }
+    fuse: { sound: minecraft:block.fire.ambient, volume: 0.8, pitch: 1.2 }
+  particles:
+    throw: { particle: flame, count: 30, speed: 0.35 }
+    fuse: { particle: flame, count: 8, offset_x: 0.3, offset_y: 0.3, offset_z: 0.3, speed: 0.1 }
+    trail: { particle: flame, count: 2, speed: 0.08 }
+    cook: { particle: flame, count: 20, speed: 0.4 }
+  effects:
+    - type: fireburst
+      range: 9
+      amount: 15
+      damage:
+        burn: 25
+      sound: { sound: minecraft:entity.firework_rocket.large_blast, volume: 6.0, pitch: 0.3 }
+      particle: { particle: flame, count: 160, speed: 0.9 }
+      shockwave: { particle: flame, count: 72, speed: 1.8, rings: 5 }

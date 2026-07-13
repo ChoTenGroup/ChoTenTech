@@ -1,0 +1,19 @@
+physiotherapy:
+  display:
+    raw: "Physiotherapy"
+    default: "<blue>理疗</blue>"
+    legacy: "&9理疗"
+  level:
+    min: 0
+    start: 0
+    max: 100
+    display:
+      0:
+        default: "<gray>Lv.%level%</gray>"
+    exp:
+      0:
+        type: calculator
+        value: "%level% * 10 + 50"
+  agents:
+    onUpgrade:
+      js: |

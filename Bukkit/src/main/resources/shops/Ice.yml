@@ -1,0 +1,180 @@
+Ice:
+  name: "<dark_aqua>冰块"
+  gui:
+    buy: |-
+      MMM---<>O
+      IIIIIIIII
+      IIIIIIIII
+      IIIIIIIII
+      IIIIIIIII
+      N-----CCC
+    sell: |-
+      MMM---<>O
+      IIIIIIIII
+      IIIIIIIII
+      IIIIIIIII
+      IIIIIIIII
+      N-----CCC
+  gui-item:
+    mode-buy:
+      material: "BOOK"
+      name: "<white><b>购买模式"
+      lore: "当前为购买模式\n点击切换到出售模式"
+    mode-sell:
+      material: "BOOK"
+      name: "<white><b>出售模式"
+      lore: "当前为出售模式\n点击切换到购买模式"
+    previous:
+      have:
+        name: "<white><b>上一页"
+        lore: "点击切换到上一页。\n第 %page% / %total_pages% 页"
+      not:
+        name: "<white><b>第 1 / 1 页"
+        lore: "已是第一页。"
+    next:
+      have:
+        name: "<white><b>下一页"
+        lore: "点击切换到下一页。\n第 %page% / %total_pages% 页"
+      not:
+        name: "<white><b>第 1 / 1 页"
+        lore: "已是最后一页。"
+    knowledge:
+      material: "KNOWLEDGE_BOOK"
+      name: "<gold><b>信息"
+      lore: |-
+        点击查看您的货币信息。
+    confirm-buy:
+      have:
+        material: "GREEN_CONCRETE"
+        name: "<green><b>确认购买"
+        lore: "点击确认购买。"
+      not-enough:
+        material: "RED_CONCRETE"
+        name: "<red><b>货币不足"
+        lore: "您的货币不足以购买所选物品。"
+      not:
+        material: "GRAY_CONCRETE"
+        name: "<gray><b>确认购买"
+        lore: "您还没有选定任何物品。"
+    confirm-sell:
+      have:
+        material: "GREEN_CONCRETE"
+        name: "<green><b>确认出售"
+        lore: "点击确认出售。"
+      not:
+        material: "GRAY_CONCRETE"
+        name: "<gray><b>确认出售"
+        lore: "您还没有选定任何物品。"
+  level:
+    1:
+      - type: level
+        level: main
+        value: 5
+      - type: affection
+        affection: Ice
+        value: 5
+    2:
+      - type: level
+        level: main
+        value: 15
+      - type: affection
+        affection: Ice
+        value: 10
+      - type: quota
+        balance: money
+        value: 5000
+    3:
+      - type: level
+        level: main
+        value: 25
+      - type: affection
+        affection: Ice
+        value: 15
+      - type: quota
+        balance: money
+        value: 20000
+  items:
+    # Lv.1 - 基础烤串
+    potato:
+      id: sertraline:potato
+      name: "<white>烤土豆"
+      buy: money:60
+      sell: money:15
+    bread:
+      id: sertraline:bread
+      name: "<white>烤面包"
+      buy: money:50
+      sell: money:12
+    corn:
+      id: sertraline:corn
+      name: "<white>烤玉米"
+      buy: money:70
+      sell: money:18
+    # Lv.2 - 精选烧烤
+    barbecue:
+      id: sertraline:barbecue
+      name: "<white>烤肉串"
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:200
+      sell: money:60
+      limit:
+        player: 10
+        player-reset: 24h
+    juda_chicken_chop:
+      id: sertraline:juda_chicken_chop
+      name: "<white>犹太鸡排"
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:250
+      sell: money:75
+      limit:
+        player: 10
+        player-reset: 24h
+    # Lv.3 - 招牌菜
+    medium_rare_steak:
+      id: sertraline:medium_rare_steak
+      name: "<gold>三分熟牛排"
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:500
+      sell: money:150
+    brazilian_barbecue:
+      id: sertraline:brazilian_barbecue
+      name: "<gold>巴西烤肉"
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:450
+      sell: money:130
+    taco:
+      id: sertraline:taco
+      name: "<white>墨西哥卷"
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:350
+      sell: money:100
+      limit:
+        player: 5
+        player-reset: 24h
+    herring_can:
+      id: sertraline:herring_can
+      name: "<white>鲱鱼罐头"
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:400
+      sell: money:120
+      limit:
+        player: 3
+        player-reset: 24h
