@@ -3,6 +3,11 @@ package io.github.zzzyyylllty.chotentech.feature.projectile
 import io.github.zzzyyylllty.chotentech.ChoTenTech
 import io.github.zzzyyylllty.chotentech.damage.DamageManager
 import io.github.zzzyyylllty.chotentech.damage.DamageType
+import io.github.zzzyyylllty.sertraline.Sertraline
+import io.github.zzzyyylllty.chotentech.function.bleedout.BleedoutManager
+import io.github.zzzyyylllty.chotentech.function.player.getPlayerLevel
+import io.github.zzzyyylllty.chotentech.util.devLog
+import org.bukkit.GameMode
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
 import org.bukkit.Material
@@ -34,6 +39,18 @@ object ProjectileManager {
 
     private val activeProjectiles = ConcurrentHashMap<UUID, ActiveProjectile>()
 
+    // ==================== 温雷 (Cooking) Tracking ====================
+
+    data class CookingGrenade(
+        val id: String,
+        val data: ProjectileData,
+        val player: Player,
+        val visual: ItemStack,
+        var fuseTicks: Int
+    )
+
+    private val cookingPlayers = ConcurrentHashMap<UUID, CookingGrenade>()
+
     private const val THROW_SPEED = 1.5
 
     // 默认音效兜底
@@ -53,7 +70,8 @@ object ProjectileManager {
         val entity: Item,
         var lastVelLength: Double = THROW_SPEED,
         var bounceCount: Int = 0,
-        var tick: Int = 0
+        var tick: Int = 0,
+        val maxTicks: Int = 300  // 15秒强制超时兜底
     )
 
     // ==================== YAML Loading ====================
@@ -262,6 +280,72 @@ object ProjectileManager {
         activeProjectiles[entity.uniqueId] = active
     }
 
+    // ==================== 温雷 (Cooking) ====================
+
+    fun isCooking(player: Player): Boolean = cookingPlayers.containsKey(player.uniqueId)
+
+    fun startCooking(player: Player, projectileId: String, item: ItemStack) {
+        val data = projectileConfigs[projectileId] ?: return
+        ensureTrackingTask()
+
+        cookingPlayers[player.uniqueId] = CookingGrenade(
+            id = projectileId,
+            data = data,
+            player = player,
+            visual = item.clone().apply { amount = 1 },
+            fuseTicks = (data.fuse.rollSeconds() * 20).toInt()
+        )
+
+        val eyeLoc = player.eyeLocation
+        spawnParticlesAt(player.world, eyeLoc, data.particles["cook"])
+        playSoundAt(player.world, eyeLoc, data.sounds["cook"])
+        player.sendMessage("§e⚡ 已拉环! 引信正在燃烧...")
+    }
+
+    fun throwCookedProjectile(player: Player, consumedItem: ItemStack? = null) {
+        val cooking = cookingPlayers.remove(player.uniqueId) ?: return
+        val data = cooking.data
+
+        // 消耗物品（创造模式不消耗）
+        if (consumedItem != null && player.gameMode != GameMode.CREATIVE) {
+            consumedItem.amount--
+            player.updateInventory()
+        }
+
+        // 补偿0.4s (8 ticks) 保证玩家能投掷出去
+        val remainingFuse = maxOf(cooking.fuseTicks + 8, 1)
+
+        val eyeLoc = player.eyeLocation
+        val direction = eyeLoc.direction.normalize()
+
+        playSoundAt(player.world, eyeLoc, data.sounds["throw"], DEFAULT_THROW)
+        spawnParticlesAt(player.world, eyeLoc, data.particles["throw"])
+
+        val entity = player.world.dropItem(eyeLoc, cooking.visual).apply {
+            velocity = direction.multiply(THROW_SPEED)
+            setCanPlayerPickup(false)
+            setCanMobPickup(false)
+            pickupDelay = Int.MAX_VALUE
+            isInvulnerable = true
+        }
+
+        activeProjectiles[entity.uniqueId] = ActiveProjectile(
+            id = cooking.id,
+            data = data,
+            thrower = player,
+            fuseTicks = remainingFuse,
+            entity = entity
+        )
+    }
+
+    fun cancelCooking(player: Player, showMessage: Boolean = true) {
+        val cooking = cookingPlayers.remove(player.uniqueId) ?: return
+        if (showMessage) player.sendMessage("§7已取消投掷")
+        val eyeLoc = player.eyeLocation
+        playSoundAt(player.world, eyeLoc, cooking.data.sounds["cancel"])
+        spawnParticlesAt(player.world, eyeLoc, cooking.data.particles["cancel"])
+    }
+
     // ==================== Tick Tracking ====================
 
     private var tracking = false
@@ -275,8 +359,17 @@ object ProjectileManager {
     }
 
     private fun tickAll() {
-        if (activeProjectiles.isEmpty()) return
+        // 飞行中的投掷物
+        if (activeProjectiles.isNotEmpty()) {
+            tickActiveProjectiles()
+        }
+        // 手中温雷
+        if (cookingPlayers.isNotEmpty()) {
+            tickCookingPlayers()
+        }
+    }
 
+    private fun tickActiveProjectiles() {
         val iter = activeProjectiles.entries.iterator()
         while (iter.hasNext()) {
             val (_, active) = iter.next()
@@ -284,6 +377,13 @@ object ProjectileManager {
 
             // 实体被移除 / 死亡
             if (!entity.isValid || entity.isDead) {
+                executeEffects(entity.location, active)
+                iter.remove()
+                continue
+            }
+
+            // 最大存活时间兜底：防止实体卡住无限生成粒子
+            if (active.tick >= active.maxTicks) {
                 executeEffects(entity.location, active)
                 iter.remove()
                 continue
@@ -315,11 +415,12 @@ object ProjectileManager {
                     spawnParticlesAt(entity.world, entity.location, data.particles["bounce"])
                     entity.velocity = entity.velocity.multiply(-data.bounce.factor)
                         .add(Vector(0.0, data.bounce.upward, 0.0))
-                    active.lastVelLength = entity.velocity.length()
                     active.bounceCount++
                 }
+                active.lastVelLength = entity.velocity.length()
+            } else {
+                active.lastVelLength = currentSpeed
             }
-            active.lastVelLength = currentSpeed
 
             // 引信 tick 音效
             active.tick++
@@ -328,6 +429,9 @@ object ProjectileManager {
                 playSoundAt(entity.world, entity.location, fuseSound)
                 spawnParticlesAt(entity.world, entity.location, data.particles["fuse"])
             }
+
+            // 飞行轨迹粒子
+            spawnParticlesAt(entity.world, entity.location, data.particles["trail"])
 
             // 引信倒计时
             active.fuseTicks--
@@ -346,13 +450,61 @@ object ProjectileManager {
         }
     }
 
+    private fun tickCookingPlayers() {
+        val iter = cookingPlayers.entries.iterator()
+        while (iter.hasNext()) {
+            val (_, cooking) = iter.next()
+            val player = cooking.player
+
+            if (!player.isOnline || player.isDead) {
+                iter.remove()
+                continue
+            }
+
+            // 手上物品检查：如果玩家不再持有该投掷物则取消温雷
+            val mainHandId = player.inventory.itemInMainHand.let {
+                if (it.type.isAir) null else Sertraline.api().getId(it)
+            }
+            if (mainHandId != cooking.id) {
+                player.sendMessage("§7已取消投掷")
+                iter.remove()
+                continue
+            }
+
+            // 递减引信
+            cooking.fuseTicks--
+
+            val loc = player.eyeLocation
+
+            // 引信音效/粒子 (每10 tick)
+            if (cooking.fuseTicks % FUSE_SOUND_INTERVAL == 0) {
+                val fuseSound = cooking.data.sounds["fuse"]
+                if (fuseSound != null) playSoundAt(player.world, loc, fuseSound)
+                spawnParticlesAt(player.world, loc, cooking.data.particles["fuse"])
+            }
+
+            // 持续 cook 粒子（手部黑烟，统一覆盖配置中的 flame）
+            spawnParticlesAt(player.world, loc, ParticleConfig("smoke", 8, 0.3))
+
+            // 引信耗尽 → 手中爆炸
+            if (cooking.fuseTicks <= 0) {
+                iter.remove()
+                player.sendMessage("§c💥 引信燃尽! 手雷在手中爆炸!")
+                applyEffects(player.location, cooking.data, player)
+                player.damage(1000.0)
+            }
+        }
+    }
+
     // ==================== Effects ====================
 
     private fun executeEffects(location: Location, active: ActiveProjectile) {
-        val world = location.world ?: return
-        val thrower = active.thrower
+        try { if (active.entity.isValid) active.entity.remove() } catch (_: Exception) {}
+        applyEffects(location, active.data, active.thrower)
+    }
 
-        active.entity.remove()
+    private fun applyEffects(location: Location, data: ProjectileData, thrower: Player) {
+        val world = location.world ?: return
 
         // === 通用爆炸特效：所有投掷物爆炸时都有 ===
         spawnDetonationFlash(world, location)
@@ -360,7 +512,7 @@ object ProjectileManager {
         spawnBurstParticles(world, location, ParticleConfig("campfire_cosy_smoke", 12, 0.3))
         spawnBurstParticles(world, location, ParticleConfig("flame", 8, 0.4))
 
-        for (effect in active.data.effects) {
+        for (effect in data.effects) {
             // 冲击波环
             if (effect.shockwave != null) {
                 spawnShockwaveRings(world, location, effect.shockwave!!)
@@ -378,33 +530,80 @@ object ProjectileManager {
                     val externalInjuryDmg = effect.damage["externalInjury"] ?: 0.0
                     val internalInjuryDmg = effect.damage["internalInjury"] ?: 0.0
 
-                    // 先做 AABB 快速检测，附近没实体就跳过射线追踪
-                    if (world.getNearbyEntities(location, effect.range, effect.range, effect.range)
-                            .any { it != thrower && it is LivingEntity }) {
+                    devLog("[破片] 爆炸于 ${location.blockX},${location.blockY},${location.blockZ} world=${location.world.name} range=${effect.range} count=$fragmentCount thrower=${thrower.name} at ${thrower.location.blockX},${thrower.location.blockY},${thrower.location.blockZ}")
+
+                    val nearby = world.getNearbyEntities(location, effect.range, effect.range, effect.range)
+                        .filterIsInstance<LivingEntity>()
+                        .filter { !(it is Player && isPlayerInDmz(it)) }
+                    devLog("[破片] 范围内非DMZ实体: ${nearby.size}个 (${nearby.map { "${it.name}@${it.location.blockX},${it.location.blockY},${it.location.blockZ}" }})")
+
+                    if (nearby.isNotEmpty()) {
+                        // 强制命中过的实体 → 随机破片不再重复伤害
+                        val forcedHit = mutableSetOf<LivingEntity>()
+
+                        // === 强制命中：随距离 0~30% 破片锁定目标 ===
+                        for (entity in nearby) {
+                            val distance = location.distance(entity.location)
+                            if (effect.check && entity is Player) {
+                                if (!shouldAffectPlayer(entity, location)) continue
+                            }
+                            // 视线检测
+                            val toTarget = entity.location.toVector().subtract(location.toVector())
+                            val dir2 = toTarget.normalize()
+                            val blockHit = world.rayTraceBlocks(location, dir2, distance, FluidCollisionMode.NEVER, true)
+                            if (blockHit != null && blockHit.hitBlock != null) continue
+
+                            val forcePct = (1.0 - distance / effect.range).coerceIn(0.0, 1.0) * 0.3
+                            val mult = effect.falloff?.multiplier(distance) ?: 1.0
+                            val totalMult = mult * (1.0 + forcePct)
+
+                            if (physicalDmg > 0) entity.damage(physicalDmg * totalMult, thrower)
+                            // 穿透伤害直接改血量，但玩家已倒地则跳过（否则会覆盖倒地系统的1点血量）
+                            if (effect.penetration > 0 && !BleedoutManager.isDowned(entity.uniqueId)) {
+                                val penetrationDmg = effect.penetration * totalMult
+                                entity.health = maxOf(0.0, entity.health - penetrationDmg)
+                            }
+                            if (entity is Player) {
+                                val pData = ChoTenTech.playerDataMap[entity.uniqueId.toString()] ?: continue
+                                if (externalInjuryDmg > 0) pData.externalInjury = maxOf(0.0, pData.externalInjury - externalInjuryDmg * totalMult)
+                                if (internalInjuryDmg > 0) pData.internalInjury = maxOf(0.0, pData.internalInjury - internalInjuryDmg * totalMult)
+                            }
+                            forcedHit.add(entity)
+                            devLog("[破片] 强制命中 ${entity.name} dist=${"%.1f".format(distance)} 强制率=${"%.0f".format(forcePct*100)}% falloff=$mult totalMult=$totalMult")
+                        }
+
                         val hitEntities = mutableSetOf<LivingEntity>()
+                        var blockStops = 0
+                        var noHits = 0
                         for (i in 0 until fragmentCount) {
-                            val theta = Math.random() * 2 * Math.PI
-                            val phi = Math.acos(2 * Math.random() - 1)
+                            // 大部分破片朝四周发射，少量向上
+                            val angle = Math.random() * 2 * Math.PI
+                            val upAngle = Math.random() * Math.PI / 4  // 0~45° 仰角
                             val dir = Vector(
-                                Math.sin(phi) * Math.cos(theta),
-                                Math.sin(phi) * Math.sin(theta),
-                                Math.cos(phi)
+                                Math.cos(angle) * Math.cos(upAngle),
+                                Math.sin(upAngle),
+                                Math.sin(angle) * Math.cos(upAngle)
                             )
                             val result = world.rayTrace(location, dir, effect.range, FluidCollisionMode.NEVER, false, 0.5) {
-                                it != thrower && it is LivingEntity
+                                it is LivingEntity && !(it is Player && isPlayerInDmz(it))
                             }
-                            val hit = result?.hitEntity as? LivingEntity ?: continue
+                            if (result == null) { noHits++; continue }
+                            if (result.hitBlock != null) { blockStops++; continue }
+                            val hit = result.hitEntity as? LivingEntity ?: continue
                             if (effect.check && hit is Player) {
                                 if (!shouldAffectPlayer(hit, location)) continue
                             }
                             hitEntities.add(hit)
                         }
+                        devLog("[破片] 方块拦截=$blockStops/$fragmentCount 无命中=$noHits/${fragmentCount} 不重复实体=${hitEntities.size}个")
                         for (entity in hitEntities) {
+                            if (entity in forcedHit) continue
                             val distance = location.distance(entity.location)
                             val mult = effect.falloff?.multiplier(distance) ?: 1.0
 
                             if (physicalDmg > 0) entity.damage(physicalDmg * mult, thrower)
-                            if (effect.penetration > 0) {
+                            // 穿透伤害跳过已倒地玩家（防覆盖倒地血量）
+                            if (effect.penetration > 0 && !BleedoutManager.isDowned(entity.uniqueId)) {
                                 val penetrationDmg = effect.penetration * mult
                                 entity.health = maxOf(0.0, entity.health - penetrationDmg)
                             }
@@ -413,6 +612,7 @@ object ProjectileManager {
                                 if (externalInjuryDmg > 0) pData.externalInjury = maxOf(0.0, pData.externalInjury - externalInjuryDmg * mult)
                                 if (internalInjuryDmg > 0) pData.internalInjury = maxOf(0.0, pData.internalInjury - internalInjuryDmg * mult)
                             }
+                            devLog("[破片] 命中 ${entity.name} dist=${"%.2f".format(distance)} falloff=$mult")
                         }
                     }
 
@@ -426,6 +626,7 @@ object ProjectileManager {
                     val entities = world.getNearbyEntities(location, effect.range, effect.range, effect.range)
                     for (entity in entities) {
                         if (entity !is LivingEntity) continue
+                        if (entity is Player && isPlayerInDmz(entity)) continue
                         if (effect.check && entity is Player) {
                             if (!shouldAffectPlayer(entity, location)) continue
                         }
@@ -441,6 +642,7 @@ object ProjectileManager {
                     val entities = world.getNearbyEntities(location, effect.range, effect.range, effect.range)
                     for (entity in entities) {
                         if (entity !is LivingEntity) continue
+                        if (entity is Player && isPlayerInDmz(entity)) continue
                         if (effect.check && entity is Player) {
                             if (!shouldAffectPlayer(entity, location)) continue
                         }
@@ -462,6 +664,7 @@ object ProjectileManager {
                     val nearbyEntities = world.getNearbyEntities(location, searchRange, searchRange, searchRange)
                         .filterIsInstance<LivingEntity>()
                         .filter { it != thrower && it.isValid }
+                        .filter { !(it is Player && isPlayerInDmz(it)) }
 
                     val strikePositions = mutableListOf<Location>()
 
@@ -497,6 +700,7 @@ object ProjectileManager {
                         val victims = world.getNearbyEntities(groundLoc, aoeRadius.toDouble(), aoeRadius.toDouble(), aoeRadius.toDouble())
                             .filterIsInstance<LivingEntity>()
                             .filter { it != thrower && it.isValid }
+                            .filter { !(it is Player && isPlayerInDmz(it)) }
 
                         for (victim in victims) {
                             if (shockDmg > 0) {
@@ -604,22 +808,48 @@ object ProjectileManager {
                         world.spawnParticle(p, location, 20, radius * 0.3, 0.1, radius * 0.3, 0.01)
                     }
 
-                    // set fire and damage to entities
-                    val entities = world.getNearbyEntities(location, radius, radius, radius)
-                    for (entity in entities) {
-                        if (entity !is LivingEntity) continue
-                        if (entity == thrower) continue
-                        if (effect.check && entity is Player) {
-                            if (!shouldAffectPlayer(entity, location)) continue
+                    // persistent fire zone: 每秒检测半径内实体，持续 fireSeconds
+                    val center = location.clone()
+                    var zoneTick = 0
+                    submit(period = 20L, delay = 0L) {
+                        if (zoneTick >= fireSeconds) return@submit
+                        zoneTick++
+
+                        // 每秒火焰粒子
+                        resolveParticle("flame")?.let { p ->
+                            world.spawnParticle(p, center, 20, radius * 0.5, 0.5, radius * 0.5, 0.05)
                         }
-                        entity.fireTicks = maxOf(entity.fireTicks, fireTicks)
-                        if (burnDmg > 0) {
-                            if (entity is Player) {
-                                val finalBurn = DamageManager.calculateDamage(burnDmg, DamageType.BURN, entity)
-                                entity.damage(finalBurn, thrower)
-                                DamageManager.applyEffects(entity, DamageType.BURN, finalBurn, burnDmg)
-                            } else {
-                                entity.damage(burnDmg, thrower)
+                        resolveParticle("small_flame")?.let { p ->
+                            world.spawnParticle(p, center, 30, radius * 0.7, 0.4, radius * 0.7, 0.08)
+                        }
+                        resolveParticle("lava")?.let { p ->
+                            world.spawnParticle(p, center, 8, radius * 0.6, 0.3, radius * 0.6, 0.02)
+                        }
+                        resolveParticle("campfire_cosy_smoke")?.let { p ->
+                            world.spawnParticle(p, center, 16, radius * 0.4, 0.8, radius * 0.4, 0.04)
+                        }
+                        resolveParticle("large_smoke")?.let { p ->
+                            world.spawnParticle(p, center, 10, radius * 0.3, 0.3, radius * 0.3, 0.03)
+                        }
+
+                        // 点燃范围内实体
+                        val nearby = world.getNearbyEntities(center, radius, radius, radius)
+                        for (entity in nearby) {
+                            if (entity !is LivingEntity) continue
+                            if (entity is Player && isPlayerInDmz(entity)) continue
+                            if (effect.check && entity is Player) {
+                                if (!shouldAffectPlayer(entity, center)) continue
+                            }
+                            entity.fireTicks = maxOf(entity.fireTicks, 40)
+                            if (burnDmg > 0) {
+                                val dmgPerTick = burnDmg / fireSeconds
+                                if (entity is Player) {
+                                    val finalDmg = DamageManager.calculateDamage(dmgPerTick, DamageType.BURN, entity)
+                                    entity.damage(finalDmg, thrower)
+                                    DamageManager.applyEffects(entity, DamageType.BURN, finalDmg, dmgPerTick)
+                                } else {
+                                    entity.damage(dmgPerTick, thrower)
+                                }
                             }
                         }
                     }
@@ -650,6 +880,7 @@ object ProjectileManager {
                     val nearby = world.getNearbyEntities(location, radius, radius, radius)
                     for (entity in nearby) {
                         if (entity !is LivingEntity || entity == thrower) continue
+                        if (entity is Player && isPlayerInDmz(entity)) continue
                         if (effect.check && entity is Player) {
                             if (!shouldAffectPlayer(entity, location)) continue
                         }
@@ -732,6 +963,13 @@ object ProjectileManager {
         return hit == null || hit.hitBlock == null
     }
 
+    // ==================== DMZ Check ====================
+
+    /**
+     * 检测玩家是否处于非军事区（DMZ），处于 DMZ 的玩家不受手雷伤害
+     */
+    private fun isPlayerInDmz(player: Player): Boolean = player.getPlayerLevel()?.dmz == true
+
     // ==================== Sound Helper ====================
 
     /**
@@ -751,7 +989,11 @@ object ProjectileManager {
     private fun spawnParticlesAt(world: World, loc: Location, config: ParticleConfig?) {
         if (config == null) return
         val particle = resolveParticle(config.key) ?: return
-        world.spawnParticle(particle, loc, config.count, config.offsetX, config.offsetY, config.offsetZ, config.speed)
+        try {
+            world.spawnParticle(particle, loc, config.count, config.offsetX, config.offsetY, config.offsetZ, config.speed)
+        } catch (_: Exception) {
+            // 某些粒子（如 vibration）需要特殊 data，忽略
+        }
     }
 
     /**

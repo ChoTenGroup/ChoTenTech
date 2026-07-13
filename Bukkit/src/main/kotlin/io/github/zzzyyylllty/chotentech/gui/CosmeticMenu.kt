@@ -13,6 +13,8 @@ import org.bukkit.NamespacedKey
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import taboolib.common.LifeCycle
+import taboolib.common.platform.Awake
 import taboolib.library.xseries.XMaterial
 import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.PageableChest
@@ -21,6 +23,12 @@ import java.util.concurrent.ConcurrentHashMap
 
 private val showAllMap = ConcurrentHashMap<String, Boolean>()
 private val patternFilterMap = ConcurrentHashMap<String, String?>()
+
+@Awake(LifeCycle.DISABLE)
+fun clearCosmeticMenuMaps() {
+    showAllMap.clear()
+    patternFilterMap.clear()
+}
 
 private val typeIcons = mapOf(
     CosmeticSlot.AURA to XMaterial.END_CRYSTAL,

@@ -18,4 +18,10 @@ data class SharedData(
     var totalPlayTime: Long = 0L,    // ms
     var joinCount: Int = 0,
     var totalDeaths: Int = 0,
+    var firstJoinTime: Long = 0L,   // epoch ms
+    var lastJoinTime: Long = 0L,    // epoch ms
+    var lastQuitTime: Long = 0L,    // epoch ms
+
+    // Cross-profile meta flags (shared scope)
+    var meta: MutableMap<String, MetaEntry> = mutableMapOf(),
 )

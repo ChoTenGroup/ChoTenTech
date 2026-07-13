@@ -8,6 +8,7 @@ import io.github.zzzyyylllty.chotentech.data.ModifierType
 import io.github.zzzyyylllty.chotentech.manager.AttributeManager
 import io.github.zzzyyylllty.chotentech.data.HealConfig
 import io.github.zzzyyylllty.chotentech.data.FRACTURE
+import io.github.zzzyyylllty.chotentech.quetiapine.data.PlayerDataManager
 import io.github.zzzyyylllty.chotentech.util.toComponent
 import io.github.zzzyyylllty.sertraline.item.rebuildDisplay
 import io.github.zzzyyylllty.sertraline.item.rebuildName
@@ -18,9 +19,11 @@ import org.bukkit.inventory.ItemStack
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.function.submit
+import taboolib.common.platform.service.PlatformExecutor
 import taboolib.module.nms.getItemTag
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ThreadLocalRandom
 import kotlin.math.floor
 
 enum class HealingPhase { PRE, HEALING, POST }
@@ -29,6 +32,7 @@ enum class PostReason { COMPLETE, CANCELLED, ITEM_LOST }
 object HealingManager {
 
     private val states = ConcurrentHashMap<UUID, HealingState>()
+    private var healingTask: PlatformExecutor.PlatformTask? = null
 
     data class HealingState(
         val config: HealConfig,
@@ -106,6 +110,9 @@ object HealingManager {
             item
         }
 
+        // 理疗经验（使用医疗物品）
+        SkillManager.givePhysiotherapyXp(player, useItem)
+
         var speedModUuid: UUID? = null
         if (config.slow > 0) {
             val modifier = AttributeModifier(
@@ -160,6 +167,16 @@ object HealingManager {
     private fun isItemValid(item: ItemStack): Boolean =
         item.amount > 0 && item.type != Material.AIR
 
+    // --- 理疗技能：概率不消耗耐久 ---
+
+    private fun shouldPreserveDurability(player: Player): Boolean {
+        if (!player.isOnline) return false
+        val level = try { PlayerDataManager(player).getLevel("physiotherapy") ?: 0L } catch (_: Exception) { 0L }
+        if (level <= 0) return false
+        // 每级 0.25%，满级 100 级 = 25%
+        return ThreadLocalRandom.current().nextDouble() < (level * 0.0025)
+    }
+
     // --- instant heal helpers ---
 
     private fun tryInstantHeal(
@@ -175,6 +192,8 @@ object HealingManager {
         val actual = floor(healed * 100) / 100
         if (actual <= 0) return false
         apply(actual)
+        // 理疗技能：概率不消耗耐久
+        if (shouldPreserveDurability(player)) return false
         val consumed = maxOf(1.0, floor(actual * rate))
         val newDur = dur - consumed
         if (newDur <= 0) {
@@ -199,11 +218,12 @@ object HealingManager {
         val toHeal = minOf(cumulativeCap, durabilityLimit)
         val actual = floor(toHeal * 100) / 100
         if (actual <= 0) {
-            // 耐久不足产生可测量的治疗效果，消耗物品退出
-            if (dur > 0) item.amount -= 1
-            return HealResult(0.0, true)
+            // 剩余可治疗量过小经舍入后为0，不消耗物品，由 isHealDone 判定是否完成
+            return HealResult(dur, false)
         }
         apply(actual)
+        // 理疗技能：概率不消耗耐久
+        if (shouldPreserveDurability(player)) return HealResult(dur, false)
         val consumed = maxOf(1.0, floor(actual * rate))
         val newDur = dur - consumed
         if (newDur <= 0) {
@@ -255,9 +275,15 @@ object HealingManager {
 
     @Awake(LifeCycle.ACTIVE)
     fun startHealingTick() {
-        submit(async = true, period = 10L) {
+        healingTask = submit(async = true, period = 10L) {
             tick()
         }
+    }
+
+    @Awake(LifeCycle.DISABLE)
+    fun stopHealingTick() {
+        healingTask?.cancel()
+        states.clear()
     }
 
     private fun tick() {

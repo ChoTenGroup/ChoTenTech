@@ -2,7 +2,12 @@ package io.github.zzzyyylllty.chotentech.hook
 import io.github.zzzyyylllty.chotentech.ChoTenTech.config
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerRegions
 import io.github.zzzyyylllty.chotentech.data.*
+import io.github.zzzyyylllty.chotentech.util.minimessage.legacyToMiniMessage
+import io.github.zzzyyylllty.chotentech.feature.SideInfoManager
 import io.github.zzzyyylllty.chotentech.util.replacePlaceholderSafety
+import ink.ptms.chemdah.api.ChemdahAPI
+import ink.ptms.chemdah.core.quest.addon.AddonTrack.Companion.trackQuest
+import ink.ptms.chemdah.core.quest.meta.MetaName
 import org.bukkit.OfflinePlayer
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
@@ -10,7 +15,10 @@ import org.bukkit.potion.PotionEffectType
 import io.github.zzzyyylllty.chotentech.function.AchievementManager
 import io.github.zzzyyylllty.chotentech.function.BaseManager
 import io.github.zzzyyylllty.chotentech.function.CurrencyManager
+import io.github.zzzyyylllty.chotentech.function.MetaManager
 import io.github.zzzyyylllty.chotentech.function.RankManager
+import io.github.zzzyyylllty.chotentech.function.WeightManager
+import io.github.zzzyyylllty.chotentech.quetiapine.data.PlayerDataManager
 import taboolib.platform.compat.PlaceholderExpansion
 import taboolib.platform.compat.replacePlaceholder
 import kotlin.math.floor
@@ -75,7 +83,7 @@ object ExamplePapiHook : PlaceholderExpansion {
                 return (current/max*100).toString()
             }
             "formatted" -> return player?.let { "%${args.removePrefix("formatted_")}%".replacePlaceholder(it).numberFormat() } ?: "1"
-            "hunger" -> return player?.let { (floor(getPercentHunger(it)/* *1.0)/1.0*/ )).toString() } ?: "100"
+            "hunger" -> return player?.let { floor(getPercentHunger(it)).toString() } ?: "100"
             "maxhunger" -> return player?.let { (floor(it.getData()?.maxHunger ?: 100.0)).toString() } ?: "100"
             "maxsaturation" -> return player?.let { (floor(it.getData()?.maxSaturation ?: 100.0)).toString() } ?: "100"
             "grain" -> return (round((player?.getData()?.grain ?: 0.0)*100)/100).toString()
@@ -326,6 +334,120 @@ object ExamplePapiHook : PlaceholderExpansion {
                     else -> "Error"
                 }
             }
+            "skill" -> {
+                if (player == null) return ""
+                val skillName = list.getOrNull(1)?.lowercase() ?: return "Error"
+                val field = list.getOrNull(2)?.lowercase() ?: "level"
+                val pm = try { PlayerDataManager(player) } catch (_: Exception) { return "0" }
+                return when (field) {
+                    "level" -> (pm.getLevel(skillName) ?: 0L).toString()
+                    "exp" -> "%.1f".format(pm.getExp(skillName)).removeSuffix(".0")
+                    "maxxp" -> pm.getNextLevelExp(skillName)?.let { "%.1f".format(it).removeSuffix(".0") } ?: "0"
+                    "progress" -> {
+                        val current = pm.getExp(skillName)
+                        val required = pm.getNextLevelExp(skillName) ?: return "100"
+                        if (required <= 0) return "100"
+                        "%.1f".format((current / required * 100).coerceAtMost(100.0)).removeSuffix(".0")
+                    }
+                    else -> "Error"
+                }
+            }
+            "stamina" -> {
+                val data = player?.getData() ?: return "0"
+                val field = list.getOrNull(1)?.lowercase() ?: "current"
+                return when (field) {
+                    "current" -> "%.1f".format(data.stamina).removeSuffix(".0")
+                    "max" -> "%.1f".format(data.maxStamina).removeSuffix(".0")
+                    "percent" -> {
+                        val max = data.maxStamina
+                        if (max <= 0) return "0"
+                        "%.1f".format((data.stamina / max * 100).coerceIn(0.0, 100.0)).removeSuffix(".0")
+                    }
+                    "hand" -> "%.1f".format(data.handStamina).removeSuffix(".0")
+                    "maxhand" -> "%.1f".format(data.maxHandStamina).removeSuffix(".0")
+                    else -> "Error"
+                }
+            }
+            "stress" -> {
+                return "%.1f".format(player?.getData()?.stress ?: 0.0).removeSuffix(".0")
+            }
+            "weight" -> {
+                if (player == null) return "0"
+                val field = list.getOrNull(1)?.lowercase() ?: "current"
+                return when (field) {
+                    "current" -> "%.1f".format(WeightManager.getPlayerTotalWeight(player)).removeSuffix(".0")
+                    "hud" -> formatWeightDisplay(player)
+                    else -> "Error"
+                }
+            }
+            "money" -> {
+                if (player == null) return "0"
+                return CurrencyManager.getBalance(player, "money").toString()
+            }
+            "point" -> {
+                if (player == null) return "0"
+                return CurrencyManager.getBalance(player, "point").toString()
+            }
+            "tape" -> {
+                if (player == null) return "0"
+                return CurrencyManager.getBalance(player, "tape").toString()
+            }
+            "goldentape" -> {
+                if (player == null) return "0"
+                return CurrencyManager.getBalance(player, "goldentape").toString()
+            }
+            "profilename" -> return player?.getData()?.profileName ?: ""
+            "profileid" -> return player?.getData()?.profileId ?: ""
+            "profilelp" -> {
+                val profileId = player?.getData()?.profileId
+                profileId?.let { "profile=$it" } ?: return ""
+                }
+            "playtime" -> {
+                val ms = player?.getData()?.playTime ?: return "0"
+                val hours = ms / 3600000
+                val minutes = (ms % 3600000) / 60000
+                return "${hours}h${minutes}m"
+            }
+            "consumption" -> return "%.1f".format(player?.getData()?.consumption ?: 0.0).removeSuffix(".0")
+            "pvp" -> return (player?.getData()?.pvpEnabled == true).toString()
+            "ended" -> return (player?.getData()?.ended == true).toString()
+            "ended_show" -> return if (player?.getData()?.ended == true) "<green>已结档" else "<yellow>未结档"
+            "ended_id" -> return player?.getData()?.endedId ?: "generic"
+            "reputation" -> {
+                val data = player?.getData() ?: return "0"
+                val faction = list.getOrNull(1)?.lowercase() ?: return "0"
+                return data.reputation[faction]?.toString() ?: "0"
+            }
+            "affection" -> {
+                val data = player?.getData() ?: return "0"
+                val npcId = list.getOrNull(1)?.lowercase() ?: return "0"
+                return data.affection[npcId]?.toString() ?: "0"
+            }
+            "meta" -> {
+                if (player == null) return ""
+                val scope = list.getOrNull(1)?.lowercase() ?: return "Error"
+                val key = list.drop(2).joinToString("_")
+                if (key.isEmpty()) return "Error"
+                val uuid = player.uniqueId.toString()
+                val entry = when (scope) {
+                    "shared" -> MetaManager.getShared(uuid, key)
+                    "independent" -> MetaManager.getIndependent(uuid, key)
+                    else -> return "Error"
+                }
+                return entry?.value ?: ""
+            }
+            "metaexists" -> {
+                if (player == null) return "false"
+                val scope = list.getOrNull(1)?.lowercase() ?: return "Error"
+                val key = list.drop(2).joinToString("_")
+                if (key.isEmpty()) return "Error"
+                val uuid = player.uniqueId.toString()
+                return when (scope) {
+                    "shared" -> MetaManager.hasShared(uuid, key).toString()
+                    "independent" -> MetaManager.hasIndependent(uuid, key).toString()
+                    else -> "Error"
+                }
+            }
             "formatdata" -> {
                 if (player == null) return ""
                 val data = player.getData() ?: return ""
@@ -338,6 +460,24 @@ object ExamplePapiHook : PlaceholderExpansion {
                     "food" -> formatFoodDisplay(player)
                     else -> "Error"
                 }
+            }
+            "sidebar" -> {
+                return getQuestSidebar(player) ?: ""
+            }
+            "sideinfo" -> {
+                if (player == null) return ""
+                if (SideInfoManager.isShowing(player)) {
+                    return SideInfoManager.getClipData(player)
+                }
+                return getQuestSidebar(player) ?: ""
+            }
+            "sidedata" -> {
+                if (player == null) return "idle"
+                return SideInfoManager.getSideData(player)
+            }
+            "clipdata" -> {
+                if (player == null) return ""
+                return SideInfoManager.getClipData(player)
             }
         }
         return "Error"
@@ -358,6 +498,42 @@ object ExamplePapiHook : PlaceholderExpansion {
 
     fun requestDataByCID(cid: String): PlayerData? {
         return DataManager.getDataByCID(cid)
+    }
+
+    private fun getQuestSidebar(player: Player?): String? {
+        if (player == null) return null
+        val profile = ChemdahAPI.playerProfile[player.name] ?: return null
+        val trackTemplate = profile.trackQuest ?: return null
+        val quest = profile.getQuests().firstOrNull { it.template === trackTemplate } ?: return null
+
+        val questName = quest.template.meta<MetaName>("name")?.displayName?.legacyToMiniMessage() ?: quest.id
+
+        val lines = mutableListOf<String>()
+        lines.add("<aqua>正在追踪任务")
+        lines.add("<yellow>$questName")
+        lines.add("")
+
+        for ((index, task) in quest.tasks.withIndex()) {
+            val taskName = task.meta<MetaName>("name")?.displayName?.legacyToMiniMessage() ?: task.id
+            val isCompleted = task.isCompleted(profile)
+
+            if (isCompleted) {
+                lines.add("<dark_gray>#${index + 1} $taskName<reset> <green>已完成")
+            } else {
+                val progress = task.objective.getProgress(profile, task)
+                val value = progress.value.toString().toDouble().roundToInt().toString()
+                val target = progress.target.toString().toDouble().roundToInt().toString()
+                val percent = (progress.percent * 100).roundToInt()
+
+                if (progress.value.toString().toDoubleOrNull()?.takeIf { it > 0 } != null) {
+                    lines.add("<dark_gray>#${index + 1} <gray>$taskName <yellow>$value/$target <gray>($percent%)")
+                } else {
+                    lines.add("<dark_gray>#${index + 1} <gray>$taskName <red>$value/$target")
+                }
+            }
+        }
+
+        return lines.joinToString("\n")
     }
 }
 
@@ -454,6 +630,21 @@ private fun formatFoodDisplay(player: Player): String {
     } else {
         "$color$num <gray>%"
     }
+}
+
+/**
+ * 负重 HUD 显示 —— 颜色 + 数值 + KG 单位。
+ * <20KG 绿 / 20-30KG 白（舒适区间） / 30-45KG 黄 / >=45KG 红（重度惩罚）
+ */
+private fun formatWeightDisplay(player: Player): String {
+    val weight = WeightManager.getPlayerTotalWeight(player)
+    val color = when {
+        weight < 20 -> "<green>"
+        weight <= 30 -> "<white>"
+        weight <= 45 -> "<yellow>"
+        else -> "<red>"
+    }
+    return "$color${"%.2f".format(weight)} <gray>kg"
 }
 
 /** 自定义状态效果中文显示名 */

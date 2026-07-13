@@ -9,8 +9,11 @@ import org.bukkit.Particle
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.player.PlayerMoveEvent
+import taboolib.common.LifeCycle
+import taboolib.common.platform.Awake
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submit
+import taboolib.common.platform.service.PlatformExecutor
 import io.github.zzzyyylllty.chotentech.util.minimessage.legacyToMiniMessage
 import io.github.zzzyyylllty.chotentech.util.toComponent
 import java.util.concurrent.ConcurrentHashMap
@@ -18,12 +21,13 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 private val orbitAngles = ConcurrentHashMap<String, Double>()
+private var auraTask: PlatformExecutor.PlatformTask? = null
 
 /**
  * Aura particle timer — runs every 4 ticks for smooth particle effects.
  */
 private fun startAuraTimer() {
-    submit(period = 4) {
+    auraTask = submit(period = 4) {
         for (player in Bukkit.getOnlinePlayers()) {
             val data = playerDataMap[player.uniqueId.toString()] ?: continue
             val auraId = data.cosmetics[CosmeticSlot.AURA.name] ?: continue
@@ -172,4 +176,10 @@ fun onEntityDeathForCosmetics(event: EntityDeathEvent) {
  */
 fun initCosmeticEffects() {
     startAuraTimer()
+}
+
+@Awake(LifeCycle.DISABLE)
+fun cancelCosmeticEffects() {
+    auraTask?.cancel()
+    orbitAngles.clear()
 }

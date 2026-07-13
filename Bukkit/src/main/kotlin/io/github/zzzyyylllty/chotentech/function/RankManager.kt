@@ -4,7 +4,7 @@ import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
 import io.github.zzzyyylllty.chotentech.data.RankConfig
 import io.github.zzzyyylllty.chotentech.util.devLog
 import io.github.zzzyyylllty.chotentech.util.toComponent
-import io.github.zzzyyylllty.sertraline.function.kether.evalKetherBoolean
+import io.github.zzzyyylllty.chotentech.kether.evalKetherBoolean
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import taboolib.common.platform.function.getDataFolder
@@ -177,6 +177,11 @@ object RankManager {
         val prefix = getRankDisplay(player, "prefix")
         val suffix = getRankDisplay(player, "suffix")
         return "$prefix${player.name}$suffix"
+    }
+
+    /** Get display string from the highest-priority eligible rank (no profile data needed) */
+    fun getEligibleRankDisplay(player: Player, type: String, displayKey: String = "current"): String {
+        return getEligibleRanks(player, type).firstOrNull()?.display?.get(displayKey) ?: ""
     }
 
     fun getTypes(): Set<String> = ranks.keys

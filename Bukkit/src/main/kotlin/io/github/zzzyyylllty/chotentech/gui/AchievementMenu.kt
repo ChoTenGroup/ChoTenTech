@@ -13,11 +13,18 @@ import taboolib.library.xseries.XMaterial
 import io.github.zzzyyylllty.chotentech.util.guiItem
 import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.PageableChest
+import taboolib.common.LifeCycle
+import taboolib.common.platform.Awake
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.concurrent.ConcurrentHashMap
 
 private val showHowtoMap = ConcurrentHashMap<String, Boolean>()
+
+@Awake(LifeCycle.DISABLE)
+fun clearAchievementMenuMaps() {
+    showHowtoMap.clear()
+}
 
 private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 

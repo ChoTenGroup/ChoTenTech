@@ -11,6 +11,7 @@ data class Base(
     val start: String,
     val region: String,
     val spawn: BaseSpawn,
+    val savePointRegion: String? = null,
 )
 
 data class BaseSpawn(

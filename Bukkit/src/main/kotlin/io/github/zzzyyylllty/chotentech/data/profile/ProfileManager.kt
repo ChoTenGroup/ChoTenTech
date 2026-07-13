@@ -19,6 +19,7 @@ import taboolib.expansion.Key
 import taboolib.expansion.Length
 import taboolib.expansion.db
 import taboolib.expansion.mapper
+import java.io.File
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
@@ -40,6 +41,9 @@ object ProfileManager {
     /** Set of uuids that have been migrated from old format */
     private val migrated = ConcurrentHashMap.newKeySet<String>()
 
+    /** Prevent repeated schema migration attempts */
+    private var schemaMigrated = false
+
     // ==================== PtcObject Data Classes & Mappers ====================
 
     class PlayerProfileRow {
@@ -53,6 +57,8 @@ object ProfileManager {
         var createTime: Long = 0L
         @Length(-1)
         var data: String = ""
+        var archived: Int = 0
+        var archivedAt: Long = 0L
     }
 
     class PlayerSharedRow {
@@ -64,6 +70,41 @@ object ProfileManager {
 
     val profileMapper by mapper<PlayerProfileRow>(db("config.yml", "database", "chotentech.db"))
     val sharedMapper by mapper<PlayerSharedRow>(db("config.yml", "database", "chotentech.db"))
+
+    // ==================== Schema Migration ====================
+
+    /**
+     * Auto-add columns that were added in later versions.
+     * Uses reflection to access the HikariDataSource from TabooLib's internal Container.
+     */
+    private fun migrateSchema() {
+        try {
+            // Force mapper initialization (lazy delegate) so the Container's DataSource exists
+            profileMapper.tableName
+
+            val mapperImpl = profileMapper
+            val containerField = mapperImpl::class.java.getDeclaredField("container")
+            containerField.isAccessible = true
+            val persistentContainer = containerField.get(mapperImpl)
+            val container = persistentContainer::class.java.getMethod("getContainer").invoke(persistentContainer)
+            val dataSource = container::class.java.getMethod("getDataSource").invoke(container) as javax.sql.DataSource
+
+            dataSource.connection.use { conn ->
+                conn.createStatement().use { stmt ->
+                    try { stmt.execute("ALTER TABLE `player_profile_row` ADD COLUMN `archived` INT NOT NULL DEFAULT 0") } catch (_: Exception) { }
+                    try { stmt.execute("ALTER TABLE `player_profile_row` ADD COLUMN `archivedAt` BIGINT NOT NULL DEFAULT 0") } catch (_: Exception) { }
+                }
+            }
+        } catch (e: Exception) {
+            devLog("[ProfileManager] Schema migration failed: ${e.message}")
+        }
+    }
+
+    private fun ensureSchema() {
+        if (schemaMigrated) return
+        schemaMigrated = true
+        migrateSchema()
+    }
 
     // ==================== Migration ====================
 
@@ -177,8 +218,10 @@ object ProfileManager {
     // ==================== Profile Info Cache ====================
 
     private fun loadProfileInfos(uuid: String): List<ProfileInfo> {
+        ensureSchema()
         return profileMapper.findAll {
             "uuid" eq uuid
+            "archived" eq 0
         }.map { row ->
             ProfileInfo(
                 profileId = row.profileId,
@@ -192,10 +235,36 @@ object ProfileManager {
         }
     }
 
+    /** Load archived (soft-deleted) profile metadata */
+    private fun loadArchivedProfileInfos(uuid: String): List<ProfileInfo> {
+        return profileMapper.findAll {
+            "uuid" eq uuid
+            "archived" eq 1
+        }.map { row ->
+            ProfileInfo(
+                profileId = row.profileId,
+                profileName = row.profileName,
+                cid = IDData(
+                    id = row.cid.toLongOrNull() ?: 0L,
+                    type = row.cidType
+                ),
+                createTime = row.createTime
+            )
+        }
+    }
+
+    /** Check if ANY profile row exists in DB for this uuid (bypasses cache) */
+    private fun hasAnyProfileInDB(uuid: String): Boolean {
+        return profileMapper.count { "uuid" eq uuid } > 0
+    }
+
     fun getProfileInfos(uuid: String): List<ProfileInfo> {
         profileInfoMap[uuid]?.let { return it }
         val infos = loadProfileInfos(uuid)
-        profileInfoMap[uuid] = infos
+        // Only cache non-empty results to avoid stale empty-cache race conditions
+        if (infos.isNotEmpty()) {
+            profileInfoMap[uuid] = infos
+        }
         return infos
     }
 
@@ -207,13 +276,14 @@ object ProfileManager {
 
     /** Load a profile's PlayerData from DB (without shared fields) */
     fun loadProfileData(uuid: String, profileId: String): PlayerData? {
+        ensureSchema()
         val json = profileMapper.findOne {
             "uuid" eq uuid
             "profile_id" eq profileId
         }?.data ?: return null
 
         return try {
-            jsonUtils.fromJson(json, PlayerData::class.java)
+            jsonUtils.fromJson(json, PlayerData::class.java)?.normalize()
         } catch (e: Exception) {
             devLog("[ProfileManager] Failed to deserialize profile $profileId for $uuid: ${e.message}")
             null
@@ -271,7 +341,12 @@ object ProfileManager {
         val currentActiveId = getSharedData(uuid).activeProfileId
         if (currentData != null && currentActiveId.isNotEmpty()) {
             currentData.profileLocation = RespawnPoint.fromLocation(player.location)
+            currentData.lastLogoutTime = System.currentTimeMillis()
             captureInventory(player)
+            capturePotionEffects(player)
+            // Sync shared fields (tape, goldentape, achievements, cosmetics) before saving
+            syncToSharedData(uuid, currentData)
+            saveSharedData(uuid)
             // Save per-profile attribute modifiers before switching away
             val uuidObj = UUID.fromString(uuid)
             val attrData = AttributeManager.getPlayerPersistentData(uuidObj)
@@ -284,6 +359,10 @@ object ProfileManager {
         val shared = getSharedData(uuid)
         shared.activeProfileId = profileId
         saveSharedData(uuid)
+
+        // Update per-profile last login time
+        newData.lastLoginTime = System.currentTimeMillis()
+        saveProfileData(uuid, profileId, stripSharedFields(newData))
 
         // Restore per-profile attribute modifiers for the incoming profile
         val uuidObj = UUID.fromString(uuid)
@@ -304,12 +383,18 @@ object ProfileManager {
         // Restore inventory for the new profile
         applyInventory(player)
 
+        // Restore potion effects for the new profile
+        applyPotionEffects(player)
+
         // Teleport to the new profile's saved location, if any
         teleportToProfileLocation(player)
 
         // Re-detect current level based on player position (profile switch doesn't trigger move event)
         val helper = io.github.zzzyyylllty.chotentech.data.ChoTenDataHelper(player)
         helper.updateLevel()
+
+        // Signal LuckPerms context update for profile change
+        io.github.zzzyyylllty.chotentech.hook.ProfileContextCalculator.signalUpdate(player)
         return merged
     }
 
@@ -320,7 +405,9 @@ object ProfileManager {
         val maxProfiles = getMaxProfiles(player)
 
         if (infos.size >= maxProfiles) return null
+        // 不允许与活跃或已删除的 profile 同名
         if (infos.any { it.profileName == profileName }) return null
+        if (loadArchivedProfileInfos(uuid).any { it.profileName == profileName }) return null
 
         // Find next available profile ID
         val existingIds: Set<Int> = infos.map { it.profileId.toIntOrNull() ?: 0 }.toSet()
@@ -329,11 +416,9 @@ object ProfileManager {
         // Generate CID
         val cid = generateProfileID(uuid)
 
-        // Save current profile first
-        val currentData = playerDataMap[uuid]
-        if (currentData != null) {
-            saveProfileData(uuid, getSharedData(uuid).activeProfileId, stripSharedFields(currentData))
-        }
+        // NOTE: Do NOT save old profile here — switchProfile below handles it
+        // with proper inventory capture. Saving here without captureInventory
+        // would overwrite the old profile's saved inventory with stale data.
 
         val now = System.currentTimeMillis()
 
@@ -355,16 +440,24 @@ object ProfileManager {
         return switchProfile(player, newId)
     }
 
-    /** Delete a profile (cannot delete the last one) */
+    /** Soft-delete a profile: archive to file + mark in DB (cannot delete the last one) */
     fun deleteProfile(player: Player, profileId: String): Boolean {
         val uuid = player.uniqueId.toString()
         val infos = getProfileInfos(uuid)
         if (infos.size <= 1) return false
 
-        profileMapper.deleteWhere {
+        val row = profileMapper.findOne {
             "uuid" eq uuid
             "profile_id" eq profileId
-        }
+        } ?: return false
+
+        // Export full data to archive file
+        exportArchivedProfile(uuid, profileId, row.data)
+
+        // Mark as archived in DB instead of deleting
+        row.archived = 1
+        row.archivedAt = System.currentTimeMillis()
+        profileMapper.update(row)
 
         refreshProfileInfos(uuid)
 
@@ -378,6 +471,18 @@ object ProfileManager {
         }
 
         return true
+    }
+
+    /** Export profile data JSON to archive file for manual restoration */
+    private fun exportArchivedProfile(uuid: String, profileId: String, dataJson: String) {
+        try {
+            val dir = File(taboolib.common.platform.function.getDataFolder(), "profiles/archived/$uuid")
+            dir.mkdirs()
+            val file = File(dir, "$profileId.json")
+            file.writeText(dataJson)
+        } catch (e: Exception) {
+            devLog("[ProfileManager] Failed to export archive for $uuid / $profileId: ${e.message}")
+        }
     }
 
     fun renameProfile(uuid: String, profileId: String, newName: String) {
@@ -415,6 +520,31 @@ object ProfileManager {
         )
     }
 
+    /**
+     * Deduplicate profiles with the same name — keep only the first one (lowest profileId),
+     * delete extras. This is a safety net for the race-condition bug that created
+     * duplicate "Default" profiles on join.
+     */
+    private fun deduplicateProfiles(uuid: String) {
+        val infos = loadProfileInfos(uuid)
+        val groups = infos.groupBy { it.profileName }
+        for ((_, dups) in groups) {
+            if (dups.size <= 1) continue
+            // Keep the one with the lowest profileId (numeric sort)
+            val keep = dups.minBy { it.profileId.toIntOrNull() ?: Int.MAX_VALUE }
+            for (dup in dups) {
+                if (dup.profileId != keep.profileId) {
+                    profileMapper.deleteWhere {
+                        "uuid" eq uuid
+                        "profile_id" eq dup.profileId
+                    }
+                    devLog("[ProfileManager] Removed duplicate profile '${dup.profileName}' (${dup.profileId}) for $uuid")
+                }
+            }
+        }
+        refreshProfileInfos(uuid)
+    }
+
     /** Sync shared fields from PlayerData TO SharedData */
     fun syncToSharedData(uuid: String, data: PlayerData) {
         val shared = getSharedData(uuid)
@@ -447,6 +577,10 @@ object ProfileManager {
                 max = maxOf(max, i)
             }
         }
+        // Add profile ending bonuses (tracked in SharedData meta)
+        val sharedData = getSharedData(player.uniqueId.toString())
+        val endedBonus = sharedData.meta["ended_profile_bonus"]?.value?.toIntOrNull() ?: 0
+        max += endedBonus
         return max
     }
 
@@ -498,7 +632,6 @@ object ProfileManager {
     }
 
     /** Restore inventory from PlayerData onto the player.
-     *  Only clears inventory if the profile actually has saved inventory data.
      *  Must run on main thread (uses Bukkit inventory API). */
     fun applyInventory(player: Player) {
         if (!Bukkit.isPrimaryThread()) {
@@ -514,11 +647,11 @@ object ProfileManager {
         val data = playerDataMap[uuid] ?: return
         val inv = player.inventory
 
-        // If profile has no inventory data, don't touch the player's items
-        // (handles migration and new profiles gracefully)
+        // Always clear first to prevent item duplication when switching to an empty-profile
+        inv.clear()
+
         if (data.inventoryContents.isNullOrEmpty()) return
 
-        inv.clear()
         data.inventoryContents.forEach { (slot, serialized) ->
             val item = ItemSerializer.deserializeNbt(serialized)
             if (item != null && slot in 0..40) {
@@ -530,6 +663,44 @@ object ProfileManager {
     /** Clear inventory contents from PlayerData (for fresh profiles) */
     private fun clearInventoryData(data: PlayerData): PlayerData {
         return data.copy(inventoryContents = mutableMapOf())
+    }
+
+    // ==================== Potion Effects ====================
+
+    /** Capture current Bukkit potion effects into PlayerData and clear them. Must run on main thread. */
+    fun capturePotionEffects(player: Player) {
+        if (!Bukkit.isPrimaryThread()) {
+            val latch = java.util.concurrent.CountDownLatch(1)
+            submit {
+                try { capturePotionEffects(player) }
+                finally { latch.countDown() }
+            }
+            latch.await()
+            return
+        }
+        val uuid = player.uniqueId.toString()
+        val data = playerDataMap[uuid] ?: return
+        data.potionEffects = player.activePotionEffects.map { io.github.zzzyyylllty.chotentech.data.PotionEffectData.fromBukkit(it) }.toMutableList()
+        player.clearActivePotionEffects()
+    }
+
+    /** Restore saved potion effects from PlayerData onto the player. Must run on main thread. */
+    fun applyPotionEffects(player: Player) {
+        if (!Bukkit.isPrimaryThread()) {
+            val latch = java.util.concurrent.CountDownLatch(1)
+            submit {
+                try { applyPotionEffects(player) }
+                finally { latch.countDown() }
+            }
+            latch.await()
+            return
+        }
+        val uuid = player.uniqueId.toString()
+        val data = playerDataMap[uuid] ?: return
+        for (ped in data.potionEffects) {
+            val bukkit = ped.toBukkit() ?: continue
+            player.addPotionEffect(bukkit, true)
+        }
     }
 
     // ==================== Save All ====================
@@ -549,7 +720,23 @@ object ProfileManager {
         }
         val uuid = player.uniqueId.toString()
         val data = playerDataMap[uuid] ?: return
-        data.profileLocation?.toLocation()?.let { player.teleport(it); return }
+
+        data.profileLocation?.toLocation()?.let { loc ->
+            // 加载区块，防止掉落虚空
+            val chunk = loc.chunk
+            if (!chunk.isLoaded) chunk.load()
+            // 检查 Y 是否有效（低于世界最低高度则用安全坐标）
+            val minY = loc.world?.minHeight ?: -64
+            val safeLoc = if (loc.y < minY || loc.y > 320) {
+                loc.world?.let { w ->
+                    val highest = w.getHighestBlockYAt(loc.blockX, loc.blockZ)
+                    loc.clone().apply { y = maxOf(highest + 1.0, minY + 5.0) }
+                } ?: loc
+            } else loc
+            player.teleport(safeLoc)
+            return
+        }
+
         // Fallback: no saved location — use Area0 spawn or world spawn
         val world = Bukkit.getWorld("Area0") ?: Bukkit.getWorlds().first()
         val fallback = if (world.name == "Area0") Location(world, -6.0, 14.0, 5.0)
@@ -566,6 +753,11 @@ object ProfileManager {
 
         // Accumulate play time before saving
         accumulatePlayTime(player)
+
+        // Track quit/logout timestamps
+        val now = System.currentTimeMillis()
+        data.lastLogoutTime = now
+        getSharedData(uuid).lastQuitTime = now
 
         // Save current location
         data.profileLocation = RespawnPoint.fromLocation(player.location)
@@ -598,15 +790,25 @@ object ProfileManager {
     /** Ensure a player has at least one profile — called on join */
     fun ensureProfile(player: Player): PlayerData {
         val uuid = player.uniqueId.toString()
+        val now = System.currentTimeMillis()
+
+        // Ensure schema migration runs BEFORE any mapper access
+        ensureSchema()
 
         // Migrate old data if needed
         migrateOldData(uuid)
 
-        // Check if profiles exist
-        val infos = getProfileInfos(uuid)
-        if (infos.isEmpty()) {
+        // Update shared join tracking
+        val shared = getSharedData(uuid)
+        if (shared.joinCount == 0 && shared.firstJoinTime == 0L) {
+            shared.firstJoinTime = now
+        }
+        shared.lastJoinTime = now
+        shared.joinCount++
+
+        // Check if profiles exist — query DB directly to bypass any stale cache
+        if (!hasAnyProfileInDB(uuid)) {
             // Create default profile
-            val now = System.currentTimeMillis()
             val cid = generateProfileID(uuid)
             val defaultLoc = if (Bukkit.getWorld("Area0") != null) {
                 Location(Bukkit.getWorld("Area0")!!, -6.0, 14.0, 5.0)
@@ -625,13 +827,17 @@ object ProfileManager {
             saveProfileData(uuid, "1", profileData)
             refreshProfileInfos(uuid)
 
-            val shared = getSharedData(uuid)
             shared.activeProfileId = "1"
-            saveSharedData(uuid)
+        } else {
+            // Refresh cache from DB in case it was stale
+            refreshProfileInfos(uuid)
+            // Deduplicate: remove any extra profiles beyond the first with the same name
+            deduplicateProfiles(uuid)
         }
 
+        saveSharedData(uuid)
+
         // Load active profile
-        val shared = getSharedData(uuid)
         val data = loadProfileData(uuid, shared.activeProfileId)
         if (data == null) {
             // Fallback: load first profile
@@ -641,6 +847,8 @@ object ProfileManager {
                 saveSharedData(uuid)
                 val fallbackData = loadProfileData(uuid, first.profileId)
                 if (fallbackData != null) {
+                    fallbackData.lastLoginTime = now
+                    saveProfileData(uuid, first.profileId, stripSharedFields(fallbackData))
                     val merged = mergeSharedFields(fallbackData, shared)
                     playerDataMap[uuid] = merged
                     // Load profile-specific attribute modifiers
@@ -666,6 +874,10 @@ object ProfileManager {
             else submit { player.inventory.clear() }
             return empty
         }
+
+        // Update per-profile last login time (BEFORE merge so merged copy carries it)
+        data.lastLoginTime = now
+        saveProfileData(uuid, shared.activeProfileId, stripSharedFields(data))
 
         val merged = mergeSharedFields(data, shared)
         playerDataMap[uuid] = merged

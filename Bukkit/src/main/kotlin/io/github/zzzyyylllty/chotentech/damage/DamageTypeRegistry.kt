@@ -4,11 +4,13 @@ import io.github.zzzyyylllty.chotentech.ChoTenTech
 import io.github.zzzyyylllty.chotentech.data.AttributeType
 import io.github.zzzyyylllty.chotentech.data.RegistrationSource
 import io.github.zzzyyylllty.chotentech.damage.handlers.*
+import io.github.zzzyyylllty.chotentech.damage.handlers.FrostHandler
 import io.github.zzzyyylllty.chotentech.logger.infoS
 import io.github.zzzyyylllty.chotentech.logger.warningS
 import io.github.zzzyyylllty.chotentech.manager.AttributeManager
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
+import taboolib.common.platform.function.submitAsync
 
 /**
  * 伤害类型注册表
@@ -185,5 +187,15 @@ object DamageTypeRegistry {
         }
 
         loadConfig()
+
+        // 定时清理各 handler 中的过期状态（每 5 分钟）
+        submitAsync(period = 6000L) {
+            (handlers["frost"] as? FrostHandler)?.cleanupStale()
+        }
+    }
+
+    /** 关闭时清理各 handler 资源 */
+    fun shutdown() {
+        (handlers["burn"] as? BurnHandler)?.cancelAll()
     }
 }

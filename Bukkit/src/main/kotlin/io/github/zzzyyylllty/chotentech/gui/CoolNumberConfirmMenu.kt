@@ -42,7 +42,6 @@ class CoolNumberConfirmMenu(
             )
         ) {
             rows(6)
-            hidePlayerInventory()
 
             map(
                 "#########",

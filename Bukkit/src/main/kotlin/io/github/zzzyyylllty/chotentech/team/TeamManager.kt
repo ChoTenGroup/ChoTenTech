@@ -45,7 +45,7 @@ object TeamManager {
     fun isInTeam(player: UUID): Boolean = teams.containsKey(player)
 
     fun getInvites(target: UUID): List<Invite> =
-        invites[target]?.filter { !it.isExpired() }?.toList() ?: emptyList()
+        invites[target]?.toList()?.filter { !it.isExpired() } ?: emptyList()
 
     // ── Team operations ──
 
@@ -136,7 +136,9 @@ object TeamManager {
     fun handleLeaderQuit(leaderId: UUID) {
         val team = teams[leaderId] ?: return
         if (team.leader != leaderId) return
-        val previousMembers = team.allMembers.toList()
+        // Defensive copy to avoid CME from concurrent modification
+        val memberSnapshot = synchronized(team.members) { team.members.toList() }
+        val previousMembers = memberSnapshot + team.leader
         for (uuid in previousMembers) {
             teams.remove(uuid)
         }

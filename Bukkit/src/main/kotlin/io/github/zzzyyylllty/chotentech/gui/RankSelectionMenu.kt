@@ -17,6 +17,19 @@ import io.github.zzzyyylllty.chotentech.util.guiItem
 
 class RankSelectionMenu {
 
+    companion object {
+        private val typeNameMap = mapOf(
+            "prefix" to "前缀",
+            "suffix" to "后缀",
+            "chatsuffix" to "聊天后缀",
+            "chatcolor" to "聊天颜色"
+        )
+        private val displayKeyMap = mapOf(
+            "current" to "当前",
+            "short" to "简写"
+        )
+    }
+
     fun open(player: Player) {
         val types = RankManager.getTypes().toList()
         if (types.isEmpty()) {
@@ -26,7 +39,6 @@ class RankSelectionMenu {
 
         player.openMenu<Chest>(mmJsonUtil.serialize("<black><font:minecraft:fusionpixel10>称号选择".toComponent())) {
             rows(4)
-            hidePlayerInventory()
 
             map(
                 "#########",
@@ -44,7 +56,7 @@ class RankSelectionMenu {
                 val activeId = data.activeRanks[type]
                 val activeName = RankManager.ranks[type]?.get(activeId)?.name ?: "无"
 
-                set(slot, guiItem(XMaterial.BOOK, "<gold>$type", listOf("<gray>当前: <white>$activeName", "<green>点击查看"))) {
+                set(slot, guiItem(XMaterial.BOOK, "<gold>${typeNameMap[type] ?: type}", listOf("<gray>当前: <white>$activeName", "<green>点击查看"))) {
                     clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
                     openRankList(clicker, type)
                 }
@@ -58,10 +70,9 @@ class RankSelectionMenu {
         val activeId = data.activeRanks[type]
 
         player.openMenu<PageableChest<RankConfig>>(
-            mmJsonUtil.serialize("<black><font:minecraft:fusionpixel10>${type} 称号".toComponent())
+            mmJsonUtil.serialize("<black><font:minecraft:fusionpixel10>${typeNameMap[type] ?: type}".toComponent())
         ) {
             rows(6)
-            hidePlayerInventory()
 
             map(
                 "#########",
@@ -87,7 +98,7 @@ class RankSelectionMenu {
 
                 if (pData.activeRanks[type] == rank.id) {
                     pData.activeRanks.remove(type)
-                    clicker.sendMessage("§7已取消 $type 称号")
+                    clicker.sendMessage("§7已取消 ${typeNameMap[type] ?: type}")
                 } else {
                     if (RankManager.setPlayerRank(clicker, type, rank.id)) {
                         clicker.sendMessage("§a已选择称号: §f${rank.name}")
@@ -136,7 +147,7 @@ class RankSelectionMenu {
         }
 
         rank.display.forEach { (key, value) ->
-            lore += "<!i><dark_aqua>$key: <white>$value"
+            lore += "<!i><dark_aqua>${displayKeyMap[key] ?: key}: <white>$value"
         }
 
         if (rank.desc.isNotBlank() || rank.display.isNotEmpty()) {

@@ -29,7 +29,6 @@ class FactionSelectMenu {
 
         player.openMenu<Chest>(mmJsonUtil.serialize("<white><shift:-16><image:kangelicon:list><shift:-176>".toComponent())) {
             rows(6)
-            hidePlayerInventory()
 
             map(
                 "MMMMM   -",
@@ -109,7 +108,6 @@ class FactionSelectMenu {
             mmJsonUtil.serialize("<white><shift:-16><image:kangelicon:list><shift:-176><aqua><font:minecraft:fusionpixel10>${faction.displayName} 基地选择".toComponent())
         ) {
             rows(6)
-            hidePlayerInventory()
 
             map(
                 "CCC    <>",

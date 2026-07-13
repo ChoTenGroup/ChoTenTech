@@ -18,7 +18,7 @@ import taboolib.common.platform.command.subCommand
     description = "MEG积分管理",
     permissionMessage = "",
     permissionDefault = PermissionDefault.OP,
-    newParser = false,
+    newParser = true,
 )
 object MoneyCommand {
 
@@ -41,7 +41,7 @@ object MoneyCommand {
                     CurrencyManager.addBalance(player, "money", amount)
                     sender.sendComponent("<green>已给予 ${player.name} $amount ${CurrencyManager.displayName("money")}")
                 }
-                suggestion<CommandSender> { _, _ -> listOf("100", "1000", "10000") }
+                suggestion<CommandSender>(uncheck = true) { _, _ -> listOf("100", "1000", "10000") }
             }
         }
     }
@@ -60,7 +60,7 @@ object MoneyCommand {
                     CurrencyManager.addBalance(player, "money", amount)
                     sender.sendComponent("<green>已给予 ${player.name} $amount ${CurrencyManager.displayName("money")}")
                 }
-                suggestion<CommandSender> { _, _ -> listOf("100", "1000", "10000") }
+                suggestion<CommandSender>(uncheck = true) { _, _ -> listOf("100", "1000", "10000") }
             }
         }
     }
@@ -82,7 +82,7 @@ object MoneyCommand {
                         sender.sendComponent("<red>${player.name} 的${CurrencyManager.displayName("money")}不足")
                     }
                 }
-                suggestion<CommandSender> { _, _ -> listOf("100", "1000", "10000") }
+                suggestion<CommandSender>(uncheck = true) { _, _ -> listOf("100", "1000", "10000") }
             }
         }
     }
@@ -104,7 +104,7 @@ object MoneyCommand {
                         sender.sendComponent("<red>${player.name} 的${CurrencyManager.displayName("money")}不足")
                     }
                 }
-                suggestion<CommandSender> { _, _ -> listOf("100", "1000", "10000") }
+                suggestion<CommandSender>(uncheck = true) { _, _ -> listOf("100", "1000", "10000") }
             }
         }
     }
@@ -123,7 +123,7 @@ object MoneyCommand {
                     CurrencyManager.setBalance(player, "money", amount)
                     sender.sendComponent("<green>已将 ${player.name} 的${CurrencyManager.displayName("money")}设为 $amount")
                 }
-                suggestion<CommandSender> { _, _ -> listOf("0", "100", "1000") }
+                suggestion<CommandSender>(uncheck = true) { _, _ -> listOf("0", "100", "1000") }
             }
         }
     }

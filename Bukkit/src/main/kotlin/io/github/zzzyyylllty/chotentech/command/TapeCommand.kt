@@ -18,7 +18,7 @@ import taboolib.common.platform.command.subCommand
     description = "磁带货币管理",
     permissionMessage = "",
     permissionDefault = PermissionDefault.OP,
-    newParser = false,
+    newParser = true,
 )
 object TapeCommand {
 
@@ -39,7 +39,7 @@ object TapeCommand {
                     CurrencyManager.addBalance(player, "tape", amount)
                     sender.sendComponent("<green>已给予 ${player.name} $amount ${CurrencyManager.displayName("tape")}")
                 }
-                suggestion<CommandSender> { _, _ -> listOf("1", "5", "10") }
+                suggestion<CommandSender>(uncheck = true) { _, _ -> listOf("1", "5", "10") }
             }
         }
     }
@@ -58,7 +58,7 @@ object TapeCommand {
                     CurrencyManager.addBalance(player, "tape", amount)
                     sender.sendComponent("<green>已给予 ${player.name} $amount ${CurrencyManager.displayName("tape")}")
                 }
-                suggestion<CommandSender> { _, _ -> listOf("1", "5", "10") }
+                suggestion<CommandSender>(uncheck = true) { _, _ -> listOf("1", "5", "10") }
             }
         }
     }
@@ -80,7 +80,7 @@ object TapeCommand {
                         sender.sendComponent("<red>${player.name} 的${CurrencyManager.displayName("tape")}不足")
                     }
                 }
-                suggestion<CommandSender> { _, _ -> listOf("1", "5", "10") }
+                suggestion<CommandSender>(uncheck = true) { _, _ -> listOf("1", "5", "10") }
             }
         }
     }
@@ -102,7 +102,7 @@ object TapeCommand {
                         sender.sendComponent("<red>${player.name} 的${CurrencyManager.displayName("tape")}不足")
                     }
                 }
-                suggestion<CommandSender> { _, _ -> listOf("1", "5", "10") }
+                suggestion<CommandSender>(uncheck = true) { _, _ -> listOf("1", "5", "10") }
             }
         }
     }
@@ -121,7 +121,7 @@ object TapeCommand {
                     CurrencyManager.setBalance(player, "tape", amount)
                     sender.sendComponent("<green>已将 ${player.name} 的${CurrencyManager.displayName("tape")}设为 $amount")
                 }
-                suggestion<CommandSender> { _, _ -> listOf("0", "1", "5") }
+                suggestion<CommandSender>(uncheck = true) { _, _ -> listOf("0", "1", "5") }
             }
         }
     }

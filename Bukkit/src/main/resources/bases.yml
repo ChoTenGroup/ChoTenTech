@@ -23,6 +23,8 @@ bases:
       z: 0.0
       yaw: 0.0
       pitch: 0.0
+    save-point:
+      region: "base-alp-savepoint"
 
   BET:
     name: "Beta 基地"

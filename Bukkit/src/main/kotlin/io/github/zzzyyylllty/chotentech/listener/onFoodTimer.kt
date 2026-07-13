@@ -15,18 +15,51 @@ import taboolib.common.platform.Awake
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submit
 import taboolib.common.platform.function.submitAsync
+import taboolib.common.platform.service.PlatformExecutor
 import java.util.concurrent.ConcurrentHashMap
 
 private val mm = MiniMessage.miniMessage()
 private const val NO_STAMINA_MSG = "<red>耐力不足，请稍作休息..."
+private const val MARSHMALLOW_DEATH_MSG = "<red>因摄入过量油腻棉花糖而死亡"
 
 private val lastLocations = ConcurrentHashMap<String, Location>()
 private val pressureTickCounters = ConcurrentHashMap<String, Int>()
+private val lastSprintEndTime = ConcurrentHashMap<String, Long>()
 private var nutritionDecayCounter = 0
+private var marshmallowDecayCounter = 0
+private var chocoDecayCounter = 0
+
+private var foodTimerTask: PlatformExecutor.PlatformTask? = null
+private var staminaBarTask: PlatformExecutor.PlatformTask? = null
 
 @Awake(LifeCycle.ACTIVE)
 fun foodTimer() {
-    submit(period = 20) {
+    foodTimerTask = submit(period = 20) {
+        // === Marshmallow decay (every 60s) ===
+        marshmallowDecayCounter++
+        if (marshmallowDecayCounter >= 60) {
+            marshmallowDecayCounter = 0
+            for (player in Bukkit.getOnlinePlayers()) {
+                if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) continue
+                val data = playerDataMap[player.uniqueId.toString()] ?: continue
+                if (data.marshmallowCounter <= 0) continue
+                val decay = if (data.marshmallowCounter > 50) 8 else 2
+                data.marshmallowCounter = maxOf(data.marshmallowCounter - decay, 0)
+            }
+        }
+
+        // === Choco decay (every 60s, stops at 2) ===
+        chocoDecayCounter++
+        if (chocoDecayCounter >= 60) {
+            chocoDecayCounter = 0
+            for (player in Bukkit.getOnlinePlayers()) {
+                if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) continue
+                val data = playerDataMap[player.uniqueId.toString()] ?: continue
+                if (data.chocoCounter <= 2) continue
+                data.chocoCounter -= 1
+            }
+        }
+
         // === Nutrition decay (every 10s) ===
         nutritionDecayCounter++
         if (nutritionDecayCounter >= 10) {
@@ -67,13 +100,22 @@ fun foodTimer() {
                     (player as Audience).sendActionBar(mm.deserialize(NO_STAMINA_MSG))
                 }
             } else {
-                if (player.isSneaking) {
-                    data.stamina = minOf(data.stamina + 5.0 * staminaRegenMult, data.maxStamina)
+                // 奔跑结束后 5 秒（100 tick）才开始恢复
+                val sprintEndTime = lastSprintEndTime[uuid]
+                if (sprintEndTime != null && System.currentTimeMillis() - sprintEndTime < 5000) {
+                    // 还在冷却中，不恢复
                 } else if (moved && player.isOnGround) {
                     data.stamina = minOf(data.stamina + 2.0 * staminaRegenMult, data.maxStamina)
                 } else if (!moved) {
                     data.stamina = minOf(data.stamina + 4.0 * staminaRegenMult, data.maxStamina)
                 }
+            }
+            // 记录奔跑结束时间
+            if (!player.isSprinting && lastSprintEndTime[uuid] == null) {
+                lastSprintEndTime[uuid] = System.currentTimeMillis()
+            }
+            if (player.isSprinting) {
+                lastSprintEndTime.remove(uuid)
             }
             // === Jump consumption (airborne, not sprinting) ===
             if (!player.isOnGround && !player.isSprinting) {
@@ -128,6 +170,17 @@ fun foodTimer() {
                 }
             }
 
+                // === Marshmallow counter effects ===
+            if (data.marshmallowCounter > 0) {
+                io.github.zzzyyylllty.chotentech.function.MarshmallowManager.updateEffects(player, data.marshmallowCounter)
+                if (data.marshmallowCounter >= 121) {
+                    player.damage(10000.0)
+                    player.sendMessage(MARSHMALLOW_DEATH_MSG)
+                }
+            } else {
+                io.github.zzzyyylllty.chotentech.function.MarshmallowManager.removeModifiers(player)
+            }
+
             // === Vanilla food level sync ===
             val stamThreshold = data.maxStamina * 0.15
             val hungerThreshold = data.maxCustomHunger * 0.1
@@ -147,7 +200,7 @@ fun foodTimer() {
 
 @Awake(LifeCycle.ACTIVE)
 fun staminaBarSync() {
-    submitAsync(period = 5) {
+    staminaBarTask = submitAsync(period = 5) {
         for (player in Bukkit.getOnlinePlayers()) {
             if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) continue
             val data = playerDataMap[player.uniqueId.toString()] ?: continue
@@ -166,4 +219,13 @@ fun onPlayerToggleSprint(event: PlayerToggleSprintEvent) {
         event.isCancelled = true
         (player as Audience).sendActionBar(mm.deserialize(NO_STAMINA_MSG))
     }
+}
+
+@Awake(LifeCycle.DISABLE)
+fun cancelFoodTimers() {
+    foodTimerTask?.cancel()
+    staminaBarTask?.cancel()
+    lastLocations.clear()
+    pressureTickCounters.clear()
+    lastSprintEndTime.clear()
 }

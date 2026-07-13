@@ -6,8 +6,7 @@ import io.github.zzzyyylllty.chotentech.listener.checkPlayerIsInNoclipPoint
 import io.github.zzzyyylllty.chotentech.util.CurrencyUtil
 import io.github.zzzyyylllty.chotentech.util.toComponent
 import io.github.zzzyyylllty.sertraline.Sertraline
-import io.github.zzzyyylllty.sertraline.function.kether.evalKetherBoolean
-import net.kyori.adventure.text.Component
+import io.github.zzzyyylllty.chotentech.kether.evalKetherBoolean
 import org.bukkit.Bukkit
 import org.bukkit.Sound
 import org.bukkit.entity.Player

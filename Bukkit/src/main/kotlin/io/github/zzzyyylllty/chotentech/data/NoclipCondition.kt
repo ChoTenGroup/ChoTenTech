@@ -2,12 +2,13 @@ package io.github.zzzyyylllty.chotentech.data
 
 import org.bukkit.Location
 import org.bukkit.util.Vector
+import java.util.concurrent.ConcurrentHashMap
 
 enum class RandomNoclipMode { EACH, RESTART }
 
 data class SharedNoclipSession(
-    val paidBy: MutableSet<String> = mutableSetOf(),
-    val playersInRange: MutableSet<String> = mutableSetOf(),
+    val paidBy: MutableSet<String> = ConcurrentHashMap.newKeySet(),
+    val playersInRange: MutableSet<String> = ConcurrentHashMap.newKeySet(),
     var unlocked: Boolean = false,
 )
 

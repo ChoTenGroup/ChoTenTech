@@ -1,4 +1,4 @@
-package io.github.zzzyyylllty.sertraline.function.kether
+package io.github.zzzyyylllty.chotentech.kether
 
 import io.github.zzzyyylllty.chotentech.ChoTenTech.console
 import org.bukkit.Bukkit

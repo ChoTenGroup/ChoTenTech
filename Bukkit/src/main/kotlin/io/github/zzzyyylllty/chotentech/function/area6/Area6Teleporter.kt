@@ -6,8 +6,11 @@ import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.World
 import org.bukkit.entity.Player
+import taboolib.common.LifeCycle
+import taboolib.common.platform.Awake
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submit
+import taboolib.common.platform.service.PlatformExecutor
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
@@ -43,8 +46,10 @@ object Area6Teleporter {
     // player UUID -> waypoints that have been triggered and still in range
     private val playerTriggered = ConcurrentHashMap<UUID, MutableSet<Int>>()
 
+    private var teleportTask: PlatformExecutor.PlatformTask? = null
+
     fun startTask() {
-        submit(period = TASK_INTERVAL) {
+        teleportTask = submit(period = TASK_INTERVAL) {
             val world = Bukkit.getWorld(WORLD_NAME) ?: return@submit
 
             // find level-60 players in Area6
@@ -136,6 +141,12 @@ object Area6Teleporter {
     }
 
     // cleanup player data on quit
+    @Awake(LifeCycle.DISABLE)
+    fun stopTask() {
+        teleportTask?.cancel()
+        teleportTask = null
+    }
+
     @SubscribeEvent
     fun onPlayerQuit(event: org.bukkit.event.player.PlayerQuitEvent) {
         val uuid = event.player.uniqueId

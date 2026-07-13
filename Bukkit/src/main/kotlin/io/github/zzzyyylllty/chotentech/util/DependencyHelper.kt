@@ -21,6 +21,10 @@ object DependencyHelper {
         isPluginInstalled("CraftEngine")
     }
 
+    val luckPerms by lazy {
+        isPluginInstalled("LuckPerms")
+    }
+
 
 
 

@@ -9,6 +9,8 @@ small_firesalt:
     throw: { particle: flame, count: 16, speed: 0.2 }
     bounce: { particle: smoke, count: 8, speed: 0.15 }
     fuse: { particle: small_flame, count: 6, offset_x: 0.3, offset_y: 0.3, offset_z: 0.3, speed: 0.08 }
+    trail: { particle: small_flame, count: 1, speed: 0.05 }
+    cook: { particle: flame, count: 10, speed: 0.25 }
   bounce:
     max: 2
     factor: 0.5
@@ -34,6 +36,8 @@ big_firesalt:
     throw: { particle: flame, count: 24, speed: 0.3 }
     bounce: { particle: large_smoke, count: 10, speed: 0.2 }
     fuse: { particle: flame, count: 10, offset_x: 0.4, offset_y: 0.4, offset_z: 0.4, speed: 0.1 }
+    trail: { particle: flame, count: 2, speed: 0.06 }
+    cook: { particle: flame, count: 18, speed: 0.35 }
   bounce:
     max: 1
     factor: 0.3

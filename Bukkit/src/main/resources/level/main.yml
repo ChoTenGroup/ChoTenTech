@@ -28,6 +28,5 @@ main:
   agents:
     onUpgrade:
       js: |
-        player.sendMessage(mmUtil.deserialize("<gold>[Quetiapine] <yellow><bold>LEVEL UP!</bold></yellow> <gray>You reached level <yellow>" + event.targetLevel))
         player.addPotionEffect(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.SLOWNESS, 300, 1))
         PlayerUtil.showTitle(player, mmUtil.deserialize("<gradient:yellow:gold>[ LEVEL UP ]"), mmUtil.deserialize("<gray>" + event.sourceLevel + " -> " + event.targetLevel), 20, 100, 20);

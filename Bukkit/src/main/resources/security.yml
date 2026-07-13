@@ -1,0 +1,101 @@
+groups:
+  president:
+    users:
+      AkaCandyKAngel:
+        accounts: [AkaCandyKAngel, AkaCanKAngel, AkaCandyLi2CO3]
+    checks: []
+    safemode: false
+  core:
+    users:
+      Jesuzi:
+        accounts: [Jesuzi, mosoon]
+      XingChen:
+        accounts: [NK_XingChen]
+    checks: [setpresidentcheck, setcorecheck]
+    safemode: false
+  independent:
+    users:
+      Jeff:
+        accounts: [Pollux_Three]
+      Momoi: {}
+      Achu:
+        accounts: [TheAAAchu, TheAchu]
+    checks: [_core, setcorecheck, .+independentcheck, allperm] # _core继承core的检查
+    safemode: false
+  enterprise:
+    users:
+      Jeff:
+        accounts: [Pollux_Three]
+      FuLing: {}
+      PumpkinPie:
+        accounts: [Pumpkin_Pie5675]
+      FanXing:
+        accounts: [CountTheStars]
+    checks: [_independent]
+  observer:
+    users:
+      Jeff:
+        accounts: [Pollux_Three]
+      FuLing: {}
+      PumpkinPie:
+        accounts: [Pumpkin_Pie5675]
+    checks: [_independent]
+  moderator:
+    users:
+      Tong:
+        accounts: [Tong]
+      Like_Wind:
+        accounts: [Like_Wind]
+      Kingsthere:
+        accounts: [Kingsthere]
+    checks: [_independent]
+  default:
+    checks: [_independent, opcheck, gamemode]
+
+
+checks:
+  gamemode:
+    misc:
+      - creative
+      # - spectator 暂时不写因为考虑到有些情况可能用旁观
+  opcheck:
+    misc:
+      - op
+  allperm:
+    permissions:
+      - *
+      - luckperms.autoop
+  kether:
+    commands:
+      - (chemdahscript|chs).+
+      - (ady|adyeshach) script.+
+      - adyeshachscript.+
+      - (trm|trmenu) action.+
+      - invero dev.+
+      - idev.+
+      - .+command (papi )?["'].+
+  worldedit:
+    commands:
+      - /(cut|set)
+  generalcommands:
+    commands:
+      # 配置前带_标识宽松检查
+      - _tp.+
+      - _gamemode.+
+  setpresidentcheck:
+    commands:
+      - (lp|luckperms|perm|permission|permissions|perms|luckpermsbungee|lpb|luckpermsvelocity|lpv) user .+ parent .+ president.+
+  setcorecheck:
+    commands:
+      - (lp|luckperms|perm|permission|permissions|perms|luckpermsbungee|lpb|luckpermsvelocity|lpv) user .+ parent .+ core.+
+      - op .+
+  setindependentcheck:
+    commands:
+      - (lp|luckperms|perm|permission|permissions|perms|luckpermsbungee|lpb|luckpermsvelocity|lpv) user .+ parent .+ independent.+
+  setadmincheck:
+    commands:
+      - (lp|luckperms|perm|permission|permissions|perms|luckpermsbungee|lpb|luckpermsvelocity|lpv) user .+ parent .+ enterprise.+
+      - (lp|luckperms|perm|permission|permissions|perms|luckpermsbungee|lpb|luckpermsvelocity|lpv) user .+ parent .+ observer.+
+  sethelpercheck:
+      - (lp|luckperms|perm|permission|permissions|perms|luckpermsbungee|lpb|luckpermsvelocity|lpv) user .+ parent .+ helper.+
+      - (lp|luckperms|perm|permission|permissions|perms|luckpermsbungee|lpb|luckpermsvelocity|lpv) user .+ parent .+ moderator.+

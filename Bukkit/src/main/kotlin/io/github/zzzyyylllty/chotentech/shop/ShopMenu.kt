@@ -750,9 +750,21 @@ object ShopMenu : Listener {
                     break
                 }
             }
+            if (canAfford) {
+                for ((item, amount) in totalItems) {
+                    if (countItem(player, item) < amount) {
+                        canAfford = false
+                        break
+                    }
+                }
+            }
         } else {
             for ((itemKey, qty) in selected) {
                 val entry = shop.items[itemKey] ?: continue
+                val count = countItem(player, entry.id)
+                if (count < qty) {
+                    canAfford = false
+                }
                 for (reward in entry.sell) {
                     val amount = reward.amount * qty
                     when (reward.type) {
@@ -770,10 +782,19 @@ object ShopMenu : Listener {
         val confirmCfg = if (session.isBuyMode) {
             when {
                 canAfford -> shop.guiItems.confirmBuy.have
-                else -> shop.guiItems.confirmBuy.notEnough ?: shop.guiItems.confirmBuy.have
+                else -> shop.guiItems.confirmBuy.have.copy(
+                    name = "<red><b>货币不足",
+                    lore = "缺少足够的货币或物品\n无法购买"
+                )
             }
         } else {
-            shop.guiItems.confirmSell.have
+            when {
+                canAfford -> shop.guiItems.confirmSell.have
+                else -> shop.guiItems.confirmSell.have.copy(
+                    name = "<red><b>物品不足",
+                    lore = "你没有足够的物品\n无法出售"
+                )
+            }
         }
 
         val mat = try {
@@ -824,15 +845,20 @@ object ShopMenu : Listener {
             for ((item, amount) in totalItems) {
                 loreLines.add("<!i> <green>● ${formatItemName(item)} x$amount")
             }
-            loreLines.add("")
-            loreLines.add("<!i><green>点击确认出售")
+            if (!canAfford) {
+                loreLines.add("")
+                loreLines.add("<!i><red><bold>物品不足!")
+            } else {
+                loreLines.add("")
+                loreLines.add("<!i><green>点击确认出售")
+            }
         }
 
         loreLines.add("<!i><gray>右键取消所有选择")
 
         meta.lore(loreLines.map { it.replacePlaceholder(player).toComponent() })
 
-        if (!canAfford && session.isBuyMode) {
+        if (!canAfford) {
             meta.setEnchantmentGlintOverride(false)
         }
 

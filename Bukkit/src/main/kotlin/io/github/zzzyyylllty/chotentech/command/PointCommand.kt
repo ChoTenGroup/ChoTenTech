@@ -18,7 +18,7 @@ import taboolib.common.platform.command.subCommand
     description = "BNTG贸易点管理",
     permissionMessage = "",
     permissionDefault = PermissionDefault.OP,
-    newParser = false,
+    newParser = true,
 )
 object PointCommand {
 
@@ -39,7 +39,7 @@ object PointCommand {
                     CurrencyManager.addBalance(player, "point", amount)
                     sender.sendComponent("<green>已给予 ${player.name} $amount ${CurrencyManager.displayName("point")}")
                 }
-                suggestion<CommandSender> { _, _ -> listOf("100", "1000", "10000") }
+                suggestion<CommandSender>(uncheck = true) { _, _ -> listOf("100", "1000", "10000") }
             }
         }
     }
@@ -58,7 +58,7 @@ object PointCommand {
                     CurrencyManager.addBalance(player, "point", amount)
                     sender.sendComponent("<green>已给予 ${player.name} $amount ${CurrencyManager.displayName("point")}")
                 }
-                suggestion<CommandSender> { _, _ -> listOf("100", "1000", "10000") }
+                suggestion<CommandSender>(uncheck = true) { _, _ -> listOf("100", "1000", "10000") }
             }
         }
     }
@@ -80,7 +80,7 @@ object PointCommand {
                         sender.sendComponent("<red>${player.name} 的${CurrencyManager.displayName("point")}不足")
                     }
                 }
-                suggestion<CommandSender> { _, _ -> listOf("100", "1000", "10000") }
+                suggestion<CommandSender>(uncheck = true) { _, _ -> listOf("100", "1000", "10000") }
             }
         }
     }
@@ -102,7 +102,7 @@ object PointCommand {
                         sender.sendComponent("<red>${player.name} 的${CurrencyManager.displayName("point")}不足")
                     }
                 }
-                suggestion<CommandSender> { _, _ -> listOf("100", "1000", "10000") }
+                suggestion<CommandSender>(uncheck = true) { _, _ -> listOf("100", "1000", "10000") }
             }
         }
     }
@@ -121,7 +121,7 @@ object PointCommand {
                     CurrencyManager.setBalance(player, "point", amount)
                     sender.sendComponent("<green>已将 ${player.name} 的${CurrencyManager.displayName("point")}设为 $amount")
                 }
-                suggestion<CommandSender> { _, _ -> listOf("0", "100", "1000") }
+                suggestion<CommandSender>(uncheck = true) { _, _ -> listOf("0", "100", "1000") }
             }
         }
     }

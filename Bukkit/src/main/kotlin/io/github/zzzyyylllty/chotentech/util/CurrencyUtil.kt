@@ -1,6 +1,6 @@
 package io.github.zzzyyylllty.chotentech.util
 
-import io.github.zzzyyylllty.sertraline.function.kether.evalKether
+import io.github.zzzyyylllty.chotentech.kether.evalKether
 import me.clip.placeholderapi.PlaceholderAPI
 import net.milkbowl.vault.economy.Economy
 import org.bukkit.Bukkit

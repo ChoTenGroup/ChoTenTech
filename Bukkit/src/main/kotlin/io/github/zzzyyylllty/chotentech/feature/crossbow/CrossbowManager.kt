@@ -349,13 +349,6 @@ object CrossbowManager {
     private val defenseBySlotCache = ConcurrentHashMap<UUID, Map<AttributeSlot, Double>>()
     private val defenseBySlotCacheTimestamps = ConcurrentHashMap<UUID, Long>()
     private const val DEFENSE_CACHE_TTL = 30_000L
-    private const val DEFENSE_CACHE_MAX_SIZE = 500
-
-    fun startDefenseCacheTask() {
-        submit(async = true, period = 600L) {
-            refreshDefenseCache()
-        }
-    }
 
     fun collectDefenseBySlot(player: Player): Map<AttributeSlot, Double> {
         val uuid = player.uniqueId
@@ -389,31 +382,6 @@ object CrossbowManager {
         defenseBySlotCache[player.uniqueId] = result
         defenseBySlotCacheTimestamps[player.uniqueId] = System.currentTimeMillis()
         return result
-    }
-
-    private fun refreshDefenseCache() {
-        val now = System.currentTimeMillis()
-        for ((uuid, _) in defenseBySlotCache) {
-            val lastUpdate = defenseBySlotCacheTimestamps[uuid] ?: 0L
-            if (now - lastUpdate < DEFENSE_CACHE_TTL) continue
-
-            val player = Bukkit.getPlayer(uuid)
-            if (player == null || !player.isOnline) {
-                invalidateDefenseCache(uuid)
-                continue
-            }
-            computeAndCacheDefenseBySlot(player)
-        }
-        if (defenseBySlotCache.size > DEFENSE_CACHE_MAX_SIZE) {
-            val overflow = defenseBySlotCache.size - DEFENSE_CACHE_MAX_SIZE
-            val toEvict = defenseBySlotCacheTimestamps.entries
-                .sortedBy { it.value }
-                .take(overflow)
-                .map { it.key }
-            for (uuid in toEvict) {
-                invalidateDefenseCache(uuid)
-            }
-        }
     }
 
     fun invalidateDefenseCache(uuid: UUID) {
