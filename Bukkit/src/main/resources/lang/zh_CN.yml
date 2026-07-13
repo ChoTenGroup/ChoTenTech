@@ -50,6 +50,12 @@ Command_Manage_List_Header: <gold>--- <yellow>{0}</yellow> 的属性列表 ---
 Command_Manage_List_Empty: <gray>无修饰符。
 Command_Manage_Clear_Success: <green>成功清除 <yellow>{0}</yellow> 的所有修饰符。
 Command_Debug_Show_Header: <gold>--- 属性调试信息 ---
+Command_Debug_Show_Item: "<gray>{0}<gray>: <white>{1}</white>"
+Command_Debug_Show_Category_Header: "<gold>--- {0} ({1}) ---"
+Command_Debug_Show_Empty: "<yellow>该分类下无属性或分类不存在"
+Command_Debug_Show_EmptyAll: "<yellow>该玩家无任何属性数据"
+Command_Debug_Categories_Header: "<gold>===== 属性分类 ====="
+Command_Debug_Categories_Item: <yellow>{0}</yellow><gray> — {1} ({2} 个属性)
 Dodge_Triggered: <aqua>闪避！
 Block_Triggered: <green>格挡！
 

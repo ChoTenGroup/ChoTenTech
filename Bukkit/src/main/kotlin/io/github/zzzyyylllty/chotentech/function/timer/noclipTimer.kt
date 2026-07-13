@@ -1,7 +1,6 @@
 package io.github.zzzyyylllty.chotentech.function.timer
 
 import io.github.zzzyyylllty.chotentech.ChoTenTech
-import io.github.zzzyyylllty.chotentech.ChoTenTech.levelsList
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
 import io.github.zzzyyylllty.chotentech.data.ChoTenDataHelper
 import io.github.zzzyyylllty.chotentech.data.PowerManager
@@ -14,7 +13,7 @@ import io.github.zzzyyylllty.chotentech.function.noclip.RandomNoclipSelector
 import io.github.zzzyyylllty.chotentech.listener.checkPlayerIsInNoclipPoint
 import io.github.zzzyyylllty.chotentech.player.sendComponent
 import io.github.zzzyyylllty.chotentech.util.toComponent
-import io.github.zzzyyylllty.sertraline.function.kether.evalKetherValue
+import io.github.zzzyyylllty.chotentech.kether.evalKetherValue
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Sound
@@ -24,10 +23,15 @@ import taboolib.common.platform.Awake
 import taboolib.common.platform.function.submit
 import taboolib.common.platform.function.submitAsync
 import taboolib.common.platform.function.warning
+import taboolib.common.platform.service.PlatformExecutor
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.roundToLong
 
 private val playerInNoclip = ConcurrentHashMap<String, String>()
+
+private var noclipTask: PlatformExecutor.PlatformTask? = null
+private var autoNoclipTask: PlatformExecutor.PlatformTask? = null
+private var sharedNoclipTask: PlatformExecutor.PlatformTask? = null
 
 fun cleanupNoclipState(uuid: String) {
     playerInNoclip.remove(uuid)
@@ -35,7 +39,7 @@ fun cleanupNoclipState(uuid: String) {
 
 @Awake(LifeCycle.ACTIVE)
 fun noclipTime() {
-    submitAsync (period = 20) {
+    noclipTask = submitAsync (period = 20) {
 
         for (player in Bukkit.getOnlinePlayers()) {
 
@@ -67,7 +71,7 @@ fun noclipTime() {
 
                 } else {
 
-                    if ((0..100).random() <= (data.noclipPoint?.basicSuccessRate ?: 60.0)) {
+                    if ((0 until 100).random() <= (data.noclipPoint?.basicSuccessRate ?: 60.0)) {
 
                         data.noclipPoint?.name?.let { data.exploreredNoclips[data.activeLevelStr]?.add(it) ?: data.activeLevelStr?.let { key -> data.exploreredNoclips.put(key, hashSetOf(it)) } }
                         val selectedLocation = data.noclipPoint?.let { selectTargetLocation(player, it) }
@@ -147,7 +151,7 @@ fun noclipTime() {
 /** 自动切出检测：每 1 秒检查玩家是否在 autoNoclip 切出点内 */
 @Awake(LifeCycle.ACTIVE)
 fun autoNoclipTimer() {
-    submitAsync(period = 20L) {
+    autoNoclipTask = submitAsync(period = 20L) {
         for (player in Bukkit.getOnlinePlayers()) {
             val data = playerDataMap[player.uniqueId.toString()] ?: continue
             // 已经在切出中或正在冷却中则跳过
@@ -189,7 +193,7 @@ fun autoNoclipTimer() {
 
 @Awake(LifeCycle.ACTIVE)
 fun sharedNoclipUpdateTimer() {
-    submitAsync(period = 40L) {
+    sharedNoclipTask = submitAsync(period = 40L) {
         for ((sessionKey, session) in ChoTenTech.sharedNoclipSessions) {
             val parts = sessionKey.split("::", limit = 2)
             if (parts.size < 2) continue
@@ -216,6 +220,14 @@ fun sharedNoclipUpdateTimer() {
             }
         }
     }
+}
+
+@Awake(LifeCycle.DISABLE)
+fun cancelNoclipTimers() {
+    noclipTask?.cancel()
+    autoNoclipTask?.cancel()
+    sharedNoclipTask?.cancel()
+    playerInNoclip.clear()
 }
 
 private fun selectTargetLocation(player: Player, noclipPoint: NoclipPoint): Location? {

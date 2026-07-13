@@ -4,6 +4,7 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldguard.WorldGuard
 import com.sk89q.worldguard.protection.util.WorldEditRegionConverter
 import io.github.zzzyyylllty.chotentech.ChoTenTech.levelsList
+import io.github.zzzyyylllty.chotentech.data.ChoTenDataHelper
 import io.github.zzzyyylllty.chotentech.data.getData
 import io.github.zzzyyylllty.chotentech.function.noclip.RandomNoclipSelector
 import io.github.zzzyyylllty.sertraline.logger.sendStringAsComponent
@@ -40,7 +41,10 @@ object TpLevelCommand {
                     sender.sendMessage("Teleporting to Level: ${level.name}")
                     val reg = WorldEditRegionConverter.convertToRegion(level.region)
                     val teleportLocation = Location(level.getWorld(), reg.center.x(), reg.center.y(), reg.center.z())
-                    submit { sender.teleport(teleportLocation) }
+                    submit {
+                        sender.teleport(teleportLocation)
+                        ChoTenDataHelper(sender).updateLevel()
+                    }
                 }
             }
             suggestion<Player> { sender, context ->

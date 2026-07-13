@@ -13,6 +13,7 @@ import org.bukkit.entity.Player
 import taboolib.common.platform.function.getDataFolder
 import taboolib.common.platform.function.releaseResourceFolder
 import taboolib.common.platform.function.submit
+import taboolib.common.platform.service.PlatformExecutor
 import taboolib.module.configuration.Configuration
 import java.io.File
 import java.util.UUID
@@ -53,6 +54,8 @@ object SteamPipeManager {
     private val playerHits = ConcurrentHashMap<UUID, Int>() // per-life hit count
 
     private var taskRunning = false
+    private var pluginEnabled = true
+    private var tickTask: PlatformExecutor.PlatformTask? = null
 
     // ---- Constants ----
     private const val SCAN_INTERVAL = 200
@@ -125,16 +128,18 @@ object SteamPipeManager {
     // ==================== Lifecycle ====================
 
     fun startTask() {
-        if (taskRunning) return
+        if (taskRunning || !pluginEnabled) return
         taskRunning = true
         devLog("<gray>[SteamPipe] 启动 tick 任务</gray>")
-        submit(period = TICK_INTERVAL.toLong(), delay = 40L) {
+        tickTask = submit(period = TICK_INTERVAL.toLong(), delay = 40L) {
             tick()
         }
     }
 
     fun stopTask() {
         taskRunning = false
+        tickTask?.cancel()
+        tickTask = null
         val unitCount = activeUnits.size
         activeUnits.clear()
         playerHits.clear()
@@ -142,6 +147,7 @@ object SteamPipeManager {
     }
 
     fun cleanup() {
+        pluginEnabled = false
         stopTask()
         levelConfigs.clear()
         devLog("<gray>[SteamPipe] 完全清理</gray>")
@@ -152,6 +158,7 @@ object SteamPipeManager {
     private var tickCounter = 0
 
     private fun tick() {
+        if (!taskRunning) return
         tickCounter++
         processUnits()
         if (tickCounter % (SCAN_INTERVAL / TICK_INTERVAL) == 0) {

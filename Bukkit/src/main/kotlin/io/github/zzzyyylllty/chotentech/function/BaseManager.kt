@@ -47,6 +47,7 @@ object BaseManager {
                     start = sec.getString("start") ?: "",
                     region = sec.getString("region") ?: "base-${idef.lowercase()}",
                     spawn = spawn,
+                    savePointRegion = sec.getString("save-point.region"),
                 )
                 baseMap[idef] = base
             } catch (e: Exception) {

@@ -12,6 +12,7 @@ import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.function.submit
 import taboolib.common.platform.function.submitAsync
+import taboolib.common.platform.service.PlatformExecutor
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.pow
 
@@ -24,17 +25,19 @@ private val FRACTURE_KEY = NamespacedKey("chotentech", "fracture")
 /** 当前有骨折效果的玩家 */
 private val fractureActive = ConcurrentHashMap<String, Boolean>()
 
+private var statusEffectTask: PlatformExecutor.PlatformTask? = null
+
 @Awake(LifeCycle.ACTIVE)
 fun statusEffectTimer() {
-    submitAsync(period = 20) {
+    statusEffectTask = submitAsync(period = 20) {
         val fractureCleanup = mutableListOf<String>()
+        val pendingSyncEffects = mutableMapOf<String, List<PlayerStatusEffect>>()
 
         for (player in Bukkit.getOnlinePlayers()) {
             val playerId = player.uniqueId.toString()
             val data = playerDataMap[playerId] ?: continue
             val currentEffects = data.statusEffects
             if (currentEffects.isEmpty()) {
-                // 无效果 → 检查是否需要清理骨折
                 if (fractureActive.remove(playerId) != null) fractureCleanup.add(playerId)
                 continue
             }
@@ -71,7 +74,6 @@ fun statusEffectTimer() {
                     }
                 }
 
-                // 需要同步线程的操作
                 if (effect.type in listOf(FRACTURE, PAIN, MUSCLE_WEAKNESS)) {
                     syncEffects.add(effect)
                 }
@@ -81,29 +83,36 @@ fun statusEffectTimer() {
 
             data.statusEffects = remaining
 
-            // 追踪骨折状态以便清理
             val hasFracture = remaining.any { it.type == FRACTURE }
             val hadFracture = fractureActive[playerId] == true
             fractureActive[playerId] = hasFracture
             if (hadFracture && !hasFracture) fractureCleanup.add(playerId)
 
             if (syncEffects.isNotEmpty()) {
-                submit {
-                    // 先清理已过期的骨折 modifier
-                    for (cleanupId in fractureCleanup) {
-                        val p = Bukkit.getPlayer(java.util.UUID.fromString(cleanupId)) ?: continue
-                        val attr = p.getAttribute(Attribute.MOVEMENT_SPEED) ?: continue
-                        attr.modifiers.filter { it.key == FRACTURE_KEY }.forEach { attr.removeModifier(it) }
-                    }
-                    fractureCleanup.clear()
+                pendingSyncEffects[playerId] = syncEffects.toList()
+            }
+        }
 
-                    for (effect in syncEffects) {
+        // Single main-thread submit to handle all fracture cleanup + sync effects
+        if (pendingSyncEffects.isNotEmpty() || fractureCleanup.isNotEmpty()) {
+            submit {
+                // Fracture cleanup
+                for (cleanupId in fractureCleanup) {
+                    val p = Bukkit.getPlayer(java.util.UUID.fromString(cleanupId)) ?: continue
+                    val attr = p.getAttribute(Attribute.MOVEMENT_SPEED) ?: continue
+                    attr.modifiers.filter { it.key == FRACTURE_KEY }.forEach { attr.removeModifier(it) }
+                }
+
+                // Sync effects per player
+                for ((playerId, effects) in pendingSyncEffects) {
+                    val player = Bukkit.getPlayer(java.util.UUID.fromString(playerId)) ?: continue
+                    val helper = ChoTenDataHelper(player)
+
+                    for (effect in effects) {
                         when (effect.type) {
                             FRACTURE -> {
                                 val attr = player.getAttribute(Attribute.MOVEMENT_SPEED) ?: continue
-                                // 移除旧的骨折 modifier
                                 attr.modifiers.filter { it.key == FRACTURE_KEY }.forEach { attr.removeModifier(it) }
-                                // 叠加计算：L1=30% L2=51% L3=65.7% ...
                                 val reduction = 1.0 - 0.7.pow(effect.level)
                                 attr.addModifier(AttributeModifier(
                                     FRACTURE_KEY,
@@ -131,17 +140,14 @@ fun statusEffectTimer() {
                         }
                     }
                 }
-            } else if (fractureCleanup.isNotEmpty()) {
-                // 仅有清理任务时也需要执行 submit
-                submit {
-                    for (cleanupId in fractureCleanup) {
-                        val p = Bukkit.getPlayer(java.util.UUID.fromString(cleanupId)) ?: continue
-                        val attr = p.getAttribute(Attribute.MOVEMENT_SPEED) ?: continue
-                        attr.modifiers.filter { it.key == FRACTURE_KEY }.forEach { attr.removeModifier(it) }
-                    }
-                    fractureCleanup.clear()
-                }
             }
         }
     }
+}
+
+@Awake(LifeCycle.DISABLE)
+fun cancelStatusEffectTimer() {
+    statusEffectTask?.cancel()
+    houndVirusLastProc.clear()
+    fractureActive.clear()
 }

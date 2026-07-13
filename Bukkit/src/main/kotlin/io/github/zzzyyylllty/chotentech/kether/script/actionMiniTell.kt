@@ -1,15 +1,10 @@
-package io.github.zzzyyylllty.sertraline.function.kether.script
+package io.github.zzzyyylllty.chotentech.kether.script
 
 import net.kyori.adventure.audience.Audience
-import net.kyori.adventure.text.ComponentLike
 import taboolib.module.kether.KetherParser
-import taboolib.module.kether.actionNow
 import taboolib.module.kether.script
-import taboolib.module.kether.scriptParser
-import taboolib.module.kether.switch
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.command.CommandSender
-import org.bukkit.entity.Player
 import taboolib.module.kether.combinationParser
 
 

@@ -106,7 +106,7 @@ fun onPlayerEat(event: PlayerItemConsumeEvent) {
                     }
                 }
             } else {
-                event.replacement = item
+                // No durability — item will be consumed normally (stack -1)
             }
             return
         }

@@ -3,14 +3,15 @@ package io.github.zzzyyylllty.chotentech.listener
 import io.github.zzzyyylllty.chotentech.ChoTenTech.blockRegenMap
 import io.github.zzzyyylllty.chotentech.ChoTenTech.regenTemplates
 import io.github.zzzyyylllty.chotentech.ChoTenTech.regenTemplatesByBlock
-import io.github.zzzyyylllty.quetiapine.data.MiningPowerManager
-import io.github.zzzyyylllty.quetiapine.data.Regen
-import io.github.zzzyyylllty.quetiapine.data.RegenBlock
-import io.github.zzzyyylllty.quetiapine.data.RegenTemplate
-import io.github.zzzyyylllty.quetiapine.data.load.PickaxeLevelManager
-import io.github.zzzyyylllty.quetiapine.util.DependencyHelper
-import io.github.zzzyyylllty.quetiapine.util.devLog
-import io.github.zzzyyylllty.quetiapine.util.toComponent
+import io.github.zzzyyylllty.chotentech.manager.AttributeManager
+import io.github.zzzyyylllty.chotentech.quetiapine.data.MiningPowerManager
+import io.github.zzzyyylllty.chotentech.quetiapine.data.Regen
+import io.github.zzzyyylllty.chotentech.quetiapine.data.RegenBlock
+import io.github.zzzyyylllty.chotentech.quetiapine.data.RegenTemplate
+import io.github.zzzyyylllty.chotentech.quetiapine.data.load.PickaxeLevelManager
+import io.github.zzzyyylllty.chotentech.quetiapine.util.DependencyHelper
+import io.github.zzzyyylllty.chotentech.quetiapine.util.devLog
+import io.github.zzzyyylllty.chotentech.quetiapine.util.toComponent
 import net.momirealms.craftengine.bukkit.api.CraftEngineBlocks
 import net.momirealms.craftengine.core.util.Key
 import org.bukkit.GameMode
@@ -27,8 +28,11 @@ import taboolib.common.platform.Awake
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submit
 import taboolib.common.platform.function.submitAsync
+import taboolib.common.platform.service.PlatformExecutor
 import java.util.LinkedList
 import kotlin.math.roundToLong
+
+private var regenBlockTask: PlatformExecutor.PlatformTask? = null
 
 val blockAdapters = LinkedHashMap<String, BlockAdapter>()
 
@@ -106,8 +110,10 @@ fun onRegenBlockBreak(e: BlockBreakEvent) {
     if (strength > 1.0) {
         e.isCancelled = true
 
-        // 计算工具伤害
-        val toolDmg = MiningPowerManager.getToolDamage(player, template.category)
+        // 计算工具伤害 (基础伤害 × 挖掘强度属性)
+        val baseDmg = MiningPowerManager.getToolDamage(player, template.category)
+        val miningPower = AttributeManager.getAttributeValue(player, "mining_power").coerceAtLeast(0.0)
+        val toolDmg = baseDmg * miningPower
 
         // 应用伤害
         val total = MiningPowerManager.applyDamage(e.block.location, toolDmg)
@@ -225,7 +231,7 @@ fun registerNativeBlockAdapters() {
 
 @Awake(LifeCycle.ACTIVE)
 fun refreshRegenBlocks() {
-    submitAsync(period = 40) {
+    regenBlockTask = submitAsync(period = 40) {
         if (blockRegenMap.isEmpty()) return@submitAsync
         val now = System.currentTimeMillis()
         val expired = ArrayList<Map.Entry<Location, Regen>>()
@@ -250,6 +256,7 @@ fun refreshRegenBlocks() {
 
 @Awake(LifeCycle.DISABLE)
 fun releaseRegenBlocks() {
+    regenBlockTask?.cancel()
     for (entry in blockRegenMap) {
         devLog("Releasing $entry")
         val (_, _, location, block, bBlock, blockData) = entry.value

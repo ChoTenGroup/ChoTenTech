@@ -61,8 +61,6 @@ activity:
   agents:
     onUpgrade:
       js:
-        player.sendMessage(mmUtil.deserialize("<gold>[Quetiapine] <gray>Your ACTIVITY level reached <yellow>" + level))
-        // OR player.sendMessage(mmUtil.deserialize("<gold>[Quetiapine] <gray>You reached level <yellow>" + event.targetLevel))
     onUpgradeSingle:
       ke:
         command papi inline "money add {{ &level }} %player_name%" as console

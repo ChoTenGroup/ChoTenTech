@@ -12,17 +12,22 @@ import io.github.zzzyyylllty.chotentech.data.SharedNoclipSession
 import io.github.zzzyyylllty.chotentech.data.PowerManager.onReload
 import io.github.zzzyyylllty.chotentech.data.SurvivalDifficulty
 import io.github.zzzyyylllty.chotentech.punish.PunishManager
+import io.github.zzzyyylllty.chotentech.security.SecurityManager
+import io.github.zzzyyylllty.chotentech.security.SecurityListener
 import io.github.zzzyyylllty.chotentech.feature.keydoor.KeyDoorManager
 import io.github.zzzyyylllty.chotentech.feature.crossbow.CrossbowManager
 import io.github.zzzyyylllty.chotentech.feature.projectile.ProjectileManager
 import io.github.zzzyyylllty.chotentech.feature.signpass.SignPassManager
 import io.github.zzzyyylllty.chotentech.feature.steampipe.SteamPipeManager
 import io.github.zzzyyylllty.chotentech.function.AchievementManager
+import io.github.zzzyyylllty.chotentech.globalmarket.GlobalMarketManager
 import io.github.zzzyyylllty.chotentech.function.BaseManager
 import io.github.zzzyyylllty.chotentech.function.DeathDropManager
+import io.github.zzzyyylllty.chotentech.feature.EndManager
 import io.github.zzzyyylllty.chotentech.function.RankManager
 import io.github.zzzyyylllty.chotentech.function.hideout.HideoutConfig
 import io.github.zzzyyylllty.chotentech.function.hideout.ItemNameHelper
+import io.github.zzzyyylllty.chotentech.data.cancelAllConsumableTasks
 import io.github.zzzyyylllty.chotentech.data.loadMedkitConfig
 import io.github.zzzyyylllty.chotentech.data.loadConsumableConfigs
 import io.github.zzzyyylllty.chotentech.damage.DamageTypeRegistry
@@ -39,17 +44,18 @@ import io.github.zzzyyylllty.chotentech.load.loadPowerFiles
 import io.github.zzzyyylllty.chotentech.load.tempPowers
 import io.github.zzzyyylllty.chotentech.util.CurrencyUtil
 import io.github.zzzyyylllty.chotentech.util.EconomyUtil
+import io.github.zzzyyylllty.chotentech.util.NotificationQueue
 import io.github.zzzyyylllty.chotentech.util.devLog
-import io.github.zzzyyylllty.quetiapine.data.LevelTemplate
-import io.github.zzzyyylllty.quetiapine.data.Regen
-import io.github.zzzyyylllty.quetiapine.data.RegenBlock
-import io.github.zzzyyylllty.quetiapine.data.RegenTemplate
-import io.github.zzzyyylllty.quetiapine.data.load.loadLevelFiles as loadQuetiapineLevelFiles
-import io.github.zzzyyylllty.quetiapine.data.load.loadRegenFiles
+import io.github.zzzyyylllty.chotentech.quetiapine.data.LevelTemplate
+import io.github.zzzyyylllty.chotentech.quetiapine.data.Regen
+import io.github.zzzyyylllty.chotentech.quetiapine.data.RegenBlock
+import io.github.zzzyyylllty.chotentech.quetiapine.data.RegenTemplate
+import io.github.zzzyyylllty.chotentech.quetiapine.data.load.loadLevelFiles as loadQuetiapineLevelFiles
+import io.github.zzzyyylllty.chotentech.quetiapine.data.load.loadRegenFiles
 import io.github.zzzyyylllty.chotentech.listener.releaseRegenBlocks
-import io.github.zzzyyylllty.quetiapine.logger.*
-import io.github.zzzyyylllty.quetiapine.util.QuetiapineLocalDependencyHelper
-import io.github.zzzyyylllty.quetiapine.util.dependencies
+import io.github.zzzyyylllty.chotentech.quetiapine.logger.*
+import io.github.zzzyyylllty.chotentech.quetiapine.util.QuetiapineLocalDependencyHelper
+import io.github.zzzyyylllty.chotentech.quetiapine.util.dependencies
 import io.github.zzzyyylllty.sertraline.Sertraline
 import net.momirealms.craftengine.core.world.ChunkPos
 import org.bukkit.Bukkit
@@ -101,6 +107,9 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
     @Config("account-types.yml")
     lateinit var accountTypes: Configuration
 
+    @Config("music-durations.yml")
+    lateinit var musicDurations: Configuration
+
     @Config("bases.yml")
     lateinit var baseConfig: Configuration
 
@@ -150,6 +159,13 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
         // Initialize punishment system
         PunishManager.reloadConfig()
 
+        // Initialize security system (auth/SafeMode)
+        SecurityManager.reload()
+        SecurityListener
+
+        // Initialize end/completion system
+        EndManager.init()
+
         // Initialize attribute system
         AttributeManager.registerBuiltinAttributes()
         AttributeManager.loadAttributeFiles()
@@ -167,18 +183,55 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
 
         // Initialize Area6 teleporter system
         io.github.zzzyyylllty.chotentech.function.area6.Area6Teleporter.startTask()
+
+        // Initialize global market
+        GlobalMarketManager.loadAll()
+
+        // Initialize bleedout / downed system
+        io.github.zzzyyylllty.chotentech.function.bleedout.BleedoutManager
+
+        // Register drop lock command and listener
+        io.github.zzzyyylllty.chotentech.function.DropCommand
+
+        // Register LuckPerms profile context calculator
+        io.github.zzzyyylllty.chotentech.hook.ProfileContextCalculator.register()
     }
 
     override fun onDisable() {
         info("Disable")
+        DamageTypeRegistry.shutdown()
         ProjectileManager.cleanupAll()
         SteamPipeManager.cleanup()
         KeyDoorManager.onDisable()
         SignPassManager.cleanup()
         DeathDropManager.removeAll()
+        GlobalMarketManager.saveToDisk()
+        GlobalMarketManager.cleanup()
         onReload()
         AchievementManager.unload()
         RankManager.unload()
+        cancelAllConsumableTasks()
+        NotificationQueue.clearAll()
+
+        // Unregister LuckPerms profile context calculator
+        io.github.zzzyyylllty.chotentech.hook.ProfileContextCalculator.unregister()
+
+        // Save all player profile data before clearing maps
+        io.github.zzzyyylllty.chotentech.data.DataManager.saveAllPlayerData()
+
+        // Clear static maps to prevent classloader memory leaks
+        playerDataMap.clear()
+        playerHudMap.clear()
+        loadedChunk.clear()
+        playerRegions.clear()
+        playerRandomNoclips.clear()
+        restartRandomNoclips.clear()
+        sharedNoclipSessions.clear()
+        sessionUnlockedNoclips.clear()
+        blockRegenMap.clear()
+        regenTemplatesByBlock.clear()
+        regenTemplates.clear()
+        levels.clear()
     }
 
     override fun onActive() {
@@ -227,6 +280,7 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
             releaseRegenBlocks()
             config.reload()
             devMode = config.getBoolean("debug",false)
+            io.github.zzzyyylllty.chotentech.util.OggDuration.load(config)
             ketherScriptCache.clear()
             jsScriptCache.clear()
             blockRegenMap.clear()
@@ -254,6 +308,8 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
             CurrencyUtil.load(currencyConfig)
             RankManager.load()
             PunishManager.reloadConfig()
+            SecurityManager.reload()
+            EndManager.init()
             conflictConfigs.clear()
             cosmeticConfigs.clear()
             loadConflictFiles()
@@ -265,7 +321,9 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
             CrossbowManager.loadCrossbowConfigs()
             SteamPipeManager.loadConfig()
             KeyDoorManager.loadConfig()
+            io.github.zzzyyylllty.chotentech.feature.keydoor.KeyDoorSertralineManager.loadConfig()
             SignPassManager.loadConfig()
+            io.github.zzzyyylllty.chotentech.feature.trap.TrapManager.loadConfig()
             loadMedkitConfig()
             loadConsumableConfigs()
             io.github.zzzyyylllty.chotentech.shop.ShopManager.loadAll()

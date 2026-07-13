@@ -1,7 +1,7 @@
 package io.github.zzzyyylllty.chotentech.command
 
 import io.github.zzzyyylllty.chotentech.player.sendComponent
-import io.github.zzzyyylllty.sertraline.function.kether.runKether
+import io.github.zzzyyylllty.chotentech.kether.runKether
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player

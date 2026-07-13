@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack
 import taboolib.common.platform.function.getDataFolder
 import taboolib.common.platform.function.releaseResourceFolder
 import taboolib.common.platform.function.submit
+import taboolib.common.platform.service.PlatformExecutor
 import taboolib.module.configuration.Configuration
 import taboolib.module.nms.ItemTag
 import taboolib.module.nms.getItemTag
@@ -43,6 +44,7 @@ object KeyDoorManager {
 
     // Tasks
     private var autoCloseRunning = false
+    private var autoCloseTask: PlatformExecutor.PlatformTask? = null
 
     // ==================== Config ====================
 
@@ -104,9 +106,13 @@ object KeyDoorManager {
         val tag = try { item.getItemTag() } catch (_: Exception) { return false }
         val keys = getKeysFromTag(tag)
 
-        if (doorConfig.key !in keys) return false
+        if (doorConfig.key !in keys) {
+            io.github.zzzyyylllty.chotentech.function.SkillManager.onDoorUnlockFailed(player)
+            return false
+        }
 
         // Open the door
+        io.github.zzzyyylllty.chotentech.function.SkillManager.onDoorUnlocked(player)
         openDoor(doorLoc)
         openDoors[doorLoc] = true
 
@@ -167,7 +173,7 @@ object KeyDoorManager {
     fun startAutoCloseTask() {
         if (autoCloseRunning) return
         autoCloseRunning = true
-        submit(period = 400L, delay = 400L) {
+        autoCloseTask = submit(period = 400L, delay = 400L) {
             if (openDoors.isEmpty()) return@submit
             val iter = openDoors.entries.iterator()
             while (iter.hasNext()) {
@@ -207,6 +213,8 @@ object KeyDoorManager {
 
     fun onDisable() {
         autoCloseRunning = false
+        autoCloseTask?.cancel()
+        autoCloseTask = null
         closeAllDoors()
     }
 

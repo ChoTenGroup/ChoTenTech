@@ -5,6 +5,9 @@ import org.bukkit.Bukkit
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.function.submitAsync
+import taboolib.common.platform.service.PlatformExecutor
+
+private var sanityTask: PlatformExecutor.PlatformTask? = null
 
 /** 解析 min 字段：若以 % 结尾则为百分比，否则为绝对值 */
 private fun resolveSanityMin(minStr: String, maxSanity: Double): Double {
@@ -19,7 +22,7 @@ private fun resolveSanityMin(minStr: String, maxSanity: Double): Double {
 /** 每秒执行：安全层级立即恢复，普通层级按 regen 缓慢恢复 */
 @Awake(LifeCycle.ACTIVE)
 fun sanityTimer() {
-    submitAsync(period = 20) {
+    sanityTask = submitAsync(period = 20) {
         for (player in Bukkit.getOnlinePlayers()) {
             val data = playerDataMap[player.uniqueId.toString()] ?: continue
             val cfg = data.activeLevel?.sanity ?: continue
@@ -35,4 +38,9 @@ fun sanityTimer() {
             }
         }
     }
+}
+
+@Awake(LifeCycle.DISABLE)
+fun cancelSanityTimer() {
+    sanityTask?.cancel()
 }

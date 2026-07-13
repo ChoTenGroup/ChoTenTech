@@ -16,11 +16,14 @@ import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.function.submit
 import taboolib.common.platform.function.submitAsync
+import taboolib.common.platform.service.PlatformExecutor
 import kotlin.math.roundToInt
+
+private var windowsTask: PlatformExecutor.PlatformTask? = null
 
 @Awake(LifeCycle.ACTIVE)
 fun checkWindows() {
-    submitAsync(period = 20) {
+    windowsTask = submitAsync(period = 20) {
         for((key, value) in playerRegions) {
             if (value.contains("level-4") || value.contains("level-881") || value.contains("level-9")) {
                 val player = Bukkit.getPlayer(key.toUUID()) ?: continue
@@ -61,4 +64,9 @@ fun checkWindows() {
             }
         }
     }
+}
+
+@Awake(LifeCycle.DISABLE)
+fun cancelWindowsTask() {
+    windowsTask?.cancel()
 }

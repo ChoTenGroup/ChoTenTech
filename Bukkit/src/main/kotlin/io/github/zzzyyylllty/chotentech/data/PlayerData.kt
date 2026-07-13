@@ -55,6 +55,7 @@ data class PlayerData (
     var subTag: String? = null,
     var createTime: Long = System.currentTimeMillis(),
     var lastLoginTime: Long = System.currentTimeMillis(),
+    var lastLogoutTime: Long = 0L,
     var editorMode: Boolean? = true,
     var discoveredBases: HashSet<String> = hashSetOf(),
     var exploreredLevels: HashSet<String> = hashSetOf(),
@@ -108,6 +109,9 @@ data class PlayerData (
     // pvp mode toggle
     var pvpEnabled: Boolean = false,
 
+    // profile end/completion flags
+    var ended: Boolean = false,
+    var endedId: String = "generic",
 
     // music replay tracking
     var lastMusicPlayTime: Long = 0L,
@@ -125,16 +129,30 @@ data class PlayerData (
     var unlockedNoclips: MutableSet<String> = mutableSetOf(),
     var unlockedShopItems: MutableSet<String> = mutableSetOf(),
 
+    var savedBases: MutableList<String> = mutableListOf(),
+
     var activeLevelStr: String? = null,
 
     // Last logout / profile-switch location — used to teleport when re-selecting this profile
     var profileLocation: RespawnPoint? = null,
+
+    // Marshmallow counter for greasy marshmallows system
+    var marshmallowCounter: Int = 0,
+
+    // Chocolate counter for chocobytes system (decays to min 2, reset on death)
+    var chocoCounter: Int = 0,
 
     // Quetiapine integration: per-profile key-value data (levels, exp, cooldowns, etc.)
     var quetiapineData: MutableMap<String, String> = mutableMapOf(),
 
     // Per-profile attribute modifiers — null means "not yet migrated" (will be seeded from shared attributes.db)
     var attributeModifiers: List<AttributeModifier>? = null,
+
+    // Per-profile meta flags (independent scope)
+    var meta: MutableMap<String, io.github.zzzyyylllty.chotentech.data.profile.MetaEntry> = mutableMapOf(),
+
+    // Per-profile saved Bukkit potion effects (serialized)
+    var potionEffects: MutableList<PotionEffectData> = mutableListOf(),
 
     @kotlin.jvm.Transient
     var sessionStart: Long = 0L     // set when profile is loaded, used to accumulate playTime
@@ -159,7 +177,10 @@ data class PlayerData (
         if (cosmetics == null) cosmetics = mutableMapOf()
         if (unlockedNoclips == null) unlockedNoclips = mutableSetOf()
         if (unlockedShopItems == null) unlockedShopItems = mutableSetOf()
+        if (savedBases == null) savedBases = mutableListOf()
         if (quetiapineData == null) quetiapineData = mutableMapOf()
+        if (meta == null) meta = mutableMapOf()
+        if (potionEffects == null) potionEffects = mutableListOf()
         return this
     }
 
@@ -203,7 +224,7 @@ data class PlayerData (
     fun setCooldownSec(sec: Double) {
         val now = Instant.now().toEpochMilli()
         val base = maxOf(noclipCooldownEnd ?: now, now)
-        noclipCooldownEnd = maxOf((noclipTimeEnd ?: base), now) + round(sec * 1000).toLong()
+        noclipCooldownEnd = base + round(sec * 1000).toLong()
     }
 }
 
@@ -212,6 +233,35 @@ data class PlayerStatusEffect(
     val level: Int,
     var remainingDuration: Long
 )
+
+/** Serializable representation of a Bukkit PotionEffect for per-profile storage */
+data class PotionEffectData(
+    val typeKey: String,       // e.g. "minecraft:speed"
+    val duration: Int,         // ticks
+    val amplifier: Int,
+    val ambient: Boolean,
+    val particles: Boolean,
+    val icon: Boolean
+) {
+    fun toBukkit(): org.bukkit.potion.PotionEffect? {
+        val key = org.bukkit.NamespacedKey.fromString(typeKey) ?: return null
+        val type = org.bukkit.Registry.EFFECT.get(key) ?: return null
+        return org.bukkit.potion.PotionEffect(type, duration, amplifier, ambient, particles, icon)
+    }
+
+    companion object {
+        fun fromBukkit(effect: org.bukkit.potion.PotionEffect): PotionEffectData {
+            return PotionEffectData(
+                typeKey = effect.type.key.asString(),
+                duration = effect.duration,
+                amplifier = effect.amplifier,
+                ambient = effect.isAmbient,
+                particles = effect.hasParticles(),
+                icon = effect.hasIcon()
+            )
+        }
+    }
+}
 
 data class PlayerHUDData(
     val huds: LinkedHashMap<String, MutableList<SingleHUDData>> = linkedMapOf()

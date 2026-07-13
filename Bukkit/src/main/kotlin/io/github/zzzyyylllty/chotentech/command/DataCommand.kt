@@ -333,5 +333,235 @@ object ChoTenDataCommand {
             }
         }
     }
+
+    @CommandBody
+    val hunger = subCommand {
+        player("user") {
+            dynamic("type") {
+                dynamic("operation") {
+                    dynamic("value") {
+                        execute<CommandSender> { sender, context, _ ->
+                            submitAsync {
+                                val player = context.player("user").castSafely<Player>()!!
+                                val data = playerDataMap[player.uniqueId.toString()] ?: run {
+                                    sender.sendComponent("<red>玩家数据为空")
+                                    return@submitAsync
+                                }
+
+                                val varValue = when (context["type"]) {
+                                    "HUNGER" -> data.customHunger
+                                    "SATURATION" -> data.customSaturation
+                                    "CONSUMPTION" -> data.consumption
+                                    else -> {
+                                        sender.sendComponent("<red>未知的变量类型，可用: HUNGER SATURATION CONSUMPTION")
+                                        return@submitAsync
+                                    }
+                                }
+
+                                val finalValue = when (context["operation"]) {
+                                    "+" -> varValue + context["value"].toDouble()
+                                    "-" -> varValue - context["value"].toDouble()
+                                    "=" -> context["value"].toDouble()
+                                    else -> {
+                                        sender.sendComponent("<red>未知的运算类型，可用: + - =")
+                                        return@submitAsync
+                                    }
+                                }
+
+                                when (context["type"]) {
+                                    "HUNGER" -> data.customHunger = maxOf(finalValue, 0.0)
+                                    "SATURATION" -> data.customSaturation = maxOf(finalValue, 0.0)
+                                    "CONSUMPTION" -> data.consumption = maxOf(finalValue, 0.0)
+                                }
+
+                                if (sender !is ConsoleCommandSender) sender.sendComponent("<red>${context["type"]} = <yellow>$finalValue")
+                            }
+                        }
+                        suggestion<CommandSender> { _, _ ->
+                            listOf("100.0", "50.0", "10.0", "1.0", "-10.0")
+                        }
+                    }
+                    suggestion<CommandSender> { _, _ ->
+                        listOf("+", "-", "=")
+                    }
+                }
+                suggestion<CommandSender> { _, _ ->
+                    listOf("HUNGER", "SATURATION", "CONSUMPTION")
+                }
+            }
+        }
+    }
+
+    @CommandBody
+    val nutrition = subCommand {
+        player("user") {
+            dynamic("type") {
+                dynamic("operation") {
+                    dynamic("value") {
+                        execute<CommandSender> { sender, context, _ ->
+                            submitAsync {
+                                val player = context.player("user").castSafely<Player>()!!
+                                val data = playerDataMap[player.uniqueId.toString()] ?: run {
+                                    sender.sendComponent("<red>玩家数据为空")
+                                    return@submitAsync
+                                }
+
+                                val varValue = when (context["type"]) {
+                                    "GRAIN" -> data.grain
+                                    "VITAMIN" -> data.vitamin
+                                    "PROTEIN" -> data.protein
+                                    "FAT" -> data.fat
+                                    else -> {
+                                        sender.sendComponent("<red>未知的变量类型，可用: GRAIN VITAMIN PROTEIN FAT")
+                                        return@submitAsync
+                                    }
+                                }
+
+                                val finalValue = when (context["operation"]) {
+                                    "+" -> varValue + context["value"].toDouble()
+                                    "-" -> varValue - context["value"].toDouble()
+                                    "=" -> context["value"].toDouble()
+                                    else -> {
+                                        sender.sendComponent("<red>未知的运算类型，可用: + - =")
+                                        return@submitAsync
+                                    }
+                                }
+
+                                when (context["type"]) {
+                                    "GRAIN" -> data.grain = maxOf(finalValue, 0.0)
+                                    "VITAMIN" -> data.vitamin = maxOf(finalValue, 0.0)
+                                    "PROTEIN" -> data.protein = maxOf(finalValue, 0.0)
+                                    "FAT" -> data.fat = maxOf(finalValue, 0.0)
+                                }
+
+                                if (sender !is ConsoleCommandSender) sender.sendComponent("<red>${context["type"]} = <yellow>$finalValue")
+                            }
+                        }
+                        suggestion<CommandSender> { _, _ ->
+                            listOf("100.0", "50.0", "10.0", "1.0", "-10.0")
+                        }
+                    }
+                    suggestion<CommandSender> { _, _ ->
+                        listOf("+", "-", "=")
+                    }
+                }
+                suggestion<CommandSender> { _, _ ->
+                    listOf("GRAIN", "VITAMIN", "PROTEIN", "FAT")
+                }
+            }
+        }
+    }
+
+    @CommandBody
+    val injury = subCommand {
+        player("user") {
+            dynamic("type") {
+                dynamic("operation") {
+                    dynamic("value") {
+                        execute<CommandSender> { sender, context, _ ->
+                            submitAsync {
+                                val player = context.player("user").castSafely<Player>()!!
+                                val data = playerDataMap[player.uniqueId.toString()] ?: run {
+                                    sender.sendComponent("<red>玩家数据为空")
+                                    return@submitAsync
+                                }
+
+                                val varValue = when (context["type"]) {
+                                    "EXTERNAL" -> data.externalInjury
+                                    "INTERNAL" -> data.internalInjury
+                                    else -> {
+                                        sender.sendComponent("<red>未知的变量类型，可用: EXTERNAL INTERNAL")
+                                        return@submitAsync
+                                    }
+                                }
+
+                                val finalValue = when (context["operation"]) {
+                                    "+" -> varValue + context["value"].toDouble()
+                                    "-" -> varValue - context["value"].toDouble()
+                                    "=" -> context["value"].toDouble()
+                                    else -> {
+                                        sender.sendComponent("<red>未知的运算类型，可用: + - =")
+                                        return@submitAsync
+                                    }
+                                }
+
+                                when (context["type"]) {
+                                    "EXTERNAL" -> data.externalInjury = maxOf(finalValue, 0.0)
+                                    "INTERNAL" -> data.internalInjury = maxOf(finalValue, 0.0)
+                                }
+
+                                if (sender !is ConsoleCommandSender) sender.sendComponent("<red>${context["type"]} = <yellow>$finalValue")
+                            }
+                        }
+                        suggestion<CommandSender> { _, _ ->
+                            listOf("100.0", "50.0", "10.0", "1.0", "-10.0")
+                        }
+                    }
+                    suggestion<CommandSender> { _, _ ->
+                        listOf("+", "-", "=")
+                    }
+                }
+                suggestion<CommandSender> { _, _ ->
+                    listOf("EXTERNAL", "INTERNAL")
+                }
+            }
+        }
+    }
+
+    @CommandBody
+    val stamina = subCommand {
+        player("user") {
+            dynamic("type") {
+                dynamic("operation") {
+                    dynamic("value") {
+                        execute<CommandSender> { sender, context, _ ->
+                            submitAsync {
+                                val player = context.player("user").castSafely<Player>()!!
+                                val data = playerDataMap[player.uniqueId.toString()] ?: run {
+                                    sender.sendComponent("<red>玩家数据为空")
+                                    return@submitAsync
+                                }
+
+                                val varValue = when (context["type"]) {
+                                    "STAMINA" -> data.stamina
+                                    "HANDSTAMINA" -> data.handStamina
+                                    else -> {
+                                        sender.sendComponent("<red>未知的变量类型，可用: STAMINA HANDSTAMINA")
+                                        return@submitAsync
+                                    }
+                                }
+
+                                val finalValue = when (context["operation"]) {
+                                    "+" -> varValue + context["value"].toDouble()
+                                    "-" -> varValue - context["value"].toDouble()
+                                    "=" -> context["value"].toDouble()
+                                    else -> {
+                                        sender.sendComponent("<red>未知的运算类型，可用: + - =")
+                                        return@submitAsync
+                                    }
+                                }
+
+                                when (context["type"]) {
+                                    "STAMINA" -> data.stamina = maxOf(finalValue, 0.0)
+                                    "HANDSTAMINA" -> data.handStamina = maxOf(finalValue, 0.0)
+                                }
+
+                                if (sender !is ConsoleCommandSender) sender.sendComponent("<red>${context["type"]} = <yellow>$finalValue")
+                            }
+                        }
+                        suggestion<CommandSender> { _, _ ->
+                            listOf("100.0", "50.0", "10.0", "1.0", "-10.0")
+                        }
+                    }
+                    suggestion<CommandSender> { _, _ ->
+                        listOf("+", "-", "=")
+                    }
+                }
+                suggestion<CommandSender> { _, _ ->
+                    listOf("STAMINA", "HANDSTAMINA")
+                }
+            }
+        }
+    }
 }
 

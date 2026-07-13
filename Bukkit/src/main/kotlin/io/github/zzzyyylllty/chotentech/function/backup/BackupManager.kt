@@ -9,6 +9,7 @@ import taboolib.common.platform.Awake
 import taboolib.common.platform.function.getDataFolder
 import taboolib.common.platform.function.submitAsync
 import taboolib.common.platform.function.warning
+import taboolib.common.platform.service.PlatformExecutor
 import java.io.File
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -31,9 +32,11 @@ private val filenameFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss
 /** 1 hour in server ticks (20 TPS) */
 private const val ONE_HOUR_TICKS = 20L * 60L * 60L
 
+private var backupTask: PlatformExecutor.PlatformTask? = null
+
 @Awake(LifeCycle.ACTIVE)
 fun startHourlyBackup() {
-    submitAsync(delay = ONE_HOUR_TICKS, period = ONE_HOUR_TICKS) {
+    backupTask = submitAsync(delay = ONE_HOUR_TICKS, period = ONE_HOUR_TICKS) {
         try {
             createBackup()
             cleanOldBackups()
@@ -43,6 +46,11 @@ fun startHourlyBackup() {
         }
     }
     devLog("[BACKUP] 每小时自动备份已启动 (3.6万像素)")
+}
+
+@Awake(LifeCycle.DISABLE)
+fun cancelBackupTask() {
+    backupTask?.cancel()
 }
 
 /**

@@ -4,7 +4,9 @@ import ink.ptms.chemdah.core.PlayerProfile
 import ink.ptms.chemdah.core.quest.QuestLoader.register
 import ink.ptms.chemdah.core.quest.Task
 import ink.ptms.chemdah.core.quest.objective.ObjectiveCountableI
-import io.github.zzzyyylllty.quetiapine.event.QuetiapineSetLevelEvent
+import io.github.zzzyyylllty.chotentech.quetiapine.event.QuetiapineSetLevelEvent
+import io.github.zzzyyylllty.sertraline.Sertraline
+import io.github.zzzyyylllty.sertraline.api.SertralineAPIImpl
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 
@@ -27,6 +29,7 @@ object ReachPlayerLevelObjective : ObjectiveCountableI<QuetiapineSetLevelEvent>(
         addSimpleCondition("level-name") { data, e ->
             data.asList().any { it.equals(e.levelName, true) }
         }
+
 
         addSimpleCondition("min-level") { data, e ->
             e.level >= data.toLong()

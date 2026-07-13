@@ -153,8 +153,9 @@ profile:
   # 每个玩家默认最大玩家档案数量（可通过权限 chotentech.profile.<数量> 扩展）
   max-profiles: 3
 
-# Quetiapine 等级系统配置
+# 音乐文件目录（插件启动时读取此目录下ogg文件解析时长，不存在则使用music-durations.yml）
 options:
+  music-dir: "D:\\Server\\Ets\\plugins\\CraftEngine\\resources\\kangelmain\\resourcepack\\assets\\kangel\\sounds\\music"
   level:
     # 每次更新最多升级多少级，此选项可以有效避免经验配置错误带来的更新卡死
     update-limit: 10
@@ -167,6 +168,39 @@ damage-system:
   # 开启后强制将玩家原版盔甲和盔甲韧性设为0（避免双层减免）
   remove-vanilla-armor: true
 
+# 受击特效配置
+hit-effects:
+  enabled: true
+  # 音效音量
+  sound-volume: 1.0
+  # 音效音调
+  sound-pitch: 1.0
+  # 粒子数量
+  particle-count: 20
+  # 粒子扩散范围
+  particle-offset: 0.5
+  # 粒子速度
+  particle-speed: 0.05
+
+# 倒地/流血机制配置
+bleedout:
+  # 是否启用倒地机制
+  enabled: true
+  # 倒地后最大存活时间（秒）
+  duration: 60
+  # 救援所需时间（秒）
+  revival-time: 5
+  # 被救起后的生命值比例 (0.0-1.0)
+  revive-health: 0.2
+  # 倒地期间再次受伤是否加速流血
+  damage-accelerates-bleedout: true
+  # 每次受伤额外扣除的倒地时间（秒）
+  damage-penalty: 10
+  # 爬行速度惩罚 (0.0=完全不能动, 1.0=正常速度)
+  crawl-speed-penalty: 0.7
+  # 爬行半径（方块），超出后拉回倒地位置
+  crawl-radius: 3.0
+
 # 组队系统配置
 team:
   # 默认队伍上限（无权限玩家）
@@ -176,3 +210,19 @@ team:
     chotentech.team.size.10: 10
     chotentech.team.size.8: 8
     chotentech.team.size.6: 6
+
+# 靠近 MythicMobs 实体降低精神配置
+mm-sanity-drain:
+  # 是否启用
+  enabled: true
+  # 检测间隔（tick，20tick = 1秒）
+  interval: 20
+  # 检测范围（格）
+  range: 8.0
+  # 默认精神降低值（未在 mobs 中单独配置的实体使用此值）
+  default-amount: 3.0
+  # 各实体 ID 对应的精神降低值（覆盖默认值）
+  mobs:
+    Skeletal: 5.0
+    DeathClaw: 10.0
+    Hound: 2.0

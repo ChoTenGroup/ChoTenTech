@@ -24,6 +24,7 @@ import taboolib.module.nms.getItemTag
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.function.submit
+import taboolib.common.platform.service.PlatformExecutor
 import taboolib.expansion.CustomType
 import taboolib.expansion.dbFile
 import taboolib.expansion.mapper
@@ -114,6 +115,10 @@ object AttributeManager {
     // 缓存 vanillaName 到 Bukkit Attribute 实例的映射（可能为 null 表示找不到）
     private val vanillaAttributeCache = ConcurrentHashMap<String, org.bukkit.attribute.Attribute?>()
 
+    // 周期性任务引用
+    private var regenTask: PlatformExecutor.PlatformTask? = null
+    private var entityCacheTask: PlatformExecutor.PlatformTask? = null
+
     // 属性注册表
     val attributeRegistry = ConcurrentHashMap<String, AttributeType>()
 
@@ -146,6 +151,7 @@ object AttributeManager {
             AttributeType("burning_time", "燃烧时间", "burning_time", 1.0),
             AttributeType("explosion_knockback_resistance", "爆炸击退抗性", "explosion_knockback_resistance", 0.0),
             AttributeType("mining_efficiency", "挖掘效率", "mining_efficiency", 0.0),
+            AttributeType("mining_power", "挖掘强度", null, 1.0, minValue = 0.0),
             AttributeType("movement_efficiency", "移动效率", "movement_efficiency", 0.0),
             AttributeType("oxygen_bonus", "氧气加成", "oxygen_bonus", 0.0),
             AttributeType("player_block_break_speed", "方块破坏速度", "player_block_break_speed", 1.0),
@@ -203,7 +209,6 @@ object AttributeManager {
             // ===== 伤害类型系统属性（7种类型的防御/加成） =====
             // 物理
             AttributeType("physical_defense", "物理防御", null, 0.0),
-            AttributeType("physical_extra_damage", "物理伤害加成", null, 0.0, isPercentage = true),
             AttributeType("physical_damage", "物理伤害", null, 0.0),
             // 灼烧
             AttributeType("burn_defense", "灼烧防御", null, 0.0),
@@ -229,6 +234,8 @@ object AttributeManager {
             AttributeType("decay_defense", "衰退防御", null, 0.0),
             AttributeType("decay_extra_damage", "衰退伤害加成", null, 0.0, isPercentage = true),
             AttributeType("decay_damage", "衰退伤害", null, 0.0),
+            // 体力上限（用于营养系统和负重系统）
+            AttributeType("stamina_max", "体力上限", null, 100.0, minValue = 0.0, maxValue = 10000.0),
             // 营养相关属性
             AttributeType("stamina_regen_multiplier", "体力回复倍率", null, 1.0, minValue = 0.0),
             AttributeType("health_regen_multiplier", "生命回复倍率", null, 1.0, minValue = 0.0),
@@ -598,16 +605,24 @@ object AttributeManager {
 
     @Awake(LifeCycle.ACTIVE)
     fun startRegenerationTask() {
-        submit(async = true, period = 20L) { // 20 ticks = 1 second
+        regenTask = submit(async = true, period = 20L) { // 20 ticks = 1 second
             updateRegeneration()
         }
         devLog("AttributeManager: started regeneration task")
 
         // 实体属性后台刷新（每 30 秒，懒加载为主，后台为辅）
-        submit(async = true, period = 600L) { // 600 ticks = 30 seconds
+        entityCacheTask = submit(async = true, period = 600L) { // 600 ticks = 30 seconds
             refreshEntityCache()
         }
         devLog("AttributeManager: started entity attribute cache task (period=30s)")
+    }
+
+    @Awake(LifeCycle.DISABLE)
+    fun cancelTasks() {
+        regenTask?.cancel()
+        entityCacheTask?.cancel()
+        regenTask = null
+        entityCacheTask = null
     }
 
     /**

@@ -13,11 +13,14 @@ import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submitAsync
+import taboolib.common.platform.service.PlatformExecutor
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
 /** 全局 BossBar 缓存，供定时器和退出事件共同访问 */
 private val stressBossBars = ConcurrentHashMap<UUID, BossBar>()
+
+private var stressTask: PlatformExecutor.PlatformTask? = null
 
 @Awake(LifeCycle.ACTIVE)
 fun stressesTimer() {
@@ -29,7 +32,9 @@ fun stressesTimer() {
     val baseStressReduce = config.getDouble("stress.base-stress-reduce", 2.0)
     val darkSanityDrain = config.getDouble("stress.dark-sanity-drain", 0.5)
 
-    submitAsync(period = interval) {
+    stressTask = submitAsync(period = interval) {
+        val onlineUuids = Bukkit.getOnlinePlayers().map { it.uniqueId }.toSet()
+
         for (player in Bukkit.getOnlinePlayers()) {
             val uuid = player.uniqueId
             val data = playerDataMap[uuid.toString()] ?: continue
@@ -77,10 +82,9 @@ fun stressesTimer() {
             }
         }
 
-        // 清理离线玩家的 BossBar
+        // 清理离线玩家的 BossBar（使用 safe set，避免异步调用 Bukkit.getPlayer）
         stressBossBars.keys.removeIf { uuid ->
-            val p = Bukkit.getPlayer(uuid)
-            p == null || !p.isOnline
+            uuid !in onlineUuids
         }
     }
 }
@@ -98,4 +102,11 @@ private fun removeStressBossBar(player: Player, uuid: UUID) {
 fun onPlayerQuitClearBossbar(event: PlayerQuitEvent) {
     val uuid = event.player.uniqueId
     stressBossBars.remove(uuid) // 直接清理缓存，定时器 cleanup 会处理 viewer
+}
+
+@Awake(LifeCycle.DISABLE)
+fun cancelStressTimer() {
+    stressTask?.cancel()
+    stressBossBars.values.forEach { bar -> bar.viewers().toSet().forEach { bar.removeViewer(it as net.kyori.adventure.audience.Audience) } }
+    stressBossBars.clear()
 }

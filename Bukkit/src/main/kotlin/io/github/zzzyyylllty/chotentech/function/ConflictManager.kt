@@ -5,6 +5,8 @@ import io.github.zzzyyylllty.chotentech.data.ResultLevel
 import io.github.zzzyyylllty.chotentech.data.conflictConfigs
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
+import taboolib.common.LifeCycle
+import taboolib.common.platform.Awake
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicLong
 
@@ -114,6 +116,11 @@ object ConflictManager {
     }
 
     fun getConflict(playerUuid: String): ActiveConflict? = playerConflicts[playerUuid]
+
+    @Awake(LifeCycle.DISABLE)
+    fun onDisable() {
+        playerConflicts.clear()
+    }
 
     fun getActiveConflicts(): List<ActiveConflict> =
         playerConflicts.values.filter { it.status != ConflictStatus.FINISHED }

@@ -1,9 +1,9 @@
 package io.github.zzzyyylllty.chotentech.listener
 
-import io.github.zzzyyylllty.quetiapine.data.DataHelper
-import io.github.zzzyyylllty.quetiapine.data.registerExternalData
-import io.github.zzzyyylllty.quetiapine.function.launchText
-import io.github.zzzyyylllty.quetiapine.util.ScriptHelper
+import io.github.zzzyyylllty.chotentech.quetiapine.data.DataHelper
+import io.github.zzzyyylllty.chotentech.quetiapine.data.registerExternalData
+import io.github.zzzyyylllty.chotentech.quetiapine.function.launchText
+import io.github.zzzyyylllty.chotentech.quetiapine.util.ScriptHelper
 import org.bukkit.event.player.PlayerJoinEvent
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake

@@ -5,6 +5,7 @@ import io.github.zzzyyylllty.chotentech.data.PlayerData
 import io.github.zzzyyylllty.chotentech.data.getData
 import io.github.zzzyyylllty.chotentech.function.BaseManager
 import io.github.zzzyyylllty.chotentech.function.player.sendComponent
+import io.github.zzzyyylllty.chotentech.quetiapine.data.PlayerDataManager
 import io.github.zzzyyylllty.chotentech.util.ItemSerializer
 import org.bukkit.Bukkit
 import org.bukkit.Sound
@@ -14,10 +15,12 @@ import org.bukkit.inventory.ItemStack
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.function.submitAsync
+import taboolib.common.platform.service.PlatformExecutor
 
 object HideoutManager {
 
     private var currentTick = 0L
+    private var hideoutTask: PlatformExecutor.PlatformTask? = null
 
     fun getCurrentBaseKey(player: Player): String {
         return player.getData()?.subTag ?: "global"
@@ -126,7 +129,7 @@ object HideoutManager {
 
     @Awake(LifeCycle.ACTIVE)
     fun hideoutTimer() {
-        submitAsync(period = 20) {
+        hideoutTask = submitAsync(period = 20) {
             currentTick++
             for (player in Bukkit.getOnlinePlayers()) {
                 val data = playerDataMap[player.uniqueId.toString()] ?: continue
@@ -275,7 +278,12 @@ object HideoutManager {
             removeRequiredItem(player, req)
         }
 
-        val craftTime = recipe.craftTime
+        val baseTime = recipe.craftTime
+        // 智力技能减少合成耗时（每级 -0.5%，最高 -50%）
+        val reduction = try {
+            (PlayerDataManager(player).getLevel("intelligence") ?: 0L) * 0.005
+        } catch (_: Exception) { 0.0 }
+        val craftTime = maxOf(1, (baseTime * (1.0 - reduction)).toInt())
         hideout.craftingQueues += CraftingQueueItem(
             recipeId = recipeId,
             startTime = System.currentTimeMillis(),
@@ -551,6 +559,12 @@ object HideoutManager {
             player.sendComponent("<green>从 ${cfg.productionItem} 提取了 <yellow>$whole <green>个")
         }
         return true
+    }
+
+    @Awake(LifeCycle.DISABLE)
+    fun cancelHideoutTimer() {
+        hideoutTask?.cancel()
+        hideoutTask = null
     }
 
     fun unlockHideout(player: Player, baseKey: String? = null): Boolean {

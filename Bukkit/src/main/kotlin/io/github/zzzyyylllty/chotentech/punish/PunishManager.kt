@@ -12,6 +12,7 @@ import taboolib.common.platform.Awake
 import taboolib.common.platform.function.getDataFolder
 import taboolib.common.platform.function.submitAsync
 import taboolib.common.platform.function.warning
+import taboolib.common.platform.service.PlatformExecutor
 import taboolib.expansion.Length
 import taboolib.expansion.Id
 import taboolib.expansion.db
@@ -61,6 +62,10 @@ object PunishManager {
     val wipeMapper by mapper<WipeBackupRecord>(db("config.yml", "database", "chotentech.db"))
 
     private val activeCache = ConcurrentHashMap<String, MutableList<PunishEntry>>()
+
+    fun clearActiveCache() {
+        activeCache.clear()
+    }
 
     var maxWarnBeforeBan: Int = 5
     var muteReasons: Map<String, Long> = emptyMap()
@@ -421,9 +426,17 @@ object PunishManager {
     }
 }
 
+private var punishTask: PlatformExecutor.PlatformTask? = null
+
 @Awake(LifeCycle.ACTIVE)
 fun startPunishmentTimer() {
-    submitAsync(period = 200) {
+    punishTask = submitAsync(period = 200) {
         PunishManager.checkExpirations()
     }
+}
+
+@Awake(LifeCycle.DISABLE)
+fun cancelPunishmentTimer() {
+    punishTask?.cancel()
+    PunishManager.clearActiveCache()
 }

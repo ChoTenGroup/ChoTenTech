@@ -11,6 +11,7 @@ import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager.releaseAll
 import io.github.zzzyyylllty.chotentech.function.player.getPlayerLevel
 import io.github.zzzyyylllty.chotentech.function.timer.cleanupNoclipState
 import io.github.zzzyyylllty.chotentech.util.devLog
+import io.github.zzzyyylllty.chotentech.damage.DamageTypeRegistry
 import io.github.zzzyyylllty.chotentech.data.AttributeModifier
 import io.github.zzzyyylllty.chotentech.data.ModifierSource
 import io.github.zzzyyylllty.chotentech.data.ModifierType
@@ -42,6 +43,7 @@ import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submit
 import taboolib.common.platform.function.submitAsync
 import taboolib.common.platform.function.warning
+import taboolib.common.platform.service.PlatformExecutor
 import taboolib.expansion.Id
 import taboolib.expansion.Length
 import taboolib.expansion.db
@@ -127,8 +129,11 @@ object DataManager {
      * 定时批量把待加载区块读入内存
      */
     @OptIn(ExperimentalAtomicApi::class)
+    private var autoLoadTask: PlatformExecutor.PlatformTask? = null
+
+    @OptIn(ExperimentalAtomicApi::class)
     fun autoLoadChunk() {
-        submitAsync(period = 60) {
+        autoLoadTask = submitAsync(period = 60) {
             if (!isLoadReleased.compareAndSet(true, false)) {
                 return@submitAsync
             }
@@ -329,6 +334,7 @@ object DataManager {
         inventoryContents = inventoryContents ?: mutableMapOf(),
         hideoutData = hideoutData ?: linkedMapOf(),
         statusEffects = statusEffects ?: mutableListOf(),
+        savedBases = savedBases ?: mutableListOf(),
         playTime = playTime ?: 0L,
         activeLevelStr = activeLevelStr,
         quetiapineData = quetiapineData ?: mutableMapOf(),
@@ -426,6 +432,9 @@ object DataManager {
         val data = ProfileManager.ensureProfile(player)
         data.lastLoginTime = System.currentTimeMillis()
         playerDataMap[player.uniqueId.toString()] = data
+        // Initialize quetiapine skill defaults ONLY after profile data is loaded,
+        // so existing saved levels/exp are not overwritten by stale detached-map writes.
+        io.github.zzzyyylllty.chotentech.quetiapine.data.QuetiapineDataBridge.initProfile(player)
         // Increment join count
         ProfileManager.getSharedData(player.uniqueId.toString()).joinCount++
         saveData(player)
@@ -460,6 +469,13 @@ object DataManager {
     @SubscribeEvent
     fun onJoin(e: PlayerJoinEvent) {
         val player = e.player
+
+        // Apply join message from rank system (condition-based, no profile data needed)
+        val joinMsg = io.github.zzzyyylllty.chotentech.function.RankManager.getEligibleRankDisplay(player, "joinmessage")
+        if (joinMsg.isNotEmpty()) {
+            e.joinMessage(joinMsg.replace("<player>", player.name).toComponent())
+        }
+
         player.addPotionEffect(PotionEffect(PotionEffectType.SLOWNESS, 100, 10))
         player.addPotionEffect(PotionEffect(PotionEffectType.BLINDNESS, 100, 10))
         player.addPotionEffect(PotionEffect(PotionEffectType.WEAKNESS, 100, 127))
@@ -503,30 +519,65 @@ object DataManager {
                 )
             )
         )
-        Thread.sleep(1000)
     }
 
     @SubscribeEvent
     fun onQuit(e: PlayerQuitEvent) {
         val player = e.player
         val uuid = player.uniqueId.toString()
+
+        // Apply quit message from rank system
+        val quitMsg = io.github.zzzyyylllty.chotentech.function.RankManager.getEligibleRankDisplay(player, "quitmessage")
+        if (quitMsg.isNotEmpty()) {
+            e.quitMessage(quitMsg.replace("<player>", player.name).toComponent())
+        }
+
         cleanupNoclipState(uuid)
+        DamageTypeRegistry.getHandler("burn")?.let { (it as? io.github.zzzyyylllty.chotentech.damage.handlers.BurnHandler)?.cancel(player) }
         io.github.zzzyyylllty.chotentech.listener.ProfileListener.onPlayerQuit(e)
+        // Save synchronously — submitAsync may not execute during shutdown
+        releaseData(player)
         submitAsync {
             for (session in sharedNoclipSessions.values) {
                 session.playersInRange.remove(uuid)
                 session.paidBy.remove(uuid)
             }
-            releaseData(player)
         }
     }
 
     @Awake(LifeCycle.DISABLE)
     fun saveAllPlayerData() {
-        Bukkit.getOnlinePlayers().forEach { player ->
-            releaseData(player)
+        autoLoadTask?.cancel()
+        autoLoadTask = null
+        // Save from in-memory map: Bukkit.getOnlinePlayers() may be empty at shutdown
+        for ((uuid, data) in playerDataMap) {
+            try {
+                val profileId = ProfileManager.getSharedData(uuid).activeProfileId
+                ProfileManager.syncToSharedData(uuid, data)
+                ProfileManager.saveSharedData(uuid)
+                if (profileId.isNotEmpty()) {
+                    ProfileManager.saveProfileData(uuid, profileId, ProfileManager.stripSharedFields(data))
+                }
+            } catch (e: Exception) {
+                warning("保存玩家数据失败 $uuid: ${e.message}")
+            }
         }
-        flushDirtyChunks()
+        // Save dirty chunks synchronously (submitAsync is unavailable after DISABLE)
+        for ((pos, province) in loadedChunk.entries) {
+            if (!province.dirty) continue
+            val chunkPos = ChunkPos(pos.world, pos.x, pos.y)
+            if (!savingChunks.add(chunkPos)) continue
+            try {
+                Bukkit.getWorld(pos.world)?.getChunkAt(pos.x, pos.y)?.let { chunk ->
+                    chunk.persistentDataContainer.set(NamespacedKey.fromString("choten:chunkdata")!!, ChunkDataPDCType(), province.data)
+                    province.dirty = false
+                }
+            } catch (e: Exception) {
+                warning("保存区块失败 ${pos.world}:${pos.x},${pos.y} -> ${e.message}")
+            } finally {
+                savingChunks.remove(chunkPos)
+            }
+        }
     }
 }
 
@@ -840,9 +891,36 @@ class ChoTenDataHelper(val player: Player) {
         data.consumption = 0.0
     }
 
+    // === 好感 ===
+
+    fun getAffection(npcId: String): Long {
+        return data.affection.getOrDefault(npcId, 0L)
+    }
+
+    fun setAffection(npcId: String, value: Long) {
+        data.affection[npcId] = value
+    }
+
+    fun addAffection(npcId: String, amount: Long) {
+        val current = data.affection.getOrDefault(npcId, 0L)
+        data.affection[npcId] = current + amount
+    }
+
+    fun removeAffection(npcId: String, amount: Long) {
+        val current = data.affection.getOrDefault(npcId, 0L)
+        data.affection[npcId] = maxOf(current - amount, 0L)
+    }
+
+    fun resetAffection(npcId: String) {
+        data.affection.remove(npcId)
+    }
+
+    fun resetAllAffection() {
+        data.affection.clear()
+    }
+
     fun resetAndPlayLevelMusic() {
         data.lastMusicPlayTime = 0L
-        data.musicReplayDelay = 0L
         player.stopSound(AdventureSoundStop.source(AdventureSound.Source.MUSIC))
         playLevelMusic()
     }
@@ -851,12 +929,9 @@ class ChoTenDataHelper(val player: Player) {
         val level = data.activeLevel ?: return
         val music = level.music ?: return
         val now = System.currentTimeMillis()
-        if (data.musicReplayDelay == 0L) {
-            data.musicReplayDelay = (120000L..300000L).random()
-        }
-        if (now - data.lastMusicPlayTime < data.musicReplayDelay) return
+        val loopInterval = io.github.zzzyyylllty.chotentech.util.OggDuration.getDuration(music)
+        if (now - data.lastMusicPlayTime < loopInterval) return
         data.lastMusicPlayTime = now
-        data.musicReplayDelay = (120000L..300000L).random()
         val pitch = 0.9 + ((data.sanity / data.effectiveMaxSanity) * 0.25)
         val soundKey = if (music.contains(':')) music else "kangel:$music"
         player.playSound(AdventureSound.sound(AdventureKey.key(soundKey), AdventureSound.Source.MUSIC, 10000f, pitch.toFloat()))

@@ -11,6 +11,8 @@ import org.bukkit.NamespacedKey
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import taboolib.common.LifeCycle
+import taboolib.common.platform.Awake
 import taboolib.library.xseries.XMaterial
 import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.PageableChest
@@ -19,6 +21,12 @@ import java.util.concurrent.ConcurrentHashMap
 
 
 private val showAllMap = ConcurrentHashMap<String, Boolean>()
+
+@Awake(LifeCycle.DISABLE)
+fun clearBaseCodexMenuMaps() {
+    showAllMap.clear()
+}
+
 class BaseCodexMenu {
 
     fun open(player: Player) {

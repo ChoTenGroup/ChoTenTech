@@ -10,6 +10,8 @@ smoke_bomb:
     throw: { particle: campfire_cosy_smoke, count: 8, speed: 0.1 }
     bounce: { particle: smoke, count: 4, speed: 0.1 }
     fuse: { particle: campfire_signal_smoke, count: 3, offset_x: 0.2, offset_y: 0.2, offset_z: 0.2, speed: 0.02 }
+    trail: { particle: smoke, count: 1, speed: 0.03 }
+    cook: { particle: campfire_cosy_smoke, count: 8, speed: 0.2 }
   effects:
     - type: smokescreen
       range: 6

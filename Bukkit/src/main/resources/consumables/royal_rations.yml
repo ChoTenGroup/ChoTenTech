@@ -21,3 +21,7 @@ royal_rations:
       slot: OTHER
       uuid: royal_rations # nameduuid
       expire: 10m
+    - effect: potion
+      potion: SATURATION
+      duration: 6000
+      amplifier: 1

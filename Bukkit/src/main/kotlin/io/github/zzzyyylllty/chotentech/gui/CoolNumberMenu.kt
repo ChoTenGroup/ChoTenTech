@@ -57,7 +57,6 @@ class CoolNumberMenu(
             )
         ) {
             rows(6)
-            hidePlayerInventory()
 
             map(
                 " 4567890 ",

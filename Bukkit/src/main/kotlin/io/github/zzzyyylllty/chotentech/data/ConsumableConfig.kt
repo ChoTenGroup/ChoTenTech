@@ -59,6 +59,13 @@ fun cancelConsumableTasks(playerId: String) {
     }
 }
 
+fun cancelAllConsumableTasks() {
+    consumableTaskIds.values.forEach { tasks ->
+        tasks.forEach { it.cancel() }
+    }
+    consumableTaskIds.clear()
+}
+
 data class ConsumableConfig(
     val id: String,
     val effects: List<ConsumableEffect>
@@ -177,6 +184,14 @@ data class ConsumableConfig(
                     val speed = ef.amplifier.toDouble()
                     player.world.spawnParticle(particle, player.location, count, offset, offset, offset, speed)
                 }
+                "nutrition_fat" -> {
+                    helper.data.fat = minOf(helper.data.fat + ef.value, 100.0)
+                    io.github.zzzyyylllty.chotentech.data.NutritionManager.sync(player)
+                }
+                "counter_marshmallow" -> {
+                    val counter = helper.data.marshmallowCounter + ef.value.toInt()
+                    helper.data.marshmallowCounter = counter.coerceAtLeast(0)
+                }
                 "mm_skill" -> {
                     val skillName = ef.sound ?: return
                     Mythic.API.castSkill(
@@ -220,6 +235,26 @@ data class ConsumableConfig(
                         }
                     }
                     consumableTaskIds.getOrPut(player.uniqueId.toString()) { mutableListOf() }.add(task)
+                }
+                "counter_choco" -> {
+                    val min = ef.value.toInt().coerceAtLeast(1)
+                    val max = ef.amplifier.coerceAtLeast(min)
+                    val addValue = if (max > min) (min..max).random() else min
+                    val newCounter = helper.data.chocoCounter + addValue
+                    helper.data.chocoCounter = newCounter.coerceAtLeast(0)
+                    // Death risk: each point over 10 = 5%
+                    if (newCounter > 10) {
+                        val risk = ((newCounter - 10) * 5).coerceAtMost(100)
+                        if (kotlin.random.Random.nextInt(100) < risk) {
+                            player.damage(10000.0)
+                        }
+                    }
+                    // Apply timed attribute effects
+                    when (ef.statusEffectId) {
+                        "classic" -> io.github.zzzyyylllty.chotentech.function.ChocoManager.applyClassic(player)
+                        "red" -> io.github.zzzyyylllty.chotentech.function.ChocoManager.applyRed(player)
+                        "white" -> io.github.zzzyyylllty.chotentech.function.ChocoManager.applyWhite(player)
+                    }
                 }
             }
         }
@@ -340,6 +375,18 @@ private fun loadConsumableFile(file: File) {
                             thresholds = thresholds
                         ))
                     }
+                    "counter_choco" -> {
+                        val rawValue = map["value"]?.toString() ?: "1"
+                        val chocoMin = (map["min"]?.toString()?.toIntOrNull())
+                        val chocoMax = (map["max"]?.toString()?.toIntOrNull()) ?: (rawValue.toIntOrNull() ?: 1)
+                        val chocoType = map["type"]?.toString() ?: ""
+                        effects.add(ConsumableEffect(
+                            effect = effectType, mode = mode,
+                            value = (chocoMin ?: chocoMax).toDouble(),
+                            amplifier = chocoMax,
+                            statusEffectId = chocoType
+                        ))
+                    }
                     else -> effects.add(ConsumableEffect(
                         effect = effectType, mode = mode, value = value
                     ))
@@ -380,6 +427,18 @@ private fun parseSingleEffect(map: Map<*, *>): ConsumableEffect? {
             duration = (map["duration"]?.toString()?.toIntOrNull()) ?: 0,
             amplifier = (map["amplifier"]?.toString()?.toIntOrNull()) ?: 0
         )
+        "counter_choco" -> {
+            val rawValue = map["value"]?.toString() ?: "1"
+            val chocoMin = (map["min"]?.toString()?.toIntOrNull())
+            val chocoMax = (map["max"]?.toString()?.toIntOrNull()) ?: (rawValue.toIntOrNull() ?: 1)
+            val chocoType = map["type"]?.toString() ?: ""
+            ConsumableEffect(
+                effect = type, mode = mode,
+                value = (chocoMin ?: chocoMax).toDouble(),
+                amplifier = chocoMax,
+                statusEffectId = chocoType
+            )
+        }
         else -> ConsumableEffect(effect = type, mode = mode, value = value)
     }
 }

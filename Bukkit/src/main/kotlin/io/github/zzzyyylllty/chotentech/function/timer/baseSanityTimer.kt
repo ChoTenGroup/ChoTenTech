@@ -6,10 +6,13 @@ import org.bukkit.Bukkit
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.function.submitAsync
+import taboolib.common.platform.service.PlatformExecutor
+
+private var baseSanityTask: PlatformExecutor.PlatformTask? = null
 
 @Awake(LifeCycle.ACTIVE)
 fun baseSanityTimer() {
-    submitAsync(period = 200) {
+    baseSanityTask = submitAsync(period = 200) {
         for (player in Bukkit.getOnlinePlayers()) {
             val regions = playerRegions[player.uniqueId.toString()]
             val inBase = regions?.any { it.startsWith("base-") } == true
@@ -21,4 +24,9 @@ fun baseSanityTimer() {
             if (data.darkness > 15.0) data.darkness -= 5.0
         }
     }
+}
+
+@Awake(LifeCycle.DISABLE)
+fun cancelBaseSanityTimer() {
+    baseSanityTask?.cancel()
 }

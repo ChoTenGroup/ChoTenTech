@@ -14,12 +14,12 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
-import org.bukkit.inventory.ItemStack
+import taboolib.common.LifeCycle
+import taboolib.common.platform.Awake
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.util.random
 import taboolib.platform.type.BukkitProxyEvent
-import java.util.Random
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.get
 
@@ -66,11 +66,16 @@ fun onPlayerInteractWithWaterDispenser(event: PlayerInteractEvent) {
         player.playSound(player.eyeLocation, Sound.ITEM_BOTTLE_FILL, 1f, 0.7f)
         block.world.dropItemNaturally(block.location, s)
 
-        if (random(1,2) == 1) waterCooldowns[key] = System.currentTimeMillis() + 600_000L
+        if (random(1.0,2.0) <= 1.2) waterCooldowns[key] = System.currentTimeMillis() + 600_000L
     }
 }
 
 class TakeWaterEvent(
     val player: Player
 ): BukkitProxyEvent() {
+}
+
+@Awake(LifeCycle.DISABLE)
+fun clearWaterCooldowns() {
+    waterCooldowns.clear()
 }

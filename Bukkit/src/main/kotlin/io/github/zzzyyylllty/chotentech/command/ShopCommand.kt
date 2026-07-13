@@ -4,6 +4,8 @@ import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
 import io.github.zzzyyylllty.chotentech.shop.GiftPackManager
 import io.github.zzzyyylllty.chotentech.shop.ShopManager
 import io.github.zzzyyylllty.chotentech.shop.ShopMenu
+import io.github.zzzyyylllty.chotentech.util.toComponent
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import taboolib.common.platform.command.CommandBody
 import taboolib.common.platform.command.CommandHeader
@@ -14,7 +16,8 @@ import taboolib.common.platform.command.subCommand
 @CommandHeader(
     name = "chotentech-shop",
     aliases = ["cttshop", "shop"],
-    description = "商店系统"
+    description = "商店系统",
+    newParser = true
 )
 object ShopCommand {
 
@@ -26,7 +29,7 @@ object ShopCommand {
     @CommandBody
     val open = subCommand {
         dynamic("shopId") {
-            suggestion<org.bukkit.command.CommandSender> { _, _ ->
+            suggestion<org.bukkit.command.CommandSender>(uncheck = true) { _, _ ->
                 ShopManager.shops.keys.toList()
             }
             execute<Player> { sender, context, _ ->
@@ -36,7 +39,12 @@ object ShopCommand {
             player("player") {
                 execute<org.bukkit.command.CommandSender> { sender, context, _ ->
                     val shopId = context["shopId"]
-                    val target = context["player"]
+                    val targetName = context["player"]
+                    val target = org.bukkit.Bukkit.getPlayerExact(targetName)
+                    if (target == null) {
+                        sender.sendMessage("<red>玩家 $targetName 不在线".toComponent())
+                        return@execute
+                    }
                     ShopMenu.open(target, shopId)
                 }
             }

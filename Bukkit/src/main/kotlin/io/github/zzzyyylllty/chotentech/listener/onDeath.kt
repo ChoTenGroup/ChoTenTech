@@ -6,6 +6,8 @@ import io.github.zzzyyylllty.chotentech.data.NutritionManager
 import io.github.zzzyyylllty.chotentech.data.cancelConsumableTasks
 import io.github.zzzyyylllty.chotentech.feature.steampipe.SteamPipeManager
 import io.github.zzzyyylllty.chotentech.function.DeathDropManager
+import io.github.zzzyyylllty.chotentech.function.MarshmallowManager
+import io.github.zzzyyylllty.chotentech.function.ChocoManager
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.event.entity.PlayerDeathEvent
@@ -35,6 +37,15 @@ fun onPlayerDeath(event: PlayerDeathEvent) {
 
     // 营养值死亡扣除
     NutritionManager.applyDeathDeduction(player)
+
+    // 重置棉花糖计数器并清除相关修饰符
+    val pd = playerDataMap[player.uniqueId.toString()]
+    if (pd != null) {
+        pd.marshmallowCounter = 0
+        pd.chocoCounter = 0
+    }
+    MarshmallowManager.removeModifiers(player)
+    ChocoManager.removeAll(player)
 
     // 重置蒸汽管道伤害计数（本条命）
     SteamPipeManager.clearPlayerHits(player)

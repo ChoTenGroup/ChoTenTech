@@ -17,6 +17,11 @@ class FrostHandler : NormalDamageHandler(DamageType.FROST) {
     override fun apply(player: Player, finalDamage: Double, baseDamage: Double) {
         if (baseDamage <= 0) return
 
+        // Periodically purge stale entries to prevent memory leak
+        if (frostAccumulation.size > 100) {
+            cleanupStale()
+        }
+
         val uuid = player.uniqueId.toString()
         val now = System.currentTimeMillis()
         val windowMs = DamageTypeRegistry.frostWindowTicks * 50
@@ -45,6 +50,13 @@ class FrostHandler : NormalDamageHandler(DamageType.FROST) {
                 frostAccumulation[uuid] = 0.0 to now
             }
         }
+    }
+
+    /** Remove entries for players whose frost window has fully expired */
+    fun cleanupStale() {
+        val now = System.currentTimeMillis()
+        val windowMs = DamageTypeRegistry.frostWindowTicks * 50
+        frostAccumulation.entries.removeIf { now - it.value.second > windowMs * 2 }
     }
 
     fun reset(player: Player) {
