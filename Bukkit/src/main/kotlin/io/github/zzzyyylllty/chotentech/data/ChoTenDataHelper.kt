@@ -334,6 +334,13 @@ object DataManager {
         inventoryContents = inventoryContents ?: mutableMapOf(),
         hideoutData = hideoutData ?: linkedMapOf(),
         statusEffects = statusEffects ?: mutableListOf(),
+        activeRanks = activeRanks ?: linkedMapOf(),
+        affection = affection ?: mutableMapOf(),
+        reputation = reputation ?: mutableMapOf(),
+        unlockedNoclips = unlockedNoclips ?: mutableSetOf(),
+        unlockedShopItems = unlockedShopItems ?: mutableSetOf(),
+        meta = meta ?: mutableMapOf(),
+        potionEffects = potionEffects ?: mutableListOf(),
         savedBases = savedBases ?: mutableListOf(),
         playTime = playTime ?: 0L,
         activeLevelStr = activeLevelStr,
@@ -917,6 +924,22 @@ class ChoTenDataHelper(val player: Player) {
 
     fun resetAllAffection() {
         data.affection.clear()
+    }
+
+    // === 游戏时间 ===
+
+    fun getGameTimeHours(): Long = data.gameTimeHours
+
+    fun setGameTimeHours(value: Long) {
+        data.gameTimeHours = maxOf(value, 0L)
+    }
+
+    fun addGameTimeHours(amount: Long) {
+        data.gameTimeHours = maxOf(data.gameTimeHours + amount, 0L)
+    }
+
+    fun removeGameTimeHours(amount: Long) {
+        data.gameTimeHours = maxOf(data.gameTimeHours - amount, 0L)
     }
 
     fun resetAndPlayLevelMusic() {

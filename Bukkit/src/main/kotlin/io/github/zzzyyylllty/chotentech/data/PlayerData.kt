@@ -111,7 +111,7 @@ data class PlayerData (
 
     // profile end/completion flags
     var ended: Boolean = false,
-    var endedId: String = "generic",
+    var endedId: String? = null,
 
     // music replay tracking
     var lastMusicPlayTime: Long = 0L,
@@ -147,6 +147,9 @@ data class PlayerData (
 
     // Per-profile attribute modifiers — null means "not yet migrated" (will be seeded from shared attributes.db)
     var attributeModifiers: List<AttributeModifier>? = null,
+
+    // In-game time tracking (60 real seconds = 1 game hour, base: 1950-01-01 00:00 = 0 hours)
+    var gameTimeHours: Long = 0L,
 
     // Per-profile meta flags (independent scope)
     var meta: MutableMap<String, io.github.zzzyyylllty.chotentech.data.profile.MetaEntry> = mutableMapOf(),

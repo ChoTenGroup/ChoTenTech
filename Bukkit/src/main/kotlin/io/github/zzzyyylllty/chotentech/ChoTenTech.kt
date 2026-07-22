@@ -162,9 +162,13 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
         // Initialize security system (auth/SafeMode)
         SecurityManager.reload()
         SecurityListener
+        SecurityListener.startPeriodicOpCheck()
 
         // Initialize end/completion system
         EndManager.init()
+
+        // Initialize game time system
+        io.github.zzzyyylllty.chotentech.listener.GameTimeManager.start()
 
         // Initialize attribute system
         AttributeManager.registerBuiltinAttributes()
@@ -212,6 +216,8 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
         RankManager.unload()
         cancelAllConsumableTasks()
         NotificationQueue.clearAll()
+        SecurityListener.stopPeriodicOpCheck()
+        io.github.zzzyyylllty.chotentech.listener.GameTimeManager.stop()
 
         // Unregister LuckPerms profile context calculator
         io.github.zzzyyylllty.chotentech.hook.ProfileContextCalculator.unregister()

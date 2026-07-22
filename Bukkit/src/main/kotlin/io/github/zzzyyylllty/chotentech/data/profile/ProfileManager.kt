@@ -190,7 +190,7 @@ object ProfileManager {
 
         val shared = if (json != null) {
             try {
-                jsonUtils.fromJson(json, SharedData::class.java)
+                jsonUtils.fromJson(json, SharedData::class.java).normalize()
             } catch (_: Exception) {
                 SharedData()
             }

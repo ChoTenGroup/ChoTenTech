@@ -191,7 +191,7 @@ object BleedoutManager {
     @Awake(LifeCycle.ACTIVE)
     fun startBleedoutTick() {
         if (!config.getBoolean("bleedout.enabled", true)) return
-        bleedoutTask = submitAsync(period = TICK_INTERVAL) { tick() }
+        bleedoutTask = submit(period = TICK_INTERVAL) { tick() }
         poseTask = submit(period = TICK_INTERVAL) { tickPose() }
     }
 
@@ -311,7 +311,6 @@ object BleedoutManager {
         for (uuid in downedPlayers.keys) {
             val player = Bukkit.getPlayer(uuid) ?: continue
             val headLoc = player.location.clone().apply { y = floor(y + 1.8).toDouble() }
-player.location.clone().apply { y = floor(y + 1.8).toDouble() }
             val old = barrierPositions[uuid]
 
             // 位置变了 → 还原旧位置，设置新位置
@@ -365,8 +364,10 @@ player.location.clone().apply { y = floor(y + 1.8).toDouble() }
         if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) return
         if (event.finalDamage <= 0.0) return
 
-        // Bypass bleedout for certain damage causes (void, kill command)
+        // Bypass bleedout for certain damage causes (void, poison, wither, kill command)
         if (event.cause == EntityDamageEvent.DamageCause.VOID
+            || event.cause == EntityDamageEvent.DamageCause.POISON
+            || event.cause == EntityDamageEvent.DamageCause.WITHER
             || event.cause == EntityDamageEvent.DamageCause.KILL) return
 
         // Player is about to die from bleedout expiry — let death proceed

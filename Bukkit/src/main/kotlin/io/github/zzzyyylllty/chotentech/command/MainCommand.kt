@@ -70,6 +70,8 @@ object MainCommand {
     val attribute = ChoTenAttributeMainCommand
 //    @CommandBody
 //    val Data = ChoTenDataCommand
+    @CommandBody
+    val gametime = GameTimeCommand
 
 }
 

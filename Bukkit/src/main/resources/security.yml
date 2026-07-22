@@ -63,7 +63,7 @@ checks:
       - op
   allperm:
     permissions:
-      - *
+      - "*"
       - luckperms.autoop
   kether:
     commands:

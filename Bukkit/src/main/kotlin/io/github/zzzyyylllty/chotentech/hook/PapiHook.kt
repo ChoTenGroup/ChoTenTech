@@ -8,6 +8,8 @@ import io.github.zzzyyylllty.chotentech.util.replacePlaceholderSafety
 import ink.ptms.chemdah.api.ChemdahAPI
 import ink.ptms.chemdah.core.quest.addon.AddonTrack.Companion.trackQuest
 import ink.ptms.chemdah.core.quest.meta.MetaName
+import io.github.zzzyyylllty.chotentech.chemdah.addon.AddonGameTimeout
+import io.github.zzzyyylllty.chotentech.listener.GameTimeManager
 import org.bukkit.OfflinePlayer
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
@@ -413,6 +415,18 @@ object ExamplePapiHook : PlaceholderExpansion {
             "ended" -> return (player?.getData()?.ended == true).toString()
             "ended_show" -> return if (player?.getData()?.ended == true) "<green>已结档" else "<yellow>未结档"
             "ended_id" -> return player?.getData()?.endedId ?: "generic"
+            "gametime" -> {
+                val hours = player?.getData()?.gameTimeHours ?: return "2150.01.01 12AM"
+                return when (list.getOrNull(1)) {
+                    null, "format" -> io.github.zzzyyylllty.chotentech.listener.GameTimeManager.formatOneLine(hours)
+                    "year" -> io.github.zzzyyylllty.chotentech.listener.GameTimeManager.getYear(hours).toString()
+                    "month" -> io.github.zzzyyylllty.chotentech.listener.GameTimeManager.getMonth(hours).toString().padStart(2, '0')
+                    "day" -> io.github.zzzyyylllty.chotentech.listener.GameTimeManager.getDay(hours).toString().padStart(2, '0')
+                    "hour" -> io.github.zzzyyylllty.chotentech.listener.GameTimeManager.getHour(hours).toString().padStart(2, '0')
+                    "total" -> hours.toString()
+                    else -> "?"
+                }
+            }
             "reputation" -> {
                 val data = player?.getData() ?: return "0"
                 val faction = list.getOrNull(1)?.lowercase() ?: return "0"
@@ -529,6 +543,34 @@ object ExamplePapiHook : PlaceholderExpansion {
                     lines.add("<dark_gray>#${index + 1} <gray>$taskName <yellow>$value/$target <gray>($percent%)")
                 } else {
                     lines.add("<dark_gray>#${index + 1} <gray>$taskName <red>$value/$target")
+                }
+            }
+        }
+
+        // Game timeout remaining time
+        val addon = quest.template.addon<AddonGameTimeout>("gametimeout")
+        if (addon != null && addon.gameDurationHours > 0) {
+            val startHours = quest.persistentDataContainer["gametimeout_start_hours", 0L].toLong()
+            if (startHours > 0L) {
+                val currentHours = player.getData()?.gameTimeHours ?: 0L
+                val remaining = (startHours + addon.gameDurationHours) - currentHours
+                if (remaining > 0) {
+                    val y = remaining / 8640
+                    val rem1 = remaining % 8640
+                    val M = rem1 / 720
+                    val rem2 = rem1 % 720
+                    val d = rem2 / 24
+                    val h = rem2 % 24
+                    val parts = mutableListOf<String>()
+                    if (y > 0) parts += "${y}年"
+                    if (M > 0) parts += "${M}月"
+                    if (d > 0) parts += "${d}天"
+                    if (h > 0 || parts.isEmpty()) parts += "${h}小时"
+                    lines.add("")
+                    lines.add("<red>剩余 ${parts.joinToString("")}")
+                } else {
+                    lines.add("")
+                    lines.add("<red>已超时")
                 }
             }
         }

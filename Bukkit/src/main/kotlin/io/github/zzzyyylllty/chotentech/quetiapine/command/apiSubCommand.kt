@@ -1,5 +1,6 @@
 package io.github.zzzyyylllty.chotentech.quetiapine.command
 
+import io.github.zzzyyylllty.chotentech.command.createModernHelper
 import io.github.zzzyyylllty.chotentech.quetiapine.function.kether.runKether
 import io.github.zzzyyylllty.chotentech.quetiapine.logger.infoS
 import net.kyori.adventure.text.minimessage.MiniMessage

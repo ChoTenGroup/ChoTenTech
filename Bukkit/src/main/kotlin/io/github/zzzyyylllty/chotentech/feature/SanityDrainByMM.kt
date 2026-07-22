@@ -29,13 +29,16 @@ fun startMMSanityDrain() {
     }
 
     mmSanityDrainTask = submit(period = interval) {
+        // Mythic.API may not be initialized yet if MythicMobs hasn't fully loaded
+        val api = try { Mythic.API } catch (_: Exception) { null } ?: return@submit
+
         for (player in Bukkit.getOnlinePlayers()) {
             if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) continue
             if (player.isDead) continue
 
             val nearbyEntities = player.getNearbyEntities(range, range, range)
             for (entity in nearbyEntities) {
-                val mob = Mythic.API.getMob(entity) ?: continue
+                val mob = api.getMob(entity) ?: continue
                 val amount = mobDrainMap[mob.id] ?: defaultAmount
                 if (amount <= 0.0) continue
 

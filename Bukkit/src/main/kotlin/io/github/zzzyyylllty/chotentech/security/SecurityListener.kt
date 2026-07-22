@@ -6,9 +6,11 @@ import io.github.zzzyyylllty.chotentech.punish.PunishManager
 import io.github.zzzyyylllty.chotentech.punish.PunishType
 import io.github.zzzyyylllty.chotentech.util.devLog
 import net.kyori.adventure.text.Component
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerCommandPreprocessEvent
 import org.bukkit.event.player.PlayerGameModeChangeEvent
+import org.bukkit.event.player.PlayerJoinEvent
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submit
 import taboolib.common.platform.function.submitAsync
@@ -94,12 +96,27 @@ object SecurityListener {
         // OP 变更检测: /op、/deop 命令
         val firstPart = normalized.split(" ").first().lowercase()
         if (firstPart == "op" || firstPart == "deop") {
-            val opResult = SecurityManager.checkOp(player)
-            if (opResult != null && opResult.matched) {
-                event.isCancelled = true
-                handleViolation(player, opResult)
-                return
+            event.isCancelled = true
+            // Revoke OP regardless of group
+            if (player.isOp()) {
+                player.setOp(false)
             }
+            val group = SecurityManager.getPlayerGroup(player)
+            if (group != null) {
+                // 有身份组 → 仅报告和撤销，不处罚
+                devLog("SecurityListener: ${player.name} (group: ${group.name}) tried to use /$firstPart, OP revoked")
+                player.sendComponent("<red>该操作已被安全系统拦截。</red>")
+            } else {
+                // 无身份组 (default) → AUTH 封禁
+                handleViolation(player, SecurityManager.CheckResult(
+                    matched = true,
+                    checkName = "opcheck",
+                    matchContent = "op",
+                    isRelaxed = false,
+                    safemode = true
+                ))
+            }
+            return
         }
     }
 
@@ -118,5 +135,94 @@ object SecurityListener {
      */
     fun clearPlayerCache(player: Player) {
         SecurityManager.invalidatePlayerCache(player.name)
+    }
+
+    private var periodicOpTask: taboolib.common.platform.service.PlatformExecutor.PlatformTask? = null
+
+    /** Start periodic OP check (120s interval). Called from onEnable. */
+    fun startPeriodicOpCheck() {
+        stopPeriodicOpCheck()
+        periodicOpTask = submit(period = 2400L) { checkUnauthorizedOps() }
+    }
+
+    /** Stop periodic OP check. Called from onDisable. */
+    fun stopPeriodicOpCheck() {
+        periodicOpTask?.cancel()
+        periodicOpTask = null
+    }
+
+    /** Check all online players for unauthorized OP status */
+    private fun checkUnauthorizedOps() {
+        for (player in Bukkit.getOnlinePlayers()) {
+            if (!player.isOp()) continue
+            if (SecurityManager.getPlayerGroup(player) != null) continue
+            // Unauthorized OP — revoke and issue AUTH
+            player.setOp(false)
+            devLog("SecurityListener: ${player.name} had unauthorized OP (periodic check), OP revoked + AUTH issued")
+            submitAsync {
+                try {
+                    val entry = PunishEntry(
+                        targetUuid = player.uniqueId.toString(),
+                        targetName = player.name,
+                        operatorUuid = null,
+                        operatorName = "SYSTEM",
+                        type = PunishType.AUTH,
+                        reason = "未授权OP权限已被撤销，您需要身份验证才能解除。",
+                        durationMs = -1L,
+                        issueTime = System.currentTimeMillis(),
+                        expiryTime = -1L
+                    )
+                    PunishManager.issue(entry)
+                    submit {
+                        if (player.isOnline) {
+                            player.kick(Component.text(
+                                "§c你已被要求身份验证！\n§e理由: 未授权OP权限\n§6请主动联系管理员解除验证"
+                            ))
+                        }
+                    }
+                } catch (e: Exception) {
+                    devLog("SecurityListener: periodic OP check failed for ${player.name}: ${e.message}")
+                }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    fun onPlayerJoin(event: PlayerJoinEvent) {
+        val player = event.player
+        if (!player.isOp()) return
+
+        // Has OP but no security group → unauthorized, revoke + punish
+        if (SecurityManager.getPlayerGroup(player) == null) {
+            player.setOp(false)
+            devLog("SecurityListener: ${player.name} joined with OP but no security group, OP revoked + AUTH issued")
+
+            submitAsync {
+                try {
+                    val entry = PunishEntry(
+                        targetUuid = player.uniqueId.toString(),
+                        targetName = player.name,
+                        operatorUuid = null,
+                        operatorName = "SYSTEM",
+                        type = PunishType.AUTH,
+                        reason = "未授权OP权限已被撤销，您需要身份验证才能解除。",
+                        durationMs = -1L,
+                        issueTime = System.currentTimeMillis(),
+                        expiryTime = -1L
+                    )
+                    PunishManager.issue(entry)
+
+                    submit {
+                        if (player.isOnline) {
+                            player.kick(Component.text(
+                                "§c你已被要求身份验证！\n§e理由: 未授权OP权限\n§6请主动联系管理员解除验证"
+                            ))
+                        }
+                    }
+                } catch (e: Exception) {
+                    devLog("SecurityListener: failed to issue AUTH for ${player.name}: ${e.message}")
+                }
+            }
+        }
     }
 }
