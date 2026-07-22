@@ -1,5 +1,6 @@
 package io.github.zzzyyylllty.chotentech.quetiapine.command
 
+import io.github.zzzyyylllty.chotentech.command.createModernHelper
 import io.github.zzzyyylllty.embiancomponent.EmbianComponent.SafetyComponentSetter
 import io.github.zzzyyylllty.embiancomponent.tools.getComponentsNMSFiltered
 import io.github.zzzyyylllty.chotentech.quetiapine.data.DataUtil

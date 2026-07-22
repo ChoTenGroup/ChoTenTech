@@ -462,30 +462,6 @@ data class ResolvedGroup(
         return null
     }
 
-    /**
-     * 检查 OP 变更 (由命令处理器调用)
-     */
-    fun checkOp(player: Player): CheckResult? {
-        val resolved = getResolvedGroup(player) ?: return null
-
-        for (item in resolved.items) {
-            val check = item.check
-            for (mp in check.miscPatterns) {
-                if (mp.pattern.matcher("op").matches()) {
-                    return CheckResult(
-                        matched = true,
-                        checkName = check.name,
-                        matchContent = "op",
-                        isRelaxed = item.relaxed || mp.relaxed,
-                        safemode = resolved.safemode
-                    )
-                }
-            }
-        }
-
-        return null
-    }
-
     // ==================== 缓存管理 ====================
 
     fun invalidatePlayerCache(playerName: String) {

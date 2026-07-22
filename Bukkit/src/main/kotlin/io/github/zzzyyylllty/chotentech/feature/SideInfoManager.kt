@@ -128,7 +128,7 @@ object SideInfoManager {
         val data = player.getData() ?: return ""
         val level = data.activeLevel ?: return ""
         val noclips = level.noclips
-        if (noclips.isEmpty()) return ""
+//        if (noclips.isEmpty()) return ""
 
         val lines = mutableListOf<String>()
         val header = if (level.number != null) "Level ${level.number} ${level.name}" else level.name

@@ -12,6 +12,7 @@ import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager.createProfil
 import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager.deleteProfile
 import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager.getProfileInfos
 import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager.loadProfileData
+import io.github.zzzyyylllty.chotentech.listener.GameTimeManager
 import io.github.zzzyyylllty.chotentech.listener.ProfileListener.releaseFromPending
 import io.github.zzzyyylllty.chotentech.util.toComponent
 import io.github.zzzyyylllty.chotentech.util.minimessage.mmJsonUtil
@@ -114,7 +115,8 @@ private data class ProfileDisplayData(
     val money: Long,
     val point: Long,
     val playTime: Long,
-    val activeLevelStr: String?
+    val activeLevelStr: String?,
+    val gameTimeHours: Long
 )
 
 class ProfileSelectionGUI {
@@ -136,7 +138,8 @@ class ProfileSelectionGUI {
                 money = pData?.money ?: 0L,
                 point = pData?.point ?: 0L,
                 playTime = pData?.playTime ?: 0L,
-                activeLevelStr = pData?.activeLevelStr
+                activeLevelStr = pData?.activeLevelStr,
+                gameTimeHours = pData?.gameTimeHours ?: 0L
             )
         }
 
@@ -157,7 +160,7 @@ class ProfileSelectionGUI {
             // Existing profiles
             infos.forEachIndexed { index, info ->
                 val isActive = info.profileId == activeProfileId
-                val display = displayMap[info.profileId] ?: ProfileDisplayData(emptyMap(), 0, 0, 0L, 0L, 0L, null)
+                val display = displayMap[info.profileId] ?: ProfileDisplayData(emptyMap(), 0, 0, 0L, 0L, 0L, null, 0L)
                 val item = buildProfileItem(player, info, display, isActive)
                 set(index, item) {
                     clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
@@ -272,7 +275,11 @@ class ProfileSelectionGUI {
         val totalSec = display.playTime / 1000
         val hours = totalSec / 3600
         val mins = (totalSec % 3600) / 60
-        lore += "<!i><gold>游玩 <white>${hours}小时 ${mins}分钟  <gold>已探索 <white>${display.exploredLevels}层, ${display.discoveredBases}基地"
+        val gameTimeStr = GameTimeManager.formatOneLine(display.gameTimeHours)
+        lore += "<!i><aqua>游戏内时间 <white>$gameTimeStr "
+        lore += " "
+        lore += "<!i><gold>游玩 <white>${hours}小时 ${mins}分钟"
+        lore += "<!i><gold>已探索 <white>${display.exploredLevels}层, ${display.discoveredBases}基地"
         val levelName = display.activeLevelStr?.let { levelsList[it] }?.let { "${it.prefix}${it.name}" }
         if (levelName != null) {
             lore += "<!i><gold>层级位置 <white>$levelName"

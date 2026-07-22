@@ -215,7 +215,7 @@ fun onPlayerToggleSprint(event: PlayerToggleSprintEvent) {
     val player = event.player
     if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) return
     val data = playerDataMap[player.uniqueId.toString()] ?: return
-    if (data.stamina <= 0.0) {
+    if (data.stamina < data.maxStamina * 0.25) {
         event.isCancelled = true
         (player as Audience).sendActionBar(mm.deserialize(NO_STAMINA_MSG))
     }

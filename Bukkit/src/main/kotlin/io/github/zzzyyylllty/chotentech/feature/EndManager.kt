@@ -5,7 +5,12 @@ import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager
 import io.github.zzzyyylllty.chotentech.data.getData
 import io.github.zzzyyylllty.chotentech.player.sendComponent
 import io.github.zzzyyylllty.chotentech.util.devLog
+import io.github.zzzyyylllty.chotentech.util.toComponent
+import net.kyori.adventure.title.Title
 import org.bukkit.entity.Player
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
+import java.time.Duration
 import taboolib.common.platform.function.getDataFolder
 import taboolib.common.platform.function.releaseResourceFolder
 import taboolib.module.configuration.Configuration
@@ -14,6 +19,9 @@ import java.io.File
 object EndManager {
 
     data class EndTemplate(
+        val icon: String = "END_STONE",
+        val name: String = "结束",
+        val color: String = "<#aaaa99>",
         val major: String,
         val message: String,
         val postmessage: String,
@@ -46,6 +54,9 @@ object EndManager {
             try {
                 val meta = section.getConfigurationSection("meta")
                 ends[key] = EndTemplate(
+                    icon = section.getString("icon") ?: "END_STONE",
+                    name = section.getString("name") ?: "结束",
+                    color = section.getString("color") ?: "<#aaaa99>",
                     major = section.getString("major") ?: "",
                     message = section.getString("message") ?: "",
                     postmessage = section.getString("postmessage") ?: "",
@@ -83,10 +94,14 @@ object EndManager {
         data.ended = true
         data.endedId = endId
 
+        // Register unlocked end cross-profile
+        val uuid = player.uniqueId.toString()
+        val sharedData = ProfileManager.getSharedData(uuid)
+        sharedData.unlockedEnds.add(endId)
+        ProfileManager.saveSharedData(uuid)
+
         // Grant profile slot bonus
         if (template.profileadded > 0) {
-            val uuid = player.uniqueId.toString()
-            val sharedData = ProfileManager.getSharedData(uuid)
             val currentBonus = sharedData.meta["ended_profile_bonus"]?.value?.toIntOrNull() ?: 0
             val newBonus = currentBonus + template.profileadded
             sharedData.meta["ended_profile_bonus"] = MetaEntry(newBonus.toString())
@@ -95,6 +110,14 @@ object EndManager {
 
         // Save profile data
         ProfileManager.saveProfileData(player.uniqueId.toString(), data.profileId, data)
+
+        // Show title + blindness effect
+        player.showTitle(Title.title(
+            "${template.color}<bold>${template.name}".toComponent(),
+            net.kyori.adventure.text.Component.empty(),
+            Title.Times.times(Duration.ofMillis(500), Duration.ofSeconds(3), Duration.ofMillis(500))
+        ))
+        player.addPotionEffect(PotionEffect(PotionEffectType.BLINDNESS, 200, 0, false, false))
 
         // Build and send the end message
         val sb = StringBuilder()
@@ -114,4 +137,24 @@ object EndManager {
     fun isEnded(player: Player): Boolean = player.getData()?.ended == true
 
     fun getEndId(player: Player): String = player.getData()?.endedId ?: "generic"
+
+    // ==================== GUI query API ====================
+
+    data class EndEntry(
+        val id: String,
+        val template: EndTemplate,
+        val unlocked: Boolean
+    )
+
+    fun getEntries(player: Player): List<EndEntry> {
+        val unlocked = ProfileManager.getSharedData(player.uniqueId.toString()).unlockedEnds
+        return ends.map { (id, template) ->
+            EndEntry(id = id, template = template, unlocked = id in unlocked)
+        }
+    }
+
+    fun getTotalCount(): Int = ends.size
+
+    fun getUnlockedCount(player: Player): Int =
+        ProfileManager.getSharedData(player.uniqueId.toString()).unlockedEnds.size
 }

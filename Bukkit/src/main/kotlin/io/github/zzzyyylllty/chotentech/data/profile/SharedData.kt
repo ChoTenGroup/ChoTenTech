@@ -24,4 +24,16 @@ data class SharedData(
 
     // Cross-profile meta flags (shared scope)
     var meta: MutableMap<String, MetaEntry> = mutableMapOf(),
-)
+
+    // Unlocked end IDs (profile completion achievements, shared across profiles)
+    var unlockedEnds: MutableSet<String> = mutableSetOf(),
+) {
+    /** Fill in null collection fields from Gson deserialization */
+    fun normalize(): SharedData {
+        if (achievements == null) achievements = linkedMapOf()
+        if (cosmetics == null) cosmetics = mutableMapOf()
+        if (meta == null) meta = mutableMapOf()
+        if (unlockedEnds == null) unlockedEnds = mutableSetOf()
+        return this
+    }
+}
