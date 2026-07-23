@@ -36,6 +36,10 @@ mythril_boots: 秘银靴子
 mythril_chestplate: 秘银护甲
 mythril_helmet: 秘银头盔
 mythril_leggings: 秘银护腿
+npa_helmet: 护统军头盔
+npa_chestplate: 护统军护甲
+npa_leggings: 护统军护腿
+npa_boots: 护统军军靴
 ruby_boots: 红宝石靴子
 ruby_chestplate: 红宝石护甲
 ruby_helmet: 红宝石头盔
@@ -55,6 +59,40 @@ ultra_alloy_leggings: 终极合金护腿
 ceshi_bow: 测试之弓
 blizzard_green_tea: 暴雪绿茶
 insulin: 胰岛素
+wheat_seeds: 小麦种子
+wheat: 小麦
+carrot: 胡萝卜
+cooked_carrot: 烤胡萝卜
+potato: 土豆
+cooked_potato: 烤马铃薯
+poisonous_potato: 毒马铃薯
+pumpkin_slice: 南瓜片
+cooked_pumpkin_slice: 烤南瓜片
+pumpkin: 南瓜
+melon: 西瓜
+melon_slice: 西瓜片
+cactus: 仙人掌
+cooked_cactus: 烤仙人掌
+beetroot: 甜菜
+cooked_beetroot: 烤甜菜
+beetroot_seeds: 甜菜种子
+pumpkin_seeds: 南瓜种子
+melon_seeds: 西瓜种子
+porkchop: 生猪排
+cooked_porkchop: 熟猪排
+beef: 生牛肉
+cooked_beef: 熟牛肉
+chicken: 生鸡肉
+cooked_chicken: 熟鸡肉
+mutton: 生羊肉
+cooked_mutton: 熟羊肉
+cocoa_beans: 可可豆
+sugar_cane: 甘蔗
+apple: 苹果
+red_mushroom: 生红蘑菇
+cooked_red_mushroom: 熟红蘑菇
+brown_mushroom: 生棕蘑菇
+cooked_brown_mushroom: 熟棕蘑菇
 apple_can: 苹果罐头
 bean_can: 茄汁豆罐头
 beef_can: 红烧牛肉罐头
@@ -123,7 +161,6 @@ boiled_almond_water: 已煮沸的杏仁水
 rio: RIO酒水
 kfc: 开封菜
 mcdonald: 金拱门
-potato: 土豆
 baked_potato: 烤土豆
 barbecue: 烧烤
 juda_chicken_chop: 巨大™鸡排
@@ -146,7 +183,7 @@ sterile_bandage: 军用消毒绷带 (${var:durabilityAsIn}$/${var:maxdurability}
 bandage: 绷带 (${var:durabilityAsIn}$/${var:maxdurability}$)
 sanity_salt: 锂盐 (${var:durabilityAsIn}$/${var:maxdurability}$)
 hermes_madicinal:  (${var:durabilityAsIn}$/${var:maxdurability}$)
-ice_medkit: “冰块”医疗盒 (${var:durabilityAsIn}$/${var:maxdurability}$)
+ice_medkit: “”冰块”医疗盒 (${var:durabilityAsIn}$/${var:maxdurability}$)”
 tianlong_medkit: “天龙”医疗袋 (${var:durabilityAsIn}$/${var:maxdurability}$)
 pumpkin_medkit: “Pumpkin”南瓜派医疗袋 (${var:durabilityAsIn}$/${var:maxdurability}$)
 fanxing_medkit: “繁星”医疗包 (${var:durabilityAsIn}$/${var:maxdurability}$)
@@ -162,29 +199,17 @@ painkiller_pills: 止疼药 (${var:durabilityAsIn}$/${var:maxdurability}$)
 sql_pills_aqua: SQL 止痛片  (${var:durabilityAsIn}$/${var:maxdurability}$)
 sql_pills_purple: SQL 止痛片  (${var:durabilityAsIn}$/${var:maxdurability}$)
 black_card: ChoTenGroup·权限卡·黑色
-  (永久有效)
 blue_card: ChoTenGroup·权限卡·蓝色访问区域
-  (永久有效)
 border_card: ChoTenGroup·权限卡·繁星边防局
-  (永久有效)
 fourty_card: ChoTenGroup·权限卡·第四十集团军军备库
-  (永久有效)
 green_card: ChoTenGroup·权限卡·自然保护区域
-  (永久有效)
 lapis_card: ChoTenGroup·权限卡·靛蓝武器库
-  (永久有效)
 purple_card: ChoTenGroup·权限卡·紫色材料室
-  (永久有效)
 red_card: ChoTenGroup·权限卡·红色军备库
-  (永久有效)
 substation_card: ChoTenGroup·权限卡·变电站区域
-  (永久有效)
 twentyfour_card: ChoTenGroup·权限卡·第二十四军军备库
-  (永久有效)
 unity_card: ChoTenGroup·权限卡·统一区物资仓库
-  (永久有效)
 yellow_card: ChoTenGroup·权限卡·黄色电子零件库
-  (永久有效)
 engine_lubricating_oil: 引擎润滑油
 radio: 全自助便携式收音机
 fabric_skin: 皮肤织物
@@ -302,7 +327,7 @@ gear: 齿轮
 hammer: 工具锤
 game_controller_handle: 游戏手柄
 trash_bag: 垃圾袋
-Colorful_trash_bag: 炫彩垃圾袋
+colorful_trash_bag: 炫彩垃圾袋
 simple_watch: 简易电子表
 glass_bottle: 玻璃瓶
 black: 暗黑物质
@@ -349,6 +374,9 @@ sealing_wax_meg: 火漆-M.E.G.
 sealing_wax_bntg: 火漆-B.N.T.G.
 wifi: WiFi
 3d_vision_glasses: 3D视觉眼镜
+agrugua_unripe: 亚格鲁格亚果-未成熟
+agrugua_ripe: 亚格鲁格亚果-成熟
+agrugua_overripe: 亚格鲁格亚果-过熟
 almond_water_blue: 杏仁水
 almond_water_gray: 杏仁水
 almond_water_green: 杏仁水
@@ -360,6 +388,9 @@ candy_guns: 糖果 枪
 candy_hazardous_waste: 糖果 有害废料
 candy_silver_tongues: 糖果 银舌头
 candy_stanleys: 糖果 扁扁的Stanleys
+chocobytes_classic: '巧克力排 - 原味! '
+chocobytes_red: '巧克力排 - 摩卡摩卡! '
+chocobytes_white: '巧克力排 - 超浓白巧! '
 dark_reparation_vials: 暗黑修复瓶
 dark_reparation_vials_navy: 暗黑修复瓶 绿松石色
 dark_reparation_vials_amethyst: 暗黑修复瓶 紫水晶色
@@ -367,16 +398,35 @@ dark_reparation_vials_ruby: 暗黑修复瓶 红宝石色
 dark_reparation_vials_onyx: 暗黑修复瓶 玛瑙黑色
 dark_reparation_vials_turquoise: 暗黑修复瓶 绿松石色
 dark_reparation_vials_quartz: 暗黑修复瓶 石英色
-a_pack_of_dumb_gum: 一包呆瓜口香糖
-dumb_gum: 呆瓜口香糖
+a_pack_of_dumb_gum: 一包呆呆口香糖
+dumb_gum: 呆呆口香糖
 lightningbottle_blue: 瓶装闪电 [蓝色]
 lightningbottle_black: 瓶装闪电 [黑色]
+greasy_marshmallows: 油腻棉花糖
+melted_greasy_marshmallows: 融化的油腻棉花糖
 lightningbottle_humanmade: 瓶装闪电 [人造]
 object_100: 超级杏仁水
+office_terminals: 办公终端
+pockets: “一些口袋”
+worn_sack: 磨损的布袋
 royal_rations: 皇家口粮
+seer_tea: “知茶”
+warpberries: 跃迁浆果
 doc_blackhands: '文档: 物资偷盗者的信件'
 doc_maoseletter: '文档: 毛瑟的信件'
-bell: 铃铛
+nizxc_flash: "Nizxc" 闪光弹
+zx_stun: "ZX" "和平建服" 震撼弹
+ice_stun: "ICEGame" "冰块" 震撼弹
+frontroad_grenade: "FrontRoad" "前路" 手榴弹
+endroad_grenade: "EndRoad" "末路" 手榴弹
+6ch_grenade: "6CHM" "遗母" 手榴弹
+shakalaka_grenade: "Shakalaka" 手榴弹
+b_shakalaka_grenade: "B-Shakalaka" 手榴弹
+shengguang_grenade: "圣光" 荧光标记手榴弹
+hqlm_petrol: "火钳刘明" 燃烧瓶
+firesalt_petrol: 火盐燃烧瓶
+strong_firesalt_petrol: 强火盐燃烧瓶
+bell: 红外测距仪
 blackflag: 流动大黑旗
 level4chest_key: level4木桶钥匙
 level4chest_key_2: 板条箱
@@ -413,6 +463,15 @@ katana: 武士刀
 mythril_dagger: 秘银匕首
 mythril_knife: 秘银小刀
 mythril_sword: 秘银剑
+ruby_dagger: 红宝石匕首
+ruby_knife: 红宝石小刀
+ruby_sword: 红宝石剑
+sapphire_dagger: 蓝宝石匕首
+sapphire_knife: 蓝宝石小刀
+sapphire_sword: 蓝宝石剑
+steel_dagger: 钢匕首
+steel_knife: 钢小刀
+steel_sword: 钢剑
 ceshi_sword: 测试之剑
 wooden_sword: 木剑
 atom_spliter: 原子分裂者
@@ -438,15 +497,8 @@ rusty_sword: 锈蚀铁剑
 sharp_stone_sword: 锐利的石剑
 silver_sword: 银剑
 excalibur_stone: 石中剑
-ruby_dagger: 红宝石匕首
-ruby_knife: 红宝石小刀
-ruby_sword: 红宝石剑
-sapphire_dagger: 蓝宝石匕首
-sapphire_knife: 蓝宝石小刀
-sapphire_sword: 蓝宝石剑
-steel_dagger: 钢匕首
-steel_knife: 钢小刀
-steel_sword: 钢剑
+toy_sword: 玩具剑
+null_sword: null
 ultra_alloy_dagger: 终极合金匕首
 ultra_alloy_knife: 终极合金小刀
 ultra_alloy_sword: 终极合金剑
@@ -560,3 +612,4 @@ lion_sculpture: 金狮雕
 necklace: 项链
 tank_sculpture: 战车模型
 tea_kettle: 茶壶
+pro_gold_bar: 超级大斤

@@ -334,7 +334,6 @@ object DataManager {
         inventoryContents = inventoryContents ?: mutableMapOf(),
         hideoutData = hideoutData ?: linkedMapOf(),
         statusEffects = statusEffects ?: mutableListOf(),
-        activeRanks = activeRanks ?: linkedMapOf(),
         affection = affection ?: mutableMapOf(),
         reputation = reputation ?: mutableMapOf(),
         unlockedNoclips = unlockedNoclips ?: mutableSetOf(),
@@ -746,6 +745,8 @@ class ChoTenDataHelper(val player: Player) {
         // Reset EACH-mode random noclip selections
         if (oldLevelId != null) {
             io.github.zzzyyylllty.chotentech.function.noclip.RandomNoclipSelector.resetPlayerRandom(player.uniqueId.toString(), oldLevelId)
+            data.totalLevelExits++
+            io.github.zzzyyylllty.chotentech.data.profile.ProfileManager.getSharedData(data.uuid).totalLevelExits++
         }
 
         resetAndPlayLevelMusic()

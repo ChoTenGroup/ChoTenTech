@@ -66,7 +66,8 @@ taboolib {
         coroutines = "1.8.1"
 
     }
-    relocate("top.maplex.arim","xxx.xxx.arim")
+    relocate("top.maplex.arim","io.github.zzzyyylllty.chotentech.dep.arim")
+//    relocate("cn.gtemc.itembridge", "io.github.zzzyyylllty.chotentech.dep.itembridge")
 }
 
 repositories {
@@ -185,7 +186,7 @@ dependencies {
     implementation("me.clip:placeholderapi:2.11.6")
     taboo("ink.ptms:um:1.2.1")
     // ItemBridge (optional)
-    compileOnly("cn.gtemc:itembridge:1.0.17")
+    taboo("cn.gtemc:itembridge:1.0.31")
     implementation("com.sk89q.worldguard:worldguard-bukkit:7.0.10-SNAPSHOT")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7") { isTransitive = false }
     compileOnly(kotlin("stdlib"))

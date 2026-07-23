@@ -528,7 +528,6 @@ items:
   hammer: 0.17
   game_controller_handle: 0.1
   trash_bag: 0.02
-  Colorful_trash_bag: 0.02
   simple_watch: 0.02
   glass_bottle: 0.07
   black: 0.17
@@ -604,6 +603,68 @@ items:
   tank_sculpture: 0.24
   tea_kettle: 0.15
   aaaaa: 0.15
+
+  # ---- 补全 itemoutputnames.yml 缺失项目 ----
+  # 生鲜食材
+  wheat_seeds: 0.02
+  wheat: 0.07
+  carrot: 0.1
+  cooked_carrot: 0.1
+  cooked_potato: 0.1
+  poisonous_potato: 0.1
+  pumpkin_slice: 0.1
+  cooked_pumpkin_slice: 0.1
+  pumpkin: 0.8
+  melon: 0.8
+  melon_slice: 0.1
+  cactus: 0.35
+  cooked_cactus: 0.35
+  beetroot: 0.07
+  cooked_beetroot: 0.07
+  beetroot_seeds: 0.02
+  pumpkin_seeds: 0.02
+  melon_seeds: 0.02
+  cocoa_beans: 0.02
+  sugar_cane: 0.1
+  apple: 0.1
+  red_mushroom: 0.07
+  cooked_red_mushroom: 0.07
+  brown_mushroom: 0.07
+  cooked_brown_mushroom: 0.07
+  porkchop: 0.1
+  cooked_porkchop: 0.1
+  beef: 0.1
+  cooked_beef: 0.1
+  chicken: 0.1
+  cooked_chicken: 0.1
+  mutton: 0.1
+  cooked_mutton: 0.1
+  # NPA护甲
+  npa_helmet: 1.8
+  npa_chestplate: 3.6
+  npa_leggings: 3.0
+  npa_boots: 1.5
+  # 特殊食品
+  chocobytes_classic: 0.07
+  chocobytes_red: 0.07
+  chocobytes_white: 0.07
+  greasy_marshmallows: 0.03
+  melted_greasy_marshmallows: 0.03
+  # 道具
+  office_terminals: 0.35
+  pockets: 0.07
+  worn_sack: 0.15
+  seer_tea: 0.15
+  warpberries: 0.05
+  # 其他
+  pro_gold_bar: 30
+  toy_sword: 0.3
+  null_sword: 0.3
+  colorful_trash_bag: 0.02
+  topaz: 0.03
+  agrugua_unripe: 0.1
+  agrugua_ripe: 0.1
+  agrugua_overripe: 0.1
 
 # ============================================================================
 # 原版物品重量 (Vanilla Minecraft items by Material name)

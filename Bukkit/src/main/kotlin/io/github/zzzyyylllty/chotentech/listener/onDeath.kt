@@ -43,6 +43,7 @@ fun onPlayerDeath(event: PlayerDeathEvent) {
     if (pd != null) {
         pd.marshmallowCounter = 0
         pd.chocoCounter = 0
+        pd.totalDeaths++ // per-profile death count
     }
     MarshmallowManager.removeModifiers(player)
     ChocoManager.removeAll(player)

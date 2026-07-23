@@ -76,11 +76,21 @@ object ShopMenu : Listener {
         if (session.selectedItems.isEmpty()) {
             return if (session.isBuyMode) "buyshop_notsel" else "sellshop_notsel"
         }
-        // Only check requirements of SELECTED items, not all shop items
         val anyUnmet = session.selectedItems.keys.any { itemKey ->
             val entry = items.find { it.key == itemKey } ?: return@any false
-            val reqs = if (session.isBuyMode) entry.buyRequirements else entry.sellRequirements
-            reqs.isNotEmpty() && reqs.any { !checkRequirement(player, it, shop) }
+            if (session.isBuyMode) {
+                val reqs = entry.buyRequirements
+                if (reqs.isNotEmpty() && reqs.any { !checkRequirement(player, it, shop) }) return@any true
+                if (!canAffordAny(player, entry)) return@any true
+            } else {
+                val reqs = entry.sellRequirements
+                if (reqs.isNotEmpty() && reqs.any { !checkRequirement(player, it, shop) }) return@any true
+                val count = countItem(player, entry.id)
+                entry.sell.forEach { reward ->
+                    if (reward.type == CostType.ITEM && count < reward.amount) return@any true
+                }
+            }
+            false
         }
         return if (anyUnmet) {
             if (session.isBuyMode) "buyshop_notmet" else "sellshop_notmet"
@@ -532,6 +542,22 @@ object ShopMenu : Listener {
         }
 
         lore.add("<!i><dark_gray><st>${" ".repeat(60)}</st>")
+
+        // Check if adding 1 more is affordable or meets conditions
+        val qtyNow = session.getQuantity(entry.key)
+        val cannotAddMore = if (session.isBuyMode) {
+            // Check conditions
+            entry.buyRequirements.any { !checkRequirement(player, it, shop) } ||
+            // Check affordability: current total cost + 1 more of this item
+            !canAffordTotalWithExtra(player, shop, session, entry, 1)
+        } else {
+            entry.sellRequirements.any { !checkRequirement(player, it, shop) } ||
+            countItem(player, entry.id) < qtyNow + 1
+        }
+        if (cannotAddMore) {
+            lore.add("<!i><red>条件不足")
+        }
+
         if (selected) {
             val qty = PlayerShopSession.get(player).getQuantity(entry.key)
             lore.add("<!i><green>已选择: $qty")
@@ -1192,6 +1218,43 @@ object ShopMenu : Listener {
     }
 
     // ── Filter helpers ──────────────────────────────────────────────
+
+    private fun canAffordTotalWithExtra(player: Player, shop: ShopConfig, session: PlayerShopSession, extraEntry: ShopItemEntry, extraQty: Long): Boolean {
+        val totals = mutableMapOf<String, Long>() // currency -> total amount
+        val itemTotals = mutableMapOf<String, Long>() // item id -> total amount
+        for ((itemKey, qty) in session.selectedItems.entries.filter { it.value > 0 }) {
+            val entry = shop.items[itemKey] ?: continue
+            for (cost in entry.buy) {
+                val unitPrice = if (cost.dynamicPricing != null) getDynamicPrice(cost, entry.key) else cost.amount
+                when (cost.type) {
+                    CostType.CURRENCY -> {
+                        val key = cost.currency ?: "money"
+                        totals[key] = (totals[key] ?: 0L) + unitPrice * qty
+                    }
+                    CostType.ITEM -> {
+                        val id = cost.item ?: "?"
+                        itemTotals[id] = (itemTotals[id] ?: 0L) + unitPrice * qty
+                    }
+                }
+            }
+        }
+        // Add the extra item
+        for (cost in extraEntry.buy) {
+            val unitPrice = if (cost.dynamicPricing != null) getDynamicPrice(cost, extraEntry.key) else cost.amount
+            when (cost.type) {
+                CostType.CURRENCY -> {
+                    val key = cost.currency ?: "money"
+                    totals[key] = (totals[key] ?: 0L) + unitPrice * extraQty
+                }
+                CostType.ITEM -> {
+                    val id = cost.item ?: "?"
+                    itemTotals[id] = (itemTotals[id] ?: 0L) + unitPrice * extraQty
+                }
+            }
+        }
+        return totals.all { (currency, amount) -> CurrencyManager.hasBalance(player, currency, amount) } &&
+            itemTotals.all { (id, amount) -> countItem(player, id) >= amount }
+    }
 
     private fun <T : Enum<T>> cycleFilter(current: T, values: Array<T>): T {
         val idx = values.indexOf(current)

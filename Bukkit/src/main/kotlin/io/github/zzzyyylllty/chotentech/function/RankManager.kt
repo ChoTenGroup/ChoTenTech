@@ -2,6 +2,7 @@ package io.github.zzzyyylllty.chotentech.function
 
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
 import io.github.zzzyyylllty.chotentech.data.RankConfig
+import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager
 import io.github.zzzyyylllty.chotentech.util.devLog
 import io.github.zzzyyylllty.chotentech.util.toComponent
 import io.github.zzzyyylllty.chotentech.kether.evalKetherBoolean
@@ -46,6 +47,7 @@ object RankManager {
                                 display[dk] = displaySection.getString(dk) ?: ""
                             }
                         }
+                        val condition = section.getString("condition") ?: "true"
                         typeRanks[key] = RankConfig(
                             id = key,
                             type = type,
@@ -53,7 +55,7 @@ object RankManager {
                             name = section.getString("name") ?: key,
                             desc = section.getString("desc") ?: "",
                             get = section.getString("get") ?: "",
-                            condition = section.getString("condition") ?: "true",
+                            condition = condition,
                             priority = section.getInt("priority", 0)
                         )
                     }
@@ -88,6 +90,7 @@ object RankManager {
         }
     }
 
+    /** Ranks the player can manually select (based on permission or condition check) */
     fun getEligibleRanks(player: Player, type: String): List<RankConfig> {
         val typeRanks = ranks[type] ?: return emptyList()
         return typeRanks.values.filter { checkCondition(player, it) }
@@ -95,20 +98,20 @@ object RankManager {
     }
 
     fun getPlayerActiveRank(player: Player, type: String): RankConfig? {
-        val data = playerDataMap[player.uniqueId.toString()] ?: return null
-        val activeId = data.activeRanks[type] ?: return null
+        val shared = ProfileManager.getSharedData(player.uniqueId.toString())
+        val activeId = shared.activeRanks[type] ?: return null
         return ranks[type]?.get(activeId)
     }
 
     fun setPlayerRank(player: Player, type: String, rankId: String?): Boolean {
-        val data = playerDataMap[player.uniqueId.toString()] ?: return false
+        val shared = ProfileManager.getSharedData(player.uniqueId.toString())
         if (rankId == null) {
-            data.activeRanks.remove(type)
+            shared.activeRanks.remove(type)
             return true
         }
         val rank = ranks[type]?.get(rankId) ?: return false
         if (!checkCondition(player, rank)) return false
-        data.activeRanks[type] = rankId
+        shared.activeRanks[type] = rankId
         return true
     }
 
@@ -126,7 +129,10 @@ object RankManager {
     }
 
     fun checkCondition(player: Player, rank: RankConfig): Boolean {
-        if (rank.condition.isBlank() || rank.condition == "true") return true
+        // Permission override: chotentech.rank.<type>.<id> bypasses condition check
+        val perm = "chotentech.rank.${rank.type}.${rank.id}"
+        if (player.hasPermission(perm)) return true
+        // Fall back to condition field
         return rank.condition.evalKetherBoolean(player)
     }
 
@@ -150,36 +156,39 @@ object RankManager {
     }
 
     fun checkPlayerRanks(player: Player) {
-        val data = playerDataMap[player.uniqueId.toString()] ?: return
+        val shared = ProfileManager.getSharedData(player.uniqueId.toString())
         var changed = false
-        val iterator = data.activeRanks.entries.iterator()
+        val iterator = shared.activeRanks.entries.iterator()
         while (iterator.hasNext()) {
             val (type, rankId) = iterator.next()
             val rank = ranks[type]?.get(rankId)
-            if (rank == null || !checkCondition(player, rank)) {
+            if (rank == null) {
+                iterator.remove()
+                changed = true
+                continue
+            }
+            if (!checkCondition(player, rank)) {
                 iterator.remove()
                 changed = true
                 player.sendMessage(
-                    " <#ff6666>你的称号「${rank?.name ?: rankId}」因条件不满足已自动撤下。"
+                    " <#ff6666>你的称号「${rank.name}」因条件不满足已自动撤下。"
                         .toComponent()
                 )
-                devLog("[称号] 玩家 ${player.name} 的 ${type} 称号「${rank?.name ?: rankId}」条件不满足，已自动撤下")
+                devLog("[称号] 玩家 ${player.name} 的 ${type} 称号「${rank.name}」条件不满足，已自动撤下")
             }
         }
         if (changed) {
-            // Update display name via team or scoreboard if needed
             player.playerListName(buildPlayerListName(player).toComponent())
         }
     }
 
     fun buildPlayerListName(player: Player): String {
-        val data = playerDataMap[player.uniqueId.toString()] ?: return player.name
         val prefix = getRankDisplay(player, "prefix")
         val suffix = getRankDisplay(player, "suffix")
         return "$prefix${player.name}$suffix"
     }
 
-    /** Get display string from the highest-priority eligible rank (no profile data needed) */
+    /** Get display string from the highest-priority eligible rank (condition-based only) */
     fun getEligibleRankDisplay(player: Player, type: String, displayKey: String = "current"): String {
         return getEligibleRanks(player, type).firstOrNull()?.display?.get(displayKey) ?: ""
     }

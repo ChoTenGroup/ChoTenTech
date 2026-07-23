@@ -77,8 +77,7 @@ data class PlayerData (
     var warehouseBaseSlots: Int? = null,
     var hideoutData: MutableMap<String, HideoutPlayerData> = linkedMapOf(),
     var statusEffects: MutableList<PlayerStatusEffect> = mutableListOf(),
-    // type -> rankId (e.g. "prefix" -> "owner")
-    var activeRanks: LinkedHashMap<String, String> = linkedMapOf(),
+    // Shared fields — synced from SharedData by ProfileManager
 
     var stamina: Double = defStamina,
     var handStamina: Double = defHandStamina,
@@ -151,6 +150,12 @@ data class PlayerData (
     // In-game time tracking (60 real seconds = 1 game hour, base: 1950-01-01 00:00 = 0 hours)
     var gameTimeHours: Long = 0L,
 
+    // Per-profile statistics
+    var totalLevelExits: Int = 0,
+    var totalDeaths: Int = 0,
+    var totalMobKills: Int = 0,
+    var totalPlayerKills: Int = 0,
+
     // Per-profile meta flags (independent scope)
     var meta: MutableMap<String, io.github.zzzyyylllty.chotentech.data.profile.MetaEntry> = mutableMapOf(),
 
@@ -174,7 +179,6 @@ data class PlayerData (
         if (deathKeepItems == null) deathKeepItems = mutableListOf()
         if (hideoutData == null) hideoutData = linkedMapOf()
         if (statusEffects == null) statusEffects = mutableListOf()
-        if (activeRanks == null) activeRanks = linkedMapOf()
         if (affection == null) affection = mutableMapOf()
         if (reputation == null) reputation = mutableMapOf()
         if (cosmetics == null) cosmetics = mutableMapOf()

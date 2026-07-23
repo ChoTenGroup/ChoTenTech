@@ -2,6 +2,7 @@ package io.github.zzzyyylllty.chotentech.gui
 
 import io.github.zzzyyylllty.chotentech.data.RankConfig
 import io.github.zzzyyylllty.chotentech.data.getData
+import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager
 import io.github.zzzyyylllty.chotentech.function.RankManager
 import io.github.zzzyyylllty.chotentech.util.minimessage.mmJsonUtil
 import io.github.zzzyyylllty.chotentech.util.toComponent
@@ -52,8 +53,8 @@ class RankSelectionMenu {
             val typeSlots = listOf('A', 'B', 'C', 'D', 'E', 'F')
             types.take(6).forEachIndexed { index, type ->
                 val slot = typeSlots[index]
-                val data = player.getData() ?: return@forEachIndexed
-                val activeId = data.activeRanks[type]
+                val shared = ProfileManager.getSharedData(player.uniqueId.toString())
+                val activeId = shared.activeRanks[type]
                 val activeName = RankManager.ranks[type]?.get(activeId)?.name ?: "无"
 
                 set(slot, guiItem(XMaterial.BOOK, "<gold>${typeNameMap[type] ?: type}", listOf("<gray>当前: <white>$activeName", "<green>点击查看"))) {
@@ -66,8 +67,8 @@ class RankSelectionMenu {
 
     private fun openRankList(player: Player, type: String) {
         val eligibleRanks = RankManager.getEligibleRanks(player, type)
-        val data = player.getData() ?: return
-        val activeId = data.activeRanks[type]
+        val shared = ProfileManager.getSharedData(player.uniqueId.toString())
+        val activeId = shared.activeRanks[type]
 
         player.openMenu<PageableChest<RankConfig>>(
             mmJsonUtil.serialize("<black><font:minecraft:fusionpixel10>${typeNameMap[type] ?: type}".toComponent())
@@ -94,10 +95,10 @@ class RankSelectionMenu {
 
             onClick { event, rank ->
                 val clicker = event.clicker
-                val pData = clicker.getData() ?: return@onClick
+                val clickerShared = ProfileManager.getSharedData(clicker.uniqueId.toString())
 
-                if (pData.activeRanks[type] == rank.id) {
-                    pData.activeRanks.remove(type)
+                if (clickerShared.activeRanks[type] == rank.id) {
+                    clickerShared.activeRanks.remove(type)
                     clicker.sendMessage("§7已取消 ${typeNameMap[type] ?: type}")
                 } else {
                     if (RankManager.setPlayerRank(clicker, type, rank.id)) {
