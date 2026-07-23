@@ -14,10 +14,13 @@ data class SharedData(
     var goldentape: Long = 0L,
     var achievements: LinkedHashMap<String, AchievementProgress> = linkedMapOf(),
     var cosmetics: MutableMap<String, String> = mutableMapOf(),
-    // Stats shared across all profiles
+    // Cross-profile statistics
     var totalPlayTime: Long = 0L,    // ms
     var joinCount: Int = 0,
     var totalDeaths: Int = 0,
+    var totalLevelExits: Int = 0,
+    var totalMobKills: Int = 0,
+    var totalPlayerKills: Int = 0,
     var firstJoinTime: Long = 0L,   // epoch ms
     var lastJoinTime: Long = 0L,    // epoch ms
     var lastQuitTime: Long = 0L,    // epoch ms
@@ -27,6 +30,9 @@ data class SharedData(
 
     // Unlocked end IDs (profile completion achievements, shared across profiles)
     var unlockedEnds: MutableSet<String> = mutableSetOf(),
+
+    // Active ranks shared across all profiles (type -> rankId)
+    var activeRanks: MutableMap<String, String> = mutableMapOf(),
 ) {
     /** Fill in null collection fields from Gson deserialization */
     fun normalize(): SharedData {

@@ -69,5 +69,4 @@ fun onPlayerBreakBlock(event: BlockBreakEvent) {
 
     // Protect natural terrain
     event.isCancelled = true
-    player.sendComponent("<red>你不能破坏地图上的自然方块!")
 }

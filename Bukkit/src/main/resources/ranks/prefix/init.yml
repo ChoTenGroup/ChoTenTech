@@ -1,0 +1,324 @@
+alpha:
+  display:
+    current: "<!i><font:minecraft:rank><image:kangelrank:rank_alpha></font>"
+  name: "Alpha玩家"
+  desc: "参加过Alpha公开测试的玩家。"
+  get: "通过参加2026年的Alpha公开测试以获得"
+  condition: ~
+  priority: 100
+
+beta:
+  display:
+    current: "<!i><font:minecraft:rank><image:kangelrank:rank_beta></font>"
+  name: "Beta玩家"
+  desc: "参加过Beta公开测试的玩家。"
+  get: "通过参加2026年的Beta公开测试以获得"
+  condition: ~
+  priority: 99
+
+borderdefense:
+  display:
+    current: "<!i><font:minecraft:rank><image:kangelrank:rank_borderdefense></font>"
+  name: "阈限边防局"
+  desc: "成为了阈限边防局的光荣一员。"
+  get: "完成游戏内任务以获得"
+  condition: ~
+  priority: 98
+
+boy:
+  display:
+    current: "<!i><font:minecraft:rank><image:kangelrank:rank_boy></font>"
+  name: "Boy称号"
+  desc: "专属称号"
+  get: "友邦 Boy 专属称号"
+  condition: ~
+  priority: 97
+
+cereal:
+  display:
+    current: "<!i><font:minecraft:rank><image:kangelrank:rank_cereal></font>"
+  name: "吃麦片"
+  desc: "专属称号"
+  get: "老玩家 坚决唐太宗吃麦片 专属称号"
+  condition: ~
+  priority: 96
+
+citizen1:
+  display:
+    current: "<!i><font:minecraft:rank><image:kangelrank:rank_citizen1></font>"
+  name: "阈限公民 I"
+  desc: "等级称号。代表了您已经初步立足于阈限世界。"
+  get: "付费等级称号。也可随游戏进程免费解锁。"
+  condition: ~
+  priority: 95
+
+citizen2:
+  display:
+    current: "<!i><font:minecraft:rank><image:kangelrank:rank_citizen2></font>"
+  name: "占位符"
+  desc: "占位符"
+  get: "占位符"
+  condition: ~
+  priority: 93
+
+citizen3:
+  display:
+    current: "<!i><font:minecraft:rank><image:kangelrank:rank_citizen3></font>"
+  name: "占位符"
+  desc: "占位符"
+  get: "占位符"
+  condition: ~
+  priority: 92
+
+citizen4:
+  display:
+    current: "<!i><font:minecraft:rank><image:kangelrank:rank_citizen4></font>"
+  name: "占位符"
+  desc: "占位符"
+  get: "占位符"
+  condition: ~
+  priority: 91
+
+citizen5:
+  display:
+    current: "<!i><font:minecraft:rank><image:kangelrank:rank_citizen5></font>"
+  name: "占位符"
+  desc: "占位符"
+  get: "占位符"
+  condition: ~
+  priority: 90
+
+citizen6:
+  display:
+    current: "<!i><font:minecraft:rank><image:kangelrank:rank_citizen6></font>"
+  name: "占位符"
+  desc: "占位符"
+  get: "占位符"
+  condition: ~
+  priority: 89
+
+citizen7:
+  display:
+    current: "<!i><font:minecraft:rank><image:kangelrank:rank_citizen7></font>"
+  name: "阈限公民 VII"
+  desc: "等级称号。代表了您已经是阈限世界不可或缺的一份子。"
+  get: "付费等级称号。也可随游戏进程免费解锁。"
+  condition: ~
+  priority: 88
+
+citizen8:
+  display:
+    current: "<!i><font:minecraft:rank><image:kangelrank:rank_citizen8></font>"
+  name: "阈限公民 VIII"
+  desc: "等级称号。代表了您已经是阈限世界不可或缺的一份子。"
+  get: "付费等级称号。也可随游戏进程免费解锁。"
+  condition: ~
+  priority: 87
+
+citizen9:
+  display:
+    current: "<!i><font:minecraft:rank><image:kangelrank:rank_citizen9></font>"
+  name: "阈限公民 IX"
+  desc: "等级称号。代表了您已经是阈限世界的核心组成部分。"
+  get: "付费等级称号。也可随游戏进程免费解锁。"
+  condition: ~
+  priority: 86
+
+citizen10:
+  display:
+    current: "<!i><font:minecraft:rank><image:kangelrank:rank_citizen10></font>"
+  name: "阈限公民 X"
+  desc: "等级称号。代表了您已经是阈限世界最有声望的其中一员。阈限世界离不开您的付出。"
+  get: "付费等级称号。也可随游戏进程免费解锁。"
+  condition: ~
+  priority: 94
+
+core:
+  display:
+    current: "<!i><font:minecraft:rank><image:kangelrank:rank_core></font>"
+  name: "占位符"
+  desc: "占位符"
+  get: "占位符"
+  condition: ~
+  priority: 85
+
+endroad:
+  display:
+    current: "<!i><font:minecraft:rank><image:kangelrank:rank_endroad></font>"
+  name: "占位符"
+  desc: "占位符"
+  get: "占位符"
+  condition: ~
+  priority: 84
+
+enterprise:
+  display:
+    current: "<!i><font:minecraft:rank><image:kangelrank:rank_enterprise></font>"
+  name: "占位符"
+  desc: "占位符"
+  get: "占位符"
+  condition: ~
+  priority: 83
+
+fanxingsa:
+  display:
+    current: "<!i><font:minecraft:rank><image:kangelrank:rank_fanxingsa></font>"
+  name: "占位符"
+  desc: "占位符"
+  get: "占位符"
+  condition: ~
+  priority: 82
+
+ge2332:
+  display:
+    current: "<!i><font:minecraft:rank><image:kangelrank:rank_ge2332></font>"
+  name: "占位符"
+  desc: "占位符"
+  get: "占位符"
+  condition: ~
+  priority: 81
+
+gingerpizza:
+  display:
+    current: "<!i><font:minecraft:rank><image:kangelrank:rank_gingerpizza></font>"
+  name: "占位符"
+  desc: "占位符"
+  get: "占位符"
+  condition: ~
+  priority: 80
+
+ice:
+  display:
+    current: "<!i><font:minecraft:rank><image:kangelrank:rank_ice></font>"
+  name: "占位符"
+  desc: "占位符"
+  get: "占位符"
+  condition: ~
+  priority: 79
+
+independent:
+  display:
+    current: "<!i><font:minecraft:rank><image:kangelrank:rank_independent></font>"
+  name: "占位符"
+  desc: "占位符"
+  get: "占位符"
+  condition: ~
+  priority: 78
+
+kazamata:
+  display:
+    current: "<!i><font:minecraft:rank><image:kangelrank:rank_kazamata></font>"
+  name: "占位符"
+  desc: "占位符"
+  get: "占位符"
+  condition: ~
+  priority: 77
+
+lemon:
+  display:
+    current: "<!i><font:minecraft:rank><image:kangelrank:rank_lemon></font>"
+  name: "占位符"
+  desc: "占位符"
+  get: "占位符"
+  condition: ~
+  priority: 76
+
+maximizer:
+  display:
+    current: "<!i><font:minecraft:rank><image:kangelrank:rank_maximizer></font>"
+  name: "占位符"
+  desc: "占位符"
+  get: "占位符"
+  condition: ~
+  priority: 75
+
+mystery6ch:
+  display:
+    current: "<!i><font:minecraft:rank><image:kangelrank:rank_mystery6ch></font>"
+  name: "占位符"
+  desc: "占位符"
+  get: "占位符"
+  condition: ~
+  priority: 74
+
+newbegin:
+  display:
+    current: "<!i><font:minecraft:rank><image:kangelrank:rank_newbegin></font>"
+  name: "占位符"
+  desc: "占位符"
+  get: "占位符"
+  condition: ~
+  priority: 73
+
+observer:
+  display:
+    current: "<!i><font:minecraft:rank><image:kangelrank:rank_observer></font>"
+  name: "占位符"
+  desc: "占位符"
+  get: "占位符"
+  condition: ~
+  priority: 72
+
+president:
+  display:
+    current: "<!i><font:minecraft:rank><image:kangelrank:rank_president></font>"
+  name: "占位符"
+  desc: "占位符"
+  get: "占位符"
+  condition: ~
+  priority: 71
+
+reboot:
+  display:
+    current: "<!i><font:minecraft:rank><image:kangelrank:rank_reboot></font>"
+  name: "占位符"
+  desc: "占位符"
+  get: "占位符"
+  condition: ~
+  priority: 70
+
+shengguang:
+  display:
+    current: "<!i><font:minecraft:rank><image:kangelrank:rank_shengguang></font>"
+  name: "占位符"
+  desc: "占位符"
+  get: "占位符"
+  condition: ~
+  priority: 69
+
+toheaven:
+  display:
+    current: "<!i><font:minecraft:rank><image:kangelrank:rank_toheaven></font>"
+  name: "占位符"
+  desc: "占位符"
+  get: "占位符"
+  condition: ~
+  priority: 68
+
+wallisyellow:
+  display:
+    current: "<!i><font:minecraft:rank><image:kangelrank:rank_wallisyellow></font>"
+  name: "占位符"
+  desc: "占位符"
+  get: "占位符"
+  condition: ~
+  priority: 67
+
+wanderer:
+  display:
+    current: "<!i><font:minecraft:rank><image:kangelrank:rank_wanderer></font>"
+  name: "占位符"
+  desc: "占位符"
+  get: "占位符"
+  condition: ~
+  priority: 66
+
+whatmean:
+  display:
+    current: "<!i><font:minecraft:rank><image:kangelrank:rank_whatmean></font>"
+  name: "占位符"
+  desc: "占位符"
+  get: "占位符"
+  condition: ~
+  priority: 65
+

@@ -17,7 +17,7 @@ import io.github.zzzyyylllty.chotentech.quetiapine.data.RegenTemplate
 import io.github.zzzyyylllty.chotentech.quetiapine.logger.infoL
 import io.github.zzzyyylllty.chotentech.quetiapine.logger.severeS
 import io.github.zzzyyylllty.chotentech.quetiapine.logger.warningL
-import io.github.zzzyyylllty.chotentech.quetiapine.util.ExternalItemHelper
+import io.github.zzzyyylllty.chotentech.util.ExternalItemHelper
 import io.github.zzzyyylllty.chotentech.quetiapine.util.devLog
 import io.github.zzzyyylllty.chotentech.quetiapine.util.toBooleanTolerance
 import taboolib.common.platform.function.getDataFolder

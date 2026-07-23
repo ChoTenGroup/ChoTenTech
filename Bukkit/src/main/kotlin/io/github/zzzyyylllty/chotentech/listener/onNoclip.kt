@@ -11,7 +11,6 @@ import io.github.zzzyyylllty.chotentech.data.ChoTenDataHelper
 import io.github.zzzyyylllty.chotentech.data.Level
 import io.github.zzzyyylllty.chotentech.data.NoclipPoint
 import io.github.zzzyyylllty.chotentech.data.PlayerData
-import io.github.zzzyyylllty.chotentech.data.PowerManager
 import io.github.zzzyyylllty.chotentech.event.NoclipEnterEvent
 import io.github.zzzyyylllty.chotentech.function.noclip.ConditionResult
 import io.github.zzzyyylllty.chotentech.function.noclip.NoclipConditionChecker
@@ -176,3 +175,9 @@ fun checkPlayerIsInNoclipPoint(
                     && player.location.z in zmin..zmax
             )
 }
+
+/**
+ * 检查切出点是否为电梯切出点且电源已激活。
+ * 如果不是电梯切出点 → 返回 true（允许正常切出）。
+ * 如果是电梯切出点但电源未激活 → 返回 false（阻止切出）。
+ */

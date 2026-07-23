@@ -144,10 +144,13 @@ object SideInfoManager {
                 np.conditions.signal != null || np.conditions.dropbag != null ||
                 np.conditions.condition != null
             )
+            val hasEleCond = np.elevatorOnly
+            val elePowerOn = !hasEleCond || PowerManager.hasElevatorPowerActiveFor(np)
 
             val (idColor, nameColor) = when {
+                isInRange && hasEleCond && !elePowerOn -> Pair("<#e02e22>", "<red>")
                 isInRange -> Pair("<#e0fe22>", "<yellow>")
-                hasCoop || hasOtherConditions -> Pair("<#e02e22>", "<gray>")
+                hasCoop || hasOtherConditions || (hasEleCond && !elePowerOn) -> Pair("<#e02e22>", "<gray>")
                 else -> Pair("<#99ce92>", "<white>")
             }
 
@@ -156,6 +159,10 @@ object SideInfoManager {
             if (includeHints) {
                 if (isInRange && data.noclipping) {
                     lines.add(" <gray>-> <aqua>停留在切出点内...")
+                } else if (isInRange && hasEleCond && !elePowerOn) {
+                    lines.add(" <gray>-> <gray>需要激活电源")
+                } else if (isInRange && hasEleCond && elePowerOn) {
+                    lines.add(" <gray>-> <yellow>按下上升按钮")
                 } else if (hasCoop) {
                     lines.add(" <gray>-> <gray>需要与其他人合作切出...")
                 } else if (hasOtherConditions) {

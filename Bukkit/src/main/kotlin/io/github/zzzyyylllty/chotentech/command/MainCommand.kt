@@ -72,6 +72,10 @@ object MainCommand {
 //    val Data = ChoTenDataCommand
     @CommandBody
     val gametime = GameTimeCommand
+    @CommandBody
+    val profileinfo = ProfileInfoCommand
+    @CommandBody
+    val settings = SettingsCommand
 
 }
 

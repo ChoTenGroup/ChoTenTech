@@ -872,4 +872,22 @@ object PowerManager {
             loc.y in minY..maxY &&
             loc.z in minZ..maxZ
     }
+
+    /**
+     * 检查切出点是否为电梯切出点且电源已激活。
+     * 如果不是电梯切出点 → 返回 true（允许正常切出）。
+     * 如果是电梯切出点但电源未激活 → 返回 false（阻止切出）。
+     */
+    fun hasElevatorPowerActiveFor(noclipPoint: NoclipPoint): Boolean {
+        val name = noclipPoint.name ?: return true
+        val elevatorRuntimes = runtimeMap.values.filter { runtime ->
+            runtime.power.obstacles.any { obstacle ->
+                obstacle.mode == ObstacleMode.ELEVATOR_DOORS &&
+                    obstacle.elevatorConfig?.noclipPointName == name
+            }
+        }
+        if (elevatorRuntimes.isEmpty()) return true
+        // 找到了关联的电梯，检查是否有任意一个电源已激活
+        return elevatorRuntimes.any { it.closeDelayTask != null }
+    }
 }

@@ -2,8 +2,9 @@ package io.github.zzzyyylllty.chotentech.quetiapine.data
 
 import io.github.zzzyyylllty.embiancomponent.EmbianComponent
 import io.github.zzzyyylllty.chotentech.quetiapine.logger.severeL
+import io.github.zzzyyylllty.chotentech.quetiapine.logger.severeS
 import io.github.zzzyyylllty.chotentech.quetiapine.logger.warningL
-import io.github.zzzyyylllty.chotentech.quetiapine.util.ExternalItemHelper
+import io.github.zzzyyylllty.chotentech.util.ExternalItemHelper
 import io.github.zzzyyylllty.chotentech.quetiapine.util.VersionHelper
 import io.github.zzzyyylllty.chotentech.quetiapine.util.asListEnhanced
 import io.github.zzzyyylllty.chotentech.quetiapine.util.toComponent
@@ -48,9 +49,9 @@ data class OmniItem(
 
             } else {
                 if (player != null) {
-                    ExternalItemHelper.itemBridge?.build(source, player, item)?.get()
+                    ExternalItemHelper.build(player, source, item)
                 } else {
-                    ExternalItemHelper.itemBridge?.build(source, item)?.get()
+                    ExternalItemHelper.build(player, source, item)
                 }
             }
             if (providedItem == null) {
@@ -59,9 +60,9 @@ data class OmniItem(
             }
             itemStack = providedItem
 
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             severeL("ErrorItemGenerationFailed", source, item)
-            e.printStackTrace()
+            severeS("${e::class.simpleName}: ${e.message}")
             return ItemStack(Material.GRASS_BLOCK)
         }
 

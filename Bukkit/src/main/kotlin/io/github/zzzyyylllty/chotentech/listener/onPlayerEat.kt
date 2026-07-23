@@ -87,8 +87,8 @@ fun onPlayerEat(event: PlayerItemConsumeEvent) {
                 val newDur = dur - 1.0
 
                 if (newDur > 0) {
-                    if (item.amount > 1) {
-                        // 堆叠: Paper 自然消耗数量-1，额外给一个扣了耐久的
+                    if (item.amount > 1 || item.getData(DataComponentTypes.FOOD) != null) {
+                        // 堆叠 或 食物: 消耗当前物品，归还一个扣了耐久的
                         val used = item.clone()
                         used.amount = 1
                         val usedTag = used.getItemTag() ?: return
@@ -111,11 +111,6 @@ fun onPlayerEat(event: PlayerItemConsumeEvent) {
             return
         }
     }
-    event.replacement = item
-    if (event.replacement?.type == Material.GLASS_BOTTLE) {
-        event.replacement = null
-    }
-
     val data = player.getData() ?: return
 
     // Check NBT for custom hunger/saturation/health values

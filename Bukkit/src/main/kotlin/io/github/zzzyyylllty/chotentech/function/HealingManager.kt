@@ -110,9 +110,6 @@ object HealingManager {
             item
         }
 
-        // 理疗经验（使用医疗物品）
-        SkillManager.givePhysiotherapyXp(player, useItem)
-
         var speedModUuid: UUID? = null
         if (config.slow > 0) {
             val modifier = AttributeModifier(
