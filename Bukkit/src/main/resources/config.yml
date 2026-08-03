@@ -157,8 +157,6 @@ profile:
 options:
   music-dir: "D:\\Server\\Ets\\plugins\\CraftEngine\\resources\\kangelmain\\resourcepack\\assets\\kangel\\sounds\\music"
   level:
-    # 每次更新最多升级多少级，此选项可以有效避免经验配置错误带来的更新卡死
-    update-limit: 10
     # 替换原版等级 null为不替换
     override-vanilla: main
 
@@ -210,6 +208,26 @@ team:
     chotentech.team.size.10: 10
     chotentech.team.size.8: 8
     chotentech.team.size.6: 6
+
+# 好友系统配置
+friend:
+  # 默认好友上限（无权限玩家）
+  max-friends: 50
+  # 权限节点 chotentech.friend.<数量> 可提升好友上限
+  # 例如 chotentech.friend.100 拥有 100 好友上限
+  # 是否允许左键点击好友头像传送到其身边（另需权限 chotentech.friend.teleport）
+  teleport: true
+
+# 变化提示箭头配置（%chotentech_change_*% 占位符与 formatdata 显示追加的箭头）
+change-arrows:
+  # 上升箭头（大号）
+  up: "▲"
+  # 下降箭头（大号）
+  down: "▼"
+  # 上升箭头颜色（MiniMessage 颜色格式）
+  up-color: "<#88ff88>"
+  # 下降箭头颜色（MiniMessage 颜色格式）
+  down-color: "<#ff8888>"
 
 # 靠近 MythicMobs 实体降低精神配置
 mm-sanity-drain:

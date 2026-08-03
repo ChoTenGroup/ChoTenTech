@@ -47,7 +47,11 @@ data class ConsumableEffect(
     val statusEffectId: String? = null,
     val statusEffectLevel: Int = 0,
     // conditional effects
-    val thresholds: String = ""
+    val thresholds: String = "",
+    // modifier death mark
+    val deathMark: Boolean = false,
+    // random chance to trigger (percentage, 100 = always)
+    val chance: Double = 100.0,
 )
 
 /** Track active tick_task PlatformTask references per player UUID. Cancelled on death. */
@@ -68,10 +72,21 @@ fun cancelAllConsumableTasks() {
 
 data class ConsumableConfig(
     val id: String,
-    val effects: List<ConsumableEffect>
+    val effects: List<ConsumableEffect>,
+    val instant: Boolean = false,
 ) {
     fun apply(player: Player) {
         val helper = ChoTenDataHelper(player)
+        // Pre-cleanup: remove old modifiers sharing the same UUID so reapplication replaces, not stacks
+        val seen = mutableSetOf<UUID>()
+        for (ef in effects) {
+            if (ef.effect == "modifier" && ef.modifierUuid != null) {
+                val uuid = UUID.nameUUIDFromBytes(ef.modifierUuid!!.toByteArray())
+                if (seen.add(uuid)) {
+                    AttributeManager.removeModifierByUuid(player.uniqueId, uuid)
+                }
+            }
+        }
         for (ef in effects) {
             applySingleEffect(player, helper, ef)
         }
@@ -79,6 +94,8 @@ data class ConsumableConfig(
 
     companion object {
         fun applySingleEffect(player: Player, helper: ChoTenDataHelper, ef: ConsumableEffect) {
+            // Random chance skip
+            if (ef.chance < 100.0 && kotlin.random.Random.nextDouble() * 100 >= ef.chance) return
             when (ef.effect) {
                 "health" -> {
                     val hp = player.health
@@ -99,6 +116,18 @@ data class ConsumableConfig(
                     when (ef.mode) {
                         "add" -> helper.addSaturation(ef.value)
                         "set" -> helper.setSaturation(ef.value)
+                    }
+                }
+                "food_restore" -> {
+                    when (ef.mode) {
+                        "add" -> {
+                            helper.addHunger(ef.value)
+                            helper.addSaturation(ef.value)
+                        }
+                        "set" -> {
+                            helper.setHunger(ef.value)
+                            helper.setSaturation(ef.value)
+                        }
                     }
                 }
                 "consumption" -> {
@@ -216,7 +245,8 @@ data class ConsumableConfig(
                         type = ef.modifierType,
                         source = ef.modifierSource,
                         slot = ef.modifierSlot,
-                        expireOn = expireOn
+                        expireOn = expireOn,
+                        deathMark = ef.deathMark
                     )
                     AttributeManager.addModifier(player.uniqueId, mod)
                 }
@@ -254,6 +284,23 @@ data class ConsumableConfig(
                         "classic" -> io.github.zzzyyylllty.chotentech.function.ChocoManager.applyClassic(player)
                         "red" -> io.github.zzzyyylllty.chotentech.function.ChocoManager.applyRed(player)
                         "white" -> io.github.zzzyyylllty.chotentech.function.ChocoManager.applyWhite(player)
+                    }
+                }
+                "health_threshold" -> {
+                    val thresholdPercent = ef.value.coerceIn(0.0, 100.0)
+                    val targetPercent = (ef.amplifier.toDouble().takeIf { it > 0 } ?: thresholdPercent).coerceIn(0.0, 100.0)
+                    if (player.health / player.maxHealth < thresholdPercent / 100.0) {
+                        player.health = player.maxHealth * (targetPercent / 100.0)
+                    }
+                }
+                "injury_threshold" -> {
+                    val thresholdPercent = ef.value.coerceIn(0.0, 100.0)
+                    val targetPercent = (ef.amplifier.toDouble().takeIf { it > 0 } ?: thresholdPercent).coerceIn(0.0, 100.0)
+                    if (helper.data.externalInjury / helper.data.maxExternalInjury < thresholdPercent / 100.0) {
+                        helper.setExternalInjury(helper.data.maxExternalInjury * (targetPercent / 100.0))
+                    }
+                    if (helper.data.internalInjury / helper.data.maxInternalInjury < thresholdPercent / 100.0) {
+                        helper.setInternalInjury(helper.data.maxInternalInjury * (targetPercent / 100.0))
                     }
                 }
             }
@@ -303,30 +350,35 @@ private fun loadConsumableFile(file: File) {
                 val effectType = map["effect"]?.toString() ?: continue
                 val mode = map["mode"]?.toString() ?: "add"
                 val value = (map["value"]?.toString()?.toDoubleOrNull()) ?: 0.0
+                val chance = (map["chance"]?.toString()?.toDoubleOrNull()) ?: 100.0
 
                 when (effectType) {
                     "potion" -> effects.add(ConsumableEffect(
                         effect = effectType, mode = mode, value = value,
                         potionId = map["potion"]?.toString(),
                         duration = (map["duration"]?.toString()?.toIntOrNull()) ?: 0,
-                        amplifier = (map["amplifier"]?.toString()?.toIntOrNull()) ?: 0
+                        amplifier = (map["amplifier"]?.toString()?.toIntOrNull()) ?: 0,
+                        chance = chance,
                     ))
                     "sound" -> effects.add(ConsumableEffect(
                         effect = effectType, mode = mode, value = value,
                         sound = map["sound"]?.toString(),
                         soundVolume = (map["volume"]?.toString()?.toFloatOrNull()) ?: 1.0f,
-                        soundPitch = (map["pitch"]?.toString()?.toFloatOrNull()) ?: 1.0f
+                        soundPitch = (map["pitch"]?.toString()?.toFloatOrNull()) ?: 1.0f,
+                        chance = chance,
                     ))
                     "particle" -> effects.add(ConsumableEffect(
                         effect = effectType, mode = mode, value = value,
                         potionId = map["particle"]?.toString(),
                         duration = (map["count"]?.toString()?.toIntOrNull()) ?: 1,
-                        amplifier = (map["speed"]?.toString()?.toIntOrNull()) ?: 0
+                        amplifier = (map["speed"]?.toString()?.toIntOrNull()) ?: 0,
+                        chance = chance,
                     ))
                     "mm_skill" -> effects.add(ConsumableEffect(
                         effect = effectType, mode = mode,
                         value = (map["power"]?.toString()?.toDoubleOrNull()) ?: 1.0,
-                        sound = map["skill"]?.toString()
+                        sound = map["skill"]?.toString(),
+                        chance = chance,
                     ))
                     "tick_task" -> {
                         val delay = (map["delay"]?.toString()?.toIntOrNull()) ?: 0
@@ -339,7 +391,8 @@ private fun loadConsumableFile(file: File) {
                         effects.add(ConsumableEffect(
                             effect = effectType, mode = mode, value = value,
                             taskDelay = delay, taskPeriod = period, taskRepeats = repeats,
-                            subEffects = subEffects
+                            subEffects = subEffects,
+                            chance = chance,
                         ))
                     }
                     "modifier" -> {
@@ -351,11 +404,14 @@ private fun loadConsumableFile(file: File) {
                         val modUuid = map["uuid"]?.toString()
                         val expireStr = map["expire"]?.toString()
                         val expireMs = parseDuration(expireStr)
+                        val deathMark = map["death_mark"]?.toString()?.toBoolean() ?: false
                         effects.add(ConsumableEffect(
                             effect = effectType, mode = mode, value = value,
                             modifierId = modId, modifierAmount = amount,
                             modifierType = type, modifierSource = source, modifierSlot = slot,
-                            modifierUuid = modUuid, modifierExpire = expireMs
+                            modifierUuid = modUuid, modifierExpire = expireMs,
+                            deathMark = deathMark,
+                            chance = chance,
                         ))
                     }
                     "status_effect" -> {
@@ -365,14 +421,16 @@ private fun loadConsumableFile(file: File) {
                         effects.add(ConsumableEffect(
                             effect = effectType, mode = mode, value = value,
                             statusEffectId = seId, statusEffectLevel = level,
-                            duration = durationSec
+                            duration = durationSec,
+                            chance = chance,
                         ))
                     }
                     "sanity_by_darkness" -> {
                         val thresholds = map["thresholds"]?.toString() ?: ""
                         effects.add(ConsumableEffect(
                             effect = effectType, mode = mode, value = value,
-                            thresholds = thresholds
+                            thresholds = thresholds,
+                            chance = chance,
                         ))
                     }
                     "counter_choco" -> {
@@ -384,17 +442,20 @@ private fun loadConsumableFile(file: File) {
                             effect = effectType, mode = mode,
                             value = (chocoMin ?: chocoMax).toDouble(),
                             amplifier = chocoMax,
-                            statusEffectId = chocoType
+                            statusEffectId = chocoType,
+                            chance = chance,
                         ))
                     }
                     else -> effects.add(ConsumableEffect(
-                        effect = effectType, mode = mode, value = value
+                        effect = effectType, mode = mode, value = value,
+                        chance = chance,
                     ))
                 }
             }
 
             if (effects.isNotEmpty()) {
-                consumableConfigs[id] = ConsumableConfig(id, effects)
+                val instant = sec.getBoolean("instant", false)
+                consumableConfigs[id] = ConsumableConfig(id, effects, instant)
             }
         }
     } catch (e: Exception) {
@@ -406,26 +467,30 @@ private fun parseSingleEffect(map: Map<*, *>): ConsumableEffect? {
     val type = map["effect"]?.toString() ?: return null
     val mode = map["mode"]?.toString() ?: "add"
     val value = (map["value"]?.toString()?.toDoubleOrNull()) ?: 0.0
+    val chance = (map["chance"]?.toString()?.toDoubleOrNull()) ?: 100.0
     return when (type) {
         "health", "hunger", "saturation", "consumption", "sanity", "darkness",
         "stress", "stamina", "hand_stamina", "handstamina",
         "external_injury", "externalinjury", "internal_injury", "internalinjury" ->
-            ConsumableEffect(effect = type, mode = mode, value = value)
+            ConsumableEffect(effect = type, mode = mode, value = value, chance = chance)
         "status_effect" -> ConsumableEffect(
             effect = type, mode = mode, value = value,
             statusEffectId = map["status_effect"]?.toString(),
             statusEffectLevel = (map["level"]?.toString()?.toIntOrNull()) ?: 0,
-            duration = (map["duration"]?.toString()?.toIntOrNull()) ?: 0
+            duration = (map["duration"]?.toString()?.toIntOrNull()) ?: 0,
+            chance = chance,
         )
         "sanity_by_darkness" -> ConsumableEffect(
             effect = type, mode = mode, value = value,
-            thresholds = map["thresholds"]?.toString() ?: ""
+            thresholds = map["thresholds"]?.toString() ?: "",
+            chance = chance,
         )
         "potion" -> ConsumableEffect(
             effect = type, mode = mode, value = value,
             potionId = map["potion"]?.toString(),
             duration = (map["duration"]?.toString()?.toIntOrNull()) ?: 0,
-            amplifier = (map["amplifier"]?.toString()?.toIntOrNull()) ?: 0
+            amplifier = (map["amplifier"]?.toString()?.toIntOrNull()) ?: 0,
+            chance = chance,
         )
         "counter_choco" -> {
             val rawValue = map["value"]?.toString() ?: "1"
@@ -436,10 +501,11 @@ private fun parseSingleEffect(map: Map<*, *>): ConsumableEffect? {
                 effect = type, mode = mode,
                 value = (chocoMin ?: chocoMax).toDouble(),
                 amplifier = chocoMax,
-                statusEffectId = chocoType
+                statusEffectId = chocoType,
+                chance = chance,
             )
         }
-        else -> ConsumableEffect(effect = type, mode = mode, value = value)
+        else -> ConsumableEffect(effect = type, mode = mode, value = value, chance = chance)
     }
 }
 

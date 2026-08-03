@@ -18,6 +18,10 @@ import taboolib.library.xseries.XMaterial
 import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.PageableChest
 import io.github.zzzyyylllty.chotentech.util.guiItem
+import io.github.zzzyyylllty.chotentech.util.loreDash
+import io.github.zzzyyylllty.chotentech.util.loreInfo
+import io.github.zzzyyylllty.chotentech.util.loreSection
+import io.github.zzzyyylllty.chotentech.util.loreSpace
 
 class ConflictMenu {
 
@@ -77,7 +81,7 @@ class ConflictMenu {
                 clicker.closeInventory()
             }
 
-            set('T', guiItem(XMaterial.WRITABLE_BOOK, if (showAll) "<aqua>显示: <green>全部" else "<aqua>显示: <yellow>进行中", listOf("<!i><gray>点击切换显示模式"), model = "kangelitem:void")) {
+            set('T', guiItem(XMaterial.WRITABLE_BOOK, if (showAll) "<aqua>显示: <green>全部" else "<aqua>显示: <yellow>进行中", listOf("<!i> <yellow>点击 <green>切换显示模式"), model = "kangelitem:void")) {
                 clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
                 open(clicker, !showAll)
             }
@@ -150,23 +154,24 @@ class ConflictMenu {
         meta.displayName("<gold>${conflict.playerName} <gray>- ${conflict.name}".toComponent())
 
         val lore = mutableListOf<String>()
-        lore += "<!i><dark_gray><st>${" ".repeat(40)}</st>"
-        lore += "<!i><gray>状态: $statusText"
+        lore += loreInfo("状态", statusText)
         if (conflict.factionLevels.isNotEmpty()) {
+            lore += loreSection("阵营等级")
             for ((faction, level) in conflict.factionLevels) {
-                lore += "<!i><gray>  $faction: ${level.displayColor}${level.displayName}"
+                lore += loreDash("<gray>$faction: ${level.displayColor}${level.displayName}")
             }
+            lore += loreSpace()
         } else {
             val noLevelText = when (conflict.status) {
                 ConflictStatus.PENDING -> "<yellow>未开始"
                 ConflictStatus.ACTIVE -> "<aqua>进行中"
                 else -> "<gray>无结果"
             }
-            lore += "<!i><gray>结果: <gold>$noLevelText"
+            lore += loreInfo("结果", "<gold>$noLevelText")
         }
-        lore += "<!i><gray>配置ID: <white>${conflict.configId}"
-        lore += "<!i><dark_gray><st>${" ".repeat(40)}</st>"
-        lore += "<!i><aqua>点击查看结果详情"
+        lore += loreInfo("配置ID", "<white>${conflict.configId}")
+        lore += loreSpace()
+        lore += "<!i> <yellow>点击 <green>查看结果详情"
 
         meta.lore(lore.toComponent())
         item.setItemMeta(meta)
@@ -180,19 +185,16 @@ class ConflictMenu {
         meta.displayName("${level.displayColor}<b>${level.displayName} <dark_gray>(${level.name})".toComponent())
 
         val lore = mutableListOf<String>()
-        lore += "<!i><dark_gray><st>${" ".repeat(40)}</st>"
-
         if (score.changes.isEmpty()) {
-            lore += "<!i><gray>无声望变化"
+            lore += "<!i><white><b>|<reset> <!i><gray>无声望变化"
         } else {
+            lore += loreSection("声望变化")
             for ((faction, change) in score.changes) {
                 val prefix = if (change >= 0) "+" else ""
                 val changeColor = if (change >= 0) "<green>" else "<red>"
-                lore += "<!i><gray>$faction: $changeColor$prefix$change"
+                lore += loreDash("<gray>$faction: $changeColor$prefix$change")
             }
         }
-
-        lore += "<!i><dark_gray><st>${" ".repeat(40)}</st>"
 
         meta.lore(lore.toComponent())
         item.setItemMeta(meta)

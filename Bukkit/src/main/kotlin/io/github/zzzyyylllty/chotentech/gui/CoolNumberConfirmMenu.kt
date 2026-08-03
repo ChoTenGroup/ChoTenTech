@@ -19,6 +19,10 @@ import taboolib.library.xseries.XMaterial
 import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.Chest
 import io.github.zzzyyylllty.chotentech.util.guiItem
+import io.github.zzzyyylllty.chotentech.util.loreDash
+import io.github.zzzyyylllty.chotentech.util.loreInfo
+import io.github.zzzyyylllty.chotentech.util.loreSection
+import io.github.zzzyyylllty.chotentech.util.loreSpace
 
 class CoolNumberConfirmMenu(
     private val info: CoolNumberInfo
@@ -113,21 +117,19 @@ class CoolNumberConfirmMenu(
 
         meta.displayName("${info.tier.color}<b>${info.number}".toComponent())
         meta.lore(listOf(
-            "<!i><dark_gray><st>${" ".repeat(50)}</st>",
-            "<!i><gray>✦ 分数: <yellow>${info.score}",
-            "<!i><gray>✦ 基础等级: ${info.tier.color}${info.tier.displayName}",
-            "<!i><gray>✦ 你的当前等级: ${currentTier.color}${currentTier.displayName}",
-            "<!i><gray>✦ 购买后等级: ${resultingTier.color}${resultingTier.displayName}",
-            "<!i>",
-            "<!i><gray>付款方式: <green>${paymentMethod.displayName}",
-            "<!i>",
-            "<!i><gray>贸易点价格: <green>$pointPrice ${if (canAffordPoint) "✓" else "✗"}",
-            "<!i><gray>磁带价格: <aqua>$tapePrice ${if (canAffordTape) "✓" else "✗"}",
-            "<!i>",
-            "<!i><gray>磁带升级: <aqua>+${CoolNumberManager.TAPE_UPGRADE_COST * tapeUpgradeLevels}",
-            "<!i>  使用 ${tapeUpgradeLevels} 级升级 (已选)",
-            "<!i>",
-            "<!i><dark_gray><st>${" ".repeat(50)}</st>",
+            loreInfo("分数", "<yellow>${info.score}"),
+            loreInfo("基础等级", "${info.tier.color}${info.tier.displayName}"),
+            loreInfo("你的当前等级", "${currentTier.color}${currentTier.displayName}"),
+            loreInfo("购买后等级", "${resultingTier.color}${resultingTier.displayName}"),
+            loreSpace(),
+            loreInfo("付款方式", "<green>${paymentMethod.displayName}"),
+            loreSpace(),
+            loreInfo("贸易点价格", "<green>$pointPrice ${if (canAffordPoint) "✓" else "✗"}"),
+            loreInfo("磁带价格", "<aqua>$tapePrice ${if (canAffordTape) "✓" else "✗"}"),
+            loreSpace(),
+            loreInfo("磁带升级", "<aqua>+${CoolNumberManager.TAPE_UPGRADE_COST * tapeUpgradeLevels}"),
+            loreDash("使用 ${tapeUpgradeLevels} 级升级 (已选)"),
+            loreSpace(),
             "<!i><green>W: 切换付款方式",
             "<!i><green>S: +1888磁带升一级",
             "<!i><green>V: 确认购买"
@@ -141,14 +143,14 @@ class CoolNumberConfirmMenu(
         val meta = item.itemMeta ?: return item
         meta.displayName("<gold><b>付款方式: ${paymentMethod.displayName}".toComponent())
         meta.lore(listOf(
-            "<!i><gray>当前: <green>${paymentMethod.displayName}",
-            "<!i><gray>点击切换为: <aqua>${
+            loreInfo("当前", "<green>${paymentMethod.displayName}"),
+            "<!i> <yellow>点击 <green>切换为 <aqua>${
                 if (paymentMethod == PaymentMethod.POINT) PaymentMethod.TAPE.displayName
                 else PaymentMethod.POINT.displayName
             }",
-            "<!i>",
-            "<!i><gray>贸易点价格: <green>${info.pointPrice}",
-            "<!i><gray>磁带价格: <aqua>${info.tapePrice + CoolNumberManager.TAPE_UPGRADE_COST * tapeUpgradeLevels}"
+            loreSpace(),
+            loreInfo("贸易点价格", "<green>${info.pointPrice}"),
+            loreInfo("磁带价格", "<aqua>${info.tapePrice + CoolNumberManager.TAPE_UPGRADE_COST * tapeUpgradeLevels}")
         ).toComponent())
         item.setItemMeta(meta)
         return item
@@ -164,14 +166,15 @@ class CoolNumberConfirmMenu(
             meta.displayName("<b><aqua>磁带升级 (已选: $tapeUpgradeLevels 级)".toComponent())
             meta.lore(listOf(
                 "<!i><gray>消耗 ${CoolNumberManager.TAPE_UPGRADE_COST} 磁带升一级",
-                "<!i><gray>当前等级: ${currentTier.color}${currentTier.displayName}",
-                "<!i><gray>升级后: ${nextTier.color}${nextTier.displayName}",
-                "<!i>",
-                "<!i><green>点击选择升级"
+                loreInfo("当前等级", "${currentTier.color}${currentTier.displayName}"),
+                loreInfo("升级后", "${nextTier.color}${nextTier.displayName}"),
+                loreSpace(),
+                "<!i> <yellow>点击 <green>选择升级"
             ).toComponent())
         } else {
             meta.displayName("<b><red>无法升级".toComponent())
             meta.lore(listOf(
+                loreSection("说明"),
                 "<!i><gray>当前等级已是黑金及以上",
                 "<!i><gray>无法继续使用磁带升级"
             ).toComponent())
@@ -185,9 +188,10 @@ class CoolNumberConfirmMenu(
         val meta = item.itemMeta ?: return item
         meta.displayName("<b><green>确认购买</b>".toComponent())
         meta.lore(listOf(
-            "<!i><gray>点击确认购买此靓号",
-            "<!i><gray>号码: ${info.number}",
-            "<!i><gray>价格: <green>${getCurrentPrice()}"
+            loreInfo("号码", info.number),
+            loreInfo("价格", "<green>${getCurrentPrice()}"),
+            loreSpace(),
+            "<!i> <yellow>点击 <green>确认购买此靓号"
         ).toComponent())
         item.setItemMeta(meta)
         return item

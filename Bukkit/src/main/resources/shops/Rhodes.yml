@@ -1,114 +1,18 @@
 Rhodes:
   name: "<red>罗德斯"
-  gui:
-    buy: |-
-      MMM---<>O
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      N-----CCC
-    sell: |-
-      MMM---<>O
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      N-----CCC
-  gui-item:
-    mode-buy:
-      material: "BOOK"
-      name: "<white><b>购买模式"
-      lore: "当前为购买模式\n点击切换到出售模式"
-    mode-sell:
-      material: "BOOK"
-      name: "<white><b>出售模式"
-      lore: "当前为出售模式\n点击切换到购买模式"
-    previous:
-      have:
-        name: "<white><b>上一页"
-        lore: "点击切换到上一页。\n第 %page% / %total_pages% 页"
-      not:
-        name: "<white><b>第 1 / 1 页"
-        lore: "已是第一页。"
-    next:
-      have:
-        name: "<white><b>下一页"
-        lore: "点击切换到下一页。\n第 %page% / %total_pages% 页"
-      not:
-        name: "<white><b>第 1 / 1 页"
-        lore: "已是最后一页。"
-    knowledge:
-      material: "KNOWLEDGE_BOOK"
-      name: "<gold><b>信息"
-      lore: |-
-        点击查看您的货币信息。
-    confirm-buy:
-      have:
-        material: "GREEN_CONCRETE"
-        name: "<green><b>确认购买"
-        lore: "点击确认购买。"
-      not-enough:
-        material: "RED_CONCRETE"
-        name: "<red><b>货币不足"
-        lore: "您的货币不足以购买所选物品。"
-      not:
-        material: "GRAY_CONCRETE"
-        name: "<gray><b>确认购买"
-        lore: "您还没有选定任何物品。"
-    confirm-sell:
-      have:
-        material: "GREEN_CONCRETE"
-        name: "<green><b>确认出售"
-        lore: "点击确认出售。"
-      not:
-        material: "GRAY_CONCRETE"
-        name: "<gray><b>确认出售"
-        lore: "您还没有选定任何物品。"
-  level:
-    1:
-      - type: level
-        level: main
-        value: 5
-      - type: affection
-        affection: Rhodes
-        value: 5
-    2:
-      - type: level
-        level: main
-        value: 15
-      - type: affection
-        affection: Rhodes
-        value: 10
-      - type: quota
-        balance: money
-        value: 5000
-    3:
-      - type: level
-        level: main
-        value: 25
-      - type: affection
-        affection: Rhodes
-        value: 15
-      - type: quota
-        balance: money
-        value: 20000
   items:
     # Lv.1 - 基础物资
     bandage:
       id: sertraline:bandage
-      name: "<white>绷带"
       buy: money:80
       sell: money:20
     wood:
       id: sertraline:wood
-      name: "<white>木材"
       buy: money:25
       sell: money:6
     # Lv.2 - 中级防具武器
     iron_sword:
       id: sertraline:iron_sword
-      name: "<white>铁剑"
       buy-requirements:
         - mode: level
           level: 2
@@ -117,7 +21,6 @@ Rhodes:
       sell: money:180
     iron_boots:
       id: sertraline:iron_boots
-      name: "<white>铁靴子"
       buy-requirements:
         - mode: level
           level: 2
@@ -126,7 +29,6 @@ Rhodes:
       sell: money:150
     iron_helmet:
       id: sertraline:iron_helmet
-      name: "<white>铁头盔"
       buy-requirements:
         - mode: level
           level: 2
@@ -136,7 +38,6 @@ Rhodes:
     # Lv.3 - 高级装备
     iron_chestplate:
       id: sertraline:iron_chestplate
-      name: "<white>铁胸甲"
       buy-requirements:
         - mode: level
           level: 3
@@ -145,7 +46,6 @@ Rhodes:
       sell: money:350
     diamond_sword:
       id: sertraline:diamond_sword
-      name: "<white>钻石剑"
       buy-requirements:
         - mode: level
           level: 3
@@ -157,7 +57,6 @@ Rhodes:
         player-reset: 24h
     diamond:
       id: sertraline:diamond
-      name: "<white>钻石"
       buy-requirements:
         - mode: level
           level: 3
@@ -167,3 +66,43 @@ Rhodes:
       limit:
         player: 3
         player-reset: 24h
+
+    emergency_water_pack:
+      id: "sertraline:emergency_water_pack"
+      buy: money:150
+
+    bandage:
+      id: "sertraline:bandage"
+      buy: money:100
+
+    sterile_bandage:
+      id: "sertraline:sterile_bandage"
+      buy: money:200
+
+    almond_bandage:
+      id: "sertraline:almond_bandage"
+      buy: money:250
+
+    almond_water_blue:
+      id: "sertraline:almond_water_blue"
+      buy: money:80
+
+    emergency_supplies:
+      id: "sertraline:mre"
+      requirements:
+        - mode: quest
+          value: FacingDespair
+          display: "需要完成任务「直面绝望」"
+      buy: money:500
+
+    fibre:
+      id: "sertraline:fibre"
+      sell: money:10
+
+    plastic:
+      id: "sertraline:plastic"
+      sell: money:8
+
+    glass_material:
+      id: "sertraline:glass_material"
+      sell: money:15

@@ -1,98 +1,5 @@
 JiShi:
   name: "<red>吉士"
-  gui:
-    buy: |-
-      MMM---<>O
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      N-----CCC
-    sell: |-
-      MMM---<>O
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      N-----CCC
-  gui-item:
-    mode-buy:
-      material: "BOOK"
-      name: "<white><b>购买模式"
-      lore: "当前为购买模式\n点击切换到出售模式"
-    mode-sell:
-      material: "BOOK"
-      name: "<white><b>出售模式"
-      lore: "当前为出售模式\n点击切换到购买模式"
-    previous:
-      have:
-        name: "<white><b>上一页"
-        lore: "点击切换到上一页。\n第 %page% / %total_pages% 页"
-      not:
-        name: "<white><b>第 1 / 1 页"
-        lore: "已是第一页。"
-    next:
-      have:
-        name: "<white><b>下一页"
-        lore: "点击切换到下一页。\n第 %page% / %total_pages% 页"
-      not:
-        name: "<white><b>第 1 / 1 页"
-        lore: "已是最后一页。"
-    knowledge:
-      material: "KNOWLEDGE_BOOK"
-      name: "<gold><b>信息"
-      lore: |-
-        点击查看您的货币信息。
-    confirm-buy:
-      have:
-        material: "GREEN_CONCRETE"
-        name: "<green><b>确认购买"
-        lore: "点击确认购买。"
-      not-enough:
-        material: "RED_CONCRETE"
-        name: "<red><b>货币不足"
-        lore: "您的货币不足以购买所选物品。"
-      not:
-        material: "GRAY_CONCRETE"
-        name: "<gray><b>确认购买"
-        lore: "您还没有选定任何物品。"
-    confirm-sell:
-      have:
-        material: "GREEN_CONCRETE"
-        name: "<green><b>确认出售"
-        lore: "点击确认出售。"
-      not:
-        material: "GRAY_CONCRETE"
-        name: "<gray><b>确认出售"
-        lore: "您还没有选定任何物品。"
-  level:
-    1:
-      - type: level
-        level: main
-        value: 5
-      - type: affection
-        affection: JiShi
-        value: 5
-    2:
-      - type: level
-        level: main
-        value: 15
-      - type: affection
-        affection: JiShi
-        value: 10
-      - type: quota
-        balance: money
-        value: 5000
-    3:
-      - type: level
-        level: main
-        value: 25
-      - type: affection
-        affection: JiShi
-        value: 15
-      - type: quota
-        balance: money
-        value: 20000
   items:
     # Lv.1
     bandage:
@@ -110,7 +17,6 @@ JiShi:
     # Lv.2
     sterile_bandage:
       id: sertraline:sterile_bandage
-      name: "<white>无菌绷带"
       buy-requirements:
         - mode: level
           level: 2
@@ -119,7 +25,6 @@ JiShi:
       sell: money:60
     iron_ingot:
       id: sertraline:iron_ingot
-      name: "<white>铁锭"
       buy-requirements:
         - mode: level
           level: 2
@@ -128,7 +33,6 @@ JiShi:
       sell: money:45
     mre:
       id: sertraline:mre
-      name: "<white>军用口粮"
       buy-requirements:
         - mode: level
           level: 2
@@ -138,7 +42,6 @@ JiShi:
     # Lv.3
     diamond_sword:
       id: sertraline:diamond_sword
-      name: "<white>钻石剑"
       buy-requirements:
         - mode: level
           level: 3
@@ -150,7 +53,6 @@ JiShi:
         player-reset: 24h
     onefirst_medkit:
       id: sertraline:onefirst_medkit
-      name: "<white>急救包"
       buy-requirements:
         - mode: level
           level: 3
@@ -159,7 +61,6 @@ JiShi:
       sell: money:180
     iron_chestplate:
       id: sertraline:iron_chestplate
-      name: "<white>铁胸甲"
       buy-requirements:
         - mode: level
           level: 3
@@ -171,7 +72,6 @@ JiShi:
         player-reset: 24h
     diamond:
       id: sertraline:diamond
-      name: "<white>钻石"
       buy-requirements:
         - mode: level
           level: 3
@@ -181,3 +81,55 @@ JiShi:
       limit:
         player: 3
         player-reset: 24h
+
+    bone:
+      id: "sertraline:bone"
+      sell: money:30
+
+    hound_paw:
+      id: "sertraline:hound_paw"
+      sell: money:80
+
+    smilers_head:
+      id: "sertraline:smilers_head"
+      sell: money:150
+
+    scale:
+      id: "sertraline:scale"
+      sell: money:100
+
+    bursters_shell:
+      id: "sertraline:bursters_shell"
+      sell: money:200
+
+    dullers_core:
+      id: "sertraline:dullers_core"
+      sell: money:300
+
+    dullers_tissue:
+      id: "sertraline:dullers_tissue"
+      sell: money:120
+
+    deathmoths_mucus:
+      id: "sertraline:deathmoths_mucus"
+      sell: money:100
+
+    iron_sword:
+      id: "sertraline:iron_sword"
+      buy: money:2000
+
+    steel_sword:
+      id: "sertraline:steel_sword"
+      buy: money:4000
+
+    diamond_sword:
+      id: "sertraline:diamond_sword"
+      buy: money:10000
+
+    elite_weapon:
+      id: "sertraline:sapphire_sword"
+      requirements:
+        - mode: quest
+          value: Capable
+          display: "需要完成任务「有能力的」"
+      buy: money:20000

@@ -14,6 +14,8 @@ lockpicking:
       0:
         type: calculator
         value: "%level% * 10 + 50"
+  gui:
+    material: "TRIPWIRE_HOOK"
   agents:
     onUpgrade:
       js: |

@@ -53,7 +53,7 @@ object ChoTenDataCommand {
         player("user") {
             dynamic("key") {
                 dynamic("content") {
-                    dynamic("time") {
+                    decimal("time", listOf("10.0")) {
                         execute<CommandSender> { sender, context, argument ->
                             submitAsync {
                                 val player = context.player("user").castSafely<Player>()!!
@@ -63,9 +63,6 @@ object ChoTenDataCommand {
                                 if (sender !is ConsoleCommandSender) sender.sendComponent("<red>${context["key"]+","+ context["content"]+","+ context["time"].toDouble()}")
 
                             }
-                        }
-                        suggestion<CommandSender> { sender, context ->
-                            listOf("10.0")
                         }
                     }
                     suggestion<CommandSender> { sender, context ->
@@ -84,7 +81,7 @@ object ChoTenDataCommand {
         player("user") {
             dynamic("type") {
                 dynamic("operation") {
-                    dynamic("value") {
+                    decimal("value") {
                         execute<CommandSender> { sender, context, argument ->
                             submitAsync {
                                 val player = context.player("user").castSafely<Player>()!!
@@ -145,9 +142,6 @@ object ChoTenDataCommand {
 
                             }
                         }
-                        suggestion<CommandSender> { _, _ ->
-                            listOf("100.0", "50.0", "10.0", "1.0", "-10.0")
-                        }
                     }
                     suggestion<CommandSender> { sender, context ->
                         listOf("+","-","=")
@@ -164,7 +158,7 @@ object ChoTenDataCommand {
     val warehouse = subCommand {
         player("user") {
             dynamic("action") {
-                dynamic("value") {
+                int("value", listOf("36", "54", "72")) {
                     execute<CommandSender> { sender, context, _ ->
                         val player = context.player("user").castSafely<Player>()!!
                         val data = playerDataMap[player.uniqueId.toString()] ?: run {
@@ -188,9 +182,6 @@ object ChoTenDataCommand {
                             else -> sender.sendComponent("<red>未知操作，可用: set <数量>, reset")
                         }
                     }
-                    suggestion<CommandSender> { _, _ ->
-                        listOf("36", "54", "72")
-                    }
                 }
                 suggestion<CommandSender> { _, _ ->
                     listOf("set", "reset")
@@ -210,7 +201,7 @@ object ChoTenDataCommand {
                     sender.sendComponent("<gold>$faction <gray>- 信誉: <yellow>$value")
                 }
                 dynamic("operation") {
-                    dynamic("value") {
+                    int("value", listOf("100", "500", "1000", "-500")) {
                         execute<CommandSender> { sender, context, _ ->
                             val player = context.player("user").castSafely<Player>()!!
                             val faction = context["faction"].uppercase()
@@ -230,9 +221,6 @@ object ChoTenDataCommand {
                             }
                             val current = ReputationManager.getReputation(player, faction)
                             sender.sendComponent("<green>已将 ${player.name} 的 $faction 信誉设为 <yellow>$current")
-                        }
-                        suggestion<CommandSender> { _, _ ->
-                            listOf("100", "500", "1000", "-500")
                         }
                     }
                     suggestion<CommandSender> { _, _ ->
@@ -257,7 +245,7 @@ object ChoTenDataCommand {
                     sender.sendComponent("<gold>$npc <gray>- 好感度: <yellow>$value")
                 }
                 dynamic("operation") {
-                    dynamic("value") {
+                    int("value", listOf("100", "500", "1000", "-500")) {
                         execute<CommandSender> { sender, context, _ ->
                             val player = context.player("user").castSafely<Player>()!!
                             val npc = context["npc"]
@@ -277,9 +265,6 @@ object ChoTenDataCommand {
                             }
                             val current = ReputationManager.getAffection(player, npc)
                             sender.sendComponent("<green>已将 ${player.name} 对 $npc 的好感度设为 <yellow>$current")
-                        }
-                        suggestion<CommandSender> { _, _ ->
-                            listOf("100", "500", "1000", "-500")
                         }
                     }
                     suggestion<CommandSender> { _, _ ->
@@ -339,7 +324,7 @@ object ChoTenDataCommand {
         player("user") {
             dynamic("type") {
                 dynamic("operation") {
-                    dynamic("value") {
+                    decimal("value", listOf("100.0", "50.0", "10.0", "1.0", "-10.0")) {
                         execute<CommandSender> { sender, context, _ ->
                             submitAsync {
                                 val player = context.player("user").castSafely<Player>()!!
@@ -377,9 +362,6 @@ object ChoTenDataCommand {
                                 if (sender !is ConsoleCommandSender) sender.sendComponent("<red>${context["type"]} = <yellow>$finalValue")
                             }
                         }
-                        suggestion<CommandSender> { _, _ ->
-                            listOf("100.0", "50.0", "10.0", "1.0", "-10.0")
-                        }
                     }
                     suggestion<CommandSender> { _, _ ->
                         listOf("+", "-", "=")
@@ -397,7 +379,7 @@ object ChoTenDataCommand {
         player("user") {
             dynamic("type") {
                 dynamic("operation") {
-                    dynamic("value") {
+                    decimal("value", listOf("100.0", "50.0", "10.0", "1.0", "-10.0")) {
                         execute<CommandSender> { sender, context, _ ->
                             submitAsync {
                                 val player = context.player("user").castSafely<Player>()!!
@@ -437,9 +419,6 @@ object ChoTenDataCommand {
                                 if (sender !is ConsoleCommandSender) sender.sendComponent("<red>${context["type"]} = <yellow>$finalValue")
                             }
                         }
-                        suggestion<CommandSender> { _, _ ->
-                            listOf("100.0", "50.0", "10.0", "1.0", "-10.0")
-                        }
                     }
                     suggestion<CommandSender> { _, _ ->
                         listOf("+", "-", "=")
@@ -457,7 +436,7 @@ object ChoTenDataCommand {
         player("user") {
             dynamic("type") {
                 dynamic("operation") {
-                    dynamic("value") {
+                    decimal("value", listOf("100.0", "50.0", "10.0", "1.0", "-10.0")) {
                         execute<CommandSender> { sender, context, _ ->
                             submitAsync {
                                 val player = context.player("user").castSafely<Player>()!!
@@ -493,9 +472,6 @@ object ChoTenDataCommand {
                                 if (sender !is ConsoleCommandSender) sender.sendComponent("<red>${context["type"]} = <yellow>$finalValue")
                             }
                         }
-                        suggestion<CommandSender> { _, _ ->
-                            listOf("100.0", "50.0", "10.0", "1.0", "-10.0")
-                        }
                     }
                     suggestion<CommandSender> { _, _ ->
                         listOf("+", "-", "=")
@@ -513,7 +489,7 @@ object ChoTenDataCommand {
         player("user") {
             dynamic("type") {
                 dynamic("operation") {
-                    dynamic("value") {
+                    decimal("value", listOf("100.0", "50.0", "10.0", "1.0", "-10.0")) {
                         execute<CommandSender> { sender, context, _ ->
                             submitAsync {
                                 val player = context.player("user").castSafely<Player>()!!
@@ -548,9 +524,6 @@ object ChoTenDataCommand {
 
                                 if (sender !is ConsoleCommandSender) sender.sendComponent("<red>${context["type"]} = <yellow>$finalValue")
                             }
-                        }
-                        suggestion<CommandSender> { _, _ ->
-                            listOf("100.0", "50.0", "10.0", "1.0", "-10.0")
                         }
                     }
                     suggestion<CommandSender> { _, _ ->

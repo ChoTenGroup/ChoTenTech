@@ -173,6 +173,7 @@ dependencies {
     compileOnly("org.geysermc.floodgate:api:2.2.4-SNAPSHOT")
 //    compileOnly(files("$rootDir/libs/Se-common-3.8.19.4-api.jar"))
     compileOnly("de.oliver:FancyNpcs:2.7.0")
+    compileOnly("de.oliver:FancyHolograms:2.9.1")
     compileOnly("ink.ptms.chemdah:api:1.1.17")
     compileOnly("net.luckperms:api:5.4")
     compileOnly("net.momirealms:craft-engine-core:0.0.65") // 将 "{version}" 替换为插件稳定版本

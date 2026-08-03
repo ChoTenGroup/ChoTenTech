@@ -1,5 +1,6 @@
 package io.github.zzzyyylllty.chotentech.shop
 
+import ink.ptms.chemdah.api.ChemdahAPI
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
 import io.github.zzzyyylllty.chotentech.function.CurrencyManager
 import io.github.zzzyyylllty.chotentech.function.ReputationManager
@@ -991,6 +992,12 @@ object ShopMenu : Listener {
 
         for ((itemKey, qty) in selected) {
             val entry = shop.items[itemKey] ?: continue
+            for (req in entry.sellRequirements) {
+                if (!checkRequirement(player, req, shop)) {
+                    player.sendMessage("<red>不满足出售 <yellow>${formatItemName(entry.id)} <red>的条件: ${req.display}<white>".toComponent())
+                    return
+                }
+            }
             val count = countItem(player, entry.id)
             if (count < qty) {
                 player.sendMessage("<red>你没有足够的 <yellow>${formatItemName(entry.id)}<red>! 需要 $qty, 你有 $count<white>".toComponent())
@@ -1176,6 +1183,13 @@ object ShopMenu : Listener {
             val entry = shop.items.values.find { matchesItemId(item, it.id) }
 
             if (entry != null && entry.sell.isNotEmpty()) {
+                // Check sell requirements before processing
+                if (entry.sellRequirements.any { !checkRequirement(player, it, shop) }) {
+                    player.inventory.addItem(item).values.forEach { leftover ->
+                        player.world.dropItem(player.location, leftover)
+                    }
+                    continue
+                }
                 for (reward in entry.sell) {
                     val amount = reward.amount * item.amount
                     when (reward.type) {
@@ -1364,6 +1378,21 @@ object ShopMenu : Listener {
                 val s = shop ?: return true
                 val required = req.level.toIntOrNull() ?: return true
                 getCurrentMerchantLevel(player, s) >= required
+            }
+            "unlock" -> {
+                if (req.value.isBlank()) return true
+                val data = playerDataMap[player.uniqueId.toString()]
+                data != null && req.value in data.unlockedShopItems
+            }
+            "quest" -> {
+                if (req.value.isBlank()) return true
+                try {
+                    val profile = ChemdahAPI.playerProfile[player.name] ?: return false
+                    val quest = profile.getQuests().firstOrNull { it.id == req.value }
+                    quest != null && quest.isCompleted
+                } catch (_: Exception) {
+                    false
+                }
             }
             else -> true
         }

@@ -15,7 +15,7 @@ import taboolib.common.platform.function.submitAsync
 
 @CommandHeader(
     name = "attributeapi",
-    aliases = ["attributedebug", "atbapi"],
+    aliases = ["atbapi"],
     permission = "chotenattribute.command.api",
     description = "API Command of DepazItems.",
     permissionMessage = "",

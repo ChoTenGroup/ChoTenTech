@@ -75,7 +75,11 @@ object MainCommand {
     @CommandBody
     val profileinfo = ProfileInfoCommand
     @CommandBody
+    val ui = ChoTenUICommand
+    @CommandBody
     val settings = SettingsCommand
+    @CommandBody
+    val profile = ProfileAdminCommand
 
 }
 

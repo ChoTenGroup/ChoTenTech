@@ -5,9 +5,7 @@ import com.sk89q.worldguard.WorldGuard
 import com.sk89q.worldguard.protection.util.WorldEditRegionConverter
 import io.github.zzzyyylllty.chotentech.ChoTenTech.levelsList
 import io.github.zzzyyylllty.chotentech.data.ChoTenDataHelper
-import io.github.zzzyyylllty.chotentech.data.getData
-import io.github.zzzyyylllty.chotentech.function.noclip.RandomNoclipSelector
-import io.github.zzzyyylllty.sertraline.logger.sendStringAsComponent
+import io.github.zzzyyylllty.chotentech.function.player.sendComponent
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.command.CommandSender
@@ -31,8 +29,11 @@ object TpLevelCommand {
 
     @CommandBody
     val main = mainCommand {
-        dynamic("level"){
-            execute<Player> { sender, context, argument ->
+        dynamic("level") {
+            suggestion<Player> { _, _ ->
+                levelsList.keys.toList()
+            }
+            execute<Player> { sender, context, _ ->
                 val level = levelsList[context["level"]]
                     ?: levelsList["level-${context["level"]}"]
                 if (level == null) {
@@ -47,46 +48,36 @@ object TpLevelCommand {
                     }
                 }
             }
-            suggestion<Player> { sender, context ->
-                levelsList.keys.toList()
-            }
-        }
-    }
-}
-
-@CommandHeader(
-    name = "tpnoclip",
-    aliases = ["tpn"],
-    permission = "chotentech.command.tpnoclip",
-    description = "tpnoclip Command for ChoTenTech.",
-    permissionMessage = "",
-    permissionDefault = PermissionDefault.OP,
-    newParser = false,
-)
-object TpNoclipCommand {
-
-    @CommandBody
-    val main = mainCommand {
-        dynamic("noclip"){
-            execute<Player> { sender, context, _ ->
-                val level = sender.getData()?.activeLevel
-                if (level == null) {
-                    sender.sendMessage("Level not found.")
-                } else {
-                    val noclipName = context["noclip"]
-                    for (n in level.noclips) {
-                        if (n.name == noclipName) {
-                            sender.teleportAsync(n.noclipPointLocation1.toLocation(sender.location.world))
-                        }
-                    }
+            dynamic("noclip") {
+                suggestion<Player> { _, context ->
+                    val levelKey = context["level"]
+                    val level = levelsList[levelKey] ?: levelsList["level-$levelKey"]
+                    level?.noclips?.mapNotNull { it.name } ?: emptyList()
                 }
-            }
-            suggestion<Player> { sender, _ ->
-                val level = sender.getData()?.activeLevel ?: return@suggestion emptyList()
-                val enabled = RandomNoclipSelector.getEnabledNoclips(sender.uniqueId.toString(), level)
-                level.noclips.mapNotNull { noclip ->
-                    noclip.name?.let { name ->
-                        if (name in enabled) name else "$name [随机禁用]"
+                execute<Player> { sender, context, _ ->
+                    val levelKey = context["level"]
+                    val level = levelsList[levelKey] ?: levelsList["level-$levelKey"]
+                    if (level == null) {
+                        sender.sendComponent("<red>层级 $levelKey 不存在")
+                        return@execute
+                    }
+                    val noclipName = context["noclip"]
+                    val point = level.noclips.find { it.name == noclipName }
+                    if (point == null) {
+                        sender.sendComponent("<red>切出点 $noclipName 不存在")
+                        return@execute
+                    }
+                    val world = point.noclipPointWorld?.let { Bukkit.getWorld(it) }
+                        ?: level.getWorld()
+                        ?: sender.world
+                    val v1 = point.noclipPointLocation1
+                    val v2 = point.noclipPointLocation2
+                    val cx = (v1.x + v2.x) / 2.0
+                    val cy = (v1.y + v2.y) / 2.0
+                    val cz = (v1.z + v2.z) / 2.0
+                    submit {
+                        sender.teleport(Location(world, cx, cy, cz))
+                        sender.sendComponent("<green>已传送到 <yellow>${level.name}<green> 的切出点 <yellow>$noclipName")
                     }
                 }
             }

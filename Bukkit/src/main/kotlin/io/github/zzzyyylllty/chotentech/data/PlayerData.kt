@@ -95,8 +95,12 @@ data class PlayerData (
     var fat: Double = defNutritionFat,
     // NPC uuid/id -> affection value
     var affection: MutableMap<String, Long> = mutableMapOf(),
+    // affection mark -> NPC ids that have consumed the mark (repeat guard)
+    var affectionMarks: MutableMap<String, MutableSet<String>> = mutableMapOf(),
     // faction id -> reputation value (e.g. MEG, BNTG, UEC)
     var reputation: MutableMap<String, Long> = mutableMapOf(),
+    // 信誉记录（conflictId=null 表示杂项扣除途径），按时间先后追加
+    var reputationRecords: MutableList<ReputationRecord> = mutableListOf(),
     // Shared field — cosmetic slot -> cosmetic id (synced from SharedData)
     var cosmetics: MutableMap<String, String> = mutableMapOf(),
 
@@ -131,6 +135,11 @@ data class PlayerData (
     var savedBases: MutableList<String> = mutableListOf(),
 
     var activeLevelStr: String? = null,
+
+    // Save point system
+    var normalSave: String? = null,
+    var baseSave: String? = null,
+    var baseSaveSpawnTime: Long = 0L,
 
     // Last logout / profile-switch location — used to teleport when re-selecting this profile
     var profileLocation: RespawnPoint? = null,
@@ -180,7 +189,9 @@ data class PlayerData (
         if (hideoutData == null) hideoutData = linkedMapOf()
         if (statusEffects == null) statusEffects = mutableListOf()
         if (affection == null) affection = mutableMapOf()
+        if (affectionMarks == null) affectionMarks = mutableMapOf()
         if (reputation == null) reputation = mutableMapOf()
+        if (reputationRecords == null) reputationRecords = mutableListOf()
         if (cosmetics == null) cosmetics = mutableMapOf()
         if (unlockedNoclips == null) unlockedNoclips = mutableSetOf()
         if (unlockedShopItems == null) unlockedShopItems = mutableSetOf()
@@ -234,6 +245,15 @@ data class PlayerData (
         noclipCooldownEnd = base + round(sec * 1000).toLong()
     }
 }
+
+/** 单条信誉变化记录；conflictId=null 表示杂项扣除途径，level 为 ResultLevel.name 或 null */
+data class ReputationRecord(
+    val conflictId: String?,
+    val faction: String,
+    val level: String?,
+    val change: Long,
+    val time: Long
+)
 
 data class PlayerStatusEffect(
     val type: String,

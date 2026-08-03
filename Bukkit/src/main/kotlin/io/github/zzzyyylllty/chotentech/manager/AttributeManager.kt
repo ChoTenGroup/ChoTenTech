@@ -162,7 +162,7 @@ object AttributeManager {
             AttributeType("gravity", "重力", "gravity", 0.08),
             AttributeType("safe_fall_distance", "安全跌落距离", "safe_fall_distance", 3.0),
             AttributeType("scale", "缩放", "scale", 1.0),
-            AttributeType("step_height", "台阶高度", "step_height", 0.6),
+            AttributeType("step_height", "跨步高度", "step_height", 0.6),
             AttributeType("spawn_reinforcements", "僵尸增援概率", "spawn_reinforcements", 0.0),
             // 自定义扩展属性 (无 vanillaName 映射)
             AttributeType("max_sanity", "精神上限", null, 100.0, minValue = 0.0, maxValue = 1000.0),
@@ -241,6 +241,8 @@ object AttributeManager {
             AttributeType("health_regen_multiplier", "生命回复倍率", null, 1.0, minValue = 0.0),
             // 防御韧性：高伤害时防御效果打折，韧性减少折扣
             AttributeType("defense_toughness", "防御韧性", null, 0.0, minValue = 0.0),
+            // 负重限制倍率：负重系统阈值乘以此值，默认1.0
+            AttributeType("weight_limit_multiplier", "负重限制", null, 1.0, minValue = 0.0),
         )
         for (type in builtins) {
             registerAttribute(type, RegistrationSource.BUILTIN)
@@ -887,6 +889,18 @@ object AttributeManager {
         val data = getPlayerPersistentData(uuid)
         val mods = data.modifiers.toMutableList()
         if (mods.removeAll { it.uuid == modifierUuid }) {
+            data.modifiers = mods
+            savePlayerData(data)
+            val player = Bukkit.getPlayer(uuid)
+            if (player != null) doUpdate(player)
+        }
+    }
+
+    fun removeDeathMarkedModifiers(uuid: UUID) {
+        val data = getPlayerPersistentData(uuid)
+        val mods = data.modifiers.toMutableList()
+        val removed = mods.removeAll { it.deathMark }
+        if (removed) {
             data.modifiers = mods
             savePlayerData(data)
             val player = Bukkit.getPlayer(uuid)

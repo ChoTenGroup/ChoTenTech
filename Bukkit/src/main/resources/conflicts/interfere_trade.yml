@@ -1,5 +1,7 @@
 interfere_trade:
   name: 贸易集团通商
+  icon: EMERALD
+  item-model: null
   score:
     full_success:
       MEG: 40

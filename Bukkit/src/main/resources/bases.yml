@@ -9,7 +9,7 @@ bases:
     faction: MEG
     model: "meg_alpha"
     enable: true
-    dev: "<#22ebff>十年不晚"
+    dev: "<#22ebff>道阻且长"
     lore:
       - "ALPHA基地坐落于 Level 1 ——宜居地带的廊道内。"
       - "它也是 M.E.G. 的重要基地之一。"
@@ -31,7 +31,7 @@ bases:
     faction: MEG
     model: "meg_beta"
     enable: false
-    dev: "<#22ebff>十年不晚"
+    dev: "<#22ebff>道阻且长"
     lore:
       - "BETA基地坐落于 Level 11 无垠城市。"
       - "是 M.E.G. 内居民最多的基地。"
@@ -51,7 +51,7 @@ bases:
     faction: MEG
     model: "meg_gamma"
     enable: false
-    dev: "<#22ebff>十年不晚"
+    dev: "<#22ebff>道阻且长"
     lore:
       - "GAMMA基地坐落在前期比较危险的 Level 3 内。"
       - "这里的装备很齐全，但是食物和药品经常短缺。"
@@ -71,7 +71,7 @@ bases:
     faction: MEG
     model: "meg_omega"
     enable: false
-    dev: "<#22ebff>十年不晚"
+    dev: "<#22ebff>道阻且长"
     lore:
       - "OMEGA基地坐落于前期最安全的 Level 4，废弃办公室。"
       - "是食物和杏仁水的主要产地和后勤保障。"
@@ -188,7 +188,7 @@ bases:
     faction: BNTG
     model: "bntg_traders"
     enable: false
-    dev: "<#22ebff>十年不晚"
+    dev: "<#22ebff>道阻且长"
     lore:
       - "Level 1 跃金段的商人之家是 B.N.T.G. 最著名的基地，"
       - "商人之家是B.N.T.G.物流、贸易的运作核心。"

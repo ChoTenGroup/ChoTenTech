@@ -12,11 +12,17 @@ import org.bukkit.entity.Player
  * @property displayNames A map of display names for the activity (e.g., "default", "legacy").
  * @property level The detailed configuration for levels within this activity.
  */
+data class GuiItemConfig(
+    val material: String,
+    val model: String? = null
+)
+
 data class LevelTemplate(
     val id: String,
     val displayNames: Map<String, String>, // Top-level activity display names
     val level: Level,
-    val agents: Agents?
+    val agents: Agents?,
+    val gui: GuiItemConfig? = null
 ) {
     fun getDefaultName(): String {
         return displayNames["default"] ?: id

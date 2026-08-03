@@ -1,98 +1,5 @@
 AmeRain:
   name: "<light_purple>雨糖"
-  gui:
-    buy: |-
-      MMM---<>O
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      N-----CCC
-    sell: |-
-      MMM---<>O
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      N-----CCC
-  gui-item:
-    mode-buy:
-      material: "BOOK"
-      name: "<white><b>购买模式"
-      lore: "当前为购买模式\n点击切换到出售模式"
-    mode-sell:
-      material: "BOOK"
-      name: "<white><b>出售模式"
-      lore: "当前为出售模式\n点击切换到购买模式"
-    previous:
-      have:
-        name: "<white><b>上一页"
-        lore: "点击切换到上一页。\n第 %page% / %total_pages% 页"
-      not:
-        name: "<white><b>第 1 / 1 页"
-        lore: "已是第一页。"
-    next:
-      have:
-        name: "<white><b>下一页"
-        lore: "点击切换到下一页。\n第 %page% / %total_pages% 页"
-      not:
-        name: "<white><b>第 1 / 1 页"
-        lore: "已是最后一页。"
-    knowledge:
-      material: "KNOWLEDGE_BOOK"
-      name: "<gold><b>信息"
-      lore: |-
-        点击查看您的货币信息。
-    confirm-buy:
-      have:
-        material: "GREEN_CONCRETE"
-        name: "<green><b>确认购买"
-        lore: "点击确认购买。"
-      not-enough:
-        material: "RED_CONCRETE"
-        name: "<red><b>货币不足"
-        lore: "您的货币不足以购买所选物品。"
-      not:
-        material: "GRAY_CONCRETE"
-        name: "<gray><b>确认购买"
-        lore: "您还没有选定任何物品。"
-    confirm-sell:
-      have:
-        material: "GREEN_CONCRETE"
-        name: "<green><b>确认出售"
-        lore: "点击确认出售。"
-      not:
-        material: "GRAY_CONCRETE"
-        name: "<gray><b>确认出售"
-        lore: "您还没有选定任何物品。"
-  level:
-    1:
-      - type: level
-        level: main
-        value: 5
-      - type: affection
-        affection: AmeRain
-        value: 5
-    2:
-      - type: level
-        level: main
-        value: 15
-      - type: affection
-        affection: AmeRain
-        value: 10
-      - type: quota
-        balance: money
-        value: 5000
-    3:
-      - type: level
-        level: main
-        value: 25
-      - type: affection
-        affection: AmeRain
-        value: 15
-      - type: quota
-        balance: money
-        value: 20000
   items:
     # Lv.1 - 基础网络配件
     paper:
@@ -126,7 +33,6 @@ AmeRain:
       sell: money:45
     cola:
       id: sertraline:cola
-      name: "<white>可乐"
       buy-requirements:
         - mode: level
           level: 2
@@ -152,7 +58,6 @@ AmeRain:
       sell: money:45
     radio:
       id: sertraline:radio
-      name: "<white>无线电"
       buy-requirements:
         - mode: level
           level: 3
@@ -161,10 +66,89 @@ AmeRain:
       sell: money:120
     advanced_wifi_sender:
       id: sertraline:advanced_wifi_sender
-      name: "<white>高级信号发射器"
       buy-requirements:
         - mode: level
           level: 3
           display: 需要商人等级 Lv.3
       buy: money:2000
       sell: money:600
+
+    plastic:
+      id: "sertraline:plastic"
+      sell: money:20
+
+    hard_plastic:
+      id: "sertraline:hard_plastic"
+      sell: money:50
+
+    broken_disk:
+      id: "sertraline:broken_disk"
+      sell: money:30
+
+    screw:
+      id: "sertraline:screw"
+      sell: money:15
+
+    nail:
+      id: "sertraline:nail"
+      sell: money:10
+
+    copper_wire:
+      id: "sertraline:copper_wire"
+      sell: money:40
+
+    raw_iron:
+      id: "sertraline:raw_iron"
+      sell: money:60
+
+    raw_gold:
+      id: "sertraline:raw_gold"
+      sell: money:120
+
+    raw_copper:
+      id: "sertraline:raw_copper"
+      sell: money:40
+
+    wifi:
+      id: "sertraline:wifi"
+      buy: money:500
+
+    basic_wifi_sender:
+      id: "sertraline:basic_wifi_sender"
+      buy: money:3000
+
+    radio:
+      id: "sertraline:radio"
+      buy: money:1000
+
+    cpu:
+      id: "sertraline:cpu"
+      buy: money:2000
+
+    graphics_card:
+      id: "sertraline:graphics_card"
+      buy: money:5000
+
+    phone:
+      id: "sertraline:phone"
+      buy: money:4000
+
+    advanced_wifi_sender:
+      id: "sertraline:advanced_wifi_sender"
+      buy: money:8000
+
+    3d_vision_glasses:
+      id: "sertraline:3d_vision_glasses"
+      buy: money:6000
+
+    ai_upgrade:
+      id: "sertraline:pro_ai_core"
+      buy: money:50000
+
+    advanced_ai:
+      id: "sertraline:advanced_ai_core"
+      requirements:
+        - mode: quest
+          value: InternetTravel2
+          display: "需要完成任务「互联网之旅 II」"
+      buy: money:25000

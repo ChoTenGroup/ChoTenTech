@@ -93,7 +93,10 @@ fun foodTimer() {
             // === Stamina (with nutrition regen multiplier) ===
             val staminaRegenMult = io.github.zzzyyylllty.chotentech.manager.AttributeManager.getAttributeValue(player, "stamina_regen_multiplier")
             if (player.isSprinting) {
-                data.stamina = maxOf(data.stamina - 1.0, 0.0)
+                // 负重体力消耗倍率：0-20kg 不变，之后每 kg +2.5%
+                val weightMult = io.github.zzzyyylllty.chotentech.function.WeightManager.getCachedWeight(player.uniqueId)
+                    ?.let { w -> if (w > 20) 1.0 + (w - 20) * 0.025 else 1.0 } ?: 1.0
+                data.stamina = maxOf(data.stamina - 1.0 * weightMult, 0.0)
                 // 体力耗尽时停止奔跑并提示
                 if (data.stamina <= 0.0) {
                     player.isSprinting = false

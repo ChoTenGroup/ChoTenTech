@@ -25,6 +25,9 @@ import taboolib.module.chat.colored
 import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.PageableChest
 import io.github.zzzyyylllty.chotentech.util.guiItem
+import io.github.zzzyyylllty.chotentech.util.loreDash
+import io.github.zzzyyylllty.chotentech.util.loreInfo
+import io.github.zzzyyylllty.chotentech.util.loreSpace
 
 import kotlin.collections.toList
 import kotlin.math.roundToInt
@@ -39,7 +42,7 @@ class QuestMenu {
             rows(6)
 
             map(
-                "BBB    <>",
+                "CCC    <>",
                 "         ",
                 " @@@@@@@ ",
                 " @@@@@@@ ",
@@ -91,13 +94,13 @@ class QuestMenu {
                     val meta = item.itemMeta
                     meta.customName(("<!i><white>「<gray>" + element.meta<Meta<String>>("name")?.source?.legacyToMiniMessage() + "<reset><white><!i>」").toComponent())
                     val lore = mutableListOf<String>()
-                    lore += " "
-                    lore += "<!i><gray> 进度 <#99FC65>${(progress.percent * 100.0).roundToInt()}%"
-                    lore += " "
-                    lore += "<!i><gray> 当前任务进度 <#66CCFF>$value<gray>/<#FFCC66>$target"
-                    lore += " "
+                    lore += loreSpace()
+                    lore += loreInfo("进度", "<#99FC65>${(progress.percent * 100.0).roundToInt()}%")
+                    lore += loreSpace()
+                    lore += loreInfo("当前任务进度", "<#66CCFF>$value<gray>/<#FFCC66>$target")
+                    lore += loreSpace()
                     if (element.objective.name == "choten submit") {
-                        lore += "<!i> <dark_gray>- <yellow>点击 <green>提交任务物品"
+                        lore += loreDash("<yellow>在NPC处提交任务物品")
                     }
                     meta.lore(lore.toComponent())
                     item.setItemMeta(meta)

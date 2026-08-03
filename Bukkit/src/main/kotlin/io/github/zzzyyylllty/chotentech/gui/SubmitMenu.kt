@@ -18,6 +18,8 @@ import taboolib.library.xseries.XMaterial
 import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.Chest
 import io.github.zzzyyylllty.chotentech.util.guiItem
+import io.github.zzzyyylllty.chotentech.util.loreInfo
+import io.github.zzzyyylllty.chotentech.util.loreSection
 import kotlin.math.min
 
 class SubmitMenu {
@@ -43,36 +45,42 @@ class SubmitMenu {
 
             map(
                 "    I    ",
-                "         ",
-                " @@@@@@@ ",
-                " @@@@@@@ ",
-                " @@@@@@@ ",
+                "XXXXXXXXX",
+                "X@@@@@@@X",
+                "X@@@@@@@X",
+                "X@@@@@@@X",
                 if (quest != null) " B  S  B " else "    S    "
             )
 
-            set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>菜单", listOf("<gray>点击打开菜单"), model = "kangelitem:void")) {
+            set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>菜单", listOf("<!i> <yellow>点击 <green>打开菜单"), model = "kangelitem:void")) {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "invero menu open menu ${clicker.name}")
                 clicker.closeInventory()
             }
+
+
+            set('X', guiItem(XMaterial.STONE, "<dark_gray>-", listOf("<!i><white><b>|<reset> <!i><gray>这里什么都没有"), model = "kangelitem:void"))
+
 
             onBuild { _, inv ->
                 if (task != null) {
                     val amount = task.condition["amount"]?.toInt() ?: 1
                     inv.setItem(4, guiItem(XMaterial.BOOK, "<gold>提交说明", listOf(
-                        "<gray>将需要提交的物品放入中间区域",
-                        "<gray>点击 <gold>[确认提交] <gray>完成提交",
-                        "<gray>所需数量: <yellow>$amount"
+                        loreSection("说明"),
+                        "<!i><gray>将需要提交的物品放入中间区域",
+                        "<!i> <yellow>点击 <green>确认提交",
+                        loreInfo("所需数量", "<yellow>$amount")
                     )))
                 } else {
                     inv.setItem(4, guiItem(XMaterial.BOOK, "<gold>提交说明", listOf(
-                        "<gray>将需要提交的物品放入中间区域",
-                        "<gray>点击 <gold>[确认提交] <gray>完成提交",
-                        "<gray>NPCID: <yellow>$npcId"
+                        loreSection("说明"),
+                        "<!i><gray>将需要提交的物品放入中间区域",
+                        "<!i> <yellow>点击 <green>确认提交",
+                        loreInfo("NPCID", "<yellow>$npcId")
                     )))
                 }
             }
 
-            set(49, guiItem(XMaterial.ANVIL, "<gold>■ 确认提交", listOf("<gray>提交中间区域的所有物品")))
+            set(49, guiItem(XMaterial.ANVIL, "<gold>■ 确认提交", listOf("<!i> <yellow>点击 <green>提交中间区域的所有物品")))
 
             if (quest != null) {
                 set(45, guiItem(XMaterial.BARRIER, "<red>返回", model = "kangelitem:void"))

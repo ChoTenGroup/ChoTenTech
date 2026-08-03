@@ -1,6 +1,7 @@
 package io.github.zzzyyylllty.chotentech.function
 
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
+import io.github.zzzyyylllty.chotentech.data.ReputationRecord
 import io.github.zzzyyylllty.chotentech.data.*
 import org.bukkit.entity.Player
 
@@ -18,6 +19,12 @@ object ReputationManager {
         val data = playerDataMap[player.uniqueId.toString()] ?: return
         val current = data.reputation.getOrDefault(faction, 0L)
         data.reputation[faction] = current + amount
+    }
+
+    /** 追加一条信誉记录；conflictId=null 且 level=null 表示杂项扣除途径 */
+    fun addRecord(player: Player, conflictId: String?, faction: String, level: ResultLevel?, change: Long) {
+        val data = playerDataMap[player.uniqueId.toString()] ?: return
+        data.reputationRecords.add(ReputationRecord(conflictId, faction, level?.name, change, System.currentTimeMillis()))
     }
 
     fun getAffection(player: Player, npcId: String): Long {
@@ -54,6 +61,7 @@ object ReputationManager {
             val current = data.reputation.getOrDefault(faction, 0L)
             data.reputation[faction] = current + change
             changes.add(ReputationChange(faction, change))
+            addRecord(player, conflictId, faction, level, change)
         }
 
         return changes

@@ -12,6 +12,7 @@ import io.github.zzzyyylllty.chotentech.data.NoclipPoint
 import io.github.zzzyyylllty.chotentech.function.noclip.RandomNoclipSelector
 import io.github.zzzyyylllty.chotentech.listener.checkPlayerIsInNoclipPoint
 import io.github.zzzyyylllty.chotentech.player.sendComponent
+import io.github.zzzyyylllty.chotentech.quetiapine.data.PlayerDataManager
 import io.github.zzzyyylllty.chotentech.util.toComponent
 import io.github.zzzyyylllty.chotentech.kether.evalKetherValue
 import org.bukkit.Bukkit
@@ -27,7 +28,26 @@ import taboolib.common.platform.service.PlatformExecutor
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.roundToLong
 
+/** 切行等级：从 10 级起算的有效等级（1-9 级无加成） */
+fun getNoclippingBonusLevels(player: Player): Int {
+    val level = try { PlayerDataManager(player).getLevel("noclipping") ?: 0L } catch (_: Exception) { 0L }
+    return maxOf(0, level.toInt() - 9)
+}
+
+/** 切行等级对成功率的加成（百分点） */
+fun getNoclippingSuccessBonus(player: Player): Double = getNoclippingBonusLevels(player) * 0.5
+
+/** 切行等级对耗时倍率的缩减 */
+fun getNoclippingTimeMultiplier(player: Player): Double {
+    val bonus = getNoclippingBonusLevels(player)
+    return maxOf(1.0 - bonus * 0.005, 0.1)
+}
+
 private val playerInNoclip = ConcurrentHashMap<String, String>()
+private val lastNoclipSuccessTime = ConcurrentHashMap<String, Long>()
+private val rapidNoclipCounter = ConcurrentHashMap<String, Int>()
+private val lastNoclipSuccessHistory = ConcurrentHashMap<String, MutableList<String>>()
+private val consecutiveFailures = ConcurrentHashMap<String, Int>()
 
 private var noclipTask: PlatformExecutor.PlatformTask? = null
 private var autoNoclipTask: PlatformExecutor.PlatformTask? = null
@@ -35,6 +55,13 @@ private var sharedNoclipTask: PlatformExecutor.PlatformTask? = null
 
 fun cleanupNoclipState(uuid: String) {
     playerInNoclip.remove(uuid)
+}
+
+fun resetNoclipExpState(uuid: String) {
+    rapidNoclipCounter.remove(uuid)
+    lastNoclipSuccessTime.remove(uuid)
+    lastNoclipSuccessHistory.remove(uuid)
+    consecutiveFailures.remove(uuid)
 }
 
 @Awake(LifeCycle.ACTIVE)
@@ -71,7 +98,14 @@ fun noclipTime() {
 
                 } else {
 
-                    if ((0 until 100).random() <= (data.noclipPoint?.basicSuccessRate ?: 60.0)) {
+                    val successRate = (data.noclipPoint?.basicSuccessRate ?: 60.0) + getNoclippingSuccessBonus(player)
+                    if ((0 until 100).random() <= successRate) {
+
+                        val isNewNoclip = data.noclipPoint?.name?.let { name ->
+                            data.activeLevelStr?.let { levelKey ->
+                                data.exploreredNoclips[levelKey]?.contains(name) != true
+                            }
+                        } ?: false
 
                         data.noclipPoint?.name?.let { data.exploreredNoclips[data.activeLevelStr]?.add(it) ?: data.activeLevelStr?.let { key -> data.exploreredNoclips.put(key, hashSetOf(it)) } }
                         val selectedLocation = data.noclipPoint?.let { selectTargetLocation(player, it) }
@@ -88,6 +122,34 @@ fun noclipTime() {
                             ChoTenDataHelper(player).exitNoclip()
                             PowerManager.unmarkElevatorNoclip(k)
                         }
+
+                        // Exp calculation
+                        val levelNoclipKey = "${data.activeLevelStr}::${data.noclipPoint?.name}"
+                        val history = lastNoclipSuccessHistory[k] ?: mutableListOf()
+                        if (levelNoclipKey in history) {
+                            // duplicate noclip in last 3 successes — 0 exp
+                        } else {
+                            consecutiveFailures.remove(k)
+                            var exp = 10.0
+                            if (isNewNoclip) exp += 10.0
+
+                            val lastTime = lastNoclipSuccessTime[k]
+                            val fiveMinAgo = System.currentTimeMillis() - 300_000
+                            if (lastTime != null && lastTime > fiveMinAgo) {
+                                rapidNoclipCounter[k] = (rapidNoclipCounter[k] ?: 0) + 1
+                            } else {
+                                rapidNoclipCounter[k] = 0
+                            }
+                            lastNoclipSuccessTime[k] = System.currentTimeMillis()
+                            exp += ((rapidNoclipCounter[k] ?: 0) * 2).coerceAtMost(20)
+
+                            history.add(levelNoclipKey)
+                            if (history.size > 3) history.removeAt(0)
+                            lastNoclipSuccessHistory[k] = history
+
+                            PlayerDataManager(player).addExp("noclipping", exp)
+                            PlayerDataManager(player).checkUpdateLevel("noclipping")
+                        }
                         player.sendActionBar("<gradient:green:yellow>切出成功".toComponent())
                         player.playSound(player, Sound.BLOCK_AMETHYST_BLOCK_BREAK, 1F, 0.5F)
                     } else {
@@ -98,6 +160,11 @@ fun noclipTime() {
                                 // 运行主线程任务
                                 if (!player.isDead) player.damage(damage)
                             }
+                        }
+                        val failCount = consecutiveFailures.merge(k, 1) { old, _ -> old + 1 } ?: 1
+                        if (failCount <= 2) {
+                            PlayerDataManager(player).addExp("noclipping", 3.0)
+                            PlayerDataManager(player).checkUpdateLevel("noclipping")
                         }
                         player.sendActionBar("<gradient:gold:red>切出失败".toComponent())
                         ChoTenDataHelper(player).exitNoclip()
@@ -179,7 +246,8 @@ fun autoNoclipTimer() {
 
                 // 自动开始切出
                 data.noclipPoint = noclipPoint
-                data.noclipTimeEnd = System.currentTimeMillis() + (noclipPoint.noclippingTime * 1000).roundToLong()
+                val timeMult = getNoclippingTimeMultiplier(player)
+                data.noclipTimeEnd = System.currentTimeMillis() + (noclipPoint.noclippingTime * timeMult * 1000).roundToLong()
                 data.noclipCooldownEnd = System.currentTimeMillis() + (noclipPoint.cooldown * 1000).roundToLong()
                 data.noclipping = true
                 NoclipEnterEvent(player, level.id, noclipPoint.name).call()
@@ -228,6 +296,10 @@ fun cancelNoclipTimers() {
     autoNoclipTask?.cancel()
     sharedNoclipTask?.cancel()
     playerInNoclip.clear()
+    lastNoclipSuccessTime.clear()
+    rapidNoclipCounter.clear()
+    lastNoclipSuccessHistory.clear()
+    consecutiveFailures.clear()
 }
 
 private fun selectTargetLocation(player: Player, noclipPoint: NoclipPoint): Location? {

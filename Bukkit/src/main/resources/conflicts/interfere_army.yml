@@ -1,5 +1,7 @@
 interfere_army:
   name: 毛瑟兵变
+  icon: CROSSBOW
+  item-model: null
   score:
     full_success:
       MEG: 100

@@ -14,9 +14,11 @@ import org.bukkit.OfflinePlayer
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
 import org.bukkit.potion.PotionEffectType
+import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager
 import io.github.zzzyyylllty.chotentech.function.AchievementManager
 import io.github.zzzyyylllty.chotentech.function.BaseManager
 import io.github.zzzyyylllty.chotentech.function.CurrencyManager
+import io.github.zzzyyylllty.chotentech.function.HealthAnimationManager
 import io.github.zzzyyylllty.chotentech.function.MetaManager
 import io.github.zzzyyylllty.chotentech.function.RankManager
 import io.github.zzzyyylllty.chotentech.function.WeightManager
@@ -54,6 +56,25 @@ object ExamplePapiHook : PlaceholderExpansion {
             "darkness" -> return (round((player?.getData()?.darkness ?: 0.0)*100)/100).toString()
             "maxdarkness" -> return (round((player?.getData()?.effectiveMaxDarkness ?: 0.0)*100)/100).toString()
             "hppercent" -> return player?.let { (it.health/(it.getAttribute(Attribute.MAX_HEALTH)?.value ?: 20.0)*100).toString() } ?: "50"
+            "hpanimated" -> return player?.let { "%.1f".format(HealthAnimationManager.getDisplayHealth(it)).removeSuffix(".0") } ?: "0"
+            "hpanimatedpercent" -> return player?.let {
+                val max = it.getAttribute(Attribute.MAX_HEALTH)?.value ?: 20.0
+                "%.1f".format(HealthAnimationManager.getDisplayHealth(it) / max * 100).removeSuffix(".0")
+            } ?: "0"
+            "healthanimatedmax" -> return player?.let {
+                "%.1f".format(maxOf(it.health, HealthAnimationManager.getDisplayHealth(it))).removeSuffix(".0")
+            } ?: "0"
+            "healthanimatedmaxpercent" -> return player?.let {
+                val max = it.getAttribute(Attribute.MAX_HEALTH)?.value ?: 20.0
+                "%.1f".format(maxOf(it.health, HealthAnimationManager.getDisplayHealth(it)) / max * 100).removeSuffix(".0")
+            } ?: "0"
+            "healthanimatedmin" -> return player?.let {
+                "%.1f".format(minOf(it.health, HealthAnimationManager.getDisplayHealth(it))).removeSuffix(".0")
+            } ?: "0"
+            "healthanimatedminpercent" -> return player?.let {
+                val max = it.getAttribute(Attribute.MAX_HEALTH)?.value ?: 20.0
+                "%.1f".format(minOf(it.health, HealthAnimationManager.getDisplayHealth(it)) / max * 100).removeSuffix(".0")
+            } ?: "0"
             "sanpercent" -> {
                 val data = player?.getData() ?: return "0"
                 val current = data.sanity
@@ -413,8 +434,8 @@ object ExamplePapiHook : PlaceholderExpansion {
             "consumption" -> return "%.1f".format(player?.getData()?.consumption ?: 0.0).removeSuffix(".0")
             "pvp" -> return (player?.getData()?.pvpEnabled == true).toString()
             "ended" -> return (player?.getData()?.ended == true).toString()
-            "ended_show" -> return if (player?.getData()?.ended == true) "<green>已结档" else "<yellow>未结档"
-            "ended_id" -> return player?.getData()?.endedId ?: "generic"
+            "endedshow" -> return if (player?.getData()?.ended == true) "<green>已结档" else "<yellow>未结档"
+            "endedid" -> return player?.getData()?.endedId ?: "generic"
             "gametime" -> {
                 val hours = player?.getData()?.gameTimeHours ?: return "2150.01.01 12AM"
                 return when (list.getOrNull(1)) {
@@ -467,23 +488,43 @@ object ExamplePapiHook : PlaceholderExpansion {
                 val data = player.getData() ?: return ""
                 val sub = list.getOrNull(1)?.lowercase() ?: return "Error"
                 return when (sub) {
-                    "sanity" -> formatStatDisplay(player, data.sanity, data.effectiveMaxSanity, 90.0, 30.0, 10.0)
-                    "internalinjury" -> formatStatDisplay(player, data.internalInjury, data.maxInternalInjury, 99.0, 75.0, 50.0)
-                    "externalinjury" -> formatStatDisplay(player, data.externalInjury, data.maxExternalInjury, 99.0, 75.0, 50.0)
+                    "sanity" -> formatStatDisplay(player, data.sanity, data.effectiveMaxSanity, 90.0, 30.0, 10.0) + " " + ChangeTracker.getArrows(player.uniqueId, "sanity")
+                    "internalinjury" -> formatStatDisplay(player, data.internalInjury, data.maxInternalInjury, 99.0, 75.0, 50.0) + " " + ChangeTracker.getArrows(player.uniqueId, "internalinjury")
+                    "externalinjury" -> formatStatDisplay(player, data.externalInjury, data.maxExternalInjury, 99.0, 75.0, 50.0) + " " + ChangeTracker.getArrows(player.uniqueId, "externalinjury")
                     "health" -> formatHealthDisplay(player)
-                    "food" -> formatFoodDisplay(player)
+                    "food" -> formatFoodDisplay(player) + " " + ChangeTracker.getArrows(player.uniqueId, "food")
                     else -> "Error"
                 }
+            }
+            "change" -> {
+                if (player == null) return ""
+                val key = list.getOrNull(1)?.lowercase() ?: return "Error"
+                return ChangeTracker.getArrows(player.uniqueId, key)
             }
             "sidebar" -> {
                 return getQuestSidebar(player) ?: ""
             }
             "sideinfo" -> {
                 if (player == null) return ""
-                if (SideInfoManager.isShowing(player)) {
-                    return SideInfoManager.getClipData(player)
+                val mode = ProfileManager.getSharedData(player.uniqueId.toString()).settings.get("sideInfoMode")
+                return when (mode) {
+                    "always_noclip" -> SideInfoManager.getClipDataRaw(player)
+                    "always_quest" -> getQuestSidebar(player) ?: ""
+                    "noclip_priority" -> {
+                        if (player.location.pitch >= 85) {
+                            getQuestSidebar(player) ?: SideInfoManager.getClipDataRaw(player)
+                        } else {
+                            SideInfoManager.getClipDataRaw(player)
+                        }
+                    }
+                    else -> { // quest_priority (default)
+                        if (SideInfoManager.isShowing(player)) {
+                            SideInfoManager.getClipData(player)
+                        } else {
+                            getQuestSidebar(player) ?: ""
+                        }
+                    }
                 }
-                return getQuestSidebar(player) ?: ""
             }
             "sidedata" -> {
                 if (player == null) return "idle"
@@ -492,6 +533,11 @@ object ExamplePapiHook : PlaceholderExpansion {
             "clipdata" -> {
                 if (player == null) return ""
                 return SideInfoManager.getClipData(player)
+            }
+            "setting" -> {
+                if (player == null || list.size < 2) return ""
+                val key = list[1].lowercase()
+                return ProfileManager.getSharedData(player.uniqueId.toString()).settings.get(key)
             }
         }
         return "Error"

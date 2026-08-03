@@ -20,12 +20,13 @@ import taboolib.common.platform.service.PlatformExecutor
 import kotlin.math.roundToInt
 
 private var windowsTask: PlatformExecutor.PlatformTask? = null
+private val windowsLevels = listOf<String>("level-3","level-4","level-9","level-881","level-58")
 
 @Awake(LifeCycle.ACTIVE)
 fun checkWindows() {
     windowsTask = submitAsync(period = 20) {
         for((key, value) in playerRegions) {
-            if (value.contains("level-4") || value.contains("level-881") || value.contains("level-9")) {
+            if (value.any { it in windowsLevels }) {
                 val player = Bukkit.getPlayer(key.toUUID()) ?: continue
 
                 if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) continue

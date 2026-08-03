@@ -4,10 +4,15 @@ import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
 import io.github.zzzyyylllty.chotentech.data.ChoTenDataHelper
 import io.github.zzzyyylllty.chotentech.data.NutritionManager
 import io.github.zzzyyylllty.chotentech.data.cancelConsumableTasks
+import io.github.zzzyyylllty.chotentech.data.getData
 import io.github.zzzyyylllty.chotentech.feature.steampipe.SteamPipeManager
 import io.github.zzzyyylllty.chotentech.function.DeathDropManager
+import io.github.zzzyyylllty.chotentech.function.savepoint.SavePointManager
+import io.github.zzzyyylllty.chotentech.manager.AttributeManager
 import io.github.zzzyyylllty.chotentech.function.MarshmallowManager
 import io.github.zzzyyylllty.chotentech.function.ChocoManager
+import io.github.zzzyyylllty.chotentech.function.HealthAnimationManager
+import io.github.zzzyyylllty.chotentech.function.timer.resetNoclipExpState
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.event.entity.PlayerDeathEvent
@@ -38,6 +43,9 @@ fun onPlayerDeath(event: PlayerDeathEvent) {
     // 营养值死亡扣除
     NutritionManager.applyDeathDeduction(player)
 
+    // 清除带 deathMark 的修饰符
+    AttributeManager.removeDeathMarkedModifiers(player.uniqueId)
+
     // 重置棉花糖计数器并清除相关修饰符
     val pd = playerDataMap[player.uniqueId.toString()]
     if (pd != null) {
@@ -51,21 +59,32 @@ fun onPlayerDeath(event: PlayerDeathEvent) {
     // 重置蒸汽管道伤害计数（本条命）
     SteamPipeManager.clearPlayerHits(player)
 
+    // Reset rapid noclip counter
+    resetNoclipExpState(player.uniqueId.toString())
+
     // Increment total deaths (shared across profiles)
     io.github.zzzyyylllty.chotentech.data.profile.ProfileManager.getSharedData(player.uniqueId.toString()).totalDeaths++
 }
 
 @SubscribeEvent
 fun onPlayerRespawn(event: PlayerRespawnEvent) {
-    val data = playerDataMap[event.player.uniqueId.toString()]
+    val player = event.player
+    val data = playerDataMap[player.uniqueId.toString()]
     if (data != null) {
         data.customHunger = 80.0
         data.customSaturation = 20.0
     }
-    val point = data?.respawnPoint
-    if (point != null) {
-        point.toLocation()?.let { event.respawnLocation = it }
+    HealthAnimationManager.sync(player)
+
+    val respawnLoc = SavePointManager.getRespawnLocation(player)
+    if (respawnLoc != null) {
+        event.respawnLocation = respawnLoc
     } else {
         DEFAULT_SPAWN?.let { event.respawnLocation = it }
+    }
+
+    // Trigger 60s recall timer if respawning at a base save
+    if (data != null && data.baseSave != null) {
+        SavePointManager.onBaseSpawn(player, data)
     }
 }

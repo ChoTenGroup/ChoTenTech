@@ -189,11 +189,18 @@ fun loadLevel(key: String, arg: Map<String, Any?>) {
         expMap = expConfigMap.toList().sortedBy { it.first }.toMap()
     )
 
+    // --- Parsing gui item config (optional) ---
+    val guiConfig = (arg["gui"] as? Map<String, Any?>)?.let { guiRaw ->
+        val mat = guiRaw["material"]?.toString() ?: return@let null
+        GuiItemConfig(material = mat, model = guiRaw["model"]?.toString())
+    }
+
     // Finally, create LevelTemplate instance
     levels[key] = LevelTemplate(
         id = key,
         displayNames = displayMap,
         level = levelInstance,
-        agents = ConfigUtil.getAgents(arg)
+        agents = ConfigUtil.getAgents(arg),
+        gui = guiConfig
     )
 }

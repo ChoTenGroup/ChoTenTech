@@ -1,0 +1,418 @@
+adrenaline_injector:
+  id: "adrenaline_injector"
+  instant: true
+  effects:
+    - effect: sound
+      sound: ENTITY_PLAYER_LEVELUP
+      volume: 0.4
+      pitch: 1.8
+    - effect: status_effect
+      status_effect: pain_relief
+      level: 1
+      duration: 60
+    - effect: modifier
+      modifier: health_regen_multiplier
+      amount: 1
+      uuid: adrenaline_injector
+      expire: 20s
+      death_mark: true
+    - effect: modifier
+      modifier: stamina_regen_multiplier
+      amount: 1
+      uuid: adrenaline_injector
+      expire: 60s
+      death_mark: true
+    - effect: modifier
+      modifier: attack_damage
+      amount: 10
+      uuid: adrenaline_injector
+      expire: 60s
+      death_mark: true
+    - effect: modifier
+      modifier: weight_limit_multiplier
+      amount: 0.1
+      uuid: adrenaline_injector
+      expire: 120s
+      death_mark: true
+    - effect: tick_task
+      delay: 1200
+      period: 20
+      repeats: 60
+      effects:
+        - effect: hunger
+          mode: add
+          value: -0.5
+
+empty_injector:
+  id: "empty_injector"
+  instant: true
+  effects: []
+
+etg_injector:
+  id: "etg_injector"
+  instant: true
+  effects:
+    - effect: sound
+      sound: BLOCK_NOTE_BLOCK_CHIME
+      volume: 0.4
+      pitch: 1.5
+    - effect: modifier
+      modifier: health_regen_multiplier
+      amount: 2
+      uuid: etg_injector
+      expire: 60s
+      death_mark: true
+    - effect: modifier
+      modifier: stamina_regen_multiplier
+      amount: 0.5
+      uuid: etg_injector
+      expire: 60s
+      death_mark: true
+    - effect: tick_task
+      delay: 1400
+      period: 20
+      repeats: 30
+      effects:
+        - effect: hunger
+          mode: add
+          value: -3
+
+fast_stamina_injector:
+  id: "fast_stamina_injector"
+  instant: true
+  effects:
+    - effect: sound
+      sound: ENTITY_EXPERIENCE_ORB_PICKUP
+      volume: 0.4
+      pitch: 1.6
+    - effect: modifier
+      modifier: stamina_regen_multiplier
+      amount: 2
+      uuid: fast_stamina_injector
+      expire: 60s
+      death_mark: true
+    - effect: modifier
+      modifier: stamina_max
+      amount: 30
+      uuid: fast_stamina_injector
+      expire: 120s
+      death_mark: true
+    - effect: modifier
+      modifier: attack_damage
+      amount: 5
+      uuid: fast_stamina_injector
+      expire: 60s
+      death_mark: true
+    - effect: modifier
+      modifier: movement_speed
+      amount: 0.01
+      uuid: fast_stamina_injector
+      expire: 60s
+      death_mark: true
+    - effect: modifier
+      modifier: weight_limit_multiplier
+      amount: 0.2
+      uuid: fast_stamina_injector
+      expire: 60s
+      death_mark: true
+    - effect: tick_task
+      delay: 1200
+      period: 20
+      repeats: 60
+      effects:
+        - effect: hunger
+          mode: add
+          value: -1
+
+fast_strength_injector:
+  id: "fast_strength_injector"
+  instant: true
+  effects:
+    - effect: sound
+      sound: ENTITY_EXPERIENCE_ORB_PICKUP
+      volume: 0.5
+      pitch: 0.8
+    - effect: modifier
+      modifier: stamina_regen_multiplier
+      amount: 1
+      uuid: fast_strength_injector
+      expire: 60s
+      death_mark: true
+    - effect: modifier
+      modifier: attack_damage
+      amount: 25
+      uuid: fast_strength_injector
+      expire: 60s
+      death_mark: true
+    - effect: modifier
+      modifier: weight_limit_multiplier
+      amount: 0.2
+      uuid: fast_strength_injector
+      expire: 120s
+      death_mark: true
+    - effect: tick_task
+      delay: 1200
+      period: 20
+      repeats: 60
+      effects:
+        - effect: hunger
+          mode: add
+          value: -1
+
+flower_of_fire_injector:
+  id: "flower_of_fire_injector"
+  instant: true
+  effects:
+    - effect: sound
+      sound: ITEM_FIRECHARGE_USE
+      volume: 0.5
+      pitch: 1.0
+    - effect: modifier
+      modifier: attack_damage
+      amount: 10
+      uuid: flower_of_fire_injector
+      expire: 180s
+      death_mark: true
+    - effect: modifier
+      modifier: movement_speed
+      amount: 0.01
+      uuid: flower_of_fire_injector
+      expire: 180s
+      death_mark: true
+    - effect: tick_task
+      delay: 2000
+      period: 20
+      repeats: 60
+      effects:
+        - effect: hunger
+          mode: add
+          value: -1
+
+golden_apple_injector:
+  id: "golden_apple_injector"
+  instant: true
+  effects:
+    - effect: sound
+      sound: ENTITY_PLAYER_LEVELUP
+      volume: 0.5
+      pitch: 0.9
+    - effect: potion
+      potion: ABSORPTION
+      duration: 6000
+      amplifier: 9
+    - effect: modifier
+      modifier: health_regen_multiplier
+      amount: 1
+      uuid: golden_apple_injector
+      expire: 300s
+      death_mark: true
+    - effect: tick_task
+      delay: 2000
+      period: 20
+      repeats: 200
+      effects:
+        - effect: hunger
+          mode: add
+          value: -0.5
+
+inocentia_injector:
+  id: "inocentia_injector"
+  instant: true
+  effects:
+    - effect: sound
+      sound: BLOCK_BEACON_ACTIVATE
+      volume: 0.4
+      pitch: 1.0
+    - effect: health_threshold
+      value: 50
+      amplifier: 50
+    - effect: modifier
+      modifier: health_regen_multiplier
+      amount: 1
+      uuid: inocentia_injector
+      expire: 60s
+      death_mark: true
+    - effect: modifier
+      modifier: attack_damage
+      amount: 30
+      uuid: inocentia_injector
+      expire: 60s
+      death_mark: true
+    - effect: modifier
+      modifier: movement_speed
+      amount: 0.01
+      uuid: inocentia_injector
+      expire: 60s
+      death_mark: true
+    - effect: tick_task
+      delay: 3600
+      period: 20
+      repeats: 120
+      effects:
+        - effect: hunger
+          mode: add
+          value: -3
+
+rainbow_injector:
+  id: "rainbow_injector"
+  instant: true
+  effects:
+    - effect: sound
+      sound: ENTITY_FIREWORK_ROCKET_TWINKLE
+      volume: 0.5
+      pitch: 1.0
+    - effect: modifier
+      modifier: attack_damage
+      amount: 10
+      uuid: rainbow_injector
+      expire: 600s
+      death_mark: true
+      chance: 25
+    - effect: modifier
+      modifier: stamina_max
+      amount: 10
+      uuid: rainbow_injector
+      expire: 600s
+      death_mark: true
+      chance: 25
+    - effect: modifier
+      modifier: health_regen_multiplier
+      amount: 1
+      uuid: rainbow_injector
+      expire: 600s
+      death_mark: true
+      chance: 25
+    - effect: modifier
+      modifier: stamina_regen_multiplier
+      amount: 1
+      uuid: rainbow_injector
+      expire: 600s
+      death_mark: true
+      chance: 25
+    - effect: modifier
+      modifier: weight_limit_multiplier
+      amount: 0.2
+      uuid: rainbow_injector
+      expire: 600s
+      death_mark: true
+      chance: 25
+    - effect: modifier
+      modifier: movement_speed
+      amount: 0.01
+      uuid: rainbow_injector
+      expire: 600s
+      death_mark: true
+      chance: 25
+    - effect: tick_task
+      period: 20
+      repeats: 600
+      chance: 25
+      effects:
+        - effect: hunger
+          mode: add
+          value: -1
+    - effect: health
+      mode: set
+      value: 0
+      chance: 25
+
+transfer_stamina_injector:
+  id: "transfer_stamina_injector"
+  instant: true
+  effects:
+    - effect: sound
+      sound: BLOCK_NOTE_BLOCK_DIDGERIDOO
+      volume: 0.4
+      pitch: 0.7
+    - effect: modifier
+      modifier: stamina_regen_multiplier
+      amount: 1
+      uuid: transfer_stamina_injector
+      expire: 200s
+      death_mark: true
+    - effect: modifier
+      modifier: stamina_max
+      amount: 50
+      uuid: transfer_stamina_injector
+      expire: 300s
+      death_mark: true
+    - effect: modifier
+      modifier: weight_limit_multiplier
+      amount: 0.2
+      uuid: transfer_stamina_injector
+      expire: 60s
+      death_mark: true
+    - effect: tick_task
+      delay: 4200
+      period: 20
+      repeats: 60
+      effects:
+        - effect: hunger
+          mode: add
+          value: -1
+    - effect: tick_task
+      delay: 4200
+      period: 20
+      repeats: 80
+      effects:
+        - effect: stamina
+          mode: add
+          value: -2.5
+
+zako_healer_injector:
+  id: "zako_healer_injector"
+  instant: true
+  effects:
+    - effect: sound
+      sound: BLOCK_NOTE_BLOCK_CHIME
+      volume: 0.3
+      pitch: 1.0
+    - effect: modifier
+      modifier: external_injury_regen
+      amount: 2
+      uuid: zako_healer_injector
+      expire: 50s
+      death_mark: true
+    - effect: modifier
+      modifier: internal_injury_regen
+      amount: 2
+      uuid: zako_healer_injector
+      expire: 50s
+      death_mark: true
+    - effect: injury_threshold
+      value: 50
+      amplifier: 50
+    - effect: tick_task
+      period: 20
+      repeats: 40
+      effects:
+        - effect: hunger
+          mode: add
+          value: -1
+
+mule_injector:
+  id: "mule_injector"
+  instant: true
+  effects:
+    - effect: sound
+      sound: ENTITY_ITEM_BREAK
+      volume: 0.4
+      pitch: 0.6
+    - effect: modifier
+      modifier: stamina_regen_multiplier
+      amount: 0.5
+      uuid: mule_injector
+      expire: 600s
+      death_mark: true
+    - effect: modifier
+      modifier: weight_limit_multiplier
+      amount: 0.5
+      uuid: mule_injector
+      expire: 600s
+      death_mark: true
+    - effect: modifier
+      modifier: health_regen_multiplier
+      amount: -0.1
+      uuid: mule_injector
+      expire: 600s
+      death_mark: true

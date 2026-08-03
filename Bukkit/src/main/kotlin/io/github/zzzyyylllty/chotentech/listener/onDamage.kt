@@ -185,6 +185,7 @@ fun onWeightFallDamage(event: EntityDamageEvent) {
     if (event.cause != EntityDamageEvent.DamageCause.FALL) return
     if (event.isCancelled) return
     val player = event.entity as Player
+    if (player.gameMode == org.bukkit.GameMode.CREATIVE || player.gameMode == org.bukkit.GameMode.SPECTATOR) return
     val weight = WeightManager.getPlayerTotalWeight(player)
     if (weight <= 20.0) return
     val multiplier = 1.0 + (weight - 20.0) * 0.2

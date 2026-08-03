@@ -48,6 +48,7 @@ Command_Manage_Remove_Attempt: <yellow>尝试移除 <aqua>{1}</aqua> 的修饰�
 Command_Manage_Update_Success: <green>成功更新 <yellow>{0}</yellow> 的属性。
 Command_Manage_List_Header: <gold>--- <yellow>{0}</yellow> 的属性列表 ---
 Command_Manage_List_Empty: <gray>无修饰符。
+Command_Manage_List_Item: "<gray>- <aqua>{0}</aqua> 值: <white>{1}</white> 类型: <yellow>{2}</yellow> <dark_gray>{3}</dark_gray>"
 Command_Manage_Clear_Success: <green>成功清除 <yellow>{0}</yellow> 的所有修饰符。
 Command_Debug_Show_Header: <gold>--- 属性调试信息 ---
 Command_Debug_Show_Item: "<gray>{0}<gray>: <white>{1}</white>"

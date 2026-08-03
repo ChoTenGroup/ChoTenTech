@@ -11,6 +11,7 @@ import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
+import org.bukkit.inventory.ItemStack
 import org.bukkit.event.player.PlayerItemConsumeEvent
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.module.nms.getItemTag
@@ -71,6 +72,12 @@ fun onPlayerEat(event: PlayerItemConsumeEvent) {
 
         if (nutritionChanged) NutritionManager.sync(player)
 
+        // 医疗物品不产生玻璃瓶（多数量保留剩余物品，单个则消耗掉）
+        event.replacement = if (item.amount > 1) {
+            item.clone().apply { amount = item.amount - 1 }
+        } else {
+            ItemStack(Material.AIR)
+        }
     }
 
     // ===== Check consumable config by sertraline_id =====
@@ -87,8 +94,8 @@ fun onPlayerEat(event: PlayerItemConsumeEvent) {
                 val newDur = dur - 1.0
 
                 if (newDur > 0) {
-                    if (item.amount > 1 || item.getData(DataComponentTypes.FOOD) != null) {
-                        // 堆叠 或 食物: 消耗当前物品，归还一个扣了耐久的
+                    if (item.amount > 1) {
+                        // 堆叠: 消耗当前物品，归还一个扣了耐久的
                         val used = item.clone()
                         used.amount = 1
                         val usedTag = used.getItemTag() ?: return
@@ -98,15 +105,29 @@ fun onPlayerEat(event: PlayerItemConsumeEvent) {
                         player.inventory.addItem(used).values.forEach {
                             player.world.dropItem(player.location, it)
                         }
+                        // 不残留玻璃瓶（原版会按药水处理整格替换，这里补回剩余数量）
+                        event.replacement = item.clone().apply { amount = item.amount - 1 }
                     } else {
                         invTag.putDeep("sertraline_data.durability", floor(newDur))
                         invTag.saveTo(item)
                         item.rebuildDisplay(player)
                         event.replacement = item
                     }
+                } else {
+                    // 耐久耗尽：物品删除，不残留玻璃瓶
+                    event.replacement = if (item.amount > 1) {
+                        item.clone().apply { amount = item.amount - 1 }
+                    } else {
+                        ItemStack(Material.AIR)
+                    }
                 }
             } else {
-                // No durability — item will be consumed normally (stack -1)
+                // 无耐久物品：正常消耗（stack -1），replacement 设为 AIR
+                event.replacement = if (item.amount > 1) {
+                    item.clone().apply { amount = item.amount - 1 }
+                } else {
+                    ItemStack(Material.AIR)
+                }
             }
             return
         }

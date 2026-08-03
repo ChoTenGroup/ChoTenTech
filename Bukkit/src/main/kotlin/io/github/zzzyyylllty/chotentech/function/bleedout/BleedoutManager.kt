@@ -16,6 +16,7 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.PlayerDeathEvent
+import org.bukkit.event.player.PlayerGameModeChangeEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerQuitEvent
@@ -44,7 +45,7 @@ object BleedoutManager {
 
     private val BLEEDOUT_SPEED_MOD_UUID = UUID.fromString("00000000-0000-0000-0000-00000000BED0")
     private val TICK_INTERVAL = 10L
-    private val GIVE_UP_TICKS = 10 // 5s (10 ticks × 0.5s)
+    private val GIVE_UP_TICKS = 5 // 2.5s (5 ticks × 0.5s)
 
     data class DownState(
         var bleedoutTicks: Int,
@@ -79,7 +80,8 @@ object BleedoutManager {
             type = ModifierType.PERCENT,
             source = ModifierSource.OTHER,
             slot = AttributeSlot.OTHER,
-            uuid = BLEEDOUT_SPEED_MOD_UUID
+            uuid = BLEEDOUT_SPEED_MOD_UUID,
+            deathMark = true
         ))
 
         downedPlayers[uuid] = DownState(
@@ -205,7 +207,9 @@ object BleedoutManager {
             bar.viewers().toSet().forEach { bar.removeViewer(it as net.kyori.adventure.audience.Audience) }
         }
         bleedoutBossBars.clear()
-        barrierPositions.values.forEach { sendRealBlock(it) }
+        barrierPositions.forEach { (uuid, loc) ->
+            Bukkit.getPlayer(uuid)?.let { sendRealBlock(loc, it) }
+        }
         barrierPositions.clear()
         downedPlayers.clear()
         pendingDeath.clear()
@@ -315,38 +319,34 @@ object BleedoutManager {
 
             // 位置变了 → 还原旧位置，设置新位置
             if (old != null && (old.blockX != headLoc.blockX || old.blockY != headLoc.blockY || old.blockZ != headLoc.blockZ)) {
-                sendRealBlock(old)
+                sendRealBlock(old, player)
             }
             if (old == null || old.blockX != headLoc.blockX || old.blockY != headLoc.blockY || old.blockZ != headLoc.blockZ) {
-                sendFakeBarrier(headLoc)
+                sendFakeBarrier(headLoc, player)
                 barrierPositions[uuid] = headLoc
             }
         }
     }
 
-    private fun sendFakeBarrier(loc: Location) {
+    private fun sendFakeBarrier(loc: Location, target: Player) {
         val barrier = org.bukkit.Material.BARRIER.createBlockData()
-        for (p in Bukkit.getOnlinePlayers()) {
-            p.sendBlockChange(loc, barrier)
-        }
+        target.sendBlockChange(loc, barrier)
     }
 
-    private fun sendRealBlock(loc: Location) {
+    private fun sendRealBlock(loc: Location, target: Player) {
         val real = loc.world?.getBlockAt(loc)?.blockData ?: return
-        for (p in Bukkit.getOnlinePlayers()) {
-            p.sendBlockChange(loc, real)
-        }
+        target.sendBlockChange(loc, real)
     }
 
     private fun setDownedPose(player: Player, downed: Boolean) {
         if (downed) {
             // 进入倒地 → 在头部位置放屏障
             val headLoc = player.location.clone().apply { y = floor(y + 1.8).toDouble() }
-            sendFakeBarrier(headLoc)
+            sendFakeBarrier(headLoc, player)
             barrierPositions[player.uniqueId] = headLoc
         } else {
             // 恢复 → 还原方块
-            barrierPositions.remove(player.uniqueId)?.let { sendRealBlock(it) }
+            barrierPositions.remove(player.uniqueId)?.let { sendRealBlock(it, player) }
         }
     }
 
@@ -434,6 +434,17 @@ object BleedoutManager {
     @SubscribeEvent
     fun onRespawnClear(event: PlayerRespawnEvent) {
         pendingDeath.remove(event.player.uniqueId)
+    }
+
+    /** 玩家切换到创造/旁观时取消倒地状态 */
+    @SubscribeEvent
+    fun onGameModeChange(event: PlayerGameModeChangeEvent) {
+        val uuid = event.player.uniqueId
+        if (!downedPlayers.containsKey(uuid)) return
+        if (event.newGameMode == GameMode.CREATIVE || event.newGameMode == GameMode.SPECTATOR) {
+            cleanupState(uuid)
+            event.player.sendActionBar("<green>已取消倒地状态".toComponent())
+        }
     }
 
     /** If a downed player somehow dies via non-damage means, clean up */

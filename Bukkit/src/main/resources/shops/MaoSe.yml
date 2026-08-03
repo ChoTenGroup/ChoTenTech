@@ -1,98 +1,5 @@
 MaoSe:
   name: "<gold>毛瑟"
-  gui:
-    buy: |-
-      MMM---<>O
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      N-----CCC
-    sell: |-
-      MMM---<>O
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      N-----CCC
-  gui-item:
-    mode-buy:
-      material: "BOOK"
-      name: "<white><b>购买模式"
-      lore: "当前为购买模式\n点击切换到出售模式"
-    mode-sell:
-      material: "BOOK"
-      name: "<white><b>出售模式"
-      lore: "当前为出售模式\n点击切换到购买模式"
-    previous:
-      have:
-        name: "<white><b>上一页"
-        lore: "点击切换到上一页。\n第 %page% / %total_pages% 页"
-      not:
-        name: "<white><b>第 1 / 1 页"
-        lore: "已是第一页。"
-    next:
-      have:
-        name: "<white><b>下一页"
-        lore: "点击切换到下一页。\n第 %page% / %total_pages% 页"
-      not:
-        name: "<white><b>第 1 / 1 页"
-        lore: "已是最后一页。"
-    knowledge:
-      material: "KNOWLEDGE_BOOK"
-      name: "<gold><b>信息"
-      lore: |-
-        点击查看您的货币信息。
-    confirm-buy:
-      have:
-        material: "GREEN_CONCRETE"
-        name: "<green><b>确认购买"
-        lore: "点击确认购买。"
-      not-enough:
-        material: "RED_CONCRETE"
-        name: "<red><b>货币不足"
-        lore: "您的货币不足以购买所选物品。"
-      not:
-        material: "GRAY_CONCRETE"
-        name: "<gray><b>确认购买"
-        lore: "您还没有选定任何物品。"
-    confirm-sell:
-      have:
-        material: "GREEN_CONCRETE"
-        name: "<green><b>确认出售"
-        lore: "点击确认出售。"
-      not:
-        material: "GRAY_CONCRETE"
-        name: "<gray><b>确认出售"
-        lore: "您还没有选定任何物品。"
-  level:
-    1:
-      - type: level
-        level: main
-        value: 5
-      - type: affection
-        affection: MaoSe
-        value: 5
-    2:
-      - type: level
-        level: main
-        value: 15
-      - type: affection
-        affection: MaoSe
-        value: 10
-      - type: quota
-        balance: money
-        value: 5000
-    3:
-      - type: level
-        level: main
-        value: 25
-      - type: affection
-        affection: MaoSe
-        value: 15
-      - type: quota
-        balance: money
-        value: 20000
   items:
     # Lv.1 - 基础医疗
     bandage:
@@ -106,7 +13,6 @@ MaoSe:
     # Lv.2 - 近战与防具
     iron_sword:
       id: sertraline:iron_sword
-      name: "<white>铁剑"
       buy-requirements:
         - mode: level
           level: 2
@@ -115,7 +21,6 @@ MaoSe:
       sell: money:180
     iron_helmet:
       id: sertraline:iron_helmet
-      name: "<white>铁头盔"
       buy-requirements:
         - mode: level
           level: 2
@@ -124,7 +29,6 @@ MaoSe:
       sell: money:150
     iron_boots:
       id: sertraline:iron_boots
-      name: "<white>铁靴子"
       buy-requirements:
         - mode: level
           level: 2
@@ -134,7 +38,6 @@ MaoSe:
     # Lv.3 - 高级装备
     iron_chestplate:
       id: sertraline:iron_chestplate
-      name: "<white>铁胸甲"
       buy-requirements:
         - mode: level
           level: 3
@@ -143,7 +46,6 @@ MaoSe:
       sell: money:350
     iron_leggings:
       id: sertraline:iron_leggings
-      name: "<white>铁护腿"
       buy-requirements:
         - mode: level
           level: 3
@@ -152,7 +54,6 @@ MaoSe:
       sell: money:270
     diamond_sword:
       id: sertraline:diamond_sword
-      name: "<white>钻石剑"
       buy-requirements:
         - mode: level
           level: 3
@@ -162,3 +63,63 @@ MaoSe:
       limit:
         player: 1
         player-reset: 24h
+
+    flint_sword:
+      id: "sertraline:flint_sword"
+      buy: money:500
+
+    leather_helmet:
+      id: "sertraline:leather_helmet"
+      buy: money:300
+
+    leather_chestplate:
+      id: "sertraline:leather_chestplate"
+      buy: money:500
+
+    leather_leggings:
+      id: "sertraline:leather_leggings"
+      buy: money:400
+
+    leather_boots:
+      id: "sertraline:leather_boots"
+      buy: money:200
+
+    iron_helmet:
+      id: "sertraline:iron_helmet"
+      buy: money:800
+
+    iron_chestplate:
+      id: "sertraline:iron_chestplate"
+      buy: money:1200
+
+    iron_leggings:
+      id: "sertraline:iron_leggings"
+      buy: money:1000
+
+    iron_boots:
+      id: "sertraline:iron_boots"
+      buy: money:600
+
+    weapon_unlock:
+      id: "sertraline:iron_sword"
+      requirements:
+        - mode: quest
+          value: IndependentArmy
+          display: "需要完成任务「独立武装」"
+      buy: money:800
+
+    flint:
+      id: "sertraline:flint"
+      sell: money:8
+
+    bone:
+      id: "sertraline:bone"
+      sell: money:5
+
+    spider_silk:
+      id: "sertraline:spider_silk"
+      sell: money:20
+
+    leather_unprocessed:
+      id: "sertraline:leather_unprocessed"
+      sell: money:25

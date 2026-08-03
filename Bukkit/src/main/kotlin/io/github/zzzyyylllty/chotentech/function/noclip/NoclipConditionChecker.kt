@@ -21,8 +21,8 @@ sealed class ConditionResult {
 object NoclipConditionChecker {
 
     fun checkConditions(player: Player, noclipPoint: NoclipPoint): ConditionResult {
-        // 电梯切出点：先检查电源是否激活
-        if (noclipPoint.elevatorOnly && !PowerManager.hasElevatorPowerActiveFor(noclipPoint)) {
+        // 检查是否有电梯关联到此切出点且电源未激活
+        if (!PowerManager.hasElevatorPowerActiveFor(noclipPoint)) {
             return ConditionResult.Blocked("需要激活电源")
         }
 

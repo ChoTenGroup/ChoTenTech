@@ -1,0 +1,220 @@
+empty_injector:
+  xbuilder:
+    name: "<!i><#AAAAAA>空针剂"
+    material: BLAZE_ROD
+    item-model: "kangelitem:empty_injector"
+  sertraline:
+    tier: C
+    type: injector
+    lore-format: default
+    vals:
+      lore: |
+        无菌、装填了生理盐水的空针剂，仅供生产。
+      graylore: |
+        哈！谁会想用这个呢？
+adrenaline_injector:
+  xbuilder:
+    name: "<!i><#FF4444>肾上腺素"
+    material: BLAZE_ROD
+    item-model: "kangelitem:adrenaline_injector"
+  sertraline:
+    tier: B
+    type: injector
+    lore-format: default
+    vals:
+      lore: |
+        紧急战斗兴奋剂，大幅提升身体机能。
+        用于在增强生理反应的同时为强烈的肌肉活动做准备。
+      graylore: |
+        肾上腺素飙升！感觉能单挑整个后室！
+
+        <!i><gray>止痛60s、生命恢复+1 20s
+        <!i><gray>耐力回复+1 60s、攻击伤害+10 60s
+        <!i><gray>负重限制+10% 120s、60s后饥饿-0.5/s 60s
+etg_injector:
+  xbuilder:
+    name: "<!i><#44FF44>ETG-Choten 再生型"
+    material: BLAZE_ROD
+    item-model: "kangelitem:etg_injector"
+  sertraline:
+    tier: A
+    type: injector
+    lore-format: default
+    vals:
+      lore: |
+        ETG系列再生针剂，加速组织修复与能量补充，
+        但过量使用会导致严重的营养耗尽。
+      graylore: |
+        虚空血泵！
+
+        <!i><gray>生命恢复+2 60s、饥饿回复+0.5 60s
+        <!i><gray>70s后饥饿-3/s 30s
+fast_stamina_injector:
+  xbuilder:
+    name: "<!i><#4488FF>FAST 耐力针剂"
+    material: BLAZE_ROD
+    item-model: "kangelitem:fast_stamina_injector"
+  sertraline:
+    tier: A
+    type: injector
+    lore-format: default
+    vals:
+      lore: |
+        FAST系列耐力强化针剂，全方位提升战斗续航，
+        药效退去后体力将被大量透支。
+      graylore: |
+        你跑不过我你信吗？
+
+        <!i><gray>耐力回复+2 60s、最大耐力+30 120s
+        <!i><gray>攻击伤害+5 60s、速度+10% 60s
+        <!i><gray>负重限制+20% 60s、60s后饥饿-1/s 60s
+fast_strength_injector:
+  xbuilder:
+    name: "<!i><#FF8844>FAST 力量针剂"
+    material: BLAZE_ROD
+    item-model: "kangelitem:fast_strength_injector"
+  sertraline:
+    tier: A
+    type: injector
+    lore-format: default
+    vals:
+      lore: |
+        FAST系列力量强化针剂，提供爆发性战斗力。
+      graylore: |
+        一拳一个实体。虽然打完就得跑路了。
+
+        <!i><gray>耐力回复+1 60s、攻击伤害+25 60s
+        <!i><gray>负重限制+20% 120s、60s后饥饿-1/s 60s
+flower_of_fire_injector:
+  xbuilder:
+    name: "<!i><#FF6600>"火焰花"针剂"
+    material: BLAZE_ROD
+    item-model: "kangelitem:flower_of_fire_injector"
+  sertraline:
+    tier: B
+    type: injector
+    lore-format: default
+    vals:
+      lore: |
+        以火焰花提取物制成的战斗针剂？有这个吗？
+        呃好吧，实际上是发明人是火焰花。
+      graylore: |
+        别担心，只是心里作用，你不会着火的。
+
+        <!i><gray>攻击伤害+10 180s、速度+10% 180s
+        <!i><gray>100s后饥饿-1/s 60s
+golden_apple_injector:
+  xbuilder:
+    name: "<!i><#FFAA00>GApple 金苹果针剂"
+    material: BLAZE_ROD
+    item-model: "kangelitem:golden_apple_injector"
+  sertraline:
+    tier: S
+    type: injector
+    lore-format: default
+    vals:
+      lore: |
+        长时间的伤害吸收与生命恢复效果。
+      graylore: |
+        可惜喝起来还是那个味。
+
+        <!i><gray>伤害吸收X 300s、生命恢复+1 300s
+        <!i><gray>100s后饥饿-0.5/s 200s
+inocentia_injector:
+  xbuilder:
+    name: "<!i><#EEEEEE>"无邪"针剂"
+    material: BLAZE_ROD
+    item-model: "kangelitem:inocentia_injector"
+  sertraline:
+    tier: S
+    type: injector
+    lore-format: default
+    vals:
+      lore: |
+        代号"无邪"的禁忌针剂，能在绝境中逆转战局，
+        但代价是之后长时间的能量枯竭。
+      graylore: |
+        这玩意儿可一点都不天真无邪。
+
+        <!i><gray>半血以下回复至50%、生命恢复+1 60s
+        <!i><gray>攻击伤害+30 60s、速度+10% 60s
+        <!i><gray>180s后饥饿-3/s 120s
+rainbow_injector:
+  xbuilder:
+    name: "<!i><#FF69B4>Rainbow 彩虹针剂"
+    material: BLAZE_ROD
+    item-model: "kangelitem:rainbow_injector"
+  sertraline:
+    tier: P
+    type: injector
+    lore-format: default
+    vals:
+      lore: |
+        效果完全随机的实验性针剂，
+        每一种颜色都代表一种可能性——包括死亡。
+      graylore: |
+        让我们一起去寻找彩虹吧！
+        希望你找到的不是通往天堂的那条。
+
+        <!i><gray>以下效果每个有小概率获得（持续600s）：
+        <!i><gray>攻击伤害+10 / 最大耐力+10
+        <!i><gray>生命恢复+1 / 耐力回复+1
+        <!i><gray>负重限制+20% / 速度+10%
+        <!i><gray>饥饿-1/s / 立即死亡
+transfer_stamina_injector:
+  xbuilder:
+    name: "<!i><#AA44FF>转移耐力针剂"
+    material: BLAZE_ROD
+    item-model: "kangelitem:transfer_stamina_injector"
+  sertraline:
+    tier: A
+    type: injector
+    lore-format: default
+    vals:
+      lore: |
+        通过透支未来体力获得短期爆发性耐力提升，
+        药效退去后将经历严重的体力与能量衰竭。
+      graylore: |
+        向未来的自己借点体力吧！
+        当然，未来的你也没法拒绝。
+
+        <!i><gray>耐力回复+1 200s、最大耐力+50 300s
+        <!i><gray>负重限制+20% 60s
+        <!i><gray>210s后饥饿-1/s 60s、耐力-2.5/s 80s
+zako_healer_injector:
+  xbuilder:
+    name: "<!i><#44AA44>ZAKO 止血针剂"
+    material: BLAZE_ROD
+    item-model: "kangelitem:zako_healer_injector"
+  sertraline:
+    tier: B
+    type: injector
+    lore-format: default
+    vals:
+      lore: |
+        紧急止血愈合针剂，快速促进外伤与内伤恢复，
+        设有阈值触发机制防止伤情恶化。
+      graylore: |
+        当然，这名字听起来就不太靠谱。
+        zako！zako！
+
+        <!i><gray>外伤回复+2 50s、内伤回复+2 50s
+        <!i><gray>半伤以下回复至50%、饥饿-1/s 40s
+mule_injector:
+  xbuilder:
+    name: "<!i><#AA8844>MULE 针剂"
+    material: BLAZE_ROD
+    item-model: "kangelitem:mule_injector"
+  sertraline:
+    tier: A
+    type: injector
+    lore-format: default
+    vals:
+      lore: |
+        专为长途搬运设计的耐力强化针剂，
+        大幅提升负重能力但会抑制生命恢复机能。
+      graylore: |
+        感觉身体被掏空...
+
+        <!i><gray>耐力回复+0.5 600s、负重限制+50% 600s
+        <!i><gray>生命恢复-0.1 600s

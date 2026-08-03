@@ -14,6 +14,8 @@ endurance:
       0:
         type: calculator
         value: "%level% * 100"
+  gui:
+    material: "SHIELD"
   agents:
     onUpgrade:
       js: |

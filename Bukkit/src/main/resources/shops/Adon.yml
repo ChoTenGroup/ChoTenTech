@@ -1,98 +1,5 @@
 Adon:
   name: "<gold>亚当"
-  gui:
-    buy: |-
-      MMM---<>O
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      N-----CCC
-    sell: |-
-      MMM---<>O
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      N-----CCC
-  gui-item:
-    mode-buy:
-      material: "BOOK"
-      name: "<white><b>购买模式"
-      lore: "当前为购买模式\n点击切换到出售模式"
-    mode-sell:
-      material: "BOOK"
-      name: "<white><b>出售模式"
-      lore: "当前为出售模式\n点击切换到购买模式"
-    previous:
-      have:
-        name: "<white><b>上一页"
-        lore: "点击切换到上一页。\n第 %page% / %total_pages% 页"
-      not:
-        name: "<white><b>第 1 / 1 页"
-        lore: "已是第一页。"
-    next:
-      have:
-        name: "<white><b>下一页"
-        lore: "点击切换到下一页。\n第 %page% / %total_pages% 页"
-      not:
-        name: "<white><b>第 1 / 1 页"
-        lore: "已是最后一页。"
-    knowledge:
-      material: "KNOWLEDGE_BOOK"
-      name: "<gold><b>信息"
-      lore: |-
-        点击查看您的货币信息。
-    confirm-buy:
-      have:
-        material: "GREEN_CONCRETE"
-        name: "<green><b>确认购买"
-        lore: "点击确认购买。"
-      not-enough:
-        material: "RED_CONCRETE"
-        name: "<red><b>货币不足"
-        lore: "您的货币不足以购买所选物品。"
-      not:
-        material: "GRAY_CONCRETE"
-        name: "<gray><b>确认购买"
-        lore: "您还没有选定任何物品。"
-    confirm-sell:
-      have:
-        material: "GREEN_CONCRETE"
-        name: "<green><b>确认出售"
-        lore: "点击确认出售。"
-      not:
-        material: "GRAY_CONCRETE"
-        name: "<gray><b>确认出售"
-        lore: "您还没有选定任何物品。"
-  level:
-    1:
-      - type: level
-        level: main
-        value: 5
-      - type: affection
-        affection: Adon
-        value: 5
-    2:
-      - type: level
-        level: main
-        value: 15
-      - type: affection
-        affection: Adon
-        value: 10
-      - type: quota
-        balance: money
-        value: 5000
-    3:
-      - type: level
-        level: main
-        value: 25
-      - type: affection
-        affection: Adon
-        value: 15
-      - type: quota
-        balance: money
-        value: 20000
   items:
     # Lv.1 - 基础电子零件
     copper_wire:
@@ -107,6 +14,19 @@ Adon:
       id: sertraline:capacitor
       buy: money:200
       sell: money:60
+    # Lv.1 - 旧件回收
+    screw:
+      id: sertraline:screw
+      sell: money:3
+    broken_disk:
+      id: sertraline:broken_disk
+      sell: money:15
+    u_disk:
+      id: sertraline:u_disk
+      sell: money:20
+    phone:
+      id: sertraline:phone
+      sell: money:25
     # Lv.2 - 电子元件
     cpu:
       id: sertraline:cpu
@@ -132,6 +52,21 @@ Adon:
           display: 需要商人等级 Lv.2
       buy: money:300
       sell: money:90
+    # Lv.2 - 精选设备（仅售）
+    advanced_wifi_sender:
+      id: sertraline:advanced_wifi_sender
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:600
+    pro_ai_core:
+      id: sertraline:pro_ai_core
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:1000
     # Lv.3 - 高级电子设备
     vpx:
       id: sertraline:vpx
@@ -157,3 +92,18 @@ Adon:
           display: 需要商人等级 Lv.3
       buy: money:350
       sell: money:100
+    # 解锁商品
+    moonshine:
+      id: sertraline:moonshine
+      buy-requirements:
+        - mode: quest
+          value: TaiKuLa
+          display: 需要完成任务「太苦啦」
+      buy: money:500
+    vodka:
+      id: sertraline:vodka
+      buy-requirements:
+        - mode: quest
+          value: TaiKuLa
+          display: 需要完成任务「太苦啦」
+      buy: money:600

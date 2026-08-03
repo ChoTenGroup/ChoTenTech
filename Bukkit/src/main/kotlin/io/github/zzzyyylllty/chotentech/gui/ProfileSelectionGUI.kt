@@ -15,6 +15,10 @@ import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager.loadProfileD
 import io.github.zzzyyylllty.chotentech.listener.GameTimeManager
 import io.github.zzzyyylllty.chotentech.listener.ProfileListener.releaseFromPending
 import io.github.zzzyyylllty.chotentech.util.toComponent
+import io.github.zzzyyylllty.chotentech.util.loreDash
+import io.github.zzzyyylllty.chotentech.util.loreInfo
+import io.github.zzzyyylllty.chotentech.util.loreSection
+import io.github.zzzyyylllty.chotentech.util.loreSpace
 import io.github.zzzyyylllty.chotentech.util.minimessage.mmJsonUtil
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -246,29 +250,32 @@ class ProfileSelectionGUI {
         val meta = item.itemMeta ?: return item
 
         val statusColor = if (isActive) "<green>" else "<gray>"
-        val statusText = if (isActive) "当前使用" else "点击切换"
 
         meta.displayName("${statusColor}<bold>${info.profileName}".toComponent())
 
         val lore = mutableListOf<String>()
-        lore += "<!i><dark_gray><st>${" ".repeat(60)}</st>"
-        lore += "<!i><dark_aqua>CID <white>${info.cid.id}  <dark_aqua>ID <white>${info.profileId}"
-        lore += "<!i><dark_aqua>创建 <white>${
+        val sharedCid = ProfileManager.getSharedData(player.uniqueId.toString()).cid.id
+        lore += loreInfo("CID", "<white>$sharedCid")
+        lore += loreInfo("ID", "<white>${info.profileId}")
+        lore += loreInfo("创建", "<white>${
             dateTimeFormatter.format(
                 Instant.ofEpochMilli(info.createTime).atZone(ZoneId.systemDefault()).toLocalDateTime()
             ).substringBefore(" ")
-        }"
+        }")
 
         // Faction reputation — one line per faction
-        display.reputation.forEach { (faction, value) ->
-            val color = when (faction.uppercase()) {
-                "MEG" -> "<#ffdd00>"
-                "BNTG" -> "<#33ffaa>"
-                "UEC" -> "<#ff3d00>"
-                else -> "<white>"
+        if (display.reputation.isNotEmpty()) {
+            lore += loreSection("阵营声望")
+            display.reputation.forEach { (faction, value) ->
+                val color = when (faction.uppercase()) {
+                    "MEG" -> "<#ffdd00>"
+                    "BNTG" -> "<#33ffaa>"
+                    "UEC" -> "<#ff3d00>"
+                    else -> "<white>"
+                }
+                val sign = if (value >= 0) "+" else ""
+                lore += loreDash("$color$faction <white>$sign$value")
             }
-            val sign = if (value >= 0) "+" else ""
-            lore += "<!i>${color}${faction} <white>$sign$value"
         }
 
         // Play time
@@ -276,20 +283,26 @@ class ProfileSelectionGUI {
         val hours = totalSec / 3600
         val mins = (totalSec % 3600) / 60
         val gameTimeStr = GameTimeManager.formatOneLine(display.gameTimeHours)
-        lore += "<!i><aqua>游戏内时间 <white>$gameTimeStr "
-        lore += " "
-        lore += "<!i><gold>游玩 <white>${hours}小时 ${mins}分钟"
-        lore += "<!i><gold>已探索 <white>${display.exploredLevels}层, ${display.discoveredBases}基地"
+        lore += loreSpace()
+        lore += loreInfo("游戏内时间", "<white>$gameTimeStr")
+        lore += loreSpace()
+        lore += loreInfo("游玩", "<white>${hours}小时 ${mins}分钟")
+        lore += loreInfo("已探索", "<white>${display.exploredLevels}层, ${display.discoveredBases}基地")
         val levelName = display.activeLevelStr?.let { levelsList[it] }?.let { "${it.prefix}${it.name}" }
         if (levelName != null) {
-            lore += "<!i><gold>层级位置 <white>$levelName"
+            lore += loreInfo("层级位置", "<white>$levelName")
         }
-        lore += "<!i><#FFCC66>积分 <white>${display.money} <white>| <#22FF66>贸易点 <white>${display.point}"
+        lore += loreInfo("积分", "<#FFCC66>${display.money}")
+        lore += loreInfo("贸易点", "<#22FF66>${display.point}")
 
-        lore += "<!i><dark_gray><st>${" ".repeat(60)}</st>"
-        lore += "<!i>${statusColor}${statusText}"
-        if (isActive && getProfileInfos(player.uniqueId.toString()).size > 1) {
-            lore += "  <!i><red>点击删除"
+        lore += loreSpace()
+        if (isActive) {
+            lore += loreInfo("状态", "<green>当前使用")
+            if (getProfileInfos(player.uniqueId.toString()).size > 1) {
+                lore += "<!i> <yellow>点击 <red>删除"
+            }
+        } else {
+            lore += "<!i> <yellow>点击 <green>切换"
         }
 
         meta.lore(lore.toComponent())
@@ -306,15 +319,15 @@ class ProfileSelectionGUI {
         if (canCreate) {
             meta.displayName("<green><bold>创建新玩家档案".toComponent())
             meta.lore(listOf(
-                "<!i><gray>当前: <yellow>$current <gray>/ <yellow>$max",
-                "<!i><green>点击创建一个新的玩家档案",
-                "<!i><gray>新玩家档案会独立存储进度"
+                loreInfo("当前", "<yellow>$current <gray>/ <yellow>$max"),
+                "<!i> <yellow>点击 <green>创建新的玩家档案",
+                loreInfo("说明", "<gray>新玩家档案会独立存储进度")
             ).toComponent())
         } else {
             meta.displayName("<red><bold>已达上限".toComponent())
             meta.lore(listOf(
-                "<!i><gray>当前: <yellow>$current <gray>/ <yellow>$max",
-                "<!i><red>已达到最大玩家档案数量"
+                loreInfo("当前", "<yellow>$current <gray>/ <yellow>$max"),
+                loreInfo("状态", "<red>已达到最大玩家档案数量")
             ).toComponent())
         }
 
@@ -330,10 +343,10 @@ class ProfileSelectionGUI {
 
         meta.displayName("<gold><bold>玩家档案信息".toComponent())
         meta.lore(listOf(
-            "<!i><gray>当前: <yellow>$current <gray>/ <yellow>$max",
-            "<!i><gray>活跃玩家档案ID: <yellow>${shared.activeProfileId}",
-            "<!i>",
-            "<!i><green>点击关闭"
+            loreInfo("当前", "<yellow>$current <gray>/ <yellow>$max"),
+            loreInfo("活跃档案ID", "<yellow>${shared.activeProfileId}"),
+            loreSpace(),
+            "<!i> <yellow>点击 <red>关闭"
         ).toComponent())
 
         item.setItemMeta(meta)

@@ -18,6 +18,8 @@ import taboolib.library.xseries.XMaterial
 import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.PageableChest
 import io.github.zzzyyylllty.chotentech.util.guiItem
+import io.github.zzzyyylllty.chotentech.util.loreInfo
+import io.github.zzzyyylllty.chotentech.util.loreSpace
 import taboolib.platform.util.nextChat
 
 class CoolNumberMenu(
@@ -171,9 +173,8 @@ class CoolNumberMenu(
         val color = if (active) "<green><b>" else "<gray>"
         meta.displayName("${color}$digit 位靓号".toComponent())
         val lore = mutableListOf(
-            "<!i>${if (active) "<green>✓ 已选中" else "<gray>点击选择"}"
+            if (active) "<!i><green>✓ 已选中" else "<!i> <yellow>点击 <green>选择"
         )
-        if (active) lore.add(0, "<!i><dark_gray><st>${" ".repeat(50)}</st>")
         meta.lore(lore.toComponent())
         item.setItemMeta(meta)
         return item
@@ -185,8 +186,8 @@ class CoolNumberMenu(
         val color = if (active) "<gold><b>" else "<white>"
         meta.displayName("${color}${category.displayName}".toComponent())
         meta.lore(listOf(
-            "<!i><gray>${category.desc}",
-            "<!i>${if (active) "<gold>✓" else "<gray>点击选择"}"
+            loreInfo("说明", "<gray>${category.desc}"),
+            if (active) "<!i><gold>✓ 已选中" else "<!i> <yellow>点击 <green>选择"
         ).toComponent())
         item.setItemMeta(meta)
         return item
@@ -199,13 +200,12 @@ class CoolNumberMenu(
         meta.displayName("${info.tier.color}<b>${info.number}".toComponent())
 
         meta.lore(listOf(
-            "<!i><dark_gray><st>${" ".repeat(50)}</st>",
-            "<!i><gray>分数: <yellow>${info.score}",
-            "<!i><gray>等级: ${info.tier.color}${info.tier.displayName}",
-            "<!i><gray>贸易点: <green>${info.pointPrice}",
-            "<!i><gray>磁带: <aqua>${info.tapePrice}",
-            "<!i><dark_gray><st>${" ".repeat(50)}</st>",
-            "<!i><green>点击查看详情"
+            loreInfo("分数", "<yellow>${info.score}"),
+            loreInfo("等级", "${info.tier.color}${info.tier.displayName}"),
+            loreInfo("贸易点", "<green>${info.pointPrice}"),
+            loreInfo("磁带", "<aqua>${info.tapePrice}"),
+            loreSpace(),
+            "<!i> <yellow>点击 <green>查看详情"
         ).toComponent())
         item.setItemMeta(meta)
         return item
@@ -216,10 +216,10 @@ class CoolNumberMenu(
         val meta = item.itemMeta ?: return item
         meta.displayName("<b><aqua>搜索靓号".toComponent())
         meta.lore(listOf(
-            "<!i><gray>点击输入号码搜索",
+            "<!i> <yellow>点击 <green>输入号码搜索",
             "<!i><gray>输入 cancel 取消",
-            "<!i><dark_gray><st>${" ".repeat(50)}</st>",
-            "<!i><gray>禁止: ${CoolNumberManager.bannedNumbers.joinToString(", ")}"
+            loreSpace(),
+            loreInfo("禁止", CoolNumberManager.bannedNumbers.joinToString(", "))
         ).toComponent())
         item.setItemMeta(meta)
         return item

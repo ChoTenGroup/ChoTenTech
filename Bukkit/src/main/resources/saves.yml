@@ -1,0 +1,15 @@
+gamma-base:
+  level: level-3
+  pos: Area2 30096 100 13 30098 100 15
+  holoPos: Area2 30116 100 6
+  name: Gamma 基地
+  type: BASE
+  base: GAM
+
+garden-entrance:
+  level: level-1
+  pos: Area1 10185 19 458 10189 24 454
+  holoPos: Area1 10187 23 456
+  respawn: Area1 10171 20 464
+  name: 花园段入口
+  type: NORMAL
