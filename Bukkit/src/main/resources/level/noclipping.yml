@@ -1,0 +1,21 @@
+noclipping:
+  display:
+    raw: "Noclipping"
+    default: "<#aa88ff>切行</#aa88ff>"
+    legacy: "&d切行"
+  level:
+    min: 0
+    start: 0
+    max: 100
+    display:
+      0:
+        default: "<gray>Lv.%level%</gray>"
+    exp:
+      0:
+        type: calculator
+        value: "%level% * 10 + 50"
+  gui:
+    material: "ENDER_PEARL"
+  agents:
+    onUpgrade:
+      js: |
