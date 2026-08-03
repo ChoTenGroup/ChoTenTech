@@ -11,6 +11,10 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import taboolib.library.xseries.XMaterial
 import io.github.zzzyyylllty.chotentech.util.guiItem
+import io.github.zzzyyylllty.chotentech.util.loreDash
+import io.github.zzzyyylllty.chotentech.util.loreInfo
+import io.github.zzzyyylllty.chotentech.util.loreSection
+import io.github.zzzyyylllty.chotentech.util.loreSpace
 import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.PageableChest
 import taboolib.common.LifeCycle
@@ -50,7 +54,7 @@ class AchievementMenu {
                 "         "
             )
 
-            set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>菜单", listOf("<gray>点击打开菜单"), model = "kangelitem:void")) {
+            set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>菜单", listOf("<!i> <yellow>点击 <green>打开菜单"), model = "kangelitem:void")) {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "invero menu open menu ${clicker.name}")
                 clicker.closeInventory()
             }
@@ -104,8 +108,8 @@ class AchievementMenu {
             else "<gold>达成方法: <gray>已隐藏".toComponent()
         )
         meta.lore(listOf(
-            "<!i><gray>点击${if (showHowto) "隐藏" else "显示"}达成方法",
-            "<!i><gray>开启后将看到成就的达成条件"
+            "<!i> <yellow>点击 <green>${if (showHowto) "隐藏" else "显示"}达成方法",
+            loreInfo("效果", "<gray>开启后将看到成就的达成条件")
         ).toComponent())
         item.setItemMeta(meta)
         return item
@@ -147,29 +151,30 @@ class AchievementMenu {
         val lore = mutableListOf<String>()
 
         // 分类
-        lore += "<!i><gray>分类: ${cat?.name ?: entry.achievement.category}"
-        lore += "<!i> "
+        lore += loreInfo("分类", "${cat?.name ?: entry.achievement.category}")
+        lore += loreSpace()
 
         // 描述
+        lore += loreSection("描述")
         entry.achievement.description.forEach { lore += "<!i><#cccccc>$it" }
-        lore += "<!i> "
+        lore += loreSpace()
 
         // 达成方法 (可隐藏)
         if (entry.achievement.howto.isNotEmpty()) {
-            lore += "<!i><gold><b>达成方法:"
-            entry.achievement.howto.forEach { lore += "<!i> <#ffaa66>· $it" }
-            lore += "<!i> "
+            lore += loreSection("达成方法")
+            entry.achievement.howto.forEach { lore += loreDash("<#ffaa66>$it") }
+            lore += loreSpace()
         }
 
         // 完成状态
         if (isCompleted) {
-            lore += "<!i><green>✓ 已完成"
+            lore += loreInfo("状态", "<green>✓ 已完成")
             val time = entry.progress?.completedTime
             if (time != null) {
-                lore += "<!i><dark_gray>完成时间: ${dateFormat.format(Date(time))}"
+                lore += loreInfo("完成时间", "<dark_gray>${dateFormat.format(Date(time))}")
             }
         } else {
-            lore += "<!i><red>✗ 未完成"
+            lore += loreInfo("状态", "<red>✗ 未完成")
         }
 
         meta.lore(lore.toComponent())

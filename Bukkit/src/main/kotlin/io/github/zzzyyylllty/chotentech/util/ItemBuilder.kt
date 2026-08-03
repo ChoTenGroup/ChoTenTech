@@ -35,3 +35,19 @@ fun guiItem(
     item.setItemMeta(meta)
     return item
 }
+
+// ── 任务GUI风格 lore 助手 ──
+
+/** 段落标题（青色），用于 2 行及以上描述的开头，如：| 简介 */
+fun loreSection(title: String): String = "<!i><white><b>|<reset> <!i><aqua>$title"
+
+/** 单项内容行（白色 标签: 值），如：| 状态: 在线 */
+fun loreInfo(label: String, value: String = ""): String =
+    if (value.isEmpty()) "<!i><white><b>|<reset> <!i><white>$label"
+    else "<!i><white><b>|<reset> <!i><white>$label: $value"
+
+/** 分隔空行 */
+fun loreSpace(): String = "<!i> "
+
+/** 段落内容列表项，如：- 目标 5/10 */
+fun loreDash(content: String): String = "<!i> <dark_gray>- $content"

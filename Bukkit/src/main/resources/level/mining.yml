@@ -14,6 +14,8 @@ mining:
       0:
         type: calculator
         value: "%level% * 10 + 50"
+  gui:
+    material: "IRON_PICKAXE"
   agents:
     onUpgrade:
       js: |

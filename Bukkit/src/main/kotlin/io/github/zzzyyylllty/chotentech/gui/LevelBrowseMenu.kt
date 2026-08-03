@@ -3,8 +3,12 @@ package io.github.zzzyyylllty.chotentech.gui
 import io.github.zzzyyylllty.chotentech.ChoTenTech.levelsList
 import io.github.zzzyyylllty.chotentech.data.Level
 import io.github.zzzyyylllty.chotentech.data.getData
-import io.github.zzzyyylllty.chotentech.util.minimessage.mmJsonUtil
 import io.github.zzzyyylllty.chotentech.util.guiItem
+import io.github.zzzyyylllty.chotentech.util.loreDash
+import io.github.zzzyyylllty.chotentech.util.loreInfo
+import io.github.zzzyyylllty.chotentech.util.loreSection
+import io.github.zzzyyylllty.chotentech.util.loreSpace
+import io.github.zzzyyylllty.chotentech.util.minimessage.mmJsonUtil
 import io.github.zzzyyylllty.chotentech.util.toComponent
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -15,7 +19,7 @@ import taboolib.library.xseries.XMaterial
 import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.PageableChest
 
-const val GUI_PREFIX = "<white><b>| </b><gold>"
+const val GUI_PREFIX = "<white><b>|</b> <!i>"
 
 class LevelBrowseMenu {
 
@@ -48,6 +52,12 @@ class LevelBrowseMenu {
                 buildLevelItem(level, data.exploreredLevels.contains(level.id), data.exploreredNoclips[level.id])
             }
 
+            onClick { _, level ->
+                if (!data.exploreredLevels.contains(level.id)) return@onClick
+                player.playSound(player.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
+                NoclipBrowseMenu().open(player, level)
+            }
+
             onPageChange { p ->
                 p.playSound(p.location, Sound.ITEM_BOOK_PAGE_TURN, 1f, 1f)
             }
@@ -68,12 +78,13 @@ class LevelBrowseMenu {
             val meta = item.itemMeta ?: return item
             meta.displayName("<dark_gray><b>???</b>".toComponent())
             meta.lore(listOf(
-                "<!i>${GUI_PREFIX}层群 <dark_gray>???</dark_gray> 层级 <dark_gray>???",
-                "<!i>",
-                "<!i>${GUI_PREFIX}生存难度: <dark_gray>???",
-                "<!i>${GUI_PREFIX}描述: <dark_gray>???",
-                "<!i>",
-                "<!i>${GUI_PREFIX}<i><red>尚未探索"
+                loreInfo("层群", "<dark_gray>???"),
+                loreInfo("层级", "<dark_gray>???"),
+                loreSpace(),
+                loreInfo("生存难度", "<dark_gray>???"),
+                loreInfo("描述", "<dark_gray>???"),
+                loreSpace(),
+                "<!i><white><b>|<reset> <!i><red><i>尚未探索"
             ).toComponent())
             item.setItemMeta(meta)
             return item
@@ -91,21 +102,22 @@ class LevelBrowseMenu {
         meta.displayName("<gold>${level.prefix}${level.name}</gold>".toComponent())
 
         val lore = mutableListOf<String>()
-        lore += "<!i>${GUI_PREFIX}层群 ${level.cluster} 层级 ${level.number ?: "???"}"
-        lore += "<!i>"
-        lore += "<!i>${level.survivalDifficulty.prefix}<b>${level.survivalDifficulty.classname}</b> <gray>| <dark_gray>${level.survivalDifficulty.one}, ${level.survivalDifficulty.two}, ${level.survivalDifficulty.three}"
-        if (level.dmz) lore += "<!i>${GUI_PREFIX}<red>非军事区: 不得主动攻击其他流浪者。"
-        lore += "<!i>"
-        lore += "<!i>${GUI_PREFIX}简介"
-        lore += "<!i>${level.tip}"
-        lore += "<!i>"
-        lore += "<!i>${GUI_PREFIX}作者: <dark_gray>${level.author}"
+        lore += loreInfo("层群", level.cluster)
+        lore += loreInfo("层级", level.number ?: "???")
+        lore += loreSpace()
+        lore += loreInfo("生存难度", "${level.survivalDifficulty.prefix}<b>${level.survivalDifficulty.classname}</b> <gray>| <dark_gray>${level.survivalDifficulty.one}, ${level.survivalDifficulty.two}, ${level.survivalDifficulty.three}")
+        if (level.dmz) lore += loreInfo("非军事区", "<red>不得主动攻击其他流浪者")
+        lore += loreSpace()
+        lore += loreSection("简介")
+        lore += "<!i><gray>${level.tip}"
+        lore += loreSpace()
+        lore += loreInfo("作者", "<dark_gray>${level.author}")
 
         if (usedNoclips != null && usedNoclips.isNotEmpty()) {
-            lore += "<!i>"
-            lore += "<!i>${GUI_PREFIX}已探索的切出点"
+            lore += loreSpace()
+            lore += loreSection("已探索的切出点")
             usedNoclips.forEach { name ->
-                lore += "<!i> <green>· $name"
+                lore += loreDash("<green>$name")
             }
         }
 

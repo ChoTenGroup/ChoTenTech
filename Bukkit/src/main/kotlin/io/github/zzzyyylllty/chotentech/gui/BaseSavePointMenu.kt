@@ -4,6 +4,9 @@ import io.github.zzzyyylllty.chotentech.data.Base
 import io.github.zzzyyylllty.chotentech.data.RespawnPoint
 import io.github.zzzyyylllty.chotentech.data.getData
 import io.github.zzzyyylllty.chotentech.util.guiItem
+import io.github.zzzyyylllty.chotentech.util.loreInfo
+import io.github.zzzyyylllty.chotentech.util.loreSection
+import io.github.zzzyyylllty.chotentech.util.loreSpace
 import io.github.zzzyyylllty.chotentech.util.minimessage.mmJsonUtil
 import io.github.zzzyyylllty.chotentech.util.toComponent
 import net.kyori.adventure.title.Title
@@ -26,10 +29,11 @@ class BaseSavePointMenu(private val base: Base) {
 
             // 存档基地
             set('A', guiItem(XMaterial.WRITABLE_BOOK, "<green><b>📂 存档基地", listOf(
-                "<gray>将当前基地添加到你的已存档列表",
-                "<gray>已存档的基地将保存在你的档案中",
-                "",
-                if (data.savedBases.contains(base.idef)) "<green>✓ 已存档" else "<yellow>点击存档"
+                loreSection("说明"),
+                "<!i><gray>将当前基地添加到你的已存档列表",
+                "<!i><gray>已存档的基地将保存在你的档案中",
+                loreSpace(),
+                if (data.savedBases.contains(base.idef)) loreInfo("状态", "<green>✓ 已存档") else "<!i> <yellow>点击 <green>存档"
             ))) {
                 if (data.savedBases.contains(base.idef)) {
                     player.sendActionBar("<yellow>该基地已存档".toComponent())
@@ -44,11 +48,13 @@ class BaseSavePointMenu(private val base: Base) {
 
             // 保存出生点
             set('C', guiItem(XMaterial.COMPASS, "<aqua><b>📍 保存出生点", listOf(
-                "<gray>将基地的出生点设为你的重生点",
-                "<gray>死亡后将在此处复活",
-                "",
-                "<yellow>点击保存"
+                loreSection("说明"),
+                "<!i><gray>将基地的出生点设为你的重生点",
+                "<!i><gray>死亡后将在此处复活",
+                loreSpace(),
+                "<!i> <yellow>点击 <green>保存"
             ))) {
+                data.baseSave = null // clear base save, let player set it via save point system
                 data.respawnPoint = RespawnPoint(
                     world = base.spawn.world,
                     x = base.spawn.x,
@@ -64,10 +70,11 @@ class BaseSavePointMenu(private val base: Base) {
 
             // 设为主基地
             set('E', guiItem(XMaterial.NETHER_STAR, "<gold><b>⭐ 设为主基地", listOf(
-                "<gray>将当前基地设为主基地",
-                "<gray>显示在称号和相关信息中",
-                "",
-                if (data.subTag == base.idef) "<green>✓ 当前主基地" else "<yellow>点击设置"
+                loreSection("说明"),
+                "<!i><gray>将当前基地设为主基地",
+                "<!i><gray>显示在称号和相关信息中",
+                loreSpace(),
+                if (data.subTag == base.idef) loreInfo("状态", "<green>✓ 当前主基地") else "<!i> <yellow>点击 <green>设置"
             ))) {
                 if (data.subTag == base.idef) {
                     player.sendActionBar("<yellow>这已经是你的主基地".toComponent())

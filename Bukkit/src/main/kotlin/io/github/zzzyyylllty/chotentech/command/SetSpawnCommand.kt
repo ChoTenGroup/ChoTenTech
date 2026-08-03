@@ -65,6 +65,8 @@ object SetSpawnCommand {
                                     return@execute
                                 }
 
+                                data.normalSave = null // clear normal save
+                                data.baseSave = null   // clear base save
                                 data.respawnPoint = RespawnPoint(
                                     world = world.name,
                                     x = x,

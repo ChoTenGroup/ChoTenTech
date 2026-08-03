@@ -841,7 +841,8 @@ object PowerManager {
         }
 
         data.noclipPoint = noclipPoint
-        data.noclipTimeEnd = System.currentTimeMillis() + (noclipPoint.noclippingTime * 1000).toLong()
+        val timeMult = io.github.zzzyyylllty.chotentech.function.timer.getNoclippingTimeMultiplier(player)
+        data.noclipTimeEnd = System.currentTimeMillis() + (noclipPoint.noclippingTime * timeMult * 1000).toLong()
         data.noclipCooldownEnd = System.currentTimeMillis() + (noclipPoint.cooldown * 1000).toLong()
         data.noclipping = true
         NoclipEnterEvent(player, level.name, noclipPoint.name).call()

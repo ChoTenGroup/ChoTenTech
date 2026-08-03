@@ -2,6 +2,9 @@ package io.github.zzzyyylllty.chotentech.gui
 
 import io.github.zzzyyylllty.chotentech.feature.EndManager
 import io.github.zzzyyylllty.chotentech.util.guiItem
+import io.github.zzzyyylllty.chotentech.util.loreDash
+import io.github.zzzyyylllty.chotentech.util.loreInfo
+import io.github.zzzyyylllty.chotentech.util.loreSpace
 import io.github.zzzyyylllty.chotentech.util.minimessage.mmJsonUtil
 import io.github.zzzyyylllty.chotentech.util.toComponent
 import org.bukkit.Bukkit
@@ -81,16 +84,16 @@ class EndGUI {
         if (entry.unlocked) {
             meta.displayName("${entry.template.color}<b>✦ ${entry.template.name}".toComponent())
             val lore = mutableListOf<String>()
-            lore += "<!i><gray>结档ID: <white>${entry.id}"
-            lore += "<!i> "
-            lore += "<!i><green>✓ 已解锁"
+            lore += loreInfo("结档ID", "<white>${entry.id}")
+            lore += loreSpace()
+            lore += loreDash("<green>✓ 已解锁")
             meta.lore(lore.toComponent())
         } else {
             meta.displayName("<gray><b>?</b> ???".toComponent())
             val lore = mutableListOf<String>()
-            lore += "<!i><gray>尚未解锁"
-            lore += "<!i> "
-            lore += "<!i><red>✗ 未解锁"
+            lore += loreInfo("状态", "<gray>尚未解锁")
+            lore += loreSpace()
+            lore += loreDash("<red>✗ 未解锁")
             meta.lore(lore.toComponent())
         }
 

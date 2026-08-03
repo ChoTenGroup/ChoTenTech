@@ -1,5 +1,7 @@
 interfere_office:
   name: 办公室紧急状态
+  icon: PAPER
+  item-model: null
   score:
     full_success:
       MEG: 70

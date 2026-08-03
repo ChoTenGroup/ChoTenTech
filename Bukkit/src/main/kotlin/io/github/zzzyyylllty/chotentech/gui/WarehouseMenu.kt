@@ -16,6 +16,7 @@ import io.github.zzzyyylllty.chotentech.util.toComponent
 import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.Chest
 import io.github.zzzyyylllty.chotentech.util.guiItem
+import io.github.zzzyyylllty.chotentech.util.loreInfo
 
 class WarehouseMenu {
 
@@ -91,8 +92,8 @@ class WarehouseMenu {
                 model = if (currentPage > 0) "kangelitem:previous" else "kangelitem:previous_no"
             ))
             inv.setItem(49, guiItem(XMaterial.CHEST, "<yellow>仓库信息", listOf(
-                "<gray>物品: <yellow>${contents.size} <gray>/ <yellow>$maxItems",
-                "<gray>页数: <yellow>${currentPage + 1} <gray>/ <yellow>$pages"
+                loreInfo("物品", "<yellow>${contents.size} <gray>/ <yellow>$maxItems"),
+                loreInfo("页数", "<yellow>${currentPage + 1} <gray>/ <yellow>$pages")
             )))
             inv.setItem(8, guiItem(
                 if (currentPage < pages - 1) XMaterial.ARROW else XMaterial.GRAY_STAINED_GLASS_PANE,
@@ -114,7 +115,7 @@ class WarehouseMenu {
                 "         "
             )
 
-            set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>菜单", listOf("<gray>点击打开菜单"), model = "kangelitem:void"))
+            set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>菜单", listOf("<!i> <yellow>点击 <green>打开菜单"), model = "kangelitem:void"))
 
             onBuild { _, inv ->
                 loadPage(inv)

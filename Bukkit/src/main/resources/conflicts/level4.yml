@@ -1,5 +1,7 @@
 level4almond:
   name: Level 4 杏仁水危机
+  icon: POTION
+  item-model: null
   score:
     full_success:
       MEG: 75

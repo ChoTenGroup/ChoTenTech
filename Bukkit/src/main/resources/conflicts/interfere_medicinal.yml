@@ -1,5 +1,7 @@
 interfere_medicinal:
   name: 我不是药神
+  icon: GLISTERING_MELON_SLICE
+  item-model: null
   score:
     full_success:
       MEG: 60

@@ -1,119 +1,32 @@
 Kael:
   name: "<green>凯尔"
-  gui:
-    buy: |-
-      MMM---<>O
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      N-----CCC
-    sell: |-
-      MMM---<>O
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      N-----CCC
-  gui-item:
-    mode-buy:
-      material: "BOOK"
-      name: "<white><b>购买模式"
-      lore: "当前为购买模式\n点击切换到出售模式"
-    mode-sell:
-      material: "BOOK"
-      name: "<white><b>出售模式"
-      lore: "当前为出售模式\n点击切换到购买模式"
-    previous:
-      have:
-        name: "<white><b>上一页"
-        lore: "点击切换到上一页。\n第 %page% / %total_pages% 页"
-      not:
-        name: "<white><b>第 1 / 1 页"
-        lore: "已是第一页。"
-    next:
-      have:
-        name: "<white><b>下一页"
-        lore: "点击切换到下一页。\n第 %page% / %total_pages% 页"
-      not:
-        name: "<white><b>第 1 / 1 页"
-        lore: "已是最后一页。"
-    knowledge:
-      material: "KNOWLEDGE_BOOK"
-      name: "<gold><b>信息"
-      lore: |-
-        点击查看您的货币信息。
-    confirm-buy:
-      have:
-        material: "GREEN_CONCRETE"
-        name: "<green><b>确认购买"
-        lore: "点击确认购买。"
-      not-enough:
-        material: "RED_CONCRETE"
-        name: "<red><b>货币不足"
-        lore: "您的货币不足以购买所选物品。"
-      not:
-        material: "GRAY_CONCRETE"
-        name: "<gray><b>确认购买"
-        lore: "您还没有选定任何物品。"
-    confirm-sell:
-      have:
-        material: "GREEN_CONCRETE"
-        name: "<green><b>确认出售"
-        lore: "点击确认出售。"
-      not:
-        material: "GRAY_CONCRETE"
-        name: "<gray><b>确认出售"
-        lore: "您还没有选定任何物品。"
-  level:
-    1:
-      - type: level
-        level: main
-        value: 5
-      - type: affection
-        affection: Kael
-        value: 5
-    2:
-      - type: level
-        level: main
-        value: 15
-      - type: affection
-        affection: Kael
-        value: 10
-      - type: quota
-        balance: money
-        value: 5000
-    3:
-      - type: level
-        level: main
-        value: 25
-      - type: affection
-        affection: Kael
-        value: 15
-      - type: quota
-        balance: money
-        value: 20000
   items:
     # Lv.1 - 基础医疗
     bandage:
       id: sertraline:bandage
-      name: "<white>绷带"
       buy: money:80
       sell: money:20
     painkiller_pills:
       id: sertraline:painkiller_pills
-      name: "<white>止痛药"
       buy: money:120
       sell: money:35
     almond_water_gray:
       id: sertraline:almond_water_gray
-      name: "<white>灰色杏仁水"
       buy: money:80
       sell: money:25
+    # 医疗材料收购
+    rag:
+      id: sertraline:rag
+      sell: money:10
+    fabric_skin:
+      id: sertraline:fabric_skin
+      sell: money:25
+    glass_bottle:
+      id: sertraline:glass_bottle
+      sell: money:3
     # Lv.2 - 进阶医疗
     sterile_bandage:
       id: sertraline:sterile_bandage
-      name: "<white>消毒绷带"
       buy-requirements:
         - mode: level
           level: 2
@@ -122,16 +35,17 @@ Kael:
       sell: money:60
     antibiotic:
       id: sertraline:antibiotic
-      name: "<white>抗生素"
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
+        - mode: quest
+          value: PenicillinAction
+          display: 需要完成任务「青霉素行动」
       buy: money:300
       sell: money:90
     insulin:
       id: sertraline:insulin
-      name: "<white>胰岛素"
       buy-requirements:
         - mode: level
           level: 2
@@ -144,7 +58,6 @@ Kael:
     # Lv.3 - 高级医疗
     onefirst_medkit:
       id: sertraline:onefirst_medkit
-      name: "<white>OneFirst医疗包"
       buy-requirements:
         - mode: level
           level: 3
@@ -156,7 +69,6 @@ Kael:
         player-reset: 24h
     almond_water_red:
       id: sertraline:almond_water_red
-      name: "<red>红色杏仁水"
       buy-requirements:
         - mode: level
           level: 3
@@ -168,11 +80,13 @@ Kael:
         player-reset: 24h
     akacandy_medkit:
       id: sertraline:akacandy_medkit
-      name: "<white>阿卡糖急救包"
       buy-requirements:
         - mode: level
           level: 3
           display: 需要商人等级 Lv.3
+        - mode: quest
+          value: VaccineResearch
+          display: 需要完成任务「疫苗研究」
       buy: money:800
       sell: money:240
       limit:

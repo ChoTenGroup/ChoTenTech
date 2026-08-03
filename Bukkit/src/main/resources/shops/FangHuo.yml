@@ -1,98 +1,5 @@
 FangHuo:
   name: "<gold>放火"
-  gui:
-    buy: |-
-      MMM---<>O
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      N-----CCC
-    sell: |-
-      MMM---<>O
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      N-----CCC
-  gui-item:
-    mode-buy:
-      material: "BOOK"
-      name: "<white><b>购买模式"
-      lore: "当前为购买模式\n点击切换到出售模式"
-    mode-sell:
-      material: "BOOK"
-      name: "<white><b>出售模式"
-      lore: "当前为出售模式\n点击切换到购买模式"
-    previous:
-      have:
-        name: "<white><b>上一页"
-        lore: "点击切换到上一页。\n第 %page% / %total_pages% 页"
-      not:
-        name: "<white><b>第 1 / 1 页"
-        lore: "已是第一页。"
-    next:
-      have:
-        name: "<white><b>下一页"
-        lore: "点击切换到下一页。\n第 %page% / %total_pages% 页"
-      not:
-        name: "<white><b>第 1 / 1 页"
-        lore: "已是最后一页。"
-    knowledge:
-      material: "KNOWLEDGE_BOOK"
-      name: "<gold><b>信息"
-      lore: |-
-        点击查看您的货币信息。
-    confirm-buy:
-      have:
-        material: "GREEN_CONCRETE"
-        name: "<green><b>确认购买"
-        lore: "点击确认购买。"
-      not-enough:
-        material: "RED_CONCRETE"
-        name: "<red><b>货币不足"
-        lore: "您的货币不足以购买所选物品。"
-      not:
-        material: "GRAY_CONCRETE"
-        name: "<gray><b>确认购买"
-        lore: "您还没有选定任何物品。"
-    confirm-sell:
-      have:
-        material: "GREEN_CONCRETE"
-        name: "<green><b>确认出售"
-        lore: "点击确认出售。"
-      not:
-        material: "GRAY_CONCRETE"
-        name: "<gray><b>确认出售"
-        lore: "您还没有选定任何物品。"
-  level:
-    1:
-      - type: level
-        level: main
-        value: 5
-      - type: affection
-        affection: FangHuo
-        value: 5
-    2:
-      - type: level
-        level: main
-        value: 15
-      - type: affection
-        affection: FangHuo
-        value: 10
-      - type: quota
-        balance: money
-        value: 5000
-    3:
-      - type: level
-        level: main
-        value: 25
-      - type: affection
-        affection: FangHuo
-        value: 15
-      - type: quota
-        balance: money
-        value: 20000
   items:
     # Lv.1 - 直播小物
     paper:
@@ -103,14 +10,9 @@ FangHuo:
       id: sertraline:bread
       buy: money:50
       sell: money:12
-    tape:
-      id: sertraline:tape
-      buy: money:30
-      sell: money:8
     # Lv.2 - 探索用品
     bandage:
       id: sertraline:bandage
-      name: "<white>绷带"
       buy-requirements:
         - mode: level
           level: 2
@@ -119,7 +21,6 @@ FangHuo:
       sell: money:20
     painkiller_pills:
       id: sertraline:painkiller_pills
-      name: "<white>止痛药"
       buy-requirements:
         - mode: level
           level: 2
@@ -128,7 +29,6 @@ FangHuo:
       sell: money:35
     iron_ingot:
       id: sertraline:iron_ingot
-      name: "<white>铁锭"
       buy-requirements:
         - mode: level
           level: 2
@@ -138,7 +38,6 @@ FangHuo:
     # Lv.3 - 粉丝特供
     mre:
       id: sertraline:mre
-      name: "<white>军用口粮"
       buy-requirements:
         - mode: level
           level: 3
@@ -147,7 +46,6 @@ FangHuo:
       sell: money:90
     apple_can:
       id: sertraline:apple_can
-      name: "<white>苹果罐头"
       buy-requirements:
         - mode: level
           level: 3
@@ -156,7 +54,6 @@ FangHuo:
       sell: money:40
     iron_sword:
       id: sertraline:iron_sword
-      name: "<white>铁剑"
       buy-requirements:
         - mode: level
           level: 3
@@ -168,7 +65,6 @@ FangHuo:
         player-reset: 24h
     onefirst_medkit:
       id: sertraline:onefirst_medkit
-      name: "<white>一线急救包"
       buy-requirements:
         - mode: level
           level: 3
@@ -178,3 +74,51 @@ FangHuo:
       limit:
         player: 3
         player-reset: 24h
+
+    red_tape:
+      id: "sertraline:red_tape"
+      buy: money:50
+
+    blue_tape:
+      id: "sertraline:blue_tape"
+      buy: money:50
+
+    u_disk:
+      id: "sertraline:u_disk"
+      buy: money:100
+
+    disk:
+      id: "sertraline:disk"
+      buy: money:120
+
+    rainbow_board:
+      id: "sertraline:rainbow_board"
+      buy: money:200
+
+    green_board:
+      id: "sertraline:green_board"
+      buy: money:80
+
+    streamer_gear:
+      id: "sertraline:advanced_ai_core"
+      requirements:
+        - mode: quest
+          value: QingQingShi
+          display: "需要完成任务「青青石」"
+      buy: money:2500
+
+    tape:
+      id: "sertraline:tape"
+      sell: money:8
+
+    dust:
+      id: "sertraline:dust"
+      sell: money:2
+
+    broken_disk:
+      id: "sertraline:broken_disk"
+      sell: money:5
+
+    rag:
+      id: "sertraline:rag"
+      sell: money:2

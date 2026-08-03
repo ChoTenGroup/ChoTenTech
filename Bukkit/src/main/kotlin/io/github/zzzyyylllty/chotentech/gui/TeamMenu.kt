@@ -3,6 +3,8 @@ package io.github.zzzyyylllty.chotentech.gui
 import io.github.zzzyyylllty.chotentech.team.Team
 import io.github.zzzyyylllty.chotentech.team.TeamManager
 import io.github.zzzyyylllty.chotentech.util.guiItem
+import io.github.zzzyyylllty.chotentech.util.loreInfo
+import io.github.zzzyyylllty.chotentech.util.loreSpace
 import io.github.zzzyyylllty.chotentech.util.minimessage.mmJsonUtil
 import io.github.zzzyyylllty.chotentech.util.toComponent
 import org.bukkit.Bukkit
@@ -111,10 +113,10 @@ class TeamMenu {
                     Material.RED_BANNER,
                     "<red><b>解散队伍",
                     listOf(
-                        "<!i><gray>点击解散队伍",
-                        "<!i><gray>此操作不可撤销",
-                        "<!i>",
-                        "<!i><red>所有队员将被移出"
+                        "<!i> <yellow>点击 <red>解散队伍",
+                        loreInfo("警告", "<red>此操作不可撤销"),
+                        loreSpace(),
+                        loreInfo("影响", "<red>所有队员将被移出")
                     )
                 )
                 set(45, disbandItem) {
@@ -135,9 +137,9 @@ class TeamMenu {
                     Material.IRON_DOOR,
                     "<yellow><b>退出队伍",
                     listOf(
-                        "<!i><gray>点击退出队伍",
-                        "<!i>",
-                        "<!i><gray>退出后需重新邀请才能加入"
+                        "<!i> <yellow>点击 <green>退出队伍",
+                        loreSpace(),
+                        loreInfo("提醒", "<gray>退出后需重新邀请才能加入")
                     )
                 )
                 set(45, leaveItem) {
@@ -159,10 +161,9 @@ class TeamMenu {
                     Material.GOLD_INGOT,
                     "<gold><b>移交队长",
                     listOf(
-                        "<!i><gray>点击队员头像的",
-                        "<!i><gray><gold>右键 <gray>移交队长",
-                        "<!i>",
-                        "<!i><gray>需要目标在线"
+                        loreInfo("操作", "<gray>点击队员头像 <gold>右键 <gray>移交队长"),
+                        loreSpace(),
+                        loreInfo("需要", "<gray>目标在线")
                     )
                 )
                 set(49, transferItem) {
@@ -193,11 +194,11 @@ class TeamMenu {
         val meta = item.itemMeta ?: return item
         meta.displayName("<gold><b>我的队伍".replacePlaceholder(player).toComponent())
         val lore = mutableListOf(
-            "<!i><gray>队长: <white>${Bukkit.getOfflinePlayer(team.leader).name ?: "未知"}",
-            "<!i><gray>成员: <white>$totalCount<gray>/<white>$maxSize",
-            "<!i><gray>在线: <green>$onlineCount <gray>/ <white>$totalCount",
-            "<!i>",
-            "<!i><gray>队伍伤害减免 <green>50%"
+            loreInfo("队长", "<white>${Bukkit.getOfflinePlayer(team.leader).name ?: "未知"}"),
+            loreInfo("成员", "<white>$totalCount<gray>/<white>$maxSize"),
+            loreInfo("在线", "<green>$onlineCount <gray>/ <white>$totalCount"),
+            loreSpace(),
+            loreInfo("队伍伤害减免", "<green>50%")
         )
         meta.lore(lore.map { it.replacePlaceholder(player).toComponent() })
         item.setItemMeta(meta)
@@ -223,13 +224,10 @@ class TeamMenu {
         val statusColor = if (online) "<green>" else "<gray>"
         meta.displayName("${statusColor}${name}".toComponent())
         val lore = mutableListOf(
-            "<!i><gray>角色: ${if (role == "队长") "<gold>队长" else "<white>队员"}"
+            loreInfo("角色", if (role == "队长") "<gold>队长" else "<white>队员"),
+            loreSpace(),
+            loreInfo("状态", if (player != null && player.isOnline) "<green>● 在线" else "<gray>● 离线")
         )
-        if (!online) {
-            lore.add("<!i><red>离线")
-        }
-        lore.add("<!i>")
-        lore.add("<!i>${if (player != null && player.isOnline) "<green>● 在线" else "<gray>● 离线"}")
 
         meta.lore(lore.map { it.toComponent() })
         item.setItemMeta(meta)

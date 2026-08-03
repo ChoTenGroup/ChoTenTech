@@ -94,6 +94,7 @@ object ConflictManager {
                     val current = data.reputation.getOrDefault(faction, 0L)
                     data.reputation[faction] = current + change
                     changes.add(ReputationManager.ReputationChange(faction, change))
+                    ReputationManager.addRecord(player, conflict.configId, faction, level, change)
                 }
             }
         }

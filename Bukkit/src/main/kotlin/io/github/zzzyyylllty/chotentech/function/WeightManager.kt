@@ -57,6 +57,9 @@ object WeightManager {
         return perUnit * item.amount
     }
 
+    /** 获取玩家上次缓存的重量（KG），避免重复计算 */
+    fun getCachedWeight(uuid: UUID): Double? = playerTotalWeight[uuid]
+
     /** 获取单件物品重量 */
     private fun getItemUnitWeight(item: ItemStack): Double {
         // 尝试按自定义物品 ID 查找
@@ -122,34 +125,42 @@ object WeightManager {
         val staminaMaxAdd: Double           // 体力上限修正（ADD 参数）
     )
 
-    private fun calculateEffects(weight: Double): WeightEffects {
+    private fun calculateEffects(player: Player, weight: Double): WeightEffects {
+        val multiplier = AttributeManager.getAttributeValue(player, "weight_limit_multiplier")
+            .coerceAtLeast(0.0)
+
+        val thresholdLight = 20.0 * multiplier
+        val thresholdComfort = 30.0 * multiplier
+        val thresholdTransition = 35.0 * multiplier
+        val thresholdHeavy = 45.0 * multiplier
+
         val speedPercent: Double
         val staminaRegenPercent: Double
         val staminaMaxAdd: Double
 
         when {
-            weight < 20 -> {
+            weight < thresholdLight -> {
                 speedPercent = minOf(weight * 0.01, 0.15)
                 staminaMaxAdd = weight * 2.0
                 staminaRegenPercent = 0.0
             }
-            weight <= 30 -> {
+            weight <= thresholdComfort -> {
                 // 舒适区间，无效果
                 speedPercent = 0.0
                 staminaMaxAdd = 0.0
                 staminaRegenPercent = 0.0
             }
-            weight < 35 -> {
+            weight < thresholdTransition -> {
                 // 过渡区间，无效果
                 speedPercent = 0.0
                 staminaMaxAdd = 0.0
                 staminaRegenPercent = 0.0
             }
             else -> {
-                staminaRegenPercent = -(weight - 35) * 0.02
+                staminaRegenPercent = -(weight - thresholdTransition) * 0.02
                 staminaMaxAdd = 0.0
-                speedPercent = if (weight >= 45) {
-                    -(weight - 45) * 0.02
+                speedPercent = if (weight >= thresholdHeavy) {
+                    -(weight - thresholdHeavy) * 0.02
                 } else {
                     0.0
                 }
@@ -162,7 +173,7 @@ object WeightManager {
     /** 为玩家应用负重修饰符（先移除旧的，再添加新的） */
     private fun applyWeightEffects(player: Player) {
         val weight = playerTotalWeight[player.uniqueId] ?: 0.0
-        val effects = calculateEffects(weight)
+        val effects = calculateEffects(player, weight)
 
         val attrData = AttributeManager.getPlayerPersistentData(player.uniqueId)
         val mods = attrData.modifiers.toMutableList()
@@ -244,6 +255,14 @@ object WeightManager {
     private fun tick() {
         for (player in Bukkit.getOnlinePlayers()) {
             if (!player.isOnline) continue
+            // 创造/旁观模式不应用负重效果
+            if (player.gameMode == org.bukkit.GameMode.CREATIVE || player.gameMode == org.bukkit.GameMode.SPECTATOR) {
+                if (playerTotalWeight.containsKey(player.uniqueId)) {
+                    playerTotalWeight.remove(player.uniqueId)
+                    removeWeightModifiers(player)
+                }
+                continue
+            }
             val newWeight = getPlayerTotalWeight(player)
             val prevWeight = playerTotalWeight[player.uniqueId]
             // 重量变化超过 0.5KG 时更新，减少不必要的 DB 写入

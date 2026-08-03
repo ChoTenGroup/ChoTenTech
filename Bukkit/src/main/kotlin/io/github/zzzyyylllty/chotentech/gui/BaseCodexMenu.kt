@@ -3,6 +3,9 @@ package io.github.zzzyyylllty.chotentech.gui
 import io.github.zzzyyylllty.chotentech.data.Base
 import io.github.zzzyyylllty.chotentech.data.getData
 import io.github.zzzyyylllty.chotentech.function.BaseManager
+import io.github.zzzyyylllty.chotentech.util.loreInfo
+import io.github.zzzyyylllty.chotentech.util.loreSection
+import io.github.zzzyyylllty.chotentech.util.loreSpace
 import io.github.zzzyyylllty.chotentech.util.minimessage.mmJsonUtil
 import io.github.zzzyyylllty.chotentech.util.toComponent
 import org.bukkit.Bukkit
@@ -104,14 +107,14 @@ class BaseCodexMenu {
         if (showAll) {
             meta.displayName("<gold>显示模式: <green>全部基地".toComponent())
             meta.lore(listOf(
-                "<!i><gray>当前显示所有基地",
-                "<!i><gray>点击切换为仅显示已发现"
+                loreInfo("当前模式", "<green>显示所有基地"),
+                "<!i> <yellow>点击 <green>切换为仅显示已发现"
             ).toComponent())
         } else {
             meta.displayName("<gold>显示模式: <gray>仅已发现".toComponent())
             meta.lore(listOf(
-                "<!i><gray>当前仅显示已发现的基地",
-                "<!i><gray>点击切换为显示全部"
+                loreInfo("当前模式", "<gray>仅显示已发现的基地"),
+                "<!i> <yellow>点击 <green>切换为显示全部"
             ).toComponent())
         }
 
@@ -129,8 +132,8 @@ class BaseCodexMenu {
 
         meta.displayName("<gold>图鉴进度".toComponent())
         meta.lore(listOf(
-            "<!i><gray>已发现: <green>$discovered <gray>/ <yellow>$total",
-            "<!i><gray>完成度: <green>${if (total > 0) "%.1f".format(discovered.toDouble() / total * 100) else "0"}%"
+            loreInfo("已发现", "<green>$discovered <gray>/ <yellow>$total"),
+            loreInfo("完成度", "<green>${if (total > 0) "%.1f".format(discovered.toDouble() / total * 100) else "0"}%")
         ).toComponent())
 
         item.setItemMeta(meta)
@@ -144,10 +147,10 @@ class BaseCodexMenu {
 
             meta.displayName("<dark_gray><b>???</b>".toComponent())
             meta.lore(listOf(
-                "<!i><gray>基地 <dark_gray>???",
-                "<!i><gray>阵营 <dark_gray>???",
-                "<!i>",
-                "<!i><gray><i>尚未发现该基地！"
+                loreInfo("基地", "<dark_gray>???"),
+                loreInfo("阵营", "<dark_gray>???"),
+                loreSpace(),
+                "<!i><white><b>|<reset> <!i><gray><i>尚未发现该基地！"
             ).toComponent())
             item.setItemMeta(meta)
             return item
@@ -166,14 +169,14 @@ class BaseCodexMenu {
         meta.displayName("<gold>${base.name}</gold>".toComponent())
 
         val lore = mutableListOf<String>()
-        lore += "<!i>${GUI_PREFIX}基地编号 <yellow>${base.idef}"
-        lore += "<!i>${GUI_PREFIX}所属阵营 $factionColor${base.faction}"
-        lore += "<!i>"
-        lore += "<!i>${GUI_PREFIX}介绍 "
+        lore += loreInfo("基地编号", "<yellow>${base.idef}")
+        lore += loreInfo("所属阵营", "$factionColor${base.faction}")
+        lore += loreSpace()
+        lore += loreSection("介绍")
         base.lore.forEach { lore += "<!i><#cccccc>$it" }
-        lore += "<!i><gray> "
-        lore += "<!i>${GUI_PREFIX}区域 <dark_gray>${base.region}"
-        lore += "<!i>${GUI_PREFIX}完成版本 ${base.dev}"
+        lore += loreSpace()
+        lore += loreInfo("区域", "<dark_gray>${base.region}")
+        lore += loreInfo("完成版本", "${base.dev}")
 
         meta.lore(lore.toComponent())
         mat.setItemMeta(meta)

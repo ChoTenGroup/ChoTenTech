@@ -1,98 +1,5 @@
 HaLei:
   name: "<gold>哈雷"
-  gui:
-    buy: |-
-      MMM---<>O
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      N-----CCC
-    sell: |-
-      MMM---<>O
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      N-----CCC
-  gui-item:
-    mode-buy:
-      material: "BOOK"
-      name: "<white><b>购买模式"
-      lore: "当前为购买模式\n点击切换到出售模式"
-    mode-sell:
-      material: "BOOK"
-      name: "<white><b>出售模式"
-      lore: "当前为出售模式\n点击切换到购买模式"
-    previous:
-      have:
-        name: "<white><b>上一页"
-        lore: "点击切换到上一页。\n第 %page% / %total_pages% 页"
-      not:
-        name: "<white><b>第 1 / 1 页"
-        lore: "已是第一页。"
-    next:
-      have:
-        name: "<white><b>下一页"
-        lore: "点击切换到下一页。\n第 %page% / %total_pages% 页"
-      not:
-        name: "<white><b>第 1 / 1 页"
-        lore: "已是最后一页。"
-    knowledge:
-      material: "KNOWLEDGE_BOOK"
-      name: "<gold><b>信息"
-      lore: |-
-        点击查看您的货币信息。
-    confirm-buy:
-      have:
-        material: "GREEN_CONCRETE"
-        name: "<green><b>确认购买"
-        lore: "点击确认购买。"
-      not-enough:
-        material: "RED_CONCRETE"
-        name: "<red><b>货币不足"
-        lore: "您的货币不足以购买所选物品。"
-      not:
-        material: "GRAY_CONCRETE"
-        name: "<gray><b>确认购买"
-        lore: "您还没有选定任何物品。"
-    confirm-sell:
-      have:
-        material: "GREEN_CONCRETE"
-        name: "<green><b>确认出售"
-        lore: "点击确认出售。"
-      not:
-        material: "GRAY_CONCRETE"
-        name: "<gray><b>确认出售"
-        lore: "您还没有选定任何物品。"
-  level:
-    1:
-      - type: level
-        level: main
-        value: 5
-      - type: affection
-        affection: HaLei
-        value: 5
-    2:
-      - type: level
-        level: main
-        value: 15
-      - type: affection
-        affection: HaLei
-        value: 10
-      - type: quota
-        balance: money
-        value: 5000
-    3:
-      - type: level
-        level: main
-        value: 25
-      - type: affection
-        affection: HaLei
-        value: 15
-      - type: quota
-        balance: money
-        value: 20000
   items:
     # Lv.1
     bandage:
@@ -106,7 +13,6 @@ HaLei:
     # Lv.2
     iron_sword:
       id: sertraline:iron_sword
-      name: "<white>铁剑"
       buy-requirements:
         - mode: level
           level: 2
@@ -115,7 +21,6 @@ HaLei:
       sell: money:180
     iron_boots:
       id: sertraline:iron_boots
-      name: "<white>铁靴子"
       buy-requirements:
         - mode: level
           level: 2
@@ -124,7 +29,6 @@ HaLei:
       sell: money:150
     painkiller_pills:
       id: sertraline:painkiller_pills
-      name: "<white>止痛药"
       buy-requirements:
         - mode: level
           level: 2
@@ -134,7 +38,6 @@ HaLei:
     # Lv.3
     diamond_sword:
       id: sertraline:diamond_sword
-      name: "<white>钻石剑"
       buy-requirements:
         - mode: level
           level: 3
@@ -146,7 +49,6 @@ HaLei:
         player-reset: 24h
     iron_chestplate:
       id: sertraline:iron_chestplate
-      name: "<white>铁胸甲"
       buy-requirements:
         - mode: level
           level: 3
@@ -155,7 +57,6 @@ HaLei:
       sell: money:350
     onefirst_medkit:
       id: sertraline:onefirst_medkit
-      name: "<white>急救包"
       buy-requirements:
         - mode: level
           level: 3
@@ -165,3 +66,47 @@ HaLei:
       limit:
         player: 3
         player-reset: 24h
+
+    bone:
+      id: "sertraline:bone"
+      sell: money:30
+
+    hound_paw:
+      id: "sertraline:hound_paw"
+      sell: money:80
+
+    smilers_head:
+      id: "sertraline:smilers_head"
+      sell: money:150
+
+    scale:
+      id: "sertraline:scale"
+      sell: money:100
+
+    bursters_shell:
+      id: "sertraline:bursters_shell"
+      sell: money:200
+
+    iron_sword:
+      id: "sertraline:iron_sword"
+      buy: money:2000
+
+    steel_sword:
+      id: "sertraline:steel_sword"
+      buy: money:4000
+
+    bronze_sword:
+      id: "sertraline:bronze_sword"
+      buy: money:3000
+
+    diamond_sword:
+      id: "sertraline:diamond_sword"
+      buy: money:10000
+
+    veteran_weapon:
+      id: "sertraline:emerald_sword"
+      requirements:
+        - mode: quest
+          value: XiangLiCar
+          display: "需要完成任务「箱里车」"
+      buy: money:15000

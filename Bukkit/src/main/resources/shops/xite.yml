@@ -1,98 +1,5 @@
 xite:
   name: "西特"
-  gui:
-    buy: |-
-      MMM---<>O
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      N-----CCC
-    sell: |-
-      MMM---<>O
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      N-----CCC
-  gui-item:
-    mode-buy:
-      material: "BOOK"
-      name: "<white><b>购买模式"
-      lore: "当前为购买模式\n点击切换到出售模式"
-    mode-sell:
-      material: "BOOK"
-      name: "<white><b>出售模式"
-      lore: "当前为出售模式\n点击切换到购买模式"
-    previous:
-      have:
-        name: "<white><b>上一页"
-        lore: "点击切换到上一页。\n第 %page% / %total_pages% 页"
-      not:
-        name: "<white><b>第 1 / 1 页"
-        lore: "已是第一页。"
-    next:
-      have:
-        name: "<white><b>下一页"
-        lore: "点击切换到下一页。\n第 %page% / %total_pages% 页"
-      not:
-        name: "<white><b>第 1 / 1 页"
-        lore: "已是最后一页。"
-    knowledge:
-      material: "KNOWLEDGE_BOOK"
-      name: "<gold><b>信息"
-      lore: |-
-        点击查看您的货币信息。
-    confirm-buy:
-      have:
-        material: "GREEN_CONCRETE"
-        name: "<green><b>确认购买"
-        lore: "点击确认购买。"
-      not-enough:
-        material: "RED_CONCRETE"
-        name: "<red><b>货币不足"
-        lore: "您的货币不足以购买所选物品。"
-      not:
-        material: "GRAY_CONCRETE"
-        name: "<gray><b>确认购买"
-        lore: "您还没有选定任何物品。"
-    confirm-sell:
-      have:
-        material: "GREEN_CONCRETE"
-        name: "<green><b>确认出售"
-        lore: "点击确认出售。"
-      not:
-        material: "GRAY_CONCRETE"
-        name: "<gray><b>确认出售"
-        lore: "您还没有选定任何物品。"
-  level:
-    1:
-      - type: level
-        level: main
-        value: 5
-      - type: affection
-        affection: xite
-        value: 5
-    2:
-      - type: level
-        level: main
-        value: 15
-      - type: affection
-        affection: xite
-        value: 10
-      - type: quota
-        balance: money
-        value: 5000
-    3:
-      - type: level
-        level: main
-        value: 25
-      - type: affection
-        affection: xite
-        value: 15
-      - type: quota
-        balance: money
-        value: 20000
   items:
     # Lv.1
     bandage:
@@ -109,18 +16,15 @@ xite:
       sell: money:6
     cracker:
       id: sertraline:cracker
-      name: "<white>饼干"
       buy: money:50
       sell: money:12
     tape:
       id: sertraline:tape
-      name: "<white>胶带"
       buy: money:30
       sell: money:8
     # Lv.2
     almond_water_gray:
       id: sertraline:almond_water_gray
-      name: "<white>杏仁水(灰)"
       buy-requirements:
         - mode: level
           level: 2
@@ -129,7 +33,6 @@ xite:
       sell: money:30
     painkiller_pills:
       id: sertraline:painkiller_pills
-      name: "<white>止痛药"
       buy-requirements:
         - mode: level
           level: 2
@@ -138,7 +41,6 @@ xite:
       sell: money:35
     paper:
       id: sertraline:paper
-      name: "<white>纸"
       buy-requirements:
         - mode: level
           level: 2
@@ -147,7 +49,6 @@ xite:
       sell: money:5
     sterile_bandage:
       id: sertraline:sterile_bandage
-      name: "<white>无菌绷带"
       buy-requirements:
         - mode: level
           level: 2
@@ -160,7 +61,6 @@ xite:
     # Lv.3
     mre:
       id: sertraline:mre
-      name: "<white>军用口粮"
       buy-requirements:
         - mode: level
           level: 3
@@ -169,7 +69,6 @@ xite:
       sell: money:90
     iron_sword:
       id: sertraline:iron_sword
-      name: "<white>铁剑"
       buy-requirements:
         - mode: level
           level: 3
@@ -181,7 +80,6 @@ xite:
         player-reset: 24h
     iron_chestplate:
       id: sertraline:iron_chestplate
-      name: "<white>铁胸甲"
       buy-requirements:
         - mode: level
           level: 3
@@ -191,3 +89,39 @@ xite:
       limit:
         player: 1
         player-reset: 24h
+
+    bone:
+      id: "sertraline:bone"
+      sell: money:30
+
+    hound_paw:
+      id: "sertraline:hound_paw"
+      sell: money:80
+
+    plastic:
+      id: "sertraline:plastic"
+      sell: money:20
+
+    rag:
+      id: "sertraline:rag"
+      sell: money:15
+
+    iron_sword:
+      id: "sertraline:iron_sword"
+      buy: money:2000
+
+    steel_sword:
+      id: "sertraline:steel_sword"
+      buy: money:4000
+
+    bandage:
+      id: "sertraline:bandage"
+      buy: money:150
+
+    painkiller_pills:
+      id: "sertraline:painkiller_pills"
+      buy: money:250
+
+    bread:
+      id: "sertraline:bread"
+      buy: money:100

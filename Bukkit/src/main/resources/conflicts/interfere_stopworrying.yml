@@ -1,5 +1,7 @@
 interfere_stopworrying:
   name: 奇爱博士
+  icon: TNT
+  item-model: null
   score:
     full_success:
       MEG: 85

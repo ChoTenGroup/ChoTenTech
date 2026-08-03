@@ -112,6 +112,9 @@ object HealingManager {
 
         var speedModUuid: UUID? = null
         if (config.slow > 0) {
+            // 先清除上次残留的治疗减速（防止 UUID 丢失导致修饰符泄漏）
+            AttributeManager.removeModifiersByAttribute(uuid, "movement_speed", ModifierSource.HEALING)
+
             val modifier = AttributeModifier(
                 attributeId = "movement_speed",
                 value = -(config.slow / 100.0),
@@ -134,7 +137,7 @@ object HealingManager {
             eiCapWarned = false,
             speedModifierUuid = speedModUuid,
             phase = HealingPhase.PRE,
-            phaseTicks = maxOf((config.preTime * 2).toInt(), 0),
+            phaseTicks = maxOf((config.preTime * 4).toInt(), 0),
             healInterval = 0
         )
 
@@ -150,7 +153,7 @@ object HealingManager {
 
     private fun enterPost(state: HealingState, reason: PostReason, player: Player? = null) {
         state.phase = HealingPhase.POST
-        state.phaseTicks = maxOf((state.config.postTime * 2).toInt(), 0)
+        state.phaseTicks = if (reason == PostReason.ITEM_LOST) 1 else maxOf((state.config.postTime * 4).toInt(), 0)
         state.postReason = reason
         if (player != null) {
             when (reason) {
@@ -272,7 +275,7 @@ object HealingManager {
 
     @Awake(LifeCycle.ACTIVE)
     fun startHealingTick() {
-        healingTask = submit(async = true, period = 10L) {
+        healingTask = submit(async = true, period = 5L) {
             tick()
         }
     }
@@ -280,6 +283,10 @@ object HealingManager {
     @Awake(LifeCycle.DISABLE)
     fun stopHealingTick() {
         healingTask?.cancel()
+        // 清理所有残留的减速修饰符
+        for (uuid in states.keys) {
+            AttributeManager.removeModifiersByAttribute(uuid, "movement_speed", ModifierSource.HEALING)
+        }
         states.clear()
     }
 
@@ -306,7 +313,7 @@ object HealingManager {
                 HealingPhase.PRE -> {
                     state.phaseTicks--
                     if (state.phaseTicks > 0) {
-                        val sec = state.phaseTicks / 2 + 1
+                        val sec = state.phaseTicks / 4 + 1
                         player.sendActionBar("<aqua>治疗准备中... <gray>${sec}秒".toComponent())
                         continue
                     }
@@ -415,7 +422,7 @@ object HealingManager {
                     state.healInterval--
                     if (state.healInterval > 0) continue
 
-                    state.healInterval = maxOf((config.perTime * 2).toInt(), 1)
+                    state.healInterval = maxOf((config.perTime * 4).toInt(), 1)
 
                     // Check item validity
                     if (!isItemValid(item)) {
@@ -568,7 +575,7 @@ object HealingManager {
                         toRemove.add(uuid)
                         continue
                     }
-                    val sec = state.phaseTicks / 2 + 1
+                    val sec = state.phaseTicks / 4 + 1
                     val msg = when (state.postReason) {
                         PostReason.COMPLETE -> "治疗完成"
                         PostReason.CANCELLED -> "治疗中断"
@@ -582,9 +589,7 @@ object HealingManager {
 
         for (uuid in toRemove) {
             val state = states.remove(uuid) ?: continue
-            if (state.speedModifierUuid != null) {
-                AttributeManager.removeModifierByUuid(uuid, state.speedModifierUuid)
-            }
+            AttributeManager.removeModifiersByAttribute(uuid, "movement_speed", ModifierSource.HEALING)
             val player = Bukkit.getPlayer(uuid)
             if (player != null) {
                 player.sendActionBar("<green>已退出治疗模式".toComponent())

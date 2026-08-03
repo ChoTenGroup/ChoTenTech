@@ -13,6 +13,7 @@ import org.bukkit.entity.Projectile
 import org.bukkit.entity.Trident
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
+import taboolib.common.platform.event.EventPriority
 import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.event.entity.ProjectileLaunchEvent
 import org.bukkit.event.player.PlayerMoveEvent
@@ -35,6 +36,7 @@ import java.io.File
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ThreadLocalRandom
+import kotlin.math.min
 
 /**
  * 副等级系统管理器
@@ -106,7 +108,7 @@ object SkillManager {
             "level/intelligence.yml", "level/agility.yml", "level/throwing.yml",
             "level/physiotherapy.yml", "level/mining.yml",
             "level/lockpicking.yml",
-            "level/farming.yml", "level/fishing.yml", "level/cooking.yml",
+            "level/farming.yml", "level/fishing.yml", "level/noclipping.yml",
             "level/woodcutting.yml"
         )
         for (file in skillLevelFiles) {
@@ -383,16 +385,19 @@ fun onBlockBreakForMining(event: BlockBreakEvent) {
     }
 }
 
-/** 力量经验 — 近战伤害 */
-@SubscribeEvent
+/** 力量经验 — 近战伤害（MONITOR：事件最终态，忽略已取消事件） */
+@SubscribeEvent(EventPriority.MONITOR, ignoreCancelled = true)
 fun onEntityDamageForStrength(event: EntityDamageByEntityEvent) {
     val player = event.damager as? Player ?: return
     if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) return
-    // 仅近战（非投射物）
     if (event.damager is Projectile) return
     val damage = event.finalDamage
-    if (damage <= 0) return
-    val xp = (damage * SkillManager.strengthDamageMultiplier).coerceAtMost(SkillManager.strengthMaxPerHit)
+    if (damage <= 5) return
+    var xp = (damage * SkillManager.strengthDamageMultiplier).coerceAtMost(SkillManager.strengthMaxPerHit)
+    // 暴击额外 50% 经验
+    if (player.fallDistance > 0.0f) {
+        xp *= 1.5
+    }
     if (xp > 0) SkillManager.giveSkillXp(player, "strength", xp)
 }
 
@@ -610,7 +615,7 @@ fun onPlayerMoveForAgility(event: PlayerMoveEvent) {
 
     // 跳检测：在空中的玩家且上一个位置在地面
     val lastY = SkillManager.lastJumpY[player.uniqueId]
-    if (!player.isOnGround && lastY != null && from.y > lastY && from.y == to.y) {
+    if (!player.isOnGround && lastY != null && from.y > lastY + 3 && from.y == to.y) {
         // 玩家起跳
         SkillManager.giveSkillXp(player, "agility", SkillManager.agilityJumpExp)
     }
@@ -618,7 +623,7 @@ fun onPlayerMoveForAgility(event: PlayerMoveEvent) {
 
     // 坠落检测：高处 → 安全落地（使用 Bukkit fallDistance）
     if (player.isOnGround && player.fallDistance >= 3.0) {
-        val xp = player.fallDistance * SkillManager.agilityFallExp
+        val xp = min(50.0, player.fallDistance * SkillManager.agilityFallExp)
         if (xp > 0) SkillManager.giveSkillXp(player, "agility", xp)
     }
 }

@@ -15,6 +15,9 @@ import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.Chest
 import taboolib.module.ui.type.PageableChest
 import io.github.zzzyyylllty.chotentech.util.guiItem
+import io.github.zzzyyylllty.chotentech.util.loreDash
+import io.github.zzzyyylllty.chotentech.util.loreInfo
+import io.github.zzzyyylllty.chotentech.util.loreSpace
 
 class RankSelectionMenu {
 
@@ -57,7 +60,10 @@ class RankSelectionMenu {
                 val activeId = shared.activeRanks[type]
                 val activeName = RankManager.ranks[type]?.get(activeId)?.name ?: "无"
 
-                set(slot, guiItem(XMaterial.BOOK, "<gold>${typeNameMap[type] ?: type}", listOf("<gray>当前: <white>$activeName", "<green>点击查看"))) {
+                set(slot, guiItem(XMaterial.BOOK, "<gold>${typeNameMap[type] ?: type}", listOf(
+                    loreInfo("当前", "<white>$activeName"),
+                    "<!i> <yellow>点击 <green>查看"
+                ))) {
                     clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
                     openRankList(clicker, type)
                 }
@@ -140,23 +146,22 @@ class RankSelectionMenu {
         meta.displayName("${statusColor}<b>${rank.name}".toComponent())
 
         val lore = mutableListOf<String>()
-        lore += "<!i><dark_gray><st>${" ".repeat(60)}</st>"
 
         if (rank.desc.isNotBlank()) {
             lore += "<!i><white>${rank.desc}"
-            lore += "<!i><dark_gray><st>${" ".repeat(60)}</st>"
+            lore += loreSpace()
         }
 
         rank.display.forEach { (key, value) ->
-            lore += "<!i><dark_aqua>${displayKeyMap[key] ?: key}: <white>$value"
+            lore += loreInfo(displayKeyMap[key] ?: key, "<white>$value")
         }
 
-        if (rank.desc.isNotBlank() || rank.display.isNotEmpty()) {
-            lore += "<!i><dark_gray><st>${" ".repeat(60)}</st>"
+        if (rank.display.isNotEmpty()) {
+            lore += loreSpace()
         }
 
-        lore += "<!i>${statusColor}${statusText}"
-        lore += "<!i><dark_gray>${rank.id}"
+        lore += loreInfo("状态", "$statusColor$statusText")
+        lore += loreDash("<dark_gray>${rank.id}")
 
         meta.lore(lore.toComponent())
         item.setItemMeta(meta)

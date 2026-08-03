@@ -76,7 +76,8 @@ data class AttributeModifier(
     val type: ModifierType,
     val source: ModifierSource,
     val slot: AttributeSlot = AttributeSlot.OTHER,
-    val expireOn: Long? = null
+    val expireOn: Long? = null,
+    val deathMark: Boolean = false
 ) : Serializable {
     val isExpired: Boolean
         get() = expireOn != null && System.currentTimeMillis() > expireOn

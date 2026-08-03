@@ -1,6 +1,5 @@
 package io.github.zzzyyylllty.chotentech.quetiapine.data
 
-import io.github.zzzyyylllty.chotentech.ChoTenTech.config
 import io.github.zzzyyylllty.chotentech.ChoTenTech.levels
 import io.github.zzzyyylllty.chotentech.quetiapine.event.QuetiapineAddExpEvent
 import io.github.zzzyyylllty.chotentech.quetiapine.event.QuetiapineAddLevelEvent
@@ -22,6 +21,10 @@ import kotlin.math.max
 class PlayerDataManager(val player: Player) {
 
     private val map: MutableMap<String, String> get() = QuetiapineDataBridge.getDataMap(player)
+
+    companion object {
+        private val upgrading = java.util.concurrent.ConcurrentHashMap.newKeySet<String>()
+    }
 
     fun getLevelWithoutEvent(levelName: String): Long? {
         return map["level.$levelName"]?.toLong()
@@ -101,27 +104,32 @@ class PlayerDataManager(val player: Player) {
         return event.level
     }
     fun checkUpdateLevel(levelName: String) {
-        devLog("Checking update for $levelName")
-        var required = getNextLevelExp(levelName) ?: return
-        var current = getExp(levelName)
-        val sourceLevel = getLevel(levelName)
-        var cLevel = sourceLevel ?: return
-        devLog("required $required current $current CLevel $cLevel")
-        if (required <= current) {
-            val limit = config.getInt("options.level.update-limit", 10)
-            for (i in 1..limit) {
-                if (required <= current) {
+        val lockKey = "${player.uniqueId}:$levelName"
+        if (!upgrading.add(lockKey)) {
+            devLog("checkUpdateLevel already running for $lockKey, skipping")
+            return
+        }
+        try {
+            devLog("Checking update for $levelName")
+            var required = getNextLevelExp(levelName) ?: return
+            var current = getExp(levelName)
+            val sourceLevel = getLevel(levelName)
+            var cLevel = sourceLevel ?: return
+            devLog("required $required current $current CLevel $cLevel")
+            if (required <= current) {
+                while (required <= current) {
                     current -= required
                     cLevel++
-                    getLevelExp(levelName, cLevel + 1)?.let { required = it }
-                } else {
-                    break
+                    val nextReq = getLevelExp(levelName, cLevel + 1) ?: break
+                    required = nextReq
                 }
+                val event = QuetiapineLevelUpgradeEvent(levelName, sourceLevel, cLevel, current, player)
+                event.call()
+                setExp(levelName, event.finalExp)
+                setLevel(levelName, event.targetLevel)
             }
-            val event = QuetiapineLevelUpgradeEvent(levelName, sourceLevel, cLevel, current, player)
-            event.call()
-            setExp(levelName, event.finalExp)
-            setLevel(levelName, event.targetLevel)
+        } finally {
+            upgrading.remove(lockKey)
         }
     }
     fun getLevelDisplay(levelName: String, display: String): String? {

@@ -101,6 +101,10 @@ fun placeholder(player: Player?, args: String): String {
                 "next" -> {
                     return pm?.getNextLevelExp(levelName).toString()
                 }
+                "percent" -> {
+                    val next = pm?.getNextLevelExp(levelName) ?: return "0"
+                    return ((pm?.getExp(levelName) ?: 0.0) / next * 100).toString()
+                }
             }
         }
     }

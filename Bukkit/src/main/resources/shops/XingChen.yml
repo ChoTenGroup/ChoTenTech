@@ -1,117 +1,23 @@
 XingChen:
   name: "<aqua>星辰闪烁"
-  gui:
-    buy: |-
-      MMM---<>O
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      N-----CCC
-    sell: |-
-      MMM---<>O
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      N-----CCC
-  gui-item:
-    mode-buy:
-      material: "BOOK"
-      name: "<white><b>购买模式"
-      lore: "当前为购买模式\n点击切换到出售模式"
-    mode-sell:
-      material: "BOOK"
-      name: "<white><b>出售模式"
-      lore: "当前为出售模式\n点击切换到购买模式"
-    previous:
-      have:
-        name: "<white><b>上一页"
-        lore: "点击切换到上一页。\n第 %page% / %total_pages% 页"
-      not:
-        name: "<white><b>第 1 / 1 页"
-        lore: "已是第一页。"
-    next:
-      have:
-        name: "<white><b>下一页"
-        lore: "点击切换到下一页。\n第 %page% / %total_pages% 页"
-      not:
-        name: "<white><b>第 1 / 1 页"
-        lore: "已是最后一页。"
-    knowledge:
-      material: "KNOWLEDGE_BOOK"
-      name: "<gold><b>信息"
-      lore: |-
-        点击查看您的货币信息。
-    confirm-buy:
-      have:
-        material: "GREEN_CONCRETE"
-        name: "<green><b>确认购买"
-        lore: "点击确认购买。"
-      not-enough:
-        material: "RED_CONCRETE"
-        name: "<red><b>货币不足"
-        lore: "您的货币不足以购买所选物品。"
-      not:
-        material: "GRAY_CONCRETE"
-        name: "<gray><b>确认购买"
-        lore: "您还没有选定任何物品。"
-    confirm-sell:
-      have:
-        material: "GREEN_CONCRETE"
-        name: "<green><b>确认出售"
-        lore: "点击确认出售。"
-      not:
-        material: "GRAY_CONCRETE"
-        name: "<gray><b>确认出售"
-        lore: "您还没有选定任何物品。"
-  level:
-    1:
-      - type: level
-        level: main
-        value: 5
-      - type: affection
-        affection: XingChen
-        value: 5
-    2:
-      - type: level
-        level: main
-        value: 15
-      - type: affection
-        affection: XingChen
-        value: 10
-      - type: quota
-        balance: money
-        value: 5000
-    3:
-      - type: level
-        level: main
-        value: 25
-      - type: affection
-        affection: XingChen
-        value: 15
-      - type: quota
-        balance: money
-        value: 20000
   items:
     # Lv.1 - 基础物资
     paper:
       id: sertraline:paper
-      buy: money:20
-      sell: money:5
+      buy: point:3
+      sell: point:1
     wood:
       id: sertraline:wood
-      buy: money:25
-      sell: money:6
+      buy: point:4
+      sell: point:1
     bandage:
       id: sertraline:bandage
-      buy: money:80
-      sell: money:20
+      buy: point:10
+      sell: point:3
     bread:
       id: sertraline:bread
-      name: "<white>面包"
-      buy: money:50
-      sell: money:12
+      buy: point:7
+      sell: point:2
     # Lv.2 - 贸易品
     silver_ingot:
       id: sertraline:silver_ingot
@@ -119,42 +25,40 @@ XingChen:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: money:250
-      sell: money:75
+      buy: point:32
+      sell: point:10
     gold_ingot_low:
       id: sertraline:gold_ingot_low
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: money:300
-      sell: money:90
+      buy: point:38
+      sell: point:12
     almond_water_gray:
       id: sertraline:almond_water_gray
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: money:100
-      sell: money:30
+      buy: point:13
+      sell: point:4
     copper_wire:
       id: sertraline:copper_wire
-      name: "<white>铜线"
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: money:150
-      sell: money:45
+      buy: point:19
+      sell: point:6
     silver_wire:
       id: sertraline:silver_wire
-      name: "<white>银线"
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: money:250
-      sell: money:75
+      buy: point:32
+      sell: point:10
     # Lv.3 - 高级贸易品
     diamond:
       id: sertraline:diamond
@@ -162,8 +66,8 @@ XingChen:
         - mode: level
           level: 3
           display: 需要商人等级 Lv.3
-      buy: money:1000
-      sell: money:300
+      buy: point:125
+      sell: point:38
       limit:
         player: 3
         player-reset: 24h
@@ -173,17 +77,64 @@ XingChen:
         - mode: level
           level: 3
           display: 需要商人等级 Lv.3
-      buy: money:800
-      sell: money:240
+      buy: point:100
+      sell: point:30
     golden_necklace:
       id: sertraline:golden_necklace
-      name: "<white>金项链"
       buy-requirements:
         - mode: level
           level: 3
           display: 需要商人等级 Lv.3
-      buy: money:1500
-      sell: money:450
+      buy: point:188
+      sell: point:57
       limit:
         player: 1
         player-reset: 24h
+
+    emerald:
+      id: "sertraline:emerald"
+      buy: point:750
+
+    ruby:
+      id: "sertraline:ruby"
+      buy: point:625
+
+    sapphire:
+      id: "sertraline:sapphire"
+      buy: point:625
+
+    raw_iron:
+      id: "sertraline:raw_iron"
+      sell: point:4
+
+    raw_copper:
+      id: "sertraline:raw_copper"
+      sell: point:4
+
+    raw_gold:
+      id: "sertraline:raw_gold"
+      sell: point:7
+
+    coal:
+      id: "sertraline:coal"
+      sell: point:2
+
+    stone:
+      id: "sertraline:stone"
+      sell: point:1
+
+    black_diamond_unlock:
+      id: "sertraline:black_diamond"
+      requirements:
+        - mode: quest
+          value: ShenJin
+          display: "需要完成任务「沈金」"
+      buy: point:1500
+
+    mythril_unlock:
+      id: "sertraline:mythril_ingot"
+      requirements:
+        - mode: quest
+          value: JiFangWeiHu
+          display: "需要完成任务「机房维护」"
+      buy: point:1875

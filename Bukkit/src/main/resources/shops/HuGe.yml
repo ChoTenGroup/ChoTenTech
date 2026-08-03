@@ -1,159 +1,122 @@
 HuGe:
   name: "<gold>虎哥"
-  gui:
-    buy: |-
-      MMM---<>O
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      N-----CCC
-    sell: |-
-      MMM---<>O
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      IIIIIIIII
-      N-----CCC
-  gui-item:
-    mode-buy:
-      material: "BOOK"
-      name: "<white><b>购买模式"
-      lore: "当前为购买模式\n点击切换到出售模式"
-    mode-sell:
-      material: "BOOK"
-      name: "<white><b>出售模式"
-      lore: "当前为出售模式\n点击切换到购买模式"
-    previous:
-      have:
-        name: "<white><b>上一页"
-        lore: "点击切换到上一页。\n第 %page% / %total_pages% 页"
-      not:
-        name: "<white><b>第 1 / 1 页"
-        lore: "已是第一页。"
-    next:
-      have:
-        name: "<white><b>下一页"
-        lore: "点击切换到下一页。\n第 %page% / %total_pages% 页"
-      not:
-        name: "<white><b>第 1 / 1 页"
-        lore: "已是最后一页。"
-    knowledge:
-      material: "KNOWLEDGE_BOOK"
-      name: "<gold><b>信息"
-      lore: |-
-        点击查看您的货币信息。
-    confirm-buy:
-      have:
-        material: "GREEN_CONCRETE"
-        name: "<green><b>确认购买"
-        lore: "点击确认购买。"
-      not-enough:
-        material: "RED_CONCRETE"
-        name: "<red><b>货币不足"
-        lore: "您的货币不足以购买所选物品。"
-      not:
-        material: "GRAY_CONCRETE"
-        name: "<gray><b>确认购买"
-        lore: "您还没有选定任何物品。"
-    confirm-sell:
-      have:
-        material: "GREEN_CONCRETE"
-        name: "<green><b>确认出售"
-        lore: "点击确认出售。"
-      not:
-        material: "GRAY_CONCRETE"
-        name: "<gray><b>确认出售"
-        lore: "您还没有选定任何物品。"
-  level:
-    1:
-      - type: level
-        level: main
-        value: 5
-      - type: affection
-        affection: HuGe
-        value: 5
-    2:
-      - type: level
-        level: main
-        value: 15
-      - type: affection
-        affection: HuGe
-        value: 10
-      - type: quota
-        balance: money
-        value: 5000
-    3:
-      - type: level
-        level: main
-        value: 25
-      - type: affection
-        affection: HuGe
-        value: 15
-      - type: quota
-        balance: money
-        value: 20000
   items:
     # Lv.1 - 基础材料
     bread:
       id: sertraline:bread
-      name: "<white>面包"
-      buy: money:50
-      sell: money:12
+      buy: point:7
+      sell: point:2
     wood:
       id: sertraline:wood
-      name: "<white>木头"
-      buy: money:25
-      sell: money:6
+      buy: point:4
+      sell: point:1
     stone:
       id: sertraline:stone
-      name: "<white>石头"
-      buy: money:40
-      sell: money:12
+      buy: point:5
+      sell: point:2
     # Lv.2 - 中级物资
     mre:
       id: sertraline:mre
-      name: "<white>MRE口粮"
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: money:300
-      sell: money:90
+      buy: point:38
+      sell: point:12
     iron_ingot:
       id: sertraline:iron_ingot
-      name: "<white>铁锭"
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: money:150
-      sell: money:45
+      buy: point:19
+      sell: point:6
     brick_plate:
       id: sertraline:brick_plate
-      name: "<white>砖板"
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: money:100
-      sell: money:30
+      buy: point:13
+      sell: point:4
     # Lv.3 - 高级装备
     iron_chestplate:
       id: sertraline:iron_chestplate
-      name: "<white>铁胸甲"
       buy-requirements:
         - mode: level
           level: 3
           display: 需要商人等级 Lv.3
-      buy: money:1200
-      sell: money:350
+      buy: point:150
+      sell: point:44
     diamond:
       id: sertraline:diamond
-      name: "<white>钻石"
       buy-requirements:
         - mode: level
           level: 3
           display: 需要商人等级 Lv.3
-      buy: money:1000
-      sell: money:300
+      buy: point:125
+      sell: point:38
+
+    cooked_porkchop:
+      id: "sertraline:cooked_porkchop"
+      buy: point:19
+
+    cooked_beef:
+      id: "sertraline:cooked_beef"
+      buy: point:25
+
+    cooked_chicken:
+      id: "sertraline:cooked_chicken"
+      buy: point:15
+
+    cooked_mutton:
+      id: "sertraline:cooked_mutton"
+      buy: point:23
+
+    baked_potato:
+      id: "sertraline:cooked_potato"
+      buy: point:10
+
+    apple_can:
+      id: "sertraline:apple_can"
+      buy: point:25
+
+    beef_can:
+      id: "sertraline:beef_can"
+      buy: point:32
+
+    porkchop:
+      id: "sertraline:porkchop"
+      sell: point:5
+
+    beef:
+      id: "sertraline:beef"
+      sell: point:7
+
+    chicken:
+      id: "sertraline:chicken"
+      sell: point:4
+
+    mutton:
+      id: "sertraline:mutton"
+      sell: point:6
+
+    potato:
+      id: "sertraline:potato"
+      sell: point:2
+
+    carrot:
+      id: "sertraline:carrot"
+      sell: point:3
+
+    wheat:
+      id: "sertraline:wheat"
+      sell: point:2
+
+    mre_supply:
+      id: "sertraline:mre"
+      requirements:
+        - mode: quest
+          value: YiYanWanNian
+          display: "需要完成任务「一眼万年」"
+      buy: point:375

@@ -15,6 +15,10 @@ import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.Chest
 import taboolib.module.ui.type.PageableChest
 import io.github.zzzyyylllty.chotentech.util.guiItem
+import io.github.zzzyyylllty.chotentech.util.loreDash
+import io.github.zzzyyylllty.chotentech.util.loreInfo
+import io.github.zzzyyylllty.chotentech.util.loreSection
+import io.github.zzzyyylllty.chotentech.util.loreSpace
 
 class FactionSelectMenu {
 
@@ -45,16 +49,17 @@ class FactionSelectMenu {
             set('M', buildFactionIcon(
                 display = "<i><#ffdd00><b>探险者总署</b><gray>（M.E.G.）",
                 lore = listOf(
-                    "我们是一线希望。我们承诺尽可能保护所有人，",
-                    "探索从未有人见过的非凡地方，我们会保证你的安全。",
-                    "这是他们所承诺的。随着冷战愈演愈烈，",
-                    "在战争被波及到的流浪者们纷纷涌向 M.E.G.。",
-                    "然而，M.E.G. 必须继续维护其名号的高标准，",
-                    "否则，阈限世界将损失一个伟大的组织......",
-                    "",
-                    "<#ffdd00><i>他们并不完美，但没有人是完美的。他们会找到出路的。",
-                    "",
-                    "<green>通过点击右边的基地以选择本阵营。"
+                    loreSection("简介"),
+                    "<!i><gray>我们是一线希望。我们承诺尽可能保护所有人，",
+                    "<!i><gray>探索从未有人见过的非凡地方，我们会保证你的安全。",
+                    "<!i><gray>这是他们所承诺的。随着冷战愈演愈烈，",
+                    "<!i><gray>在战争被波及到的流浪者们纷纷涌向 M.E.G.。",
+                    "<!i><gray>然而，M.E.G. 必须继续维护其名号的高标准，",
+                    "<!i><gray>否则，阈限世界将损失一个伟大的组织......",
+                    loreSpace(),
+                    "<!i><#ffdd00><i>他们并不完美，但没有人是完美的。他们会找到出路的。",
+                    loreSpace(),
+                    "<!i> <yellow>点击 <green>选择本阵营"
                 )
             )) {
                 clicker.closeInventory()
@@ -65,15 +70,16 @@ class FactionSelectMenu {
             set('B', buildFactionIcon(
                 display = "<i><#33ffaa><b>不结盟贸易集团</b><gray>（B.N.T.G.）",
                 lore = listOf(
-                    "金钱归我，荣耀归你。",
-                    "B.N.T.G.，亦称不结盟贸易集团。",
-                    "一个通过电汇、钞票和股票证书联系在一起的组织。",
-                    "只要你能带来收益，你就是B.N.T.G.的不错人选。",
-                    "我们等待着，渴望一个未来，一个可能属于金钱和荣耀的秩序。",
-                    "",
-                    "<#33ffaa><i>既来之，则安之。在这里，每一句话都是契约。",
-                    "",
-                    "<green>通过点击下方的基地以选择本阵营。"
+                    loreSection("简介"),
+                    "<!i><gray>金钱归我，荣耀归你。",
+                    "<!i><gray>B.N.T.G.，亦称不结盟贸易集团。",
+                    "<!i><gray>一个通过电汇、钞票和股票证书联系在一起的组织。",
+                    "<!i><gray>只要你能带来收益，你就是B.N.T.G.的不错人选。",
+                    "<!i><gray>我们等待着，渴望一个未来，一个可能属于金钱和荣耀的秩序。",
+                    loreSpace(),
+                    "<!i><#33ffaa><i>既来之，则安之。在这里，每一句话都是契约。",
+                    loreSpace(),
+                    "<!i> <yellow>点击 <green>选择本阵营"
                 )
             )) {
                 clicker.closeInventory()
@@ -84,14 +90,15 @@ class FactionSelectMenu {
             set('U', buildFactionIcon(
                 display = "<i><#ff3d00><b>无羁探险者联盟</b><gray>（U.E.C.）",
                 lore = listOf(
-                    "U.E.C.创立的宗旨是\"人们的安全高于一切\"。至少他们是这么说的。",
-                    "无羁探险者联盟通过创立傀儡组织，扶持代理人来攫取利益。",
-                    "一个臭名昭著的例子是\"无尽下水道\"组织，许多U.E.C.的居民都定居于此。",
-                    "无羁探险者联盟是一个结合了经济联盟、军事联盟和一体化项目的组织。",
-                    "",
-                    "<#ff3d00><i>不受恐惧之束缚，因为勇敢而团结。",
-                    "",
-                    "<green>通过点击下方的基地以选择本阵营。"
+                    loreSection("简介"),
+                    "<!i><gray>U.E.C.创立的宗旨是\"人们的安全高于一切\"。至少他们是这么说的。",
+                    "<!i><gray>无羁探险者联盟通过创立傀儡组织，扶持代理人来攫取利益。",
+                    "<!i><gray>一个臭名昭著的例子是\"无尽下水道\"组织，许多U.E.C.的居民都定居于此。",
+                    "<!i><gray>无羁探险者联盟是一个结合了经济联盟、军事联盟和一体化项目的组织。",
+                    loreSpace(),
+                    "<!i><#ff3d00><i>不受恐惧之束缚，因为勇敢而团结。",
+                    loreSpace(),
+                    "<!i> <yellow>点击 <green>选择本阵营"
                 )
             )) {
                 clicker.closeInventory()
@@ -169,7 +176,7 @@ class FactionSelectMenu {
         val meta = item.itemMeta ?: return item
         meta.setCustomModelData(10000)
         meta.displayName(display.toComponent())
-        meta.lore(lore.map { "<!i><gray>$it" }.toComponent())
+        meta.lore(lore.toComponent())
         item.setItemMeta(meta)
         return item
     }
@@ -184,30 +191,28 @@ class FactionSelectMenu {
         meta.displayName("<gradient:#888888:#eeeeee:#888888><< ${base.name} >>".toComponent())
 
         val lore = mutableListOf<String>()
-        lore += "<!i><gray><st>${" ".repeat(60)}</st>"
 
         if (!base.enable) {
-            lore += "<!i><yellow>施工中 <gray>- 将在 ${base.dev} <gray>版本中发布!"
+            lore += loreInfo("状态", "<yellow>施工中 <gray>- 将在 ${base.dev} 版本中发布!")
         } else {
-            lore += "<!i><green>可用 <gray>- 已在 ${base.dev} <gray>版本中发布!"
+            lore += loreInfo("状态", "<green>可用 <gray>- 已在 ${base.dev} 版本中发布!")
         }
 
-        lore += "<!i><dark_gray><st>${" ".repeat(60)}</st>"
-        lore += "<!i><white><b>| <yellow>描述"
+        lore += loreSpace()
+        lore += loreSection("描述")
         base.lore.forEach { lore += "<!i> $it" }
-        lore += "<!i><white><b>| <yellow>初始资源"
-        lore += " <!i>${base.start}"
-        lore += "<!i><dark_gray><st>${" ".repeat(60)}</st>"
+        lore += loreSpace()
+        lore += loreSection("初始资源")
+        lore += "<!i>${base.start}"
+        lore += loreSpace()
 
         if (!base.enable) {
-            lore += "<!i><#ffaa00>敬请期待!"
+            lore += loreDash("<#ffaa00>敬请期待!")
         } else if (alreadySelected) {
-            lore += "<!i><#88eeff>选择中"
+            lore += loreDash("<#88eeff>选择中")
         } else {
-            lore += "<!i><green>点击以选择这个基地。"
+            lore += "<!i> <yellow>点击 <green>选择这个基地"
         }
-
-        lore += "<!i><gray><st>${" ".repeat(60)}</st>"
 
         meta.lore(lore.toComponent())
         item.setItemMeta(meta)

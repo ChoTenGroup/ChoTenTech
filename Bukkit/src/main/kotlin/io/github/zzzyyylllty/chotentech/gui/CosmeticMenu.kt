@@ -19,6 +19,8 @@ import taboolib.library.xseries.XMaterial
 import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.PageableChest
 import io.github.zzzyyylllty.chotentech.util.guiItem
+import io.github.zzzyyylllty.chotentech.util.loreInfo
+import io.github.zzzyyylllty.chotentech.util.loreSpace
 import java.util.concurrent.ConcurrentHashMap
 
 private val showAllMap = ConcurrentHashMap<String, Boolean>()
@@ -222,7 +224,7 @@ class CosmeticMenu {
                 val item = XMaterial.COMPASS.parseItem() ?: ItemStack(Material.COMPASS)
                 val meta = item.itemMeta ?: return item
                 meta.displayName("<aqua><bold>菜单".toComponent())
-                meta.lore(listOf("<gray>点击打开主菜单".toComponent()))
+                meta.lore(listOf("<!i> <yellow>点击 <green>打开主菜单".toComponent()))
                 meta.itemModel = NamespacedKey.fromString("kangelitem:void")
                 item.setItemMeta(meta)
                 item
@@ -231,7 +233,7 @@ class CosmeticMenu {
                 val item = XMaterial.BARRIER.parseItem() ?: ItemStack(Material.BARRIER)
                 val meta = item.itemMeta ?: return item
                 meta.displayName("<red><bold>关闭".toComponent())
-                meta.lore(listOf("<gray>点击关闭菜单".toComponent()))
+                meta.lore(listOf("<!i> <yellow>点击 <red>关闭菜单".toComponent()))
                 item.setItemMeta(meta)
                 item
             }
@@ -239,7 +241,7 @@ class CosmeticMenu {
                 val item = XMaterial.OAK_DOOR.parseItem() ?: ItemStack(Material.OAK_DOOR)
                 val meta = item.itemMeta ?: return item
                 meta.displayName("<gray><bold>返回".toComponent())
-                meta.lore(listOf("<gray>点击返回".toComponent()))
+                meta.lore(listOf("<!i> <yellow>点击 <green>返回".toComponent()))
                 item.setItemMeta(meta)
                 item
             }
@@ -254,9 +256,9 @@ class CosmeticMenu {
 
         meta.displayName("<bold>$displayName".toComponent())
         meta.lore(listOf(
-            "<!i><gray>当前: <yellow>$equippedName".toComponent(),
-            "<!i>".toComponent(),
-            "<!i><green>点击选择装饰".toComponent()
+            loreInfo("当前", "<yellow>$equippedName").toComponent(),
+            loreSpace().toComponent(),
+            "<!i> <yellow>点击 <green>选择装饰".toComponent()
         ))
 
         item.setItemMeta(meta)
@@ -272,13 +274,13 @@ class CosmeticMenu {
             meta.displayName("<gold>显示模式: <green>全部装饰".toComponent())
             meta.lore(listOf(
                 "<!i><gray>当前显示所有装饰品".toComponent(),
-                "<!i><gray>点击切换为仅显示已解锁".toComponent()
+                "<!i> <yellow>点击 <green>切换为仅显示已解锁".toComponent()
             ))
         } else {
             meta.displayName("<gold>显示模式: <gray>仅已解锁".toComponent())
             meta.lore(listOf(
                 "<!i><gray>当前仅显示有权限的装饰品".toComponent(),
-                "<!i><gray>点击切换为显示全部".toComponent()
+                "<!i> <yellow>点击 <green>切换为显示全部".toComponent()
             ))
         }
 
@@ -295,10 +297,10 @@ class CosmeticMenu {
 
         meta.displayName("<gold>装饰品进度".toComponent())
         meta.lore(listOf(
-            "<!i><gray>已装备: <green>$equipped <gray>/ <yellow>${CosmeticSlot.entries.size}".toComponent(),
-            "<!i><gray>总装饰品: <yellow>$total".toComponent(),
-            "<!i>".toComponent(),
-            "<!i><gray>点击刷新".toComponent()
+            loreInfo("已装备", "<green>$equipped <gray>/ <yellow>${CosmeticSlot.entries.size}").toComponent(),
+            loreInfo("总装饰品", "<yellow>$total").toComponent(),
+            loreSpace().toComponent(),
+            "<!i> <yellow>点击 <green>刷新".toComponent()
         ))
 
         item.setItemMeta(meta)
@@ -320,9 +322,9 @@ class CosmeticMenu {
 
         meta.displayName("<gold>粒子展示: $patternDisplay".toComponent())
         meta.lore(listOf(
-            "<!i><gray>当前: $patternDisplay".toComponent(),
-            "<!i>".toComponent(),
-            "<!i><gray>点击切换展示方式".toComponent(),
+            loreInfo("当前", "$patternDisplay").toComponent(),
+            loreSpace().toComponent(),
+            "<!i> <yellow>点击 <green>切换展示方式".toComponent(),
             "<!i><gray>散发 → 环绕 → 光环 → 螺旋 → 波浪 → 默认".toComponent()
         ))
 
@@ -363,17 +365,16 @@ class CosmeticMenu {
         meta.displayName("${statusColor}<bold>${cosmetic.name}".toComponent())
 
         val lore = mutableListOf<String>()
-        lore += "<!i><dark_gray><st>${" ".repeat(60)}</st>"
 
         if (cosmetic.id.isEmpty()) {
-            if (isActive) lore += "<!i><gray>点击卸下当前装备的装饰品"
+            if (isActive) lore += "<!i> <yellow>点击 <red>卸下当前装备的装饰品"
             else lore += "<!i><gray>当前未装备任何装饰品"
         } else {
             val slotName = slotDisplayName(cosmetic.slot)
-            lore += "<!i><dark_aqua>类型: <white>$slotName"
+            lore += loreInfo("类型", "<white>$slotName")
 
             if (!cosmetic.particle.isNullOrBlank()) {
-                lore += "<!i><dark_aqua>粒子: <white>${cosmetic.particle}"
+                lore += loreInfo("粒子", "<white>${cosmetic.particle}")
             }
             if (!cosmetic.particlePattern.isNullOrBlank()) {
                 val patternName = when (cosmetic.particlePattern) {
@@ -384,21 +385,25 @@ class CosmeticMenu {
                     "wave" -> "波浪"
                     else -> cosmetic.particlePattern
                 }
-                lore += "<!i><dark_aqua>样式: <white>$patternName"
+                lore += loreInfo("样式", "<white>$patternName")
             }
             if (!cosmetic.messageFormat.isNullOrBlank()) {
-                lore += "<!i><dark_aqua>格式: <white>${cosmetic.messageFormat}"
+                lore += loreInfo("格式", "<white>${cosmetic.messageFormat}")
             }
             if (cosmetic.particleCount > 0) {
-                lore += "<!i><dark_aqua>数量: <white>${cosmetic.particleCount}"
+                lore += loreInfo("数量", "<white>${cosmetic.particleCount}")
             }
             if (cosmetic.particleRadius > 0 && cosmetic.particlePattern != null) {
-                lore += "<!i><dark_aqua>半径: <white>${cosmetic.particleRadius}"
+                lore += loreInfo("半径", "<white>${cosmetic.particleRadius}")
             }
         }
 
-        lore += "<!i><dark_gray><st>${" ".repeat(60)}</st>"
-        lore += "<!i>${statusColor}${statusText}"
+        lore += loreSpace()
+        lore += when (statusText) {
+            "点击装备" -> "<!i> <yellow>点击 <green>装备"
+            "点击卸下" -> "<!i> <yellow>点击 <red>卸下"
+            else -> "<!i>${statusColor}${statusText}"
+        }
 
         meta.lore(lore.map { it.toComponent() })
         mat.setItemMeta(meta)

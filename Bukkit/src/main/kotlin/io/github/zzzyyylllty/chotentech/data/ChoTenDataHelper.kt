@@ -409,6 +409,12 @@ object DataManager {
             it.cid = newData.cid.id.toString()
             it.cidType = newData.cid.type
         }) { "uuid" eq uuid }
+
+        // 同步到 SharedData（全 profile 共用）
+        ProfileManager.getSharedData(uuid).also { shared ->
+            shared.cid = userID
+            ProfileManager.saveSharedData(uuid)
+        }
     }
 
     fun modifyUserID(userID: Long, playerData: PlayerData) {
@@ -421,6 +427,12 @@ object DataManager {
             it.cid = newData.cid.id.toString()
             it.cidType = newData.cid.type
         }) { "uuid" eq uuid }
+
+        // 同步到 SharedData（全 profile 共用）
+        ProfileManager.getSharedData(uuid).also { shared ->
+            shared.cid = playerData.cid.copy(id = userID)
+            ProfileManager.saveSharedData(uuid)
+        }
     }
 
     fun isIDExist(cid: String): Boolean {
@@ -510,7 +522,7 @@ object DataManager {
         }
     }
 
-    val title = "<#2CBAA8><b>十年不晚".toComponent()
+    val title = "<#66FF99><b>道阻且长".toComponent()
 
     fun sendLoadingTips(player: Player, message: String) {
         player.playSound(player, Sound.BLOCK_NOTE_BLOCK_SNARE, SoundCategory.MASTER, 1f, 2f)
@@ -819,7 +831,7 @@ class ChoTenDataHelper(val player: Player) {
     // === 食物（自定义饥饿值/饱和度） ===
 
     fun addHunger(amount: Double) {
-        data.customHunger = minOf(data.customHunger + amount, data.maxCustomHunger)
+        data.customHunger = (data.customHunger + amount).coerceIn(0.0, data.maxCustomHunger)
     }
     fun removeHunger(amount: Double) {
         data.customHunger = maxOf(data.customHunger - amount, 0.0)
@@ -835,7 +847,7 @@ class ChoTenDataHelper(val player: Player) {
     }
 
     fun addSaturation(amount: Double) {
-        data.customSaturation = minOf(data.customSaturation + amount, data.maxCustomSaturation)
+        data.customSaturation = (data.customSaturation + amount).coerceIn(0.0, data.maxCustomSaturation)
     }
     fun removeSaturation(amount: Double) {
         data.customSaturation = maxOf(data.customSaturation - amount, 0.0)
@@ -887,7 +899,7 @@ class ChoTenDataHelper(val player: Player) {
     }
 
     fun addConsumption(amount: Double) {
-        data.consumption = minOf(data.consumption + amount, 100.0)
+        data.consumption = (data.consumption + amount).coerceIn(0.0, 100.0)
     }
     fun removeConsumption(amount: Double) {
         data.consumption = maxOf(data.consumption - amount, 0.0)
@@ -952,12 +964,15 @@ class ChoTenDataHelper(val player: Player) {
     fun playLevelMusic() {
         val level = data.activeLevel ?: return
         val music = level.music ?: return
+        val mode = ProfileManager.getSharedData(data.uuid).settings.get("levelMusicMode")
+        if (mode == "off") return
         val now = System.currentTimeMillis()
         val loopInterval = io.github.zzzyyylllty.chotentech.util.OggDuration.getDuration(music)
         if (now - data.lastMusicPlayTime < loopInterval) return
         data.lastMusicPlayTime = now
         val pitch = 0.9 + ((data.sanity / data.effectiveMaxSanity) * 0.25)
         val soundKey = if (music.contains(':')) music else "kangel:$music"
-        player.playSound(AdventureSound.sound(AdventureKey.key(soundKey), AdventureSound.Source.MUSIC, 10000f, pitch.toFloat()))
+        val source = if (mode == "master") AdventureSound.Source.MASTER else AdventureSound.Source.MUSIC
+        player.playSound(AdventureSound.sound(AdventureKey.key(soundKey), source, 10000f, pitch.toFloat()))
     }
 }

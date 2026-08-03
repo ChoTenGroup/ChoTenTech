@@ -25,6 +25,8 @@ main:
       0:
         type: calculator
         value: "%level% * 5 + 100"
+  gui:
+    material: "NETHER_STAR"
   agents:
     onUpgrade:
       js: |

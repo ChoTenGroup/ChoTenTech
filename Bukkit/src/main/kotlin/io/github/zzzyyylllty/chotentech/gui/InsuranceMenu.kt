@@ -17,6 +17,8 @@ import io.github.zzzyyylllty.chotentech.util.toComponent
 import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.Chest
 import io.github.zzzyyylllty.chotentech.util.guiItem
+import io.github.zzzyyylllty.chotentech.util.loreInfo
+import io.github.zzzyyylllty.chotentech.util.loreSection
 
 class InsuranceMenu {
 
@@ -35,7 +37,7 @@ class InsuranceMenu {
                 " B  C  B "
             )
 
-            set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>菜单", listOf("<gray>点击打开菜单"), model = "kangelitem:void")) {
+            set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>菜单", listOf("<!i> <yellow>点击 <green>打开菜单"), model = "kangelitem:void")) {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "invero menu open menu ${clicker.name}")
                 clicker.closeInventory()
             }
@@ -43,10 +45,11 @@ class InsuranceMenu {
             onBuild { _, inv ->
                 // Left info (slot 46)
                 inv.setItem(46, guiItem(XMaterial.BOOK, "<gold>投保说明", listOf(
-                    "<gray>将工具或盔甲放入中间格子",
-                    "<gray>点击 <gold>[确认投保] <gray>完成投保",
-                    "<gray>仅工具和盔甲可以投保",
-                    "<gray>投保物品死亡不掉落"
+                    loreSection("说明"),
+                    "<!i><gray>将工具或盔甲放入中间格子",
+                    "<!i><gold>[确认投保] <gray>完成投保",
+                    "<!i><gray>仅工具和盔甲可以投保",
+                    "<!i><gray>投保物品死亡不掉落"
                 )))
 
                 // Right info — price list (slot 52)
@@ -54,15 +57,16 @@ class InsuranceMenu {
                 val tiers = config.getConfigurationSection("insurance.tiers")
                 if (tiers != null) {
                     for (key in tiers.getKeys(false)) {
-                        priceLore += "<gray>$key: <gold>${tiers.getDouble(key, 0.0).toLong()}"
+                        priceLore += loreInfo("$key", "<gold>${tiers.getDouble(key, 0.0).toLong()}")
                     }
                 }
                 inv.setItem(52, guiItem(XMaterial.GOLD_INGOT, "<yellow>价格表", priceLore))
 
                 // Confirm button (slot 49)
                 inv.setItem(49, guiItem(XMaterial.ANVIL, "<gold>■ 确认投保", listOf(
-                    "<gray>投保中间区域的所有物品",
-                    "<gray>点击后自动返还无法投保的物品"
+                    loreSection("说明"),
+                    "<!i><gray>投保中间区域的所有物品",
+                    "<!i><gray>无法投保的物品将自动返还"
                 )))
             }
 

@@ -25,6 +25,7 @@ import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.warning
 import kotlin.collections.get
 import kotlin.collections.set
+import io.github.zzzyyylllty.chotentech.function.timer.getNoclippingTimeMultiplier
 import kotlin.math.round
 import kotlin.math.roundToLong
 
@@ -112,7 +113,7 @@ fun checkPlayerRegion(
                 is ConditionResult.Allowed -> {
                     return Pair(list.copy(
                         noclipPoint = noclipPoint,
-                        noclipTimeEnd = System.currentTimeMillis() + (noclipPoint.noclippingTime * 1000).roundToLong(),
+                        noclipTimeEnd = System.currentTimeMillis() + (noclipPoint.noclippingTime * getNoclippingTimeMultiplier(player) * 1000).roundToLong(),
                         noclipCooldownEnd = System.currentTimeMillis() + (noclipPoint.cooldown * 1000).roundToLong(),
                         noclipping = true
                     ), true).also {
@@ -127,7 +128,7 @@ fun checkPlayerRegion(
                         is ConditionResult.Allowed -> {
                             return Pair(list.copy(
                                 noclipPoint = noclipPoint,
-                                noclipTimeEnd = System.currentTimeMillis() + (noclipPoint.noclippingTime * 1000).roundToLong(),
+                                noclipTimeEnd = System.currentTimeMillis() + (noclipPoint.noclippingTime * getNoclippingTimeMultiplier(player) * 1000).roundToLong(),
                                 noclipCooldownEnd = System.currentTimeMillis() + (noclipPoint.cooldown * 1000).roundToLong(),
                                 noclipping = true
                             ), true).also {

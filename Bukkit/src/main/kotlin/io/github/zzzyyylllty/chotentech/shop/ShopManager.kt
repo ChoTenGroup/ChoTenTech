@@ -15,6 +15,8 @@ object ShopManager {
     private val playerResetTimers = mutableMapOf<String, MutableMap<String, Long>>()
     private val playerSalesByShop = mutableMapOf<String, MutableMap<String, Long>>()  // shopId -> playerId -> totalSales
 
+    private var defaultsConfig: YamlConfiguration? = null
+
     fun loadAll() {
         shops.clear()
         val dir = File(getDataFolder(), "shops")
@@ -24,7 +26,15 @@ object ShopManager {
             return
         }
 
-        dir.listFiles { f -> f.extension == "yml" }?.forEach { file ->
+        // 加载默认配置
+        val defaultsFile = File(dir, "shop-defaults.yml")
+        defaultsConfig = if (defaultsFile.exists()) {
+            YamlConfiguration.loadConfiguration(defaultsFile).also {
+                info("§a[Shop] Loaded shop defaults")
+            }
+        } else null
+
+        dir.listFiles { f -> f.extension == "yml" && f.name != "shop-defaults.yml" && f.name != "example.yml" }?.forEach { file ->
             try {
                 val config = YamlConfiguration.loadConfiguration(file)
                 for (key in config.getKeys(false)) {
@@ -49,13 +59,78 @@ object ShopManager {
 
     private fun parseShop(key: String, sec: ConfigurationSection): ShopConfig {
         val name = sec.getString("name") ?: key
-        val guiBuy = sec.getString("gui.buy", "") ?: ""
-        val guiSell = sec.getString("gui.sell", "") ?: ""
-        val guiItems = parseGuiItems(sec.getConfigurationSection("gui-item") ?: emptySection())
+
+        // 使用默认值作为后备
+        val defaultSec = defaultsConfig
+        val guiBuy = sec.getString("gui.buy") ?: defaultSec?.getString("gui.buy") ?: ""
+        val guiSell = sec.getString("gui.sell") ?: defaultSec?.getString("gui.sell") ?: ""
+        val guiItemsSec = sec.getConfigurationSection("gui-item")
+            ?: defaultSec?.getConfigurationSection("gui-item")
+        val guiItems = parseGuiItems(guiItemsSec ?: emptySection())
         val items = parseItems(sec.getConfigurationSection("items") ?: emptySection())
-        val levels = parseLevels(sec.getConfigurationSection("level"))
+        val levels = parseLevelsWithDefaults(sec.getConfigurationSection("level"), defaultSec, key)
 
         return ShopConfig(key, name, guiBuy, guiSell, guiItems, items, levels)
+    }
+
+    /**
+     * 解析等级配置。
+     * - 如果商店有自己的 level: 段，仅使用该商店的等级（忽略默认值）
+     * - 如果商店没有 level: 段，使用默认等级并替换 {id} 占位符
+     */
+    private fun parseLevelsWithDefaults(sec: ConfigurationSection?, defaultSec: ConfigurationSection?, shopKey: String): Map<Int, List<LevelRequirement>> {
+        // 商店有自己的等级配置 → 只使用商店自身的
+        if (sec != null) {
+            return parseLevels(sec)
+        }
+
+        // 没有商店等级 → 使用默认等级（替换 {id} 占位符）
+        val result = mutableMapOf<Int, List<LevelRequirement>>()
+        val defaultLevelSec = defaultSec?.getConfigurationSection("level") ?: return result
+        for (lk in defaultLevelSec.getKeys(false)) {
+            val lnum = lk.toIntOrNull() ?: continue
+            val list = defaultLevelSec.getList(lk) ?: continue
+            val reqs = mutableListOf<LevelRequirement>()
+            for (entry in list) {
+                when (entry) {
+                    is Map<*, *> -> {
+                        @Suppress("UNCHECKED_CAST")
+                        val m = replaceIdPlaceholders(entry as Map<String, Any>, shopKey)
+                        reqs.add(mapToLevelRequirement(m))
+                    }
+                    is ConfigurationSection -> {
+                        val m = mutableMapOf<String, Any>()
+                        for (k in entry.getKeys(false)) {
+                            val v = entry.get(k) ?: continue
+                            m[k] = if (v is String) v.replace("{id}", shopKey) else v
+                        }
+                        reqs.add(mapToLevelRequirement(m))
+                    }
+                }
+            }
+            result[lnum] = reqs
+        }
+        return result
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun replaceIdPlaceholders(m: Map<String, Any>, shopKey: String): Map<String, Any> {
+        val result = HashMap<String, Any>()
+        for ((k, v) in m) {
+            result[k] = if (v is String) v.replace("{id}", shopKey) else v
+        }
+        return result
+    }
+
+    private fun mapToLevelRequirement(m: Map<String, Any>): LevelRequirement {
+        return LevelRequirement(
+            type = m["type"] as? String ?: "",
+            level = m["level"] as? String ?: "",
+            value = (m["value"] as? Number)?.toInt() ?: 0,
+            affection = m["affection"] as? String ?: "",
+            balance = m["balance"] as? String ?: "",
+            quota = (m["value"] as? Number)?.toLong() ?: 0
+        )
     }
 
     private fun parseGuiItems(sec: ConfigurationSection): GuiItemsConfig {

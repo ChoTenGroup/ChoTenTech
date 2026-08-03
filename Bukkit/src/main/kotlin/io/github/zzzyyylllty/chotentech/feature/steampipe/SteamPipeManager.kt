@@ -1,6 +1,10 @@
 package io.github.zzzyyylllty.chotentech.feature.steampipe
 
+import com.sk89q.worldedit.bukkit.BukkitAdapter
+import com.sk89q.worldedit.math.BlockVector3
+import com.sk89q.worldguard.WorldGuard
 import io.github.zzzyyylllty.chotentech.ChoTenTech
+import io.github.zzzyyylllty.chotentech.ChoTenTech.playerRegions
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
@@ -231,6 +235,7 @@ object SteamPipeManager {
             }
 
             if (foundPos != null) {
+                if (isInBaseRegion(world, foundPos)) continue
                 results.add(SteamPipeUnit(
                     world = world,
                     pos = foundPos,
@@ -261,6 +266,7 @@ object SteamPipeManager {
 
             val mat = world.getBlockType(epos)
             if (mat !in config.blocks) continue
+            if (isInBaseRegion(world, epos)) continue
 
             val faces = detectExposedFaces(world, epos)
             if (faces.isEmpty()) continue
@@ -449,6 +455,7 @@ object SteamPipeManager {
     }
 
     private fun applyPlayerDamage(player: Player, unit: SteamPipeUnit) {
+        if (isPlayerInBase(player)) return
         val config = unit.levelConfig
         val hits = playerHits.getOrDefault(player.uniqueId, 0)
 
@@ -490,4 +497,23 @@ object SteamPipeManager {
     // ==================== Block Type Helper ====================
 
     private fun World.getBlockType(pos: BlockPos): Material = getBlockAt(pos.x, pos.y, pos.z).type
+
+    // ==================== Base Guard ====================
+
+    /** Check if a block position is inside any base region */
+    private fun isInBaseRegion(world: World, pos: BlockPos): Boolean {
+        try {
+            val container = WorldGuard.getInstance().platform.regionContainer
+            val rm = container[BukkitAdapter.adapt(world)] ?: return false
+            val ids = rm.getApplicableRegionsIDs(BlockVector3.at(pos.x, pos.y, pos.z))
+            return ids.any { it.startsWith("base-") }
+        } catch (_: Exception) {
+            return false
+        }
+    }
+
+    /** Check if a player is currently inside any base region */
+    private fun isPlayerInBase(player: Player): Boolean {
+        return playerRegions[player.uniqueId.toString()]?.any { it.startsWith("base-") } == true
+    }
 }

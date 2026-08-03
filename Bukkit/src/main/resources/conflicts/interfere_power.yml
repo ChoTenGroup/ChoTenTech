@@ -1,5 +1,7 @@
 interfere_power:
   name: 权力斗争
+  icon: BLAZE_POWDER
+  item-model: null
   score:
     full_success:
       MEG: 80

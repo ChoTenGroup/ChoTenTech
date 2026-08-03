@@ -34,14 +34,14 @@ object ChoTenAttributeManageCommand {
             suggestion<CommandSender> { _, _ -> Bukkit.getOnlinePlayers().map { it.name } }
             dynamic("attrId") {
                 suggestion<CommandSender> { _, _ -> AttributeManager.attributeRegistry.keys.toList() }
-                dynamic("value") {
-                    dynamic("type") {
-                        suggestion<CommandSender> { _, _ -> ModifierType.entries.map { it.name } }
+                dynamic("type") {
+                    suggestion<CommandSender> { _, _ -> ModifierType.entries.map { it.name } }
+                    dynamic("value") {
                         execute<CommandSender> { sender, context, _ ->
                             val player = Bukkit.getPlayer(context["player"]) ?: return@execute sender.sendStringAsComponent(sender.asLangText("Command_Error_Player_Not_Found", context["player"]))
                             val attrId = context["attrId"]
-                            val value = context["value"].toDoubleOrNull() ?: return@execute sender.sendStringAsComponent(sender.asLangText("Command_Error_Invalid_Value", context["value"]))
                             val type = runCatching { ModifierType.valueOf(context["type"].uppercase()) }.getOrNull() ?: return@execute sender.sendStringAsComponent(sender.asLangText("Command_Error_Invalid_Type", context["type"]))
+                            val value = context["value"].toDoubleOrNull() ?: return@execute sender.sendStringAsComponent(sender.asLangText("Command_Error_Invalid_Value", context["value"]))
 
                             val modifier = AttributeModifier(
                                 attributeId = attrId,
@@ -66,14 +66,14 @@ object ChoTenAttributeManageCommand {
             suggestion<CommandSender> { _, _ -> Bukkit.getOnlinePlayers().map { it.name } }
             dynamic("attrId") {
                 suggestion<CommandSender> { _, _ -> AttributeManager.attributeRegistry.keys.toList() }
-                dynamic("value") {
-                    dynamic("type") {
-                        suggestion<CommandSender> { _, _ -> ModifierType.entries.map { it.name } }
+                dynamic("type") {
+                    suggestion<CommandSender> { _, _ -> ModifierType.entries.map { it.name } }
+                    dynamic("value") {
                         execute<CommandSender> { sender, context, _ ->
                             val player = Bukkit.getOfflinePlayer(context["player"])
                             val attrId = context["attrId"]
-                            val value = context["value"].toDoubleOrNull() ?: return@execute sender.sendStringAsComponent(sender.asLangText("Command_Error_Invalid_Value", context["value"]))
                             val type = runCatching { ModifierType.valueOf(context["type"].uppercase()) }.getOrNull() ?: return@execute sender.sendStringAsComponent(sender.asLangText("Command_Error_Invalid_Type", context["type"]))
+                            val value = context["value"].toDoubleOrNull() ?: return@execute sender.sendStringAsComponent(sender.asLangText("Command_Error_Invalid_Value", context["value"]))
 
                             val data = AttributeManager.getPlayerPersistentData(player.uniqueId)
                             val mods = data.modifiers.toMutableList()

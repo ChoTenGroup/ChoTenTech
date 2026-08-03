@@ -19,15 +19,14 @@ import taboolib.expansion.Key
 import taboolib.expansion.Length
 import taboolib.expansion.db
 import taboolib.expansion.mapper
-import java.io.File
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
 data class ProfileInfo(
     val profileId: String,
     val profileName: String,
-    val cid: IDData,
-    val createTime: Long = System.currentTimeMillis()
+    val createTime: Long = System.currentTimeMillis(),
+    val archivedAt: Long = 0L
 )
 
 object ProfileManager {
@@ -134,16 +133,7 @@ object ProfileManager {
         try {
             val pData: PlayerData = jsonUtils.fromJson(oldData, PlayerData::class.java)
 
-            // Extract shared fields
-            val sharedData = SharedData(
-                activeProfileId = "1",
-                tape = pData.tape,
-                goldentape = pData.goldentape,
-                achievements = pData.achievements,
-                cosmetics = pData.cosmetics
-            )
-
-            // Create profile data without shared fields
+            // Create profile data without shared fields (BEFORE sharedData so we can use its CID)
             val profileData = pData.copy(
                 profileId = "1",
                 profileName = "Default",
@@ -153,6 +143,16 @@ object ProfileManager {
                 cosmetics = mutableMapOf()
             )
             val profileJson = jsonUtils.toJson(profileData, PlayerData::class.java)
+
+            // Save shared data (with CID from profile)
+            val sharedData = SharedData(
+                activeProfileId = "1",
+                tape = pData.tape,
+                goldentape = pData.goldentape,
+                achievements = pData.achievements,
+                cosmetics = pData.cosmetics,
+                cid = profileData.cid     // 迁移 CID 到共享数据
+            )
 
             // Insert into player_profiles
             profileMapper.insert(PlayerProfileRow().also {
@@ -226,10 +226,6 @@ object ProfileManager {
             ProfileInfo(
                 profileId = row.profileId,
                 profileName = row.profileName,
-                cid = IDData(
-                    id = row.cid.toLongOrNull() ?: 0L,
-                    type = row.cidType
-                ),
                 createTime = row.createTime
             )
         }
@@ -244,11 +240,8 @@ object ProfileManager {
             ProfileInfo(
                 profileId = row.profileId,
                 profileName = row.profileName,
-                cid = IDData(
-                    id = row.cid.toLongOrNull() ?: 0L,
-                    type = row.cidType
-                ),
-                createTime = row.createTime
+                createTime = row.createTime,
+                archivedAt = row.archivedAt
             )
         }
     }
@@ -357,6 +350,13 @@ object ProfileManager {
         // Load new profile
         val newData = loadProfileData(uuid, profileId) ?: return null
         val shared = getSharedData(uuid)
+
+        // If shared CID is unset, seed from this profile's CID
+        if (shared.cid.id == 0L && newData.cid.id != 0L) {
+            shared.cid = newData.cid
+            saveSharedData(uuid)
+        }
+
         shared.activeProfileId = profileId
         saveSharedData(uuid)
 
@@ -413,14 +413,15 @@ object ProfileManager {
         val existingIds: Set<Int> = infos.map { it.profileId.toIntOrNull() ?: 0 }.toSet()
         val newId = (1..99).first { it !in existingIds }.toString()
 
-        // Generate CID
-        val cid = generateProfileID(uuid)
-
         // NOTE: Do NOT save old profile here — switchProfile below handles it
         // with proper inventory capture. Saving here without captureInventory
         // would overwrite the old profile's saved inventory with stale data.
 
         val now = System.currentTimeMillis()
+        val shared = getSharedData(uuid)
+
+        // Use shared CID (all profiles share the same CID)
+        val cid = shared.cid
 
         // Create profile data
         val profileData = PlayerData(
@@ -440,7 +441,7 @@ object ProfileManager {
         return switchProfile(player, newId)
     }
 
-    /** Soft-delete a profile: archive to file + mark in DB (cannot delete the last one) */
+    /** Soft-delete a profile: mark as archived in DB (cannot delete the last one). Max 10 archived per player. */
     fun deleteProfile(player: Player, profileId: String): Boolean {
         val uuid = player.uniqueId.toString()
         val infos = getProfileInfos(uuid)
@@ -451,15 +452,15 @@ object ProfileManager {
             "profile_id" eq profileId
         } ?: return false
 
-        // Export full data to archive file
-        exportArchivedProfile(uuid, profileId, row.data)
-
-        // Mark as archived in DB instead of deleting
+        // Mark as archived in DB
         row.archived = 1
         row.archivedAt = System.currentTimeMillis()
         profileMapper.update(row)
 
         refreshProfileInfos(uuid)
+
+        // Enforce max 10 archived: purge oldest if over limit
+        purgeOldestArchived(uuid)
 
         // If the deleted profile was active, switch to first available
         val shared = getSharedData(uuid)
@@ -473,15 +474,40 @@ object ProfileManager {
         return true
     }
 
-    /** Export profile data JSON to archive file for manual restoration */
-    private fun exportArchivedProfile(uuid: String, profileId: String, dataJson: String) {
-        try {
-            val dir = File(taboolib.common.platform.function.getDataFolder(), "profiles/archived/$uuid")
-            dir.mkdirs()
-            val file = File(dir, "$profileId.json")
-            file.writeText(dataJson)
-        } catch (e: Exception) {
-            devLog("[ProfileManager] Failed to export archive for $uuid / $profileId: ${e.message}")
+    /** Restore an archived profile back to active */
+    fun restoreProfile(uuid: String, profileId: String): Boolean {
+        val row = profileMapper.findOne {
+            "uuid" eq uuid
+            "profile_id" eq profileId
+            "archived" eq 1
+        } ?: return false
+
+        // Check name conflict with active profiles
+        val activeNames = getProfileInfos(uuid).map { it.profileName }.toSet()
+        if (row.profileName in activeNames) return false
+
+        row.archived = 0
+        row.archivedAt = 0L
+        profileMapper.update(row)
+        refreshProfileInfos(uuid)
+        return true
+    }
+
+    /** Get archived (soft-deleted) profile infos for a player */
+    fun getArchivedProfileInfos(uuid: String): List<ProfileInfo> {
+        return loadArchivedProfileInfos(uuid)
+    }
+
+    /** If archived count > 10, permanently delete the oldest ones */
+    private fun purgeOldestArchived(uuid: String) {
+        val archived = loadArchivedProfileInfos(uuid).sortedBy { it.archivedAt }
+        if (archived.size <= 10) return
+        val toDelete = archived.take(archived.size - 10)
+        for (info in toDelete) {
+            profileMapper.deleteWhere {
+                "uuid" eq uuid
+                "profile_id" eq info.profileId
+            }
         }
     }
 
@@ -500,11 +526,16 @@ object ProfileManager {
 
     /** Copy shared fields FROM SharedData INTO PlayerData */
     private fun mergeSharedFields(data: PlayerData, shared: SharedData): PlayerData {
+        // 如果 SharedData 有 CID 则使用共享的，否则保留 profile 自带的 CID
+        val effectiveCid = if (shared.cid.id != 0L) shared.cid else data.cid
         return data.copy(
+            cid = effectiveCid,
             tape = shared.tape,
             goldentape = shared.goldentape,
             achievements = shared.achievements,
             cosmetics = shared.cosmetics,
+            // Shared settings
+            pvpEnabled = shared.settings.getBoolean("pvpEnabled"),
             // Shared stats
             sessionStart = System.currentTimeMillis()
         )
@@ -518,6 +549,17 @@ object ProfileManager {
             achievements = linkedMapOf(),
             cosmetics = mutableMapOf()
         )
+    }
+
+    /** Sync shared fields from PlayerData TO SharedData */
+    fun syncToSharedData(uuid: String, data: PlayerData) {
+        val shared = getSharedData(uuid)
+        shared.tape = data.tape
+        shared.goldentape = data.goldentape
+        shared.achievements = data.achievements
+        shared.cosmetics = data.cosmetics
+        shared.settings.values["pvpEnabled"] = data.pvpEnabled.toString()
+        // Shared stats are updated via accumulatePlayTime, not directly from PlayerData
     }
 
     /**
@@ -543,16 +585,6 @@ object ProfileManager {
             }
         }
         refreshProfileInfos(uuid)
-    }
-
-    /** Sync shared fields from PlayerData TO SharedData */
-    fun syncToSharedData(uuid: String, data: PlayerData) {
-        val shared = getSharedData(uuid)
-        shared.tape = data.tape
-        shared.goldentape = data.goldentape
-        shared.achievements = data.achievements
-        shared.cosmetics = data.cosmetics
-        // Shared stats are updated via accumulatePlayTime, not directly from PlayerData
     }
 
     /** Accumulate play time for the current session into both per-profile and shared counters. */
@@ -808,8 +840,11 @@ object ProfileManager {
 
         // Check if profiles exist — query DB directly to bypass any stale cache
         if (!hasAnyProfileInDB(uuid)) {
-            // Create default profile
+            // Generate CID (only for the very first profile)
             val cid = generateProfileID(uuid)
+            // Save CID to shared data so all profiles share it
+            shared.cid = cid
+
             val defaultLoc = if (Bukkit.getWorld("Area0") != null) {
                 Location(Bukkit.getWorld("Area0")!!, -6.0, 14.0, 5.0)
             } else {
@@ -868,11 +903,20 @@ object ProfileManager {
                 }
             }
             // Should never happen — clear inventory for fresh start
-            val empty = PlayerData(playerName = player.name, uuid = uuid, cid = generateProfileID(uuid))
+            val freshCid = generateProfileID(uuid)
+            val empty = PlayerData(playerName = player.name, uuid = uuid, cid = freshCid)
+            shared.cid = freshCid
+            saveSharedData(uuid)
             playerDataMap[uuid] = empty
             if (Bukkit.isPrimaryThread()) player.inventory.clear()
             else submit { player.inventory.clear() }
             return empty
+        }
+
+        // If shared CID is unset, seed from this profile's CID
+        if (shared.cid.id == 0L && data.cid.id != 0L) {
+            shared.cid = data.cid
+            saveSharedData(uuid)
         }
 
         // Update per-profile last login time (BEFORE merge so merged copy carries it)

@@ -32,11 +32,15 @@ data class ConflictScore(
 data class ConflictConfig(
     val id: String,
     val name: String,
+    val icon: String?,
+    val itemModel: String?,
     val scores: Map<ResultLevel, ConflictScore>
 ) {
     companion object {
         fun fromConfig(id: String, section: ConfigurationSection): ConflictConfig {
             val name = section.getString("name") ?: id
+            val icon = section.getString("icon")
+            val itemModel = section.getString("item-model")
             val scores = mutableMapOf<ResultLevel, ConflictScore>()
             val scoreSection = section.getConfigurationSection("score") ?: error("Missing score section in conflict $id")
             for (key in scoreSection.getKeys(false)) {
@@ -46,7 +50,7 @@ data class ConflictConfig(
                     scores[level] = ConflictScore.fromConfig(sec)
                 }
             }
-            return ConflictConfig(id, name, scores)
+            return ConflictConfig(id, name, icon, itemModel, scores)
         }
     }
 }

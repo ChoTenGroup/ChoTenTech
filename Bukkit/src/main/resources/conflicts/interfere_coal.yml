@@ -1,5 +1,7 @@
 interfere_coal:
   name: 煤炭监狱
+  icon: COAL
+  item-model: null
   score:
     full_success:
       MEG: 70

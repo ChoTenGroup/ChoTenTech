@@ -51,6 +51,10 @@ object SideInfoManager {
         return state.inProximity || state.proximityFadeTimer > 0 || state.countdown > 0
     }
 
+    fun getClipDataRaw(player: Player): String {
+        return buildClipText(player, true)
+    }
+
     fun getClipData(player: Player): String {
         val state = playerStates[player.uniqueId] ?: return ""
         val phase = getSideData(player)
@@ -159,9 +163,9 @@ object SideInfoManager {
             if (includeHints) {
                 if (isInRange && data.noclipping) {
                     lines.add(" <gray>-> <aqua>停留在切出点内...")
-                } else if (isInRange && hasEleCond && !elePowerOn) {
+                } else if (hasEleCond && !elePowerOn) {
                     lines.add(" <gray>-> <gray>需要激活电源")
-                } else if (isInRange && hasEleCond && elePowerOn) {
+                } else if (hasEleCond && elePowerOn) {
                     lines.add(" <gray>-> <yellow>按下上升按钮")
                 } else if (hasCoop) {
                     lines.add(" <gray>-> <gray>需要与其他人合作切出...")
