@@ -20,8 +20,6 @@ import io.github.zzzyyylllty.chotentech.util.jsonUtils
 import taboolib.expansion.TableName
 import java.util.UUID
 import io.github.zzzyyylllty.chotentech.util.toComponent
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.key.Key as AdventureKey
 import net.kyori.adventure.sound.Sound as AdventureSound
 import net.kyori.adventure.sound.SoundStop as AdventureSoundStop
@@ -51,7 +49,6 @@ import taboolib.expansion.mapper
 import java.util.Collections
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ThreadLocalRandom
 import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.math.roundToLong
@@ -67,26 +64,7 @@ fun emptyData(player: Player, profileId: String = "1", profileName: String = "De
 }
 
 fun generateID(player: Player? = null): IDData {
-    var id = ThreadLocalRandom.current().nextLong(
-        config.getLong("id.range.min", 100000000),
-        config.getLong("id.range.max", 9999999999)
-    )
-
-    repeat(20) {
-        if (getDataByCID(id.toString()) == null) {
-            return IDData(
-                id = id,
-                type = "NORMAL"
-            )
-        }
-        id = ThreadLocalRandom.current().nextLong(
-            config.getLong("id.range.min", 100000000),
-            config.getLong("id.range.max", 9999999999)
-        )
-    }
-
-    player?.kick(Component.text("发生致命错误: 无法为您 (${player.name}) 分配UID，请联系管理员。").color(RED))
-    throw IllegalArgumentException("发生致命错误: 无法为玩家 ${player?.name} 分配UID")
+    return IDData(id = CidAllocator.allocate(player?.name, player?.uniqueId?.toString()), type = "NORMAL")
 }
 
 fun Player.getData(): PlayerData? {
@@ -401,6 +379,10 @@ object DataManager {
 
     fun modifyUserIDData(userID: IDData, playerData: PlayerData) {
         val uuid = playerData.uuid
+        // 管理员强制改号不做原子预留：目标号码被他人持有时仅警告，避免静默重复 CID
+        if (CidAllocator.isCidTaken(userID.id.toString()) && !CidAllocator.isReservedBy(userID.id, uuid)) {
+            warning("modifyUserIDData: 将 ${playerData.playerName}($uuid) 的CID设为已被占用的 ${userID.id}")
+        }
         val newData = playerData.copy(cid = userID)
         playerDataMap[uuid] = newData
 

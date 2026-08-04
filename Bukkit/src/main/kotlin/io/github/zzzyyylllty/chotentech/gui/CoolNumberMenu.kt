@@ -1,10 +1,12 @@
 package io.github.zzzyyylllty.chotentech.gui
 
 import io.github.zzzyyylllty.chotentech.ChoTenTech
+import io.github.zzzyyylllty.chotentech.data.CidAllocator
 import io.github.zzzyyylllty.chotentech.data.CoolNumberCategory
 import io.github.zzzyyylllty.chotentech.data.CoolNumberInfo
 import io.github.zzzyyylllty.chotentech.data.CoolNumberTier
 import io.github.zzzyyylllty.chotentech.data.DataManager
+import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager
 import io.github.zzzyyylllty.chotentech.function.CoolNumberManager
 import io.github.zzzyyylllty.chotentech.util.minimessage.mmJsonUtil
 import io.github.zzzyyylllty.chotentech.util.toComponent
@@ -38,8 +40,13 @@ class CoolNumberMenu(
         }
         // async load from DB to supplement
         submitAsync {
-            val dbCids = DataManager.userDataMapper.listOf("cid") {}.filterNotNull()
-            val all = (CoolNumberManager.getTakenCids() + dbCids).toSet()
+            val dbCids = DataManager.userDataMapper.rawQuery({ rows("cid") }) { rs ->
+                buildList { while (rs.next()) add(rs.getString(1)) }
+            }.filterNotNull()
+            val profileCids = ProfileManager.profileMapper.rawQuery({ rows("cid") }) { rs ->
+                buildList { while (rs.next()) add(rs.getString(1)) }
+            }.filterNotNull()
+            val all = (CoolNumberManager.getTakenCids() + dbCids + profileCids + CidAllocator.getAllReservedCids()).toSet()
             CoolNumberManager.refreshTakenCids(all)
         }
         openPageable(player)
