@@ -3,20 +3,25 @@ package io.github.zzzyyylllty.chotentech.function.savepoint
 import io.github.zzzyyylllty.chotentech.data.PlayerData
 import io.github.zzzyyylllty.chotentech.data.getData
 import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager
+import de.oliver.fancyholograms.api.FancyHologramsPlugin
+import de.oliver.fancyholograms.api.HologramManager
+import de.oliver.fancyholograms.api.data.TextHologramData
 import io.github.zzzyyylllty.chotentech.util.devLog
 import io.github.zzzyyylllty.chotentech.util.toComponent
 import org.bukkit.Bukkit
-import org.bukkit.Color
 import org.bukkit.Location
+import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.entity.Player
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
+import taboolib.common.platform.function.info
 import taboolib.common.platform.function.submitAsync
+import taboolib.common.platform.function.warning
 import taboolib.common.platform.service.PlatformExecutor
-import java.util.Optional
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ThreadLocalRandom
 
 object SavePointManager {
 
@@ -48,68 +53,53 @@ object SavePointManager {
     // ---- Hologram management ----
 
     fun createHolograms() {
-        try {
-            val fhPlugin = Bukkit.getPluginManager().getPlugin("FancyHolograms")
-            if (fhPlugin == null || !fhPlugin.isEnabled) return
-
-            val fhClass = Class.forName("de.oliver.fancyholograms.api.FancyHologramsPlugin")
-            val api = fhClass.getMethod("get").invoke(null)
-            val manager = api::class.java.getMethod("getHologramManager").invoke(api)
-
-            // FancyHolograms 2.9.x API: TextHologramData(String name, Location location) + setText(List<String>) + manager.create(data)
-            val textDataClass = Class.forName("de.oliver.fancyholograms.api.data.TextHologramData")
-            val textDataCtor = textDataClass.getConstructor(String::class.java, Location::class.java)
-            val setTextMethod = textDataClass.getMethod("setText", List::class.java)
-            val createMethod = manager::class.java.getMethod(
-                "create",
-                Class.forName("de.oliver.fancyholograms.api.data.HologramData")
-            )
-
-            for (sp in SavePointConfig.getAll()) {
-                val holoId = "chotentech_save_${sp.id}"
-                // Remove existing
-                try { removeSingleHologram(manager, holoId) } catch (_: Exception) {}
-
-                val lines = mutableListOf(
-                    if (sp.isBase) "<aqua><b>基地存档点</b></aqua>" else "<green><b>存档点</b></green>",
-                    sp.name
-                )
-
-                val textData = textDataCtor.newInstance(holoId, sp.effectiveHoloPos)
-                setTextMethod.invoke(textData, lines)
-                createMethod.invoke(manager, textData)
-                hologramIds.add(holoId)
-            }
-
-            devLog("<gray>[SavePoint] 创建了 ${hologramIds.size} 个存档点全息图")
-        } catch (e: Exception) {
-            devLog("<yellow>[SavePoint] FancyHolograms 不可用，跳过全息图: ${e.message}")
+        val fhPlugin = Bukkit.getPluginManager().getPlugin("FancyHolograms")
+        if (fhPlugin == null || !fhPlugin.isEnabled) {
+            info("[SavePoint] FancyHolograms 未启用，跳过全息图")
+            return
         }
+        val manager = FancyHologramsPlugin.get().hologramManager
+        for (sp in SavePointConfig.getAll()) {
+            val holoId = "chotentech_save_${sp.id}"
+            try {
+                removeSingleHologram(manager, holoId)
+                val pos = sp.effectiveHoloPos
+                if (pos.world == null) {
+                    warning("[SavePoint] 存档点 ${sp.id} 的世界 ${sp.world} 不存在，跳过全息图")
+                    continue
+                }
+                val textData = TextHologramData(holoId, pos)
+                textData.setText(
+                    listOf(
+                        if (sp.isBase) "<aqua><b>基地存档点</b></aqua>" else "<green><b>存档点</b></green>",
+                        sp.name
+                    )
+                )
+                manager.create(textData)
+                hologramIds.add(holoId)
+            } catch (e: Exception) {
+                warning("[SavePoint] 创建存档点 ${sp.id} 全息图失败: ${e.message}")
+            }
+        }
+        info("[SavePoint] 创建了 ${hologramIds.size} 个存档点全息图")
     }
 
-    private fun removeSingleHologram(manager: Any, holoId: String) {
-        try {
-            // getHologram(id) 返回 Optional<Hologram>
-            val opt = manager::class.java.getMethod("getHologram", String::class.java)
-                .invoke(manager, holoId) as? Optional<*> ?: return
-            opt.ifPresent { holo ->
-                runCatching {
-                    manager::class.java.getMethod("removeHologram", holo::class.java).invoke(manager, holo)
-                }
-            }
-        } catch (_: Exception) { /* FancyHolograms not available */ }
+    private fun removeSingleHologram(manager: HologramManager, holoId: String) {
+        manager.getHologram(holoId).ifPresent { holo ->
+            runCatching { manager.removeHologram(holo) }
+        }
     }
 
     fun removeHolograms() {
         try {
-            val fhClass = Class.forName("de.oliver.fancyholograms.api.FancyHologramsPlugin")
-            val api = fhClass.getMethod("get").invoke(null)
-            val manager = api::class.java.getMethod("getHologramManager").invoke(api)
+            val manager = FancyHologramsPlugin.get().hologramManager
             for (id in hologramIds) {
-                try { removeSingleHologram(manager, id) } catch (_: Exception) {}
+                removeSingleHologram(manager, id)
             }
             hologramIds.clear()
-        } catch (_: Exception) { /* FancyHolograms not available */ }
+        } catch (e: Exception) {
+            warning("[SavePoint] 移除全息图失败: ${e.message}")
+        }
     }
 
     // ---- Zone border particles ----
@@ -128,11 +118,17 @@ object SavePointManager {
             }
             if (!hasNearby) continue
 
-            // 彩色烟雾粒子（1.21.4 的 SMOKE 不支持着色，用 ENTITY_EFFECT 实现彩色烟雾）
-            val color = if (sp.isBase) Color.fromRGB(0x55FFFF) else Color.fromRGB(0x55FF55)
+            // FALLING_DUST 粒子以方块颜色着色，每次生成随机浅/深色：
+            // 普通存档点绿色（浅绿/深绿混凝土）、基地存档点青色（浅蓝/青色混凝土）
+            val shades = if (sp.isBase) {
+                arrayOf(Material.LIGHT_BLUE_CONCRETE.createBlockData(), Material.CYAN_CONCRETE.createBlockData())
+            } else {
+                arrayOf(Material.LIME_CONCRETE.createBlockData(), Material.GREEN_CONCRETE.createBlockData())
+            }
             val step = 0.5
             fun spawn(loc: Location) {
-                world.spawnParticle(Particle.ENTITY_EFFECT, loc, 1, 0.0, 0.0, 0.0, 1.0, color)
+                val blockData = shades[ThreadLocalRandom.current().nextInt(shades.size)]
+                world.spawnParticle(Particle.FALLING_DUST, loc, 1, 0.0, 0.0, 0.0, 1.0, blockData)
             }
 
             val minX = minOf(sp.pos1.x, sp.pos2.x)

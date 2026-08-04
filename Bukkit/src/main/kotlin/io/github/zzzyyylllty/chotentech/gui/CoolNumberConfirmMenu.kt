@@ -1,5 +1,6 @@
 package io.github.zzzyyylllty.chotentech.gui
 
+import io.github.zzzyyylllty.chotentech.data.CidAllocator
 import io.github.zzzyyylllty.chotentech.data.CoolNumberInfo
 import io.github.zzzyyylllty.chotentech.data.CoolNumberTier
 import io.github.zzzyyylllty.chotentech.data.DataManager
@@ -210,12 +211,13 @@ class CoolNumberConfirmMenu(
     private fun confirmPurchase(player: Player, currentTier: CoolNumberTier) {
         // final availability check (DB)
         submitAsync {
-            if (DataManager.isIDExist(info.number)) {
-                player.sendMessage(" §c该号码已被其他玩家使用！")
-                return@submitAsync
-            }
             if (CoolNumberManager.bannedNumbers.any { info.number.contains(it) }) {
                 player.sendMessage(" §c该号码已被禁止选择！")
+                return@submitAsync
+            }
+            // 原子预留：唯一键插入成功才算拿到号码（并发购买/新CID分配兜底）
+            if (CidAllocator.isCidTaken(info.number) || !CidAllocator.reserve(info.number.toLong(), player.name, player.uniqueId.toString())) {
+                player.sendMessage(" §c该号码已被其他玩家使用！")
                 return@submitAsync
             }
 
@@ -224,10 +226,12 @@ class CoolNumberConfirmMenu(
             when (paymentMethod) {
                 PaymentMethod.POINT -> {
                     if (info.pointPrice > CoolNumberManager.MAX_POINT_PRICE) {
+                        CidAllocator.releaseReservation(info.number.toLong())
                         player.sendMessage(" §c该号码贸易点价格过高 (超过 $CoolNumberManager.MAX_POINT_PRICE)，无法使用贸易点购买")
                         return@submitAsync
                     }
                     if (!CoolNumberManager.deductPoint(player, info.pointPrice)) {
+                        CidAllocator.releaseReservation(info.number.toLong())
                         player.sendMessage(" §c贸易点不足！需要 ${info.pointPrice} 贸易点")
                         return@submitAsync
                     }
@@ -235,6 +239,7 @@ class CoolNumberConfirmMenu(
                 PaymentMethod.TAPE -> {
                     val totalTape = info.tapePrice + CoolNumberManager.TAPE_UPGRADE_COST * tapeUpgradeLevels
                     if (!CoolNumberManager.deductTape(player, totalTape)) {
+                        CidAllocator.releaseReservation(info.number.toLong())
                         player.sendMessage(" §c磁带不足！需要 $totalTape 磁带")
                         return@submitAsync
                     }
@@ -243,6 +248,7 @@ class CoolNumberConfirmMenu(
 
             // Apply CID change
             val playerData = player.getData() ?: run {
+                CidAllocator.releaseReservation(info.number.toLong())
                 player.sendMessage(" §c玩家数据异常！")
                 return@submitAsync
             }

@@ -36,7 +36,7 @@ class SettingsMenu {
             rows(6)
 
             map(
-                "CCC  H<>",
+                "CCC  R<>",
                 "         ",
                 " ####### ",
                 " ####### ",
@@ -119,6 +119,35 @@ class SettingsMenu {
             set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>菜单", listOf("<!i> <yellow>点击 <green>打开菜单"), model = "kangelitem:void")) {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "invero menu open menu ${clicker.name}")
                 clicker.closeInventory()
+            }
+
+            set('R', guiItem(XMaterial.RED_DYE, "<red><bold>恢复默认设置", listOf(
+                loreSection("恢复默认"),
+                "<!i><gray>将所有设置恢复为默认值",
+                loreSpace(),
+                loreInfo("注意", "<red>PVP 模式 / 计分板 / 音效等将一并重置"),
+                loreSpace(),
+                "<!i> <yellow>SHIFT + 右键 <red>立即恢复"
+            ), model = "kangelitem:void")) {
+                val e = clickEventOrNull()
+                if (e == null || !e.isShiftClick || !e.isRightClick) {
+                    clicker.sendComponent("<red>请按住 <yellow>SHIFT <red>并<yellow>右键<red>以恢复默认设置")
+                    return@set
+                }
+                val sid = clicker.uniqueId.toString()
+                val s = ProfileManager.getSharedData(sid).settings
+                SettingRegistry.all.forEach { def ->
+                    s.values[def.id] = def.defaultValue
+                    when (def.action) {
+                        "pvp" -> clicker.getData()?.pvpEnabled = s.getBoolean(def.id)
+                        "scoreboard" -> clicker.performCommand("scoreboard ${if (s.getBoolean(def.id)) "on" else "off"}")
+                    }
+                }
+                clicker.sendComponent("<red>♻ 已恢复默认设置")
+                playClick(sid)
+                ProfileManager.saveSharedData(sid)
+                resetElementsCache()
+                open(clicker)
             }
 
             setPreviousPage(7) { _, page ->

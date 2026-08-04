@@ -2,6 +2,7 @@ package io.github.zzzyyylllty.chotentech.data.profile
 
 import io.github.zzzyyylllty.chotentech.ChoTenTech.config
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
+import io.github.zzzyyylllty.chotentech.data.CidAllocator
 import io.github.zzzyyylllty.chotentech.data.IDData
 import io.github.zzzyyylllty.chotentech.data.PlayerData
 import io.github.zzzyyylllty.chotentech.data.RespawnPoint
@@ -626,15 +627,8 @@ object ProfileManager {
         } != null
     }
 
-    private fun generateProfileID(uuid: String): IDData {
-        var id = (100000000L..9999999999L).random()
-        repeat(20) {
-            if (!isCIDTaken(id.toString())) {
-                return IDData(id = id, type = "NORMAL")
-            }
-            id = (100000000L..9999999999L).random()
-        }
-        return IDData(id = id, type = "NORMAL")
+    private fun generateProfileID(playerName: String, uuid: String): IDData {
+        return IDData(id = CidAllocator.allocate(playerName, uuid), type = "NORMAL")
     }
 
     // ==================== Inventory ====================
@@ -841,7 +835,7 @@ object ProfileManager {
         // Check if profiles exist — query DB directly to bypass any stale cache
         if (!hasAnyProfileInDB(uuid)) {
             // Generate CID (only for the very first profile)
-            val cid = generateProfileID(uuid)
+            val cid = generateProfileID(player.name, uuid)
             // Save CID to shared data so all profiles share it
             shared.cid = cid
 
@@ -903,7 +897,7 @@ object ProfileManager {
                 }
             }
             // Should never happen — clear inventory for fresh start
-            val freshCid = generateProfileID(uuid)
+            val freshCid = generateProfileID(player.name, uuid)
             val empty = PlayerData(playerName = player.name, uuid = uuid, cid = freshCid)
             shared.cid = freshCid
             saveSharedData(uuid)
