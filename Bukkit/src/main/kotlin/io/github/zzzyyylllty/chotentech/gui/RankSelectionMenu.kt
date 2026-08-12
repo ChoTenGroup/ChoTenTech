@@ -73,7 +73,7 @@ class RankSelectionMenu {
                 val lore = mutableListOf(
                     loreInfo("当前", "<white>$effectiveName")
                 )
-                if (effectiveFull.isNotBlank()) {
+                if (effectiveFull.isNotBlank() && (type == "prefix" || type == "suffix")) {
                     lore += "<!i><gray>(全称: <white>$effectiveFull)"
                 }
                 lore += "<!i> <yellow>点击 <green>查看"
@@ -104,6 +104,8 @@ class RankSelectionMenu {
     private fun openRankList(player: Player, type: String) {
         val eligibleRanks = RankManager.getEligibleRanks(player, type)
         val effectiveId = RankManager.getEffectiveRank(player, type)?.id
+        // 当前生效的称号置顶,其余保持优先级降序
+        val orderedRanks = eligibleRanks.sortedByDescending { it.id == effectiveId }
 
         player.openMenu<PageableChest<RankConfig>>(
             mmJsonUtil.serialize("<white><shift:-16><image:kangelicon:list><shift:-176><aqua><font:minecraft:fusionpixel10>${typeNameMap[type] ?: type}".toComponent())
@@ -126,7 +128,7 @@ class RankSelectionMenu {
 
             slotsBy('@')
 
-            elements { eligibleRanks }
+            elements { orderedRanks }
 
             onGenerate { _, rank, _, _ ->
                 buildRankItem(rank, rank.id == effectiveId)
@@ -203,7 +205,7 @@ class RankSelectionMenu {
     }
 
     /** 按显示宽度智能分行:中文等全角字符记 2 宽,单行上限 maxWidth 半角宽;MiniMessage 标签不计宽且保持完整 */
-    private fun wrapDesc(text: String, maxWidth: Int = 28): List<String> {
+    private fun wrapDesc(text: String, maxWidth: Int = 50): List<String> {
         val lines = mutableListOf<String>()
         var line = StringBuilder()
         var width = 0
