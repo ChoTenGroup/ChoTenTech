@@ -175,7 +175,7 @@ object CustomDamageListener {
             for (entryTag in chotenatbData.asList()) {
                 val compound = entryTag.asCompound() ?: continue
                 val typeId = compound["damage_type"]?.asString() ?: continue
-                DamageType.fromId(typeId)
+                DamageType.fromId(typeId)?.let { return it }
             }
             null
         } catch (_: Exception) { null }

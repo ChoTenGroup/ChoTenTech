@@ -30,7 +30,7 @@ import taboolib.common.platform.Awake
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.getDataFolder
 import taboolib.common.platform.function.releaseResourceFile
-import taboolib.common.platform.function.submitAsync
+import taboolib.common.platform.function.submit
 import taboolib.common.platform.service.PlatformExecutor
 import java.io.File
 import java.util.UUID
@@ -224,7 +224,7 @@ object SkillManager {
     /** 启动周期性移动经验任务（耐力/敏捷/投掷） */
     @Awake(LifeCycle.ACTIVE)
     fun startMoveTask() {
-        moveTask = submitAsync(period = 20) { // 每秒一次
+        moveTask = submit(period = 20) { // 每秒一次
             for (player in Bukkit.getOnlinePlayers()) {
                 if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) continue
                 if (playerDataMap[player.uniqueId.toString()] == null) continue

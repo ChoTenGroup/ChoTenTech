@@ -10,7 +10,7 @@ import org.bukkit.GameMode
 import org.bukkit.entity.Player
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
-import taboolib.common.platform.function.submitAsync
+import taboolib.common.platform.function.submit
 import taboolib.common.platform.service.PlatformExecutor
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
@@ -47,7 +47,7 @@ object SkillBuffManager {
 
     @Awake(LifeCycle.ACTIVE)
     fun startBuffTask() {
-        task = submitAsync(period = 20) {
+        task = submit(period = 20) {
             applyBuffs()
         }
     }

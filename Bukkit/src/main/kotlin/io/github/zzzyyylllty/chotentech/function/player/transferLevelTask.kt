@@ -11,7 +11,6 @@ import org.bukkit.entity.Player
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import taboolib.common.platform.function.submit
-import taboolib.common.platform.function.submitAsync
 import java.time.Duration
 
 
@@ -24,7 +23,7 @@ fun transferLevelTask(
         player.addPotionEffect(PotionEffect(PotionEffectType.SLOWNESS, 10, 10))
     }
 
-    submitAsync {
+    submit {
         val (world, region, cluster, number, name, sdclass, author, tip, noclips) = level
         var title = "NOT_SET"
         var looptime = 0
@@ -44,7 +43,7 @@ fun transferLevelTask(
                 HUDManager(player).addHUD("levelname", hud, 0.25)
             }
 
-            submitAsync(period = 5, delay = 0) {
+            submit(period = 5, delay = 0) {
                 if (looptime >= length) {
                     cancel()
                 } else {
@@ -62,7 +61,7 @@ fun transferLevelTask(
 
         if (titleMode != "off") {
             val titleDelay = if (titleMode == "on") 5L * (length + 4) else 0L
-            submitAsync(delay = titleDelay) {
+            submit(delay = titleDelay) {
                 player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 5.0f, 1.3f)
 
                 player.showTitle(Title.title("<white><b>$preparetitle".toComponent(), "<i>${level.prefix + level.name}".toComponent(), Title.Times.times(
@@ -73,7 +72,7 @@ fun transferLevelTask(
             }
         }
 
-        submitAsync(delay = 5L * (length + 12)) {
+        submit(delay = 5L * (length + 12)) {
             val setting = ProfileManager.getSharedData(player.uniqueId.toString()).settings.get("levelChatMessage")
             if (setting == "true") {
                 val levelTag = if (number != null) "<gradient:#FFD700:#FFA500>Level $number</gradient>" else "<dark_aqua>Enigmatic Level</dark_aqua>"

@@ -246,17 +246,6 @@ object GlobalMarketMenu : Listener {
                 "---------"
             )
 
-            onClick(lock = false) { event ->
-                val rawSlot = event.rawSlot
-                if (rawSlot < 18 && rawSlot == 2) {
-                    val item = event.currentItem
-                    if (item != null && !item.type.isAir) {
-                        session.listedItem = item.clone()
-                        session.step = ListingStep.WAITING_ITEM
-                    }
-                }
-            }
-
             set('B', buildButton(player, listOf(
                 "<green><b>确认物品",
                 "<!i><gray>将物品放入左侧格子后点击此处",
@@ -290,12 +279,15 @@ object GlobalMarketMenu : Listener {
             }
 
             onClose {
+                // 只返还仍留在槽位中的物品；玩家自己取回的不会被重复返还（防刷物）
                 if (session.step != ListingStep.CONFIRMING) {
-                    val held = session.listedItem
-                    if (held != null) {
+                    val inv = it.inventory
+                    val held = inv.getItem(2)
+                    if (held != null && !held.type.isAir) {
                         it.player.inventory.addItem(held).values.forEach { leftover ->
                             it.player.world.dropItem(it.player.location, leftover)
                         }
+                        inv.setItem(2, null)
                         session.reset()
                     }
                 }
@@ -343,9 +335,10 @@ object GlobalMarketMenu : Listener {
                 "<!i><gray>当前: ${session.price.toLong()} ${CurrencyManager.displayName(session.currency)}"
             ), "WRITABLE_BOOK")) {
                 clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
+                // 先标记等待聊天输入，onClose 才不会返还物品
+                awaitingPrice[clicker.uniqueId] = session
                 clicker.closeInventory()
                 clicker.sendMessage("<aqua>请在聊天栏输入你想要的单价（整数），输入 <red>cancel <aqua>取消".toComponent())
-                awaitingPrice[clicker.uniqueId] = session
             }
 
             val confirmStack = buildButton(player, listOf(
@@ -365,8 +358,17 @@ object GlobalMarketMenu : Listener {
                     clicker.sendMessage("<red>价格必须大于0".toComponent())
                     return@set
                 }
+                // 先标记已确认，onClose 不再返还；物品由 completeListing 处理
+                session.step = ListingStep.CONFIRMING
                 clicker.closeInventory()
                 completeListing(clicker, session)
+            }
+
+            onClose {
+                // 未确认上架就关闭价格界面（按 ESC / 传送等）→ 返还已收取的物品
+                if (session.step == ListingStep.WAITING_PRICE && awaitingPrice[player.uniqueId] !== session) {
+                    GlobalMarketManager.refundListingItem(player, session)
+                }
             }
         }
     }
@@ -421,7 +423,15 @@ object GlobalMarketMenu : Listener {
 
         val fee = session.price * (GlobalMarketManager.config.listingFee / 100.0)
         if (fee > 0) {
-            CurrencyManager.removeBalance(player, session.currency, fee.toLong())
+            val feePaid = CurrencyManager.removeBalance(player, session.currency, fee.toLong())
+            if (!feePaid) {
+                player.inventory.addItem(item).values.forEach { leftover ->
+                    player.world.dropItem(player.location, leftover)
+                }
+                player.sendMessage("<red>[全球市场] 余额不足，无法支付手续费（${fee.toLong()} ${CurrencyManager.displayName(session.currency)}），物品已返还".toComponent())
+                session.reset()
+                return
+            }
         }
 
         session.step = ListingStep.CONFIRMING

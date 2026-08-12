@@ -1,6 +1,5 @@
 package io.github.zzzyyylllty.chotentech.gui
 
-import io.github.zzzyyylllty.chotentech.ChoTenTech
 import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager
 import io.github.zzzyyylllty.chotentech.friend.FriendManager
 import io.github.zzzyyylllty.chotentech.util.guiItem
@@ -12,7 +11,6 @@ import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.entity.Player
-import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 import taboolib.library.xseries.XMaterial
@@ -84,11 +82,8 @@ class FriendMenu {
                 val clicker = event.clicker
                 clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
 
-                when {
-                    event.clickEvent().click.name == "LEFT" || event.clickEvent().click.name == "SHIFT_LEFT" ->
-                        teleportTo(clicker, friendId)
-                    event.clickEvent().click.name == "RIGHT" || event.clickEvent().click.name == "SHIFT_RIGHT" ->
-                        FriendDeleteConfirmMenu(friendId).open(clicker)
+                if (event.clickEvent().click.name == "RIGHT" || event.clickEvent().click.name == "SHIFT_RIGHT") {
+                    FriendDeleteConfirmMenu(friendId).open(clicker)
                 }
             }
 
@@ -116,7 +111,6 @@ class FriendMenu {
             loreInfo("好友", "<white>$total<gray>/<white>$max"),
             loreInfo("在线", "<green>$online <gray>/ <white>$total"),
             loreSpace(),
-            "<!i> <yellow>左键 <green>传送到好友身边",
             "<!i> <yellow>右键 <red>删除好友"
         ).map { it.toComponent() })
         item.setItemMeta(meta)
@@ -144,32 +138,10 @@ class FriendMenu {
         }
         lore += loreSpace()
         lore += loreInfo("状态", if (online) "<green>● 在线" else "<gray>● 离线")
-        if (online) {
-            lore += loreSpace()
-            lore += "<!i> <yellow>左键 <green>传送到好友身边"
-        }
         lore += "<!i> <yellow>右键 <red>删除好友"
         meta.lore(lore.map { it.toComponent() })
         item.setItemMeta(meta)
         return item
-    }
-
-    private fun teleportTo(clicker: Player, friendId: UUID) {
-        val friend = Bukkit.getPlayer(friendId)
-        if (friend == null || !friend.isOnline) {
-            clicker.sendMessage("<red>该好友不在线".toComponent())
-            return
-        }
-        if (!clicker.hasPermission("chotentech.friend.teleport")) {
-            clicker.sendMessage("<red>你没有传送权限".toComponent())
-            return
-        }
-        if (!ChoTenTech.config.getBoolean("friend.teleport", true)) {
-            clicker.sendMessage("<red>传送到好友功能已被管理员禁用".toComponent())
-            return
-        }
-        clicker.teleportAsync(friend.location)
-        clicker.sendMessage("<green>已传送到 <yellow>${friend.name} <green>身边".toComponent())
     }
 }
 

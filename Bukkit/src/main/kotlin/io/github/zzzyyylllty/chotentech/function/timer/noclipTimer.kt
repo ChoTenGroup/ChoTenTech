@@ -179,7 +179,6 @@ fun noclipTime() {
                 var foundNoclip: NoclipPoint? = null
                 for (noclipPoint in level.noclips) {
                     if (noclipPoint.autoNoclip) continue
-                    if (noclipPoint.elevatorOnly) continue
                     if (noclipPoint.name != null && noclipPoint.name !in enabledNames) continue
                     if (!checkPlayerIsInNoclipPoint(player, noclipPoint)) continue
                     foundNoclip = noclipPoint
@@ -218,7 +217,7 @@ fun noclipTime() {
 /** 自动切出检测：每 1 秒检查玩家是否在 autoNoclip 切出点内 */
 @Awake(LifeCycle.ACTIVE)
 fun autoNoclipTimer() {
-    autoNoclipTask = submitAsync(period = 20L) {
+    autoNoclipTask = submit(period = 20L) {
         for (player in Bukkit.getOnlinePlayers()) {
             val data = playerDataMap[player.uniqueId.toString()] ?: continue
             // 已经在切出中或正在冷却中则跳过
@@ -229,7 +228,6 @@ fun autoNoclipTimer() {
             val enabledNames = RandomNoclipSelector.getEnabledNoclips(player.uniqueId.toString(), level)
             for (noclipPoint in level.noclips) {
                 if (!noclipPoint.autoNoclip) continue
-                if (noclipPoint.elevatorOnly) continue
                 if (noclipPoint.name != null && noclipPoint.name !in enabledNames) continue
                 if (!checkPlayerIsInNoclipPoint(player, noclipPoint)) continue
 
@@ -261,7 +259,7 @@ fun autoNoclipTimer() {
 
 @Awake(LifeCycle.ACTIVE)
 fun sharedNoclipUpdateTimer() {
-    sharedNoclipTask = submitAsync(period = 40L) {
+    sharedNoclipTask = submit(period = 40L) {
         for ((sessionKey, session) in ChoTenTech.sharedNoclipSessions) {
             val parts = sessionKey.split("::", limit = 2)
             if (parts.size < 2) continue

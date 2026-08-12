@@ -10,7 +10,7 @@ import org.bukkit.entity.Player
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.function.getDataFolder
-import taboolib.common.platform.function.submitAsync
+import taboolib.common.platform.function.submit
 import taboolib.common.platform.function.warning
 import taboolib.common.platform.service.PlatformExecutor
 import taboolib.expansion.Length
@@ -65,6 +65,34 @@ object PunishManager {
 
     fun clearActiveCache() {
         activeCache.clear()
+    }
+
+    /** 启动/重载时从数据库回填未过期处罚到缓存，保证重启后封禁/禁言/AUTH 仍然生效 */
+    fun reloadActiveCache() {
+        activeCache.clear()
+        val records = punishmentMapper.findAll { "active" eq true }
+        for (record in records) {
+            val type = runCatching { PunishType.valueOf(record.type) }.getOrNull() ?: continue
+            val entry = PunishEntry(
+                id = record.id,
+                targetUuid = record.targetUuid,
+                targetName = record.targetName,
+                operatorUuid = record.operatorUuid.takeIf { it != "NULL" },
+                operatorName = record.operatorName,
+                type = type,
+                reason = record.reason,
+                durationMs = record.durationMs,
+                issueTime = record.issueTime,
+                expiryTime = record.expiryTime,
+                active = record.active,
+                silent = record.silent,
+                meta = runCatching { jsonUtils.fromJson(record.metaJson, Map::class.java) }.getOrNull()
+                    ?.filterValues { it is String } as Map<String, String>? ?: emptyMap()
+            )
+            if (!entry.isExpired) {
+                activeCache.getOrPut(entry.targetUuid) { mutableListOf() }.add(entry)
+            }
+        }
     }
 
     var maxWarnBeforeBan: Int = 5
@@ -256,8 +284,17 @@ object PunishManager {
             try {
                 val items = jsonUtils.fromJson(snapshot.inventory, Array<org.bukkit.inventory.ItemStack>::class.java)
                 if (items != null) {
+                    val leftover = mutableListOf<org.bukkit.inventory.ItemStack>()
                     for (item in items) {
-                        if (item != null) player.inventory.addItem(item)
+                        if (item != null) leftover.addAll(player.inventory.addItem(item).values)
+                    }
+                    // 物品栏放不下的先放末影箱，再掉落到地上，避免还原时丢物
+                    if (leftover.isNotEmpty()) {
+                        val enderLeft = leftover.flatMap { player.enderChest.addItem(it).values }
+                        for (item in enderLeft) {
+                            player.world.dropItem(player.location, item)
+                        }
+                        player.sendComponent("<yellow>物品栏已满，部分还原物品已放入末影箱或掉落在地上")
                     }
                 }
             } catch (_: Exception) {}
@@ -430,7 +467,8 @@ private var punishTask: PlatformExecutor.PlatformTask? = null
 
 @Awake(LifeCycle.ACTIVE)
 fun startPunishmentTimer() {
-    punishTask = submitAsync(period = 200) {
+    PunishManager.reloadActiveCache()
+    punishTask = submit(period = 200) {
         PunishManager.checkExpirations()
     }
 }

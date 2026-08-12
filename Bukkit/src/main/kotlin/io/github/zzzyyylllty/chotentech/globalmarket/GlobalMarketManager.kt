@@ -235,8 +235,23 @@ object GlobalMarketManager {
         }
     }
 
+    /** 返还会话中已收取但尚未上架的物品（防止中途退出丢物） */
+    fun refundListingItem(player: Player, session: MarketListingSession) {
+        val item = session.listedItemData?.let { ItemSerializer.deserializeNbt(it) } ?: session.listedItem
+        if (item != null) {
+            player.inventory.addItem(item).values.forEach { leftover ->
+                player.world.dropItem(player.location, leftover)
+            }
+        }
+        session.reset()
+    }
+
     fun removeListingSession(player: Player) {
-        listingSessions.remove(player.uniqueId)
+        listingSessions.remove(player.uniqueId)?.let { session ->
+            if (session.step != ListingStep.CONFIRMING) {
+                refundListingItem(player, session)
+            }
+        }
     }
 
     fun getPendingBalancesCount(): Int = pendingBalances.size

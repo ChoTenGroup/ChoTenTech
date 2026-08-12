@@ -5,6 +5,7 @@ import io.github.zzzyyylllty.chotentech.ChoTenTech.playerRegions
 import org.bukkit.Bukkit
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
+import taboolib.common.platform.function.submit
 import taboolib.common.platform.function.submitAsync
 import taboolib.common.platform.service.PlatformExecutor
 
@@ -12,7 +13,7 @@ private var baseSanityTask: PlatformExecutor.PlatformTask? = null
 
 @Awake(LifeCycle.ACTIVE)
 fun baseSanityTimer() {
-    baseSanityTask = submitAsync(period = 200) {
+    baseSanityTask = submit(period = 200) {
         for (player in Bukkit.getOnlinePlayers()) {
             val regions = playerRegions[player.uniqueId.toString()]
             val inBase = regions?.any { it.startsWith("base-") } == true

@@ -164,12 +164,10 @@ private fun breakBlock(player: org.bukkit.entity.Player, block: Block, template:
     block.type = Material.AIR
 
     // 计划刷新 — 全部在主线程执行避免竞态
-    submitAsync(delay = 1) {
-        submit {
-            template.tempBlock?.let { blockAdapters[it.adapter]?.placeByID(block.location, it.block) }
-            val time = System.currentTimeMillis() + ((template.period ?: 10.0) * 1000.0).roundToLong()
-            blockRegenMap[block.location] = Regen(template.id, time, block.location, template.block, block, data)
-        }
+    submit(delay = 1) {
+        template.tempBlock?.let { blockAdapters[it.adapter]?.placeByID(block.location, it.block) }
+        val time = System.currentTimeMillis() + ((template.period ?: 10.0) * 1000.0).roundToLong()
+        blockRegenMap[block.location] = Regen(template.id, time, block.location, template.block, block, data)
     }
 
     template.agents?.runAgent("onMined", mapOf("event" to e, "block" to block), player)
@@ -231,8 +229,8 @@ fun registerNativeBlockAdapters() {
 
 @Awake(LifeCycle.ACTIVE)
 fun refreshRegenBlocks() {
-    regenBlockTask = submitAsync(period = 40) {
-        if (blockRegenMap.isEmpty()) return@submitAsync
+    regenBlockTask = submit(period = 40) {
+        if (blockRegenMap.isEmpty()) return@submit
         val now = System.currentTimeMillis()
         val expired = ArrayList<Map.Entry<Location, Regen>>()
         for (entry in blockRegenMap) {

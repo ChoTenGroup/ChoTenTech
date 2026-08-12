@@ -24,7 +24,7 @@ private val windowsLevels = listOf<String>("level-3","level-4","level-9","level-
 
 @Awake(LifeCycle.ACTIVE)
 fun checkWindows() {
-    windowsTask = submitAsync(period = 20) {
+    windowsTask = submit(period = 20) {
         for((key, value) in playerRegions) {
             if (value.any { it in windowsLevels }) {
                 val player = Bukkit.getPlayer(key.toUUID()) ?: continue

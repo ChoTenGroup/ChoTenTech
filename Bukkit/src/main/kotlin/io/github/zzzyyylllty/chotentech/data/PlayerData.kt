@@ -119,6 +119,7 @@ data class PlayerData (
     // music replay tracking
     var lastMusicPlayTime: Long = 0L,
     var musicReplayDelay: Long = 0L,  // randomized 120000..300000 ms
+    var musicPlayedCount: Int = 0,  // 当前层级音乐已播放次数(进入层级时重置)
 
     // currencies (use Long to avoid floating-point errors)
     var money: Long = 0L,

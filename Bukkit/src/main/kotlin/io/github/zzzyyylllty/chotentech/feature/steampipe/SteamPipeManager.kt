@@ -14,6 +14,8 @@ import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerQuitEvent
+import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.getDataFolder
 import taboolib.common.platform.function.releaseResourceFolder
 import taboolib.common.platform.function.submit
@@ -99,7 +101,7 @@ object SteamPipeManager {
                 levelConfigs[levelKey] = SteamPipeLevelConfig(
                     level = levelKey,
                     blocks = blocks,
-                    centerRange = parseRange(sec.getString("center_range", "0-30")),
+                    centerRange = parseRange(sec.getString("center_range", "10-45")),
                     maxSearches = sec.getInt("max_searches", 4),
                     maxNativeUnits = sec.getInt("max_native", 2),
                     warningSeconds = sec.getDouble("warning", 7.0),
@@ -107,11 +109,11 @@ object SteamPipeManager {
                     eruptionSeconds = parseRange(sec.getString("eruption", "5-10")),
                     endSeconds = sec.getDouble("end", 1.0),
                     endSecondsNative = sec.getDouble("end_native", 2.0),
-                    firstHitDamage = sec.getDouble("first_hit", 35.0),
-                    firstHitDamageNative = sec.getDouble("first_hit_native", 60.0),
-                    firstHitMinHp = sec.getDouble("first_hit_min_hp", 1.0),
-                    secondHitDamage = sec.getDouble("second_hit", 50.0),
-                    secondHitDamageNative = sec.getDouble("second_hit_native", 65.0)
+                    firstHitDamage = sec.getDouble("first_hit", 25.0),
+                    firstHitDamageNative = sec.getDouble("first_hit_native", 30.0),
+                    firstHitMinHp = sec.getDouble("first_hit_min_hp", 10.0),
+                    secondHitDamage = sec.getDouble("second_hit", 40.0),
+                    secondHitDamageNative = sec.getDouble("second_hit_native", 45.0)
                 )
             } catch (_: Exception) { /* skip */ }
         }
@@ -492,6 +494,12 @@ object SteamPipeManager {
 
     fun clearPlayerHits(player: Player) {
         playerHits.remove(player.uniqueId)
+    }
+
+    /** 玩家下线清除命中计数，防止未死亡玩家泄漏缓存 */
+    @SubscribeEvent
+    fun onPlayerQuit(event: PlayerQuitEvent) {
+        clearPlayerHits(event.player)
     }
 
     // ==================== Block Type Helper ====================

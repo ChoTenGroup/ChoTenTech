@@ -962,6 +962,15 @@ object ShopMenu : Listener {
             }
         }
 
+        // Pre-flight: item must be resolvable, otherwise giveItem would silently fail after payment
+        for ((itemKey, qty) in selected) {
+            val entry = shop.items[itemKey] ?: continue
+            if (resolveItem(player, entry.id) == null) {
+                player.sendMessage("<red>商品 ${formatItemName(entry.id)} 无法发放，请联系管理员<white>".toComponent())
+                return
+            }
+        }
+
         // Process payment
         for ((currency, amount) in costs) {
             CurrencyManager.removeBalance(player, currency, amount)

@@ -200,6 +200,11 @@ object ExamplePapiHook : PlaceholderExpansion {
                     else -> rank?.display?.get(field) ?: ""
                 }
             }
+            "chatcolor" -> return player?.let { chatRankDisplay(it, "chatcolor", list.getOrNull(1)?.lowercase() ?: "current") } ?: ""
+            "namecolor" -> return player?.let { chatRankDisplay(it, "namecolor", list.getOrNull(1)?.lowercase() ?: "current") } ?: ""
+            "prefix" -> return player?.let { chatRankDisplay(it, "prefix", list.getOrNull(1)?.lowercase() ?: "current") } ?: ""
+            "suffix" -> return player?.let { chatRankDisplay(it, "suffix", list.getOrNull(1)?.lowercase() ?: "current") } ?: ""
+            "chatsuffix" -> return player?.let { chatRankDisplay(it, "chatsuffix", list.getOrNull(1)?.lowercase() ?: "current") } ?: ""
             "hud" -> {
                 val split = list[1].split("?:")
                 val first = split[0]
@@ -558,6 +563,11 @@ object ExamplePapiHook : PlaceholderExpansion {
 
     fun requestDataByCID(cid: String): PlayerData? {
         return DataManager.getDataByCID(cid)
+    }
+
+    /** 聊天类称号显示:自动应用生效称号(激活优先,否则最高优先级条件匹配) */
+    private fun chatRankDisplay(player: Player, type: String, field: String): String {
+        return RankManager.getEffectiveRankDisplay(player, type, field)
     }
 
     private fun getQuestSidebar(player: Player?): String? {

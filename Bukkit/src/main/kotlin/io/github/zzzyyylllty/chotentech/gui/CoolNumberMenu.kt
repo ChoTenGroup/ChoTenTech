@@ -68,7 +68,7 @@ class CoolNumberMenu(
             rows(6)
 
             map(
-                " 4567890 ",
+                "<4567890>",
                 " ABCDEFG ",
                 " ####### ",
                 " ####### ",
@@ -125,7 +125,7 @@ class CoolNumberMenu(
                 }
             }
 
-            setPreviousPage(7) { _, hasPrev ->
+            setPreviousPage(0) { _, hasPrev ->
                 guiItem(XMaterial.ARROW, "<green>上一页", model = if (hasPrev) "kangelitem:previous" else "kangelitem:previous_no")
             }
 

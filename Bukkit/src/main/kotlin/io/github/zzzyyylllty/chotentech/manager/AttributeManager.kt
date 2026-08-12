@@ -599,7 +599,7 @@ object AttributeManager {
             if (modified) {
                 data.modifiers = modifiers
                 savePlayerData(data)
-                updatePlayer(player, async = true)
+                updatePlayer(player, async = false)
             }
         }
     }
@@ -607,13 +607,13 @@ object AttributeManager {
 
     @Awake(LifeCycle.ACTIVE)
     fun startRegenerationTask() {
-        regenTask = submit(async = true, period = 20L) { // 20 ticks = 1 second
+        regenTask = submit(period = 20L) { // 20 ticks = 1 second
             updateRegeneration()
         }
         devLog("AttributeManager: started regeneration task")
 
         // 实体属性后台刷新（每 30 秒，懒加载为主，后台为辅）
-        entityCacheTask = submit(async = true, period = 600L) { // 600 ticks = 30 seconds
+        entityCacheTask = submit(period = 600L) { // 600 ticks = 30 seconds
             refreshEntityCache()
         }
         devLog("AttributeManager: started entity attribute cache task (period=30s)")
@@ -671,8 +671,8 @@ object AttributeManager {
      * 更新玩家属性
      */
     fun updatePlayer(player: Player, async: Boolean = true) {
-        if (async) {
-            submit(async = true) {
+        if (async && !Bukkit.isPrimaryThread()) {
+            submit(async = false) {
                 doUpdate(player)
             }
         } else {

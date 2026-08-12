@@ -307,8 +307,15 @@ object BleedoutManager {
             if (downedPlayers.containsKey(uuid)) cleanupState(uuid)
         }
 
-        // Remove stale boss bars
-        bleedoutBossBars.keys.removeIf { it !in downedPlayers.keys && it !in pendingDeath }
+        // Remove stale boss bars（需同步移除观众，否则 BossBar 残留显示）
+        bleedoutBossBars.entries.removeIf { (uuid, bar) ->
+            if (uuid !in downedPlayers.keys && uuid !in pendingDeath) {
+                Bukkit.getPlayer(uuid)?.let { bar.removeViewer(it) }
+                true
+            } else {
+                false
+            }
+        }
     }
 
     private fun tickPose() {

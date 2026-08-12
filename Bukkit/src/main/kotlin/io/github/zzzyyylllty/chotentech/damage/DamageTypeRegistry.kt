@@ -10,7 +10,8 @@ import io.github.zzzyyylllty.chotentech.logger.warningS
 import io.github.zzzyyylllty.chotentech.manager.AttributeManager
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
-import taboolib.common.platform.function.submitAsync
+import taboolib.common.platform.function.submit
+import taboolib.common.platform.service.PlatformExecutor
 
 /**
  * 伤害类型注册表
@@ -25,6 +26,9 @@ object DamageTypeRegistry {
 
     /** 处理器映射：DamageType.id -> DamageTypeHandler */
     private val handlers = linkedMapOf<String, DamageTypeHandler>()
+
+    /** 过期状态清理定时任务 */
+    private var cleanupTask: PlatformExecutor.PlatformTask? = null
 
     /** 获取所有已注册的伤害类型 */
     fun getAll(): Collection<RegisteredDamageType> = registry.values.toList()
@@ -189,13 +193,15 @@ object DamageTypeRegistry {
         loadConfig()
 
         // 定时清理各 handler 中的过期状态（每 5 分钟）
-        submitAsync(period = 6000L) {
+        cleanupTask = submit(period = 6000L) {
             (handlers["frost"] as? FrostHandler)?.cleanupStale()
         }
     }
 
     /** 关闭时清理各 handler 资源 */
     fun shutdown() {
+        cleanupTask?.cancel()
+        cleanupTask = null
         (handlers["burn"] as? BurnHandler)?.cancelAll()
     }
 }

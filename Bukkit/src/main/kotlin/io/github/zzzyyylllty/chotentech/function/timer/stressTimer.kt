@@ -12,6 +12,7 @@ import org.bukkit.event.player.PlayerQuitEvent
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.event.SubscribeEvent
+import taboolib.common.platform.function.submit
 import taboolib.common.platform.function.submitAsync
 import taboolib.common.platform.service.PlatformExecutor
 import java.util.UUID
@@ -32,7 +33,7 @@ fun stressesTimer() {
     val baseStressReduce = config.getDouble("stress.base-stress-reduce", 2.0)
     val darkSanityDrain = config.getDouble("stress.dark-sanity-drain", 0.5)
 
-    stressTask = submitAsync(period = interval) {
+    stressTask = submit(period = interval) {
         val onlineUuids = Bukkit.getOnlinePlayers().map { it.uniqueId }.toSet()
 
         for (player in Bukkit.getOnlinePlayers()) {

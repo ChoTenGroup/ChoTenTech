@@ -10,7 +10,8 @@ import io.github.zzzyyylllty.chotentech.util.devLog
 import me.clip.placeholderapi.PlaceholderAPI
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
-import taboolib.common.platform.function.submitAsync
+import taboolib.common.platform.function.submit
+import taboolib.common.platform.service.PlatformExecutor
 import taboolib.module.configuration.Configuration
 import java.io.File
 
@@ -27,7 +28,7 @@ object AchievementManager {
         val progress: AchievementProgress?
     )
 
-    private var checkTask: Any? = null
+    private var checkTask: PlatformExecutor.PlatformTask? = null
 
     fun load(files: List<File>) {
         achievements.clear()
@@ -131,7 +132,7 @@ object AchievementManager {
             return
         }
 
-        checkTask = submitAsync(period = 100L) {
+        checkTask = submit(period = 100L) {
             for (player in Bukkit.getOnlinePlayers()) {
                 tryAutoComplete(player)
             }
@@ -140,9 +141,7 @@ object AchievementManager {
     }
 
     private fun stopAutoCheck() {
-        if (checkTask is org.bukkit.scheduler.BukkitTask) {
-            (checkTask as org.bukkit.scheduler.BukkitTask).cancel()
-        }
+        checkTask?.cancel()
         checkTask = null
     }
 

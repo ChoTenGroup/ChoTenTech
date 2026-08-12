@@ -215,8 +215,6 @@ friend:
   max-friends: 50
   # 权限节点 chotentech.friend.<数量> 可提升好友上限
   # 例如 chotentech.friend.100 拥有 100 好友上限
-  # 是否允许左键点击好友头像传送到其身边（另需权限 chotentech.friend.teleport）
-  teleport: true
 
 # 变化提示箭头配置（%chotentech_change_*% 占位符与 formatdata 显示追加的箭头）
 change-arrows:
@@ -244,3 +242,28 @@ mm-sanity-drain:
     Skeletal: 5.0
     DeathClaw: 10.0
     Hound: 2.0
+# ==================== 背包系统（ChoTenBackpack 合并） ====================
+backpack:
+  # ItemTag 键名：手持物品的 NBT 中包含此标签即为背包物品
+  tag: "cho-backpack"
+
+  # 物品被拒绝放入时的提示消息 (MiniMessage 格式)
+  deny-slot-message: "<red>该物品不能放入此背包！"
+
+  # 背包类型定义
+  types:
+    default:
+      display: "&6普通背包"
+      slots: 27
+      # JS 条件：放入物品时判断，返回 true 允许
+      # 可用变量: item (ItemStack), player (Player)
+      condition: "true"
+    # Example: VIP backpack with filter
+    # vip:
+    #   display: "&bVIP背包"
+    #   slots: 54
+    #   condition: >-
+    #     (function(){
+    #       var t = item.getType().name();
+    #       return !t.contains("BEDROCK") && !t.contains("BARRIER");
+    #     })()

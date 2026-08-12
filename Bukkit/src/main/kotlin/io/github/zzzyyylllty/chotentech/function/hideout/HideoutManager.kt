@@ -14,6 +14,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
+import taboolib.common.platform.function.submit
 import taboolib.common.platform.function.submitAsync
 import taboolib.common.platform.service.PlatformExecutor
 
@@ -129,7 +130,7 @@ object HideoutManager {
 
     @Awake(LifeCycle.ACTIVE)
     fun hideoutTimer() {
-        hideoutTask = submitAsync(period = 20) {
+        hideoutTask = submit(period = 20) {
             currentTick++
             for (player in Bukkit.getOnlinePlayers()) {
                 val data = playerDataMap[player.uniqueId.toString()] ?: continue

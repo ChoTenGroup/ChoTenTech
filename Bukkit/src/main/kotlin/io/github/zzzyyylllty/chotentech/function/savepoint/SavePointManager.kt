@@ -16,6 +16,7 @@ import org.bukkit.entity.Player
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.function.info
+import taboolib.common.platform.function.submit
 import taboolib.common.platform.function.submitAsync
 import taboolib.common.platform.function.warning
 import taboolib.common.platform.service.PlatformExecutor
@@ -346,13 +347,13 @@ object SavePointManager {
         SavePointConfig.load()
         createHolograms()
 
-        tickTask = submitAsync(period = 20) {
+        tickTask = submit(period = 20) {
             for (player in Bukkit.getOnlinePlayers()) {
                 tickPlayer(player)
             }
         }
 
-        particleTask = submitAsync(period = 10) {
+        particleTask = submit(period = 10) {
             displayZoneParticles()
         }
     }

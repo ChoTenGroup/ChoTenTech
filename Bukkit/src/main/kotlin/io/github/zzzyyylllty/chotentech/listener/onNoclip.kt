@@ -100,7 +100,6 @@ fun checkPlayerRegion(
 
         for (noclipPoint in levels) {
             if (noclipPoint.autoNoclip) continue
-            if (noclipPoint.elevatorOnly) continue
             if (noclipPoint.name != null && noclipPoint.name !in enabledNames) continue
 
             val isInNoclipPoint = checkPlayerIsInNoclipPoint(player, noclipPoint)

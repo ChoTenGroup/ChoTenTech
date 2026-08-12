@@ -10,7 +10,8 @@ import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import taboolib.common.platform.function.getDataFolder
 import taboolib.common.platform.function.releaseResourceFolder
-import taboolib.common.platform.function.submitAsync
+import taboolib.common.platform.function.submit
+import taboolib.common.platform.service.PlatformExecutor
 import taboolib.module.configuration.Configuration
 import java.io.File
 
@@ -18,7 +19,7 @@ object RankManager {
 
     val ranks: LinkedHashMap<String, LinkedHashMap<String, RankConfig>> = linkedMapOf()
 
-    private var checkTask: Any? = null
+    private var checkTask: PlatformExecutor.PlatformTask? = null
 
     fun load() {
         ranks.clear()
@@ -120,6 +121,17 @@ object RankManager {
         return rank?.display?.get(displayKey) ?: ""
     }
 
+    /** 生效称号:优先已激活且条件仍满足的,否则自动应用条件匹配的最高优先级(无需手动切换) */
+    fun getEffectiveRank(player: Player, type: String): RankConfig? {
+        val active = getPlayerActiveRank(player, type)
+        if (active != null && checkCondition(player, active)) return active
+        return getEligibleRanks(player, type).firstOrNull()
+    }
+
+    fun getEffectiveRankDisplay(player: Player, type: String, displayKey: String = "current"): String {
+        return getEffectiveRank(player, type)?.display?.get(displayKey) ?: ""
+    }
+
     fun getRankName(player: Player, type: String): String {
         return getPlayerActiveRank(player, type)?.name ?: ""
     }
@@ -138,7 +150,7 @@ object RankManager {
 
     private fun startAutoCheck() {
         stopAutoCheck()
-        checkTask = submitAsync(period = 1200L) {
+        checkTask = submit(period = 1200L) {
             for (player in Bukkit.getOnlinePlayers()) {
                 try {
                     checkPlayerRanks(player)
@@ -149,9 +161,7 @@ object RankManager {
     }
 
     private fun stopAutoCheck() {
-        if (checkTask is org.bukkit.scheduler.BukkitTask) {
-            (checkTask as org.bukkit.scheduler.BukkitTask).cancel()
-        }
+        checkTask?.cancel()
         checkTask = null
     }
 
@@ -178,13 +188,15 @@ object RankManager {
             }
         }
         if (changed) {
-            player.playerListName(buildPlayerListName(player).toComponent())
+            devLog("[称号] 玩家 ${player.name} 自动撤下不满足条件的称号")
         }
+        // 始终同步 Tab 名称,使自动应用的装饰(未手动激活)随条件变化即时生效
+        player.playerListName(buildPlayerListName(player).toComponent())
     }
 
     fun buildPlayerListName(player: Player): String {
-        val prefix = getRankDisplay(player, "prefix")
-        val suffix = getRankDisplay(player, "suffix")
+        val prefix = getEffectiveRankDisplay(player, "prefix")
+        val suffix = getEffectiveRankDisplay(player, "suffix")
         return "$prefix${player.name}$suffix"
     }
 
