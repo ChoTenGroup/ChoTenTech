@@ -1,8 +1,10 @@
 package io.github.zzzyyylllty.chotentech.data
 
 import io.github.zzzyyylllty.chotentech.ChoTenTech.config
+import io.github.zzzyyylllty.chotentech.ChoTenTech.levelsList
 import io.github.zzzyyylllty.chotentech.ChoTenTech.loadedChunk
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
+import io.github.zzzyyylllty.chotentech.ChoTenTech.playerHudMap
 import io.github.zzzyyylllty.chotentech.ChoTenTech.sharedNoclipSessions
 import io.github.zzzyyylllty.chotentech.data.DataManager.getDataByCID
 import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager
@@ -26,6 +28,7 @@ import net.kyori.adventure.sound.SoundStop as AdventureSoundStop
 import net.kyori.adventure.title.Title
 import org.bukkit.Bukkit
 import org.bukkit.Chunk
+import org.bukkit.Location
 import org.bukkit.NamespacedKey
 import org.bukkit.Sound
 import org.bukkit.SoundCategory
@@ -131,8 +134,9 @@ object DataManager {
             val batches = snapshot.chunked(batchSize)
             val latch = CountDownLatch(batches.size)
 
+            // 区块 PDC 读写必须发生在主线程；分批调度避免长时间阻塞
             batches.forEachIndexed { index, batch ->
-                submitAsync {
+                submit {
                     try {
                         devLog("第 ${index + 1} 批区块加载开始，数量=${batch.size}")
                         batch.forEach { pos ->
@@ -150,6 +154,7 @@ object DataManager {
                 }
             }
 
+            // 等待必须在异步线程，避免阻塞主线程
             submitAsync {
                 latch.await()
                 isLoadReleased.store(true)
@@ -535,6 +540,10 @@ object DataManager {
         cleanupNoclipState(uuid)
         DamageTypeRegistry.getHandler("burn")?.let { (it as? io.github.zzzyyylllty.chotentech.damage.handlers.BurnHandler)?.cancel(player) }
         io.github.zzzyyylllty.chotentech.listener.ProfileListener.onPlayerQuit(e)
+        // 下线取消 consumable 延时任务，防止任务残留/重复执行
+        cancelConsumableTasks(uuid)
+        // 清理会话级 HUD 缓存
+        playerHudMap.remove(uuid)
         // Save synchronously — submitAsync may not execute during shutdown
         releaseData(player)
         submitAsync {
@@ -743,7 +752,7 @@ class ChoTenDataHelper(val player: Player) {
             io.github.zzzyyylllty.chotentech.data.profile.ProfileManager.getSharedData(data.uuid).totalLevelExits++
         }
 
-        resetAndPlayLevelMusic()
+        resetAndPlayLevelMusic(oldLevelId?.let { levelsList[it]?.music })
     }
 
     fun activeLevel(): Level? {
@@ -937,10 +946,25 @@ class ChoTenDataHelper(val player: Player) {
         data.gameTimeHours = maxOf(data.gameTimeHours - amount, 0L)
     }
 
-    fun resetAndPlayLevelMusic() {
+    /** 切换层级时重置并播放层级音乐;新旧层级音乐相同时不打断,继续播放 */
+    fun resetAndPlayLevelMusic(previousMusic: String? = null) {
+        if (previousMusic != null && previousMusic == data.activeLevel?.music) return
         data.lastMusicPlayTime = 0L
+        data.musicPlayedCount = 0
         player.stopSound(AdventureSoundStop.source(AdventureSound.Source.MUSIC))
         playLevelMusic()
+    }
+
+    /** 当前层级音乐是否仍应播放(once/count 模式播完返回 false) */
+    fun levelMusicCanPlay(): Boolean {
+        val level = data.activeLevel ?: return false
+        if (level.music == null) return false
+        val repeat = ProfileManager.getSharedData(data.uuid).settings.get("levelMusicRepeat")
+        return when (repeat) {
+            "loop", null, "" -> true
+            "once" -> data.musicPlayedCount < 1
+            else -> data.musicPlayedCount < (repeat.toIntOrNull() ?: Int.MAX_VALUE)
+        }
     }
 
     fun playLevelMusic() {
@@ -948,13 +972,21 @@ class ChoTenDataHelper(val player: Player) {
         val music = level.music ?: return
         val mode = ProfileManager.getSharedData(data.uuid).settings.get("levelMusicMode")
         if (mode == "off") return
+        if (!levelMusicCanPlay()) return
         val now = System.currentTimeMillis()
         val loopInterval = io.github.zzzyyylllty.chotentech.util.OggDuration.getDuration(music)
         if (now - data.lastMusicPlayTime < loopInterval) return
         data.lastMusicPlayTime = now
+        data.musicPlayedCount++
         val pitch = 0.9 + ((data.sanity / data.effectiveMaxSanity) * 0.25)
         val soundKey = if (music.contains(':')) music else "kangel:$music"
-        val source = if (mode == "master") AdventureSound.Source.MASTER else AdventureSound.Source.MUSIC
-        player.playSound(AdventureSound.sound(AdventureKey.key(soundKey), source, 10000f, pitch.toFloat()))
+        val source = if (mode == "master") SoundCategory.MASTER else SoundCategory.MUSIC
+        // 从层级区域中心点 y=320 处播放（音乐不跟随玩家）；无区域时回退到玩家位置
+        val pos = level.region?.let { r ->
+            val cx = (r.minimumPoint.x + r.maximumPoint.x) / 2.0
+            val cz = (r.minimumPoint.z + r.maximumPoint.z) / 2.0
+            level.getWorld()?.let { w -> Location(w, cx, 320.0, cz) }
+        } ?: player.location
+        player.playSound(pos, soundKey, source, 10000f, pitch.toFloat())
     }
 }

@@ -6,7 +6,7 @@ import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager
 import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager.getSharedData
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
-import taboolib.common.platform.function.submitAsync
+import taboolib.common.platform.function.submit
 import taboolib.common.platform.function.warning
 import taboolib.common.platform.service.PlatformExecutor
 
@@ -109,7 +109,7 @@ object MetaManager {
 
     @Awake(LifeCycle.ACTIVE)
     fun startExpiryCheck() {
-        expiryTask = submitAsync(period = 1200L) {   // every 60 seconds
+        expiryTask = submit(period = 1200L) {   // every 60 seconds
             try {
                 cleanExpired()
             } catch (e: Exception) {

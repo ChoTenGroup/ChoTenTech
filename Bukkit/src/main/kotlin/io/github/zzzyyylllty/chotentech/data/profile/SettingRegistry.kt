@@ -134,6 +134,22 @@ object SettingRegistry {
             )
         ),
         SettingDef(
+            id = "levelMusicRepeat",
+            name = "音乐重复",
+            desc = "层级音乐的播放次数。",
+            icon = XMaterial.MUSIC_DISC_13,
+            type = SettingType.CYCLE,
+            defaultValue = "loop",
+            options = listOf(
+                "loop" to "循环播放",
+                "once" to "只播一次",
+                "2" to "播放2次",
+                "3" to "播放3次",
+                "5" to "播放5次",
+                "10" to "播放10次"
+            )
+        ),
+        SettingDef(
             id = "levelTitleMode",
             name = "层级标题动画",
             desc = "切换进入层级时的标题动画。",

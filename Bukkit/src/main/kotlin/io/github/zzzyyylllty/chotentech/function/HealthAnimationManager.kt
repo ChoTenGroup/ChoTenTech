@@ -6,7 +6,7 @@ import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
-import taboolib.common.platform.function.submitAsync
+import taboolib.common.platform.function.submit
 import taboolib.common.platform.service.PlatformExecutor
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
@@ -75,7 +75,7 @@ object HealthAnimationManager {
 
     @Awake(LifeCycle.ACTIVE)
     fun startTask() {
-        tickTask = submitAsync(period = 1L) { tick() }
+        tickTask = submit(period = 1L) { tick() }
         devLog("[HealthAnimation] 血量动画任务已启动（每 tick 更新）")
     }
 

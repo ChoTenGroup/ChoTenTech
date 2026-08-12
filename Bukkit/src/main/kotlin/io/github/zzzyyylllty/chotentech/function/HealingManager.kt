@@ -275,7 +275,7 @@ object HealingManager {
 
     @Awake(LifeCycle.ACTIVE)
     fun startHealingTick() {
-        healingTask = submit(async = true, period = 5L) {
+        healingTask = submit(period = 5L) {
             tick()
         }
     }

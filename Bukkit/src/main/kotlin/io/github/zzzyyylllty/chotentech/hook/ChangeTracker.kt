@@ -7,7 +7,7 @@ import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
-import taboolib.common.platform.function.submitAsync
+import taboolib.common.platform.function.submit
 import taboolib.common.platform.service.PlatformExecutor
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
@@ -134,7 +134,7 @@ object ChangeTracker {
 
     @Awake(LifeCycle.ACTIVE)
     fun startTask() {
-        tickTask = submitAsync(period = 20L) { tick() }
+        tickTask = submit(period = 20L) { tick() }
         devLog("[ChangeTracker] 变化追踪任务已启动（每 20 tick 更新）")
     }
 

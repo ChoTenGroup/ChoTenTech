@@ -29,7 +29,7 @@ private var statusEffectTask: PlatformExecutor.PlatformTask? = null
 
 @Awake(LifeCycle.ACTIVE)
 fun statusEffectTimer() {
-    statusEffectTask = submitAsync(period = 20) {
+    statusEffectTask = submit(period = 20) {
         val fractureCleanup = mutableListOf<String>()
         val pendingSyncEffects = mutableMapOf<String, List<PlayerStatusEffect>>()
 

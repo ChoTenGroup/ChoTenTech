@@ -25,7 +25,7 @@ fun loadLevelFiles() {
         releaseResourceFile("level/testlevel.yml")
         releaseResourceFile("level/main.yml")
     }
-    val files = File(getDataFolder(), "Level").listFiles()
+    val files = File(getDataFolder(), "Level").listFiles() ?: emptyArray()
     for (file in files) {
         // If directory load file in it...
         if (file.isDirectory) file.listFiles()?.forEach {

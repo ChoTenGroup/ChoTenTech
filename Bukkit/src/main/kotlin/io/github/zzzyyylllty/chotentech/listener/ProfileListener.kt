@@ -19,11 +19,11 @@ import java.util.concurrent.ConcurrentHashMap
 
 object ProfileListener {
 
-    /** Players who haven't confirmed a profile selection this session */
-    val pendingSelection = ConcurrentHashMap.newKeySet<String>()
+    /** Players who haven't confirmed a profile selection this session (uuid -> 当前会话的 player 对象,用于防掉线重进竞态) */
+    val pendingSelection = ConcurrentHashMap<String, Player>()
 
-    /** Track players who already triggered the profile GUI this session */
-    private val guiTriggered = ConcurrentHashMap.newKeySet<String>()
+    /** Track players who already triggered the profile GUI this session (uuid -> player 对象) */
+    private val guiTriggered = ConcurrentHashMap<String, Player>()
 
     /** Holding location before profile selection */
     private val holdingLocation: Location by lazy {
@@ -34,7 +34,7 @@ object ProfileListener {
     /** Mark player as pending — teleport to holding, clear inv, reset GUI trigger, clear active profile */
     fun setPending(player: Player) {
         val uuid = player.uniqueId.toString()
-        pendingSelection.add(uuid)
+        pendingSelection[uuid] = player
         player.inventory.clear()
         player.teleport(holdingLocation)
         guiTriggered.remove(uuid)
@@ -64,7 +64,9 @@ object ProfileListener {
     @SubscribeEvent
     fun onJoinClearInventory(e: PlayerJoinEvent) {
         val player = e.player
-        if (pendingSelection.contains(player.uniqueId.toString())) {
+        val uuid = player.uniqueId.toString()
+        val pending = pendingSelection[uuid] ?: return
+        if (pending === player) {
             player.inventory.clear()
         }
     }
@@ -74,7 +76,9 @@ object ProfileListener {
     fun onHoldPending(event: PlayerMoveEvent) {
         val player = event.player
         val uuid = player.uniqueId.toString()
-        if (!pendingSelection.contains(uuid)) return
+        val pending = pendingSelection[uuid] ?: return
+        // 掉线重进时旧连接的残留事件可能晚于新连接处理,只响应当前 pending 的 player 对象
+        if (pending !== player) return
 
         // Ignore rotation-only
         val to = event.to ?: return
@@ -88,7 +92,7 @@ object ProfileListener {
         }
 
         // Open GUI on first actual movement
-        if (guiTriggered.add(uuid)) {
+        if (guiTriggered.putIfAbsent(uuid, player) == null) {
             ProfileSelectionGUI().open(player)
         }
     }
@@ -99,11 +103,12 @@ object ProfileListener {
         if (event.reason != org.bukkit.event.inventory.InventoryCloseEvent.Reason.PLAYER) return
         val player = event.player as? Player ?: return
         val uuid = player.uniqueId.toString()
-        if (!pendingSelection.contains(uuid)) return
+        val pending = pendingSelection[uuid] ?: return
+        if (pending !== player) return
         if (ProfileCreationPending.pending.containsKey(uuid) || ProfileDeletionPending.pending.containsKey(uuid)) return
 
         submit(delay = 1) {
-            if (pendingSelection.contains(uuid)) {
+            if (pendingSelection[uuid] === player) {
                 ProfileSelectionGUI().open(player)
             }
         }
@@ -113,19 +118,28 @@ object ProfileListener {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     fun onPlayerChat(event: AsyncPlayerChatEvent) {
         val player = event.player
-        if (ProfileCreationPending.handleChat(player, event.message)) {
-            event.isCancelled = true
-        } else if (ProfileDeletionPending.handleChat(player, event.message)) {
-            event.isCancelled = true
+        val uuid = player.uniqueId.toString()
+        // 有挂起的创建/删除操作时才拦截
+        if (!ProfileCreationPending.pending.containsKey(uuid) && !ProfileDeletionPending.pending.containsKey(uuid)) return
+        // 取消必须在本事件线程内同步设置，否则消息已广播
+        event.isCancelled = true
+        val message = event.message
+        // handleChat 会打开 GUI/传送/写库，需在主线程执行
+        submit {
+            if (!ProfileCreationPending.handleChat(player, message)) {
+                ProfileDeletionPending.handleChat(player, message)
+            }
         }
     }
 
     /** Clean up on quit */
     @SubscribeEvent
     fun onPlayerQuit(event: PlayerQuitEvent) {
-        val uuid = event.player.uniqueId.toString()
-        pendingSelection.remove(uuid)
-        guiTriggered.remove(uuid)
+        val player = event.player
+        val uuid = player.uniqueId.toString()
+        // 仅清理当前会话(同一 player 对象)的状态,防止掉线重进时旧连接的 quit 事件误清新连接的 pending 状态
+        if (pendingSelection[uuid] === player) pendingSelection.remove(uuid)
+        if (guiTriggered[uuid] === player) guiTriggered.remove(uuid)
         ProfileCreationPending.pending.remove(uuid)
         ProfileDeletionPending.pending.remove(uuid)
     }

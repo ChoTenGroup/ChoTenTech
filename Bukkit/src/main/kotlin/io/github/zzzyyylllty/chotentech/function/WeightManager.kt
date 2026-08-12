@@ -14,6 +14,7 @@ import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.function.getDataFolder
 import taboolib.common.platform.function.releaseResourceFile
+import taboolib.common.platform.function.submit
 import taboolib.common.platform.function.submitAsync
 import taboolib.common.platform.service.PlatformExecutor
 import java.io.File
@@ -237,7 +238,7 @@ object WeightManager {
     fun startWeightTask() {
         loadConfig()
 
-        weightTask = submitAsync(period = 20) { // 1 秒 = 20 ticks
+        weightTask = submit(period = 20) { // 1 秒 = 20 ticks
             tick()
         }
         devLog("[WeightManager] 负重系统已启动")

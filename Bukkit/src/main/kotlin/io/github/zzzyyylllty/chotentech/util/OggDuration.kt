@@ -12,9 +12,6 @@ object OggDuration {
 
     private val durationCache = ConcurrentHashMap<String, Long>()
 
-    /** Milliseconds of silence between loops */
-    private const val LOOP_GAP_MS = 1000L
-
     fun getDuration(soundName: String): Long {
         return durationCache[soundName] ?: 60_000L
     }
@@ -148,7 +145,7 @@ object OggDuration {
 
                 if (lastGranule <= 0) return 0
 
-                return (lastGranule * 1000 / sampleRate) - LOOP_GAP_MS
+                return lastGranule * 1000 / sampleRate
             }
         } catch (_: Exception) {
             return 0

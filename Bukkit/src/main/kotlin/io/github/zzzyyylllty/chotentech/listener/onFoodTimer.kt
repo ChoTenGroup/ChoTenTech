@@ -203,7 +203,7 @@ fun foodTimer() {
 
 @Awake(LifeCycle.ACTIVE)
 fun staminaBarSync() {
-    staminaBarTask = submitAsync(period = 5) {
+    staminaBarTask = submit(period = 5) {
         for (player in Bukkit.getOnlinePlayers()) {
             if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) continue
             val data = playerDataMap[player.uniqueId.toString()] ?: continue

@@ -27,6 +27,8 @@ import io.github.zzzyyylllty.chotentech.feature.EndManager
 import io.github.zzzyyylllty.chotentech.function.RankManager
 import io.github.zzzyyylllty.chotentech.function.hideout.HideoutConfig
 import io.github.zzzyyylllty.chotentech.function.hideout.ItemNameHelper
+import io.github.zzzyyylllty.chotentech.data.backpack.BackpackConfig
+import io.github.zzzyyylllty.chotentech.listener.BackpackListener
 import io.github.zzzyyylllty.chotentech.data.cancelAllConsumableTasks
 import io.github.zzzyyylllty.chotentech.data.loadMedkitConfig
 import io.github.zzzyyylllty.chotentech.data.loadConsumableConfigs
@@ -152,6 +154,10 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
 
         reloadCustomConfig()
 
+        // Initialize backpack system (merged ChoTenBackpack)
+        BackpackListener
+        BackpackListener.init()
+
         // Initialize profile system
         io.github.zzzyyylllty.chotentech.data.profile.ProfileManager
         io.github.zzzyyylllty.chotentech.listener.ProfileListener
@@ -224,6 +230,9 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
 
         // Save all player profile data before clearing maps
         io.github.zzzyyylllty.chotentech.data.DataManager.saveAllPlayerData()
+
+        // Clear backpack open sessions (merged ChoTenBackpack)
+        BackpackListener.disable()
 
         // Clear static maps to prevent classloader memory leaks
         playerDataMap.clear()
@@ -335,6 +344,7 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
             io.github.zzzyyylllty.chotentech.shop.ShopManager.loadAll()
             io.github.zzzyyylllty.chotentech.shop.GiftPackManager.loadAll()
             io.github.zzzyyylllty.chotentech.shop.ShopMenu.loadItemOutputNames()
+            BackpackConfig.load()
         }
     }
 

@@ -6,17 +6,17 @@ import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager
 import io.github.zzzyyylllty.chotentech.function.RankManager
 import io.github.zzzyyylllty.chotentech.util.minimessage.mmJsonUtil
 import io.github.zzzyyylllty.chotentech.util.toComponent
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import taboolib.library.xseries.XMaterial
 import taboolib.module.ui.openMenu
-import taboolib.module.ui.type.Chest
 import taboolib.module.ui.type.PageableChest
 import io.github.zzzyyylllty.chotentech.util.guiItem
-import io.github.zzzyyylllty.chotentech.util.loreDash
 import io.github.zzzyyylllty.chotentech.util.loreInfo
+import io.github.zzzyyylllty.chotentech.util.loreSection
 import io.github.zzzyyylllty.chotentech.util.loreSpace
 
 class RankSelectionMenu {
@@ -26,11 +26,14 @@ class RankSelectionMenu {
             "prefix" to "前缀",
             "suffix" to "后缀",
             "chatsuffix" to "聊天后缀",
-            "chatcolor" to "聊天颜色"
+            "chatcolor" to "聊天颜色",
+            "namecolor" to "名字颜色",
+            "joinmessage" to "进服消息",
+            "quitmessage" to "退服消息"
         )
         private val displayKeyMap = mapOf(
-            "current" to "当前",
-            "short" to "简写"
+            "current" to "全称",
+            "short" to "缩写"
         )
     }
 
@@ -41,65 +44,96 @@ class RankSelectionMenu {
             return
         }
 
-        player.openMenu<Chest>(mmJsonUtil.serialize("<black><font:minecraft:fusionpixel10>称号选择".toComponent())) {
-            rows(4)
+        player.openMenu<PageableChest<String>>(
+            mmJsonUtil.serialize("<white><shift:-16><image:kangelicon:list><shift:-176><aqua><font:minecraft:fusionpixel10>称号选择".toComponent())
+        ) {
+            rows(6)
 
             map(
-                "#########",
-                "# A B C #",
-                "# D E F #",
-                "#########"
+                "CCC    <>",
+                "         ",
+                " @@@@@@@ ",
+                " @@@@@@@ ",
+                " @@@@@@@ ",
+                "         "
             )
 
-            set('#', XMaterial.BLACK_STAINED_GLASS_PANE) { name = " " }
+            set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>菜单", listOf("<!i> <yellow>点击 <green>打开菜单"), model = "kangelitem:void")) {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "invero menu open menu ${clicker.name}")
+                clicker.closeInventory()
+            }
 
-            val typeSlots = listOf('A', 'B', 'C', 'D', 'E', 'F')
-            types.take(6).forEachIndexed { index, type ->
-                val slot = typeSlots[index]
-                val shared = ProfileManager.getSharedData(player.uniqueId.toString())
-                val activeId = shared.activeRanks[type]
-                val activeName = RankManager.ranks[type]?.get(activeId)?.name ?: "无"
+            slotsBy('@')
 
-                set(slot, guiItem(XMaterial.BOOK, "<gold>${typeNameMap[type] ?: type}", listOf(
-                    loreInfo("当前", "<white>$activeName"),
-                    "<!i> <yellow>点击 <green>查看"
-                ))) {
-                    clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
-                    openRankList(clicker, type)
+            elements { types }
+
+            onGenerate { player, type, _, _ ->
+                val effectiveName = RankManager.getEffectiveRank(player, type)?.name ?: "无"
+                val effectiveFull = RankManager.getEffectiveRankDisplay(player, type, "current")
+                val lore = mutableListOf(
+                    loreInfo("当前", "<white>$effectiveName")
+                )
+                if (effectiveFull.isNotBlank()) {
+                    lore += "<!i><gray>(全称: <white>$effectiveFull)"
                 }
+                lore += "<!i> <yellow>点击 <green>查看"
+                guiItem(XMaterial.BOOK, "<gold>${typeNameMap[type] ?: type}", lore)
+            }
+
+            onClick { event, type ->
+                event.isCancelled = true
+                val clicker = event.clicker
+                clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
+                openRankList(clicker, type)
+            }
+
+            onPageChange { p ->
+                p.playSound(p.location, Sound.ITEM_BOOK_PAGE_TURN, 1f, 1f)
+            }
+
+            setPreviousPage(7) { _, page ->
+                guiItem(XMaterial.ARROW, "<aqua>上一页", model = if (page) "kangelitem:previous" else "kangelitem:previous_no")
+            }
+
+            setNextPage(8) { _, page ->
+                guiItem(XMaterial.ARROW, "<aqua>下一页", model = if (page) "kangelitem:next" else "kangelitem:next_no")
             }
         }
     }
 
     private fun openRankList(player: Player, type: String) {
         val eligibleRanks = RankManager.getEligibleRanks(player, type)
-        val shared = ProfileManager.getSharedData(player.uniqueId.toString())
-        val activeId = shared.activeRanks[type]
+        val effectiveId = RankManager.getEffectiveRank(player, type)?.id
 
         player.openMenu<PageableChest<RankConfig>>(
-            mmJsonUtil.serialize("<black><font:minecraft:fusionpixel10>${typeNameMap[type] ?: type}".toComponent())
+            mmJsonUtil.serialize("<white><shift:-16><image:kangelicon:list><shift:-176><aqua><font:minecraft:fusionpixel10>${typeNameMap[type] ?: type}".toComponent())
         ) {
             rows(6)
 
             map(
-                "#########",
-                "#@@@@@@@#",
-                "#@@@@@@@#",
-                "#@@@@@@@#",
-                "#@@@@@@@#",
-                "###<B>###"
+                "CCC    <>",
+                "         ",
+                " @@@@@@@ ",
+                " @@@@@@@ ",
+                " @@@@@@@ ",
+                "         "
             )
 
-            set('#', XMaterial.BLACK_STAINED_GLASS_PANE) { name = " " }
+            set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>菜单", listOf("<!i> <yellow>点击 <green>返回称号选择"), model = "kangelitem:void")) {
+                clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
+                open(clicker)
+            }
+
             slotsBy('@')
 
             elements { eligibleRanks }
 
             onGenerate { _, rank, _, _ ->
-                buildRankItem(rank, rank.id == activeId)
+                buildRankItem(rank, rank.id == effectiveId)
             }
 
             onClick { event, rank ->
+                event.isCancelled = true
                 val clicker = event.clicker
                 val clickerShared = ProfileManager.getSharedData(clicker.uniqueId.toString())
 
@@ -120,11 +154,6 @@ class RankSelectionMenu {
                 p.playSound(p.location, Sound.ITEM_BOOK_PAGE_TURN, 1f, 1f)
             }
 
-            set('B', guiItem(XMaterial.COMPASS, "<gold>返回")) {
-                clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
-                open(clicker)
-            }
-
             setPreviousPage(7) { _, page ->
                 guiItem(XMaterial.ARROW, "<aqua>上一页", model = if (page) "kangelitem:previous" else "kangelitem:previous_no")
             }
@@ -141,30 +170,70 @@ class RankSelectionMenu {
         val meta = item.itemMeta ?: return item
 
         val statusColor = if (isActive) "<green>" else "<gray>"
-        val statusText = if (isActive) "已启用" else "点击选择"
 
         meta.displayName("${statusColor}<b>${rank.name}".toComponent())
 
         val lore = mutableListOf<String>()
 
-        if (rank.desc.isNotBlank()) {
-            lore += "<!i><white>${rank.desc}"
-            lore += loreSpace()
-        }
-
-        rank.display.forEach { (key, value) ->
-            lore += loreInfo(displayKeyMap[key] ?: key, "<white>$value")
-        }
+        lore += loreInfo("名称", "<white>${rank.name}")
 
         if (rank.display.isNotEmpty()) {
             lore += loreSpace()
+            lore += loreSection("展示方式")
+            rank.display.forEach { (key, value) ->
+                lore += "<!i><#88aacc>${displayKeyMap[key] ?: key}：<white>$value"
+            }
         }
 
-        lore += loreInfo("状态", "$statusColor$statusText")
-        lore += loreDash("<dark_gray>${rank.id}")
+        if (rank.desc.isNotBlank()) {
+            lore += loreSpace()
+            lore += loreSection("描述")
+            wrapDesc(rank.desc).forEach { lore += "<!i><#aacc88>$it" }
+        }
+
+        if (rank.get.isNotBlank()) {
+            lore += loreSpace()
+            lore += loreSection("获取方式")
+            lore += "<!i><#ccaa88>${rank.get}"
+        }
 
         meta.lore(lore.toComponent())
         item.setItemMeta(meta)
         return item
+    }
+
+    /** 按显示宽度智能分行:中文等全角字符记 2 宽,单行上限 maxWidth 半角宽;MiniMessage 标签不计宽且保持完整 */
+    private fun wrapDesc(text: String, maxWidth: Int = 28): List<String> {
+        val lines = mutableListOf<String>()
+        var line = StringBuilder()
+        var width = 0
+        val lineTags = StringBuilder()
+
+        var i = 0
+        while (i < text.length) {
+            val c = text[i]
+            if (c == '<') {
+                val end = text.indexOf('>', i + 1)
+                if (end > i) {
+                    val tag = text.substring(i, end + 1)
+                    line.append(tag)
+                    lineTags.append(tag)
+                    i = end + 1
+                    continue
+                }
+            }
+            val w = if (c.code > 0xFF) 2 else 1
+            if (width + w > maxWidth) {
+                lines.add(line.toString())
+                // 换行时延续上一行的标签,避免下一行失去颜色/格式
+                line = StringBuilder(lineTags.toString())
+                width = 0
+            }
+            line.append(c)
+            width += w
+            i++
+        }
+        if (line.isNotEmpty()) lines.add(line.toString())
+        return lines
     }
 }

@@ -52,6 +52,21 @@ fun onLoginBanCheck(event: PlayerLoginEvent) {
     }
 }
 
+/** 离线时下达的 wipe 在玩家上线时补执行（备份为空说明执行时玩家不在线） */
+@SubscribeEvent
+fun onJoinExecuteOfflineWipe(event: PlayerJoinEvent) {
+    val player = event.player
+    val uuid = player.uniqueId.toString()
+    for (entry in PunishManager.getActiveByType(uuid, PunishType.WIPE)) {
+        val backup = PunishManager.getWipeBackup(entry.id) ?: continue
+        if (backup.dataJson != "{}") continue // 已执行过（有真实快照）或已还原
+        val scope = entry.meta["scope"] ?: "all"
+        PunishManager.clearWipedData(player, scope)
+        PunishManager.deactivatePunishment(entry.id)
+        player.sendComponent("<red>你的数据已被管理员清除！范围: $scope，理由: ${entry.reason}")
+    }
+}
+
 @SubscribeEvent
 fun onJoinPunishNotify(event: PlayerJoinEvent) {
     val player = event.player

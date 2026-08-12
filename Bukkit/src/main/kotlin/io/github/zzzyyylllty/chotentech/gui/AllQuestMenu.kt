@@ -76,10 +76,14 @@ class AllQuestMenu {
                     lore += "<!i><white><b>|<reset> <!i><aqua>进程"
                     element.tasks.forEach {
                         val name = it.meta<Meta<String>>("name")?.source?.legacyToMiniMessage()
-                        val progress = it.objective.getProgress(profile, it)
-                        val value = progress.value.toString().toDouble().roundTo(1).toString().removeSuffix(".0")
-                        val target = progress.target.toString().toDouble().roundTo(1).toString().removeSuffix(".0")
-                        lore += "<!i> <dark_gray>- <#88aacc>$name <#83ff66>$value<#aaaabb>/$target"
+                        lore += if (it.isCompleted(profile)) {
+                            "<!i> <dark_gray>- <#88aacc>$name <#ff3311>已完成"
+                        } else {
+                            val progress = it.objective.getProgress(profile, it)
+                            val value = progress.value.toString().toDouble().roundTo(1).toString().removeSuffix(".0")
+                            val target = progress.target.toString().toDouble().roundTo(1).toString().removeSuffix(".0")
+                            "<!i> <dark_gray>- <#88aacc>$name <#ff3311>$value<#aaaabb>/$target"
+                        }
                     }
                     lore += "<!i> "
                     cui?.descriptionIndex?.let {
@@ -103,9 +107,9 @@ class AllQuestMenu {
                         }
                         lore += "<!i> "
                     }
-                    lore += "<i> ${providerText(cui)}"
-                    lore += "<!i> <yellow>点击 <green>打开详细菜单"
-                    lore += "<!i> <yellow>右键 <green>追踪任务"
+                    lore += "<!i><white><b>|<reset> <i>${providerText(cui)}"
+                    lore += "<!i><yellow>点击 <green>打开详细菜单"
+                    lore += "<!i><yellow>右键 <green>追踪任务"
                     lore += "<!i> "
                     meta.lore(lore.toComponent())
                     cui?.model?.let { meta.itemModel = NamespacedKey.fromString(it) }

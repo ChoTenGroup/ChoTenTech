@@ -3,6 +3,7 @@ package io.github.zzzyyylllty.chotentech.listener
 import io.github.zzzyyylllty.chotentech.ChoTenTech
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
 import io.github.zzzyyylllty.chotentech.feature.crossbow.CrossbowManager
+import io.github.zzzyyylllty.chotentech.damage.DamageCategory
 import io.github.zzzyyylllty.chotentech.damage.DamageManager
 import io.github.zzzyyylllty.chotentech.damage.DamageType
 import io.github.zzzyyylllty.chotentech.damage.DamageTypeRegistry
@@ -319,6 +320,8 @@ object AttackListener {
         if (dmgSysEnabled && victim is LivingEntity) {
             val damageTypeId = event.getDamageTypeTag()
             if (damageTypeId != null) {
+                // 先移除标签，防止 handler 内 player.damage() 的嵌套伤害事件递归重入
+                event.removeDamageTypeTag()
                 val rdt = DamageTypeRegistry.get(damageTypeId)
                 if (rdt != null && rdt.enabled) {
                     val beforeDefense = modifiedDamage
@@ -326,10 +329,13 @@ object AttackListener {
 
                     if (victim is Player && modifiedDamage > 0) {
                         DamageManager.applyEffects(victim, rdt.type, modifiedDamage, beforeDefense)
+                        // SPECIAL 类型由 handler 自行结算扣血（如侵蚀/衰退/精神伤害），事件不再重复结算
+                        if (rdt.type.category == DamageCategory.SPECIAL) {
+                            modifiedDamage = 0.0
+                        }
                     }
                 }
             }
-            event.removeDamageTypeTag()
         }
 
         // 9. 闪避与格挡判定（受害者）

@@ -18,7 +18,7 @@ data class NoclipPoint(
     val name: String?,
     val targetLevel: String?,
     val autoNoclip: Boolean = false, // 是否自动切出（无需蹲下）
-    val elevatorOnly: Boolean = false, // 仅限电梯触发（无法通过正常蹲下切出）
+    val elevatorOnly: Boolean = false, // 电梯专用切出点（正常蹲下也可切出，但需电梯电源激活）
     val conditions: NoclipConditions? = null,
     val targetLocations: List<WeightedLocation>? = null, // 多个加权目标位置
 )
