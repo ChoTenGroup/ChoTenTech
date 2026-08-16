@@ -27,6 +27,9 @@ data class SharedData(
     var lastJoinTime: Long = 0L,    // epoch ms
     var lastQuitTime: Long = 0L,    // epoch ms
 
+    // 是否已完成教学任务(共享:任一 profile 完成即全局生效)
+    var isCompletedTutorial: Boolean = false,
+
     // Cross-profile meta flags (shared scope)
     var meta: MutableMap<String, MetaEntry> = mutableMapOf(),
 

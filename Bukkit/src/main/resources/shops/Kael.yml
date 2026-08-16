@@ -2,37 +2,39 @@ Kael:
   name: "<green>凯尔"
   items:
     # Lv.1 - 基础医疗
-    bandage:
-      id: sertraline:bandage
-      buy: money:80
-      sell: money:20
     painkiller_pills:
       id: sertraline:painkiller_pills
-      buy: money:120
-      sell: money:35
-    almond_water_gray:
-      id: sertraline:almond_water_gray
-      buy: money:80
-      sell: money:25
-    # 医疗材料收购
+      buy: money:160
+      sell: money:64
+    almond_bandage:
+      id: sertraline:almond_bandage
+      buy: money:180
+      sell: money:72
+    ice_medkit:
+      id: sertraline:ice_medkit
+      buy: money:160
+      sell: money:64
+    empty_injector:
+      id: sertraline:empty_injector
+      buy: money:140
+      sell: money:56
+    # Lv.1 - 医疗材料收购
     rag:
       id: sertraline:rag
-      sell: money:10
+      sell: money:16
     fabric_skin:
       id: sertraline:fabric_skin
-      sell: money:25
+      sell: money:60
     glass_bottle:
       id: sertraline:glass_bottle
-      sell: money:3
+      sell: money:16
+    deathmoths_mucus:
+      id: sertraline:deathmoths_mucus
+      sell: money:18
+    spider_silk:
+      id: sertraline:spider_silk
+      sell: money:56
     # Lv.2 - 进阶医疗
-    sterile_bandage:
-      id: sertraline:sterile_bandage
-      buy-requirements:
-        - mode: level
-          level: 2
-          display: 需要商人等级 Lv.2
-      buy: money:200
-      sell: money:60
     antibiotic:
       id: sertraline:antibiotic
       buy-requirements:
@@ -43,52 +45,199 @@ Kael:
           value: PenicillinAction
           display: 需要完成任务「青霉素行动」
       buy: money:300
-      sell: money:90
-    insulin:
-      id: sertraline:insulin
+      sell: money:120
+    tianlong_medkit:
+      id: sertraline:tianlong_medkit
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: money:500
-      sell: money:150
+      buy: money:300
+      sell: money:120
+    6ch_vaseline:
+      id: sertraline:6ch_vaseline
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:300
+      sell: money:120
+    adrenaline_injector:
+      id: sertraline:adrenaline_injector
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:320
+      sell: money:128
+    flower_of_fire_injector:
+      id: sertraline:flower_of_fire_injector
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:320
+      sell: money:128
+    zako_healer_injector:
+      id: sertraline:zako_healer_injector
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:320
+      sell: money:128
+    # Lv.3 - 高级医疗
+    insulin:
+      id: sertraline:insulin
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
       limit:
         player: 3
         player-reset: 24h
-    # Lv.3 - 高级医疗
+      buy: money:950
+      sell: money:380
     onefirst_medkit:
       id: sertraline:onefirst_medkit
       buy-requirements:
         - mode: level
           level: 3
           display: 需要商人等级 Lv.3
-      buy: money:600
-      sell: money:180
-      limit:
-        player: 3
-        player-reset: 24h
-    almond_water_red:
-      id: sertraline:almond_water_red
-      buy-requirements:
-        - mode: level
-          level: 3
-          display: 需要商人等级 Lv.3
-      buy: money:400
-      sell: money:120
-      limit:
-        player: 5
-        player-reset: 24h
-    akacandy_medkit:
-      id: sertraline:akacandy_medkit
-      buy-requirements:
-        - mode: level
-          level: 3
-          display: 需要商人等级 Lv.3
-        - mode: quest
-          value: VaccineResearch
-          display: 需要完成任务「疫苗研究」
-      buy: money:800
-      sell: money:240
       limit:
         player: 2
         player-reset: 24h
+      buy: money:1500
+      sell: money:600
+    zaped:
+      id: sertraline:zaped
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      limit:
+        player: 2
+        player-reset: 24h
+      buy: money:1000
+      sell: money:400
+    epsilon_pills:
+      id: sertraline:epsilon_pills
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      limit:
+        player: 2
+        player-reset: 24h
+      buy: money:900
+      sell: money:360
+    sql_pills_aqua:
+      id: sertraline:sql_pills_aqua
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      limit:
+        player: 2
+        player-reset: 24h
+      buy: money:900
+      sell: money:360
+    sql_pills_purple:
+      id: sertraline:sql_pills_purple
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      limit:
+        player: 2
+        player-reset: 24h
+      buy: money:900
+      sell: money:360
+    etg_injector:
+      id: sertraline:etg_injector
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      limit:
+        player: 2
+        player-reset: 24h
+      buy: money:900
+      sell: money:360
+    fast_stamina_injector:
+      id: sertraline:fast_stamina_injector
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      limit:
+        player: 2
+        player-reset: 24h
+      buy: money:900
+      sell: money:360
+    fast_strength_injector:
+      id: sertraline:fast_strength_injector
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      limit:
+        player: 2
+        player-reset: 24h
+      buy: money:900
+      sell: money:360
+    transfer_stamina_injector:
+      id: sertraline:transfer_stamina_injector
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      limit:
+        player: 2
+        player-reset: 24h
+      buy: money:900
+      sell: money:360
+    mule_injector:
+      id: sertraline:mule_injector
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      limit:
+        player: 2
+        player-reset: 24h
+      buy: money:900
+      sell: money:360
+    golden_apple_injector:
+      id: sertraline:golden_apple_injector
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      limit:
+        player: 1
+        player-reset: 24h
+      buy: money:1800
+      sell: money:720
+    inocentia_injector:
+      id: sertraline:inocentia_injector
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      limit:
+        player: 1
+        player-reset: 24h
+      buy: money:1800
+      sell: money:720
+    rainbow_injector:
+      id: sertraline:rainbow_injector
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      limit:
+        player: 1
+        player-reset: 24h
+      buy: money:8000
+      sell: money:3200

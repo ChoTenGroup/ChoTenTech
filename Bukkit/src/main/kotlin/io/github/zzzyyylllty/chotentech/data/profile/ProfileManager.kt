@@ -6,11 +6,16 @@ import io.github.zzzyyylllty.chotentech.data.CidAllocator
 import io.github.zzzyyylllty.chotentech.data.IDData
 import io.github.zzzyyylllty.chotentech.data.PlayerData
 import io.github.zzzyyylllty.chotentech.data.RespawnPoint
+import io.github.zzzyyylllty.chotentech.function.savepoint.SaveIdMigrator
 import io.github.zzzyyylllty.chotentech.manager.AttributeManager
+import io.github.zzzyyylllty.chotentech.player.sendComponent
 import io.github.zzzyyylllty.chotentech.util.ItemSerializer
+import io.github.zzzyyylllty.chotentech.util.TTLCache
 import io.github.zzzyyylllty.chotentech.util.devLog
 import org.bukkit.Location
 import io.github.zzzyyylllty.chotentech.util.jsonUtils
+import ink.ptms.chemdah.api.ChemdahAPI
+import ink.ptms.chemdah.core.database.Database
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -37,6 +42,23 @@ object ProfileManager {
 
     /** uuid -> list of ProfileInfo (metadata cache) */
     val profileInfoMap = ConcurrentHashMap<String, List<ProfileInfo>>()
+
+    /** 档案数据缓存(key = "uuid:profileId" -> PlayerData):
+     *  消除主线程 DB 读取 —— switchProfile/选择流程在多人 + 自动保存写锁时不再阻塞主线程。
+     *  固定 TTL:过期条目自动回源,避免离线查询的档案长驻内存;写路径 saveProfileData 同步刷新 */
+    private val profileDataCache = TTLCache<String, PlayerData>(PROFILE_DATA_CACHE_TTL)
+
+    /** 档案加载 miss 的负数缓存(固定短 TTL):占位符反复查询不存在档案时不再逐次查库 */
+    private val profileMissCache = TTLCache<String, Unit>(MISS_CACHE_TTL)
+
+    /** profile 表 cid -> uuid 索引:CID 占用探测(isCIDTaken)避免每次 findOne 发起 DB 连接 */
+    private val profileCidIndex = ConcurrentHashMap<String, String>()
+
+    /** profile 表 cid 占用 miss 的负数缓存(固定短 TTL):配合内存索引避免重复 findOne */
+    private val profileCidMissCache = TTLCache<String, Unit>(MISS_CACHE_TTL)
+
+    private const val PROFILE_DATA_CACHE_TTL = 10 * 60 * 1000L
+    private const val MISS_CACHE_TTL = 30 * 1000L
 
     /** Set of uuids that have been migrated from old format */
     private val migrated = ConcurrentHashMap.newKeySet<String>()
@@ -268,20 +290,38 @@ object ProfileManager {
 
     // ==================== Profile CRUD ====================
 
-    /** Load a profile's PlayerData from DB (without shared fields) */
+    /** key = "uuid:profileId" */
+    private fun profileCacheKey(uuid: String, profileId: String) = "$uuid:$profileId"
+
+    /** Load a profile's PlayerData from DB (without shared fields) — 缓存优先,避免主线程 DB 读取 */
     fun loadProfileData(uuid: String, profileId: String): PlayerData? {
         ensureSchema()
-        val json = profileMapper.findOne {
+        val key = profileCacheKey(uuid, profileId)
+        profileDataCache.get(key)?.let { return it }
+        if (profileMissCache.get(key) != null) return null
+        val row = profileMapper.findOne {
             "uuid" eq uuid
             "profile_id" eq profileId
-        }?.data ?: return null
+        }
+        if (row == null) {
+            profileMissCache.put(key, Unit)
+            return null
+        }
 
-        return try {
-            jsonUtils.fromJson(json, PlayerData::class.java)?.normalize()
+        val data = try {
+            jsonUtils.fromJson(row.data, PlayerData::class.java)?.normalize()
         } catch (e: Exception) {
             devLog("[ProfileManager] Failed to deserialize profile $profileId for $uuid: ${e.message}")
             null
         }
+        if (data != null) {
+            // 存档点 ID 迁移:失效旧 ID(中文)按 name 匹配新英文 ID,join/切档随下次保存落库
+            if (SaveIdMigrator.convert(data)) {
+                devLog("[ProfileManager] 存档点 ID 迁移 $uuid/$profileId: baseSave=${data.baseSave}, normalSave=${data.normalSave}")
+            }
+            profileDataCache.put(key, data)
+        }
+        return data
     }
 
     /** Save a profile's PlayerData to DB (shared fields are NOT saved here) */
@@ -298,6 +338,16 @@ object ProfileManager {
             it.createTime = data.createTime
             it.data = json
         }) { "uuid" eq uuid and ("profile_id" eq profileId) }
+        // 深拷贝入缓存:调用方(常为 playerDataMap 活对象)与缓存解耦,避免共享可变集合引用
+        // 被异步读取方并发访问(CME/半更新读取)
+        runCatching { jsonUtils.fromJson(json, PlayerData::class.java) }.getOrNull()
+            ?.let { profileDataCache.put(profileCacheKey(uuid, profileId), it) }
+        profileMissCache.remove(profileCacheKey(uuid, profileId))
+        // cid 列已写入,同步内存索引并清除负数缓存,保证 isCIDTaken 不再查库
+        if (data.cid.id != 0L) {
+            profileCidIndex[data.cid.id.toString()] = uuid
+            profileCidMissCache.remove(data.cid.id.toString())
+        }
     }
 
     /** Get the active profile's PlayerData with shared fields merged in */
@@ -311,13 +361,13 @@ object ProfileManager {
     /** Switch the active profile and load its data into playerDataMap.
      *  Inventory capture/restore requires main thread — if called from async,
      *  the entire operation is bridged to main thread synchronously. */
-    fun switchProfile(player: Player, profileId: String): PlayerData? {
+    fun switchProfile(player: Player, profileId: String, skipProfileTeleport: Boolean = false): PlayerData? {
         // Must run on main thread for inventory API. Bridge from async if needed.
         if (!Bukkit.isPrimaryThread()) {
             var result: PlayerData? = null
             val latch = java.util.concurrent.CountDownLatch(1)
             submit {
-                try { result = switchProfile(player, profileId) }
+                try { result = switchProfile(player, profileId, skipProfileTeleport) }
                 finally { latch.countDown() }
             }
             latch.await()
@@ -334,6 +384,8 @@ object ProfileManager {
         val currentData = playerDataMap[uuid]
         val currentActiveId = getSharedData(uuid).activeProfileId
         if (currentData != null && currentActiveId.isNotEmpty()) {
+            // 将 Chemdah 内存中的任务数据(当前 profile)写回 playerDataMap,此时仍指向旧 profile
+            ChemdahAPI.playerProfile[player.name]?.push()
             currentData.profileLocation = RespawnPoint.fromLocation(player.location)
             currentData.lastLogoutTime = System.currentTimeMillis()
             captureInventory(player)
@@ -381,6 +433,9 @@ object ProfileManager {
         val merged = mergeSharedFields(newData, shared)
         playerDataMap[uuid] = merged
 
+        // 重新加载 Chemdah 任务数据:select(新 profile 数据) -> validation -> 写缓存 -> Selected 事件
+        Database.loadProfile(player)
+
         // Restore inventory for the new profile
         applyInventory(player)
 
@@ -388,7 +443,8 @@ object ProfileManager {
         applyPotionEffects(player)
 
         // Teleport to the new profile's saved location, if any
-        teleportToProfileLocation(player)
+        // (新建档案由调用方负责教学传送,此处跳过,避免先误传送到 Area0 fallback)
+        if (!skipProfileTeleport) teleportToProfileLocation(player)
 
         // Re-detect current level based on player position (profile switch doesn't trigger move event)
         val helper = io.github.zzzyyylllty.chotentech.data.ChoTenDataHelper(player)
@@ -438,8 +494,11 @@ object ProfileManager {
         saveProfileData(uuid, newId, profileData)
         refreshProfileInfos(uuid)
 
-        // Switch to it
-        return switchProfile(player, newId)
+        // Switch to it, then teleport the freshly created profile to the tutorial start
+        // (跳过 switchProfile 内部的档案位置传送,避免先误传到 Area0 fallback 再二次传送)
+        val switched = switchProfile(player, newId, skipProfileTeleport = true)
+        teleportToTutorialEntry(player)
+        return switched
     }
 
     /** Soft-delete a profile: mark as archived in DB (cannot delete the last one). Max 10 archived per player. */
@@ -459,6 +518,8 @@ object ProfileManager {
         profileMapper.update(row)
 
         refreshProfileInfos(uuid)
+        profileDataCache.remove(profileCacheKey(uuid, profileId))
+        profileMissCache.remove(profileCacheKey(uuid, profileId))
 
         // Enforce max 10 archived: purge oldest if over limit
         purgeOldestArchived(uuid)
@@ -505,10 +566,16 @@ object ProfileManager {
         if (archived.size <= 10) return
         val toDelete = archived.take(archived.size - 10)
         for (info in toDelete) {
+            profileMapper.findOne {
+                "uuid" eq uuid
+                "profile_id" eq info.profileId
+            }?.cid?.let { profileCidIndex.remove(it) }
             profileMapper.deleteWhere {
                 "uuid" eq uuid
                 "profile_id" eq info.profileId
             }
+            profileDataCache.remove(profileCacheKey(uuid, info.profileId))
+            profileMissCache.remove(profileCacheKey(uuid, info.profileId))
         }
     }
 
@@ -564,28 +631,50 @@ object ProfileManager {
     }
 
     /**
-     * Deduplicate profiles with the same name — keep only the first one (lowest profileId),
-     * delete extras. This is a safety net for the race-condition bug that created
+     * Deduplicate profiles with the same name — keep only one, delete extras.
+     * Keep priority: the ACTIVE profile (never delete the row the player is on),
+     * then the row with the freshest saved data (player's newest progress),
+     * then the lowest profileId.
+     * This is a safety net for the race-condition bug that created
      * duplicate "Default" profiles on join.
      */
     private fun deduplicateProfiles(uuid: String) {
         val infos = loadProfileInfos(uuid)
+        val activeId = getSharedData(uuid).activeProfileId
         val groups = infos.groupBy { it.profileName }
         for ((_, dups) in groups) {
             if (dups.size <= 1) continue
-            // Keep the one with the lowest profileId (numeric sort)
-            val keep = dups.minBy { it.profileId.toIntOrNull() ?: Int.MAX_VALUE }
+            // 活跃档案必须保留;否则保留数据最新(lastLoginTime)的行,避免玩家进度被旧行覆盖
+            val keep = dups.firstOrNull { it.profileId == activeId }
+                ?: dups.maxByOrNull { readLastLoginTime(uuid, it) ?: 0L }
+                ?: dups.minBy { it.profileId.toIntOrNull() ?: Int.MAX_VALUE }
             for (dup in dups) {
                 if (dup.profileId != keep.profileId) {
+                    profileMapper.findOne {
+                        "uuid" eq uuid
+                        "profile_id" eq dup.profileId
+                    }?.cid?.let { profileCidIndex.remove(it) }
                     profileMapper.deleteWhere {
                         "uuid" eq uuid
                         "profile_id" eq dup.profileId
                     }
-                    devLog("[ProfileManager] Removed duplicate profile '${dup.profileName}' (${dup.profileId}) for $uuid")
+                    profileDataCache.remove(profileCacheKey(uuid, dup.profileId))
+                    profileMissCache.remove(profileCacheKey(uuid, dup.profileId))
+                    devLog("[ProfileManager] Removed duplicate profile '${dup.profileName}' (${dup.profileId}) for $uuid, kept ${keep.profileId}")
                 }
             }
         }
         refreshProfileInfos(uuid)
+    }
+
+    /** Best-effort read of the profile's last login time from its saved data JSON */
+    private fun readLastLoginTime(uuid: String, info: ProfileInfo): Long? {
+        val row = profileMapper.findOne {
+            "uuid" eq uuid
+            "profile_id" eq info.profileId
+        } ?: return null
+        val parsed = runCatching { jsonUtils.fromJson(row.data, PlayerData::class.java) }.getOrNull() ?: return null
+        return parsed.lastLoginTime.takeIf { it > 0 }
     }
 
     /** Accumulate play time for the current session into both per-profile and shared counters. */
@@ -621,10 +710,29 @@ object ProfileManager {
     fun isCIDTaken(cid: String): Boolean {
         // Check old user_data table
         if (io.github.zzzyyylllty.chotentech.data.DataManager.isIDExist(cid)) return true
-        // Check new profile table
-        return profileMapper.findOne {
+        // Check new profile table(内存索引优先)
+        if (profileCidIndex.containsKey(cid)) return true
+        if (profileCidMissCache.get(cid) != null) return false
+        val row = profileMapper.findOne {
             "cid" eq cid
-        } != null
+        }
+        if (row != null) {
+            profileCidIndex[cid] = row.uuid
+            return true
+        }
+        profileCidMissCache.put(cid, Unit)
+        return false
+    }
+
+    /** profile 表全量已占 CID(供 CidAllocator 启动时加载内存占用集合) */
+    fun getAllProfileCids(): Set<String> {
+        return try {
+            profileMapper.rawQuery({ rows("cid") }) { rs ->
+                buildSet { while (rs.next()) add(rs.getString(1)) }
+            }
+        } catch (e: Exception) {
+            emptySet()
+        }
     }
 
     private fun generateProfileID(playerName: String, uuid: String): IDData {
@@ -771,6 +879,32 @@ object ProfileManager {
         player.teleport(fallback)
     }
 
+    /** 教学关卡起点传送位置(world x y z yaw pitch) */
+    private val TUTORIAL_LOCATION = "world 30027 20 71 90 0"
+
+    /** 新档案进入时的教学传送:传送到教学关卡起点;已完成教学的玩家提示可用 /skiptutorial 跳过 */
+    fun teleportToTutorialEntry(player: Player) {
+        if (!Bukkit.isPrimaryThread()) {
+            submit { teleportToTutorialEntry(player) }
+            return
+        }
+        val parts = TUTORIAL_LOCATION.split(" ")
+        val world = Bukkit.getWorld(parts[0])
+        if (world == null) {
+            teleportToProfileLocation(player)
+            return
+        }
+        val loc = Location(world, parts[1].toDouble(), parts[2].toDouble(), parts[3].toDouble(), parts[4].toFloat(), parts[5].toFloat())
+        val chunk = loc.chunk
+        if (!chunk.isLoaded) chunk.load()
+        player.teleport(loc)
+        // 教学传送后立即按新位置检测层级(与 switchProfile 内部逻辑一致)
+        io.github.zzzyyylllty.chotentech.data.ChoTenDataHelper(player).updateLevel()
+        if (getSharedData(player.uniqueId.toString()).isCompletedTutorial) {
+            player.sendComponent("<yellow>你已完成教学,接取教程任务后可使用 <aqua>/skiptutorial <yellow>跳过教学直接开始游戏")
+        }
+    }
+
     /** Save all profile data and shared data for a player */
     fun saveAll(player: Player) {
         val uuid = player.uniqueId.toString()
@@ -804,13 +938,91 @@ object ProfileManager {
             data.attributeModifiers = attrData.modifiers
         }
 
-        // Save profile data (without shared fields)
-        saveProfileData(uuid, profileId, stripSharedFields(data))
+        // 未选档案(强制选择状态)时只保存共享数据,不写档案行 —— 否则会向 profile 表插入 profileId="" 的脏行
+        if (profileId.isNotEmpty()) {
+            saveProfileData(uuid, profileId, stripSharedFields(data))
+        }
+    }
+
+    /**
+     * 周期自动保存玩家的档案与共享数据。
+     * 主线程完成 Bukkit API 捕获(位置/背包)、共享字段同步与 JSON 序列化快照;DB 写入也在主线程执行,
+     * 与 quit/切档的同步写库完全串行 —— 引用校验与写库之间不会穿插其他流程。
+     * 序列化必须在主线程:stripped 是浅拷贝,嵌套集合与 playerDataMap 中的活跃对象共享引用,
+     * 异步序列化会与主线程的并发修改竞争 —— 轻则 CME 导致本轮保存失败,重则 HashMap 扩容期迭代
+     * 产出"缺条目但合法"的 JSON 落库覆盖新数据(静默数据丢失)。每 tick 仅保存 2 人的节奏下,
+     * 捕获与写库开销(毫秒级)由主线程承担可接受。
+     * 写库前校验 map 引用:退出流程(saveAll)或切档(switchProfile)已写库并替换/移除条目后,
+     * 本快照已过期,放弃落库,防止旧数据覆盖新数据。
+     */
+    fun saveAllAsync(player: Player) {
+        val uuid = player.uniqueId.toString()
+        val data = playerDataMap[uuid] ?: return
+        val shared = getSharedData(uuid)
+        val profileId = shared.activeProfileId
+
+        // ---- 主线程:Bukkit API 与共享字段同步 ----
+        accumulatePlayTime(player)
+        val now = System.currentTimeMillis()
+        data.lastLogoutTime = now
+        shared.lastQuitTime = now
+        data.profileLocation = RespawnPoint.fromLocation(player.location)
+        captureInventory(player)
+        syncToSharedData(uuid, data)
+
+        // 未选档案(强制选择状态)时只保存共享数据,不写档案行(与 saveAll 一致)
+        val stripped = if (profileId.isNotEmpty()) stripSharedFields(data) else null
+
+        // ---- 主线程:序列化快照 ----
+        val sharedJson = jsonUtils.toJson(shared, SharedData::class.java)
+        var profileJson: String? = null
+        var profileName = data.profileName
+        var createTime = data.createTime
+        val cid = data.cid.id.toString()
+        val cidType = data.cid.type
+        if (stripped != null) {
+            val info = getProfileInfos(uuid).find { it.profileId == profileId }
+            profileName = info?.profileName ?: data.profileName
+            stripped.attributeModifiers = AttributeManager.getPlayerPersistentData(UUID.fromString(uuid)).modifiers
+            profileJson = jsonUtils.toJson(stripped, PlayerData::class.java)
+        }
+
+        // ---- 主线程:DB 写入(引用校验与写库原子) ----
+        submit {
+            if (playerDataMap[uuid] !== data) return@submit
+            try {
+                sharedMapper.insertOrUpdate(PlayerSharedRow().also {
+                    it.uuid = uuid
+                    it.data = sharedJson
+                }) { "uuid" eq uuid }
+
+                if (stripped != null && profileJson != null) {
+                    profileMapper.insertOrUpdate(PlayerProfileRow().also {
+                        it.uuid = uuid
+                        it.profileId = profileId
+                        it.profileName = profileName
+                        it.cid = cid
+                        it.cidType = cidType
+                        it.createTime = createTime
+                        it.data = profileJson
+                    }) { "uuid" eq uuid and ("profile_id" eq profileId) }
+                    // 深拷贝入缓存:与活数据解耦,异步读取方(getDataByCID/占位符)不会并发读共享集合
+                    runCatching { jsonUtils.fromJson(profileJson, PlayerData::class.java) }.getOrNull()
+                        ?.let { profileDataCache.put(profileCacheKey(uuid, profileId), it) }
+                    profileMissCache.remove(profileCacheKey(uuid, profileId))
+                }
+            } catch (e: Exception) {
+                devLog("[ProfileManager] 自动保存失败 $uuid: ${e.message}")
+            }
+        }
     }
 
     fun releaseAll(uuid: String) {
         sharedDataMap.remove(uuid)
         profileInfoMap.remove(uuid)
+        val prefix = "$uuid:"
+        profileDataCache.removeIf { it.startsWith(prefix) }
+        profileMissCache.removeIf { it.startsWith(prefix) }
     }
 
     /** Ensure a player has at least one profile — called on join */
@@ -832,8 +1044,12 @@ object ProfileManager {
         shared.lastJoinTime = now
         shared.joinCount++
 
+        // 是否为本次进服自动创建的新档案(用于教学传送)
+        var freshProfileCreated = false
+
         // Check if profiles exist — query DB directly to bypass any stale cache
         if (!hasAnyProfileInDB(uuid)) {
+            freshProfileCreated = true
             // Generate CID (only for the very first profile)
             val cid = generateProfileID(player.name, uuid)
             // Save CID to shared data so all profiles share it
@@ -934,7 +1150,8 @@ object ProfileManager {
 
         // Restore inventory for this profile
         applyInventory(player)
-        teleportToProfileLocation(player)
+        // 自动创建的 Default 档案传送至教学关卡起点,其余档案传送至档案保存位置
+        if (freshProfileCreated) teleportToTutorialEntry(player) else teleportToProfileLocation(player)
         return merged
     }
 }

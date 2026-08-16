@@ -1,0 +1,138 @@
+ZhangShun:
+  name: "<gold>张顺"
+  items:
+    # Lv.1 - 基础用品
+    bandage:
+      id: sertraline:bandage
+      buy: point:10
+      sell: point:3
+    bread:
+      id: sertraline:bread
+      buy: point:7
+      sell: point:2
+    wood:
+      id: sertraline:wood
+      buy: point:4
+      sell: point:1
+    # Lv.2 - 中级商品
+    almond_water_red:
+      id: sertraline:almond_water_red
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:50
+      sell: point:15
+    iron_ingot:
+      id: sertraline:iron_ingot
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:19
+      sell: point:6
+    tape:
+      id: sertraline:tape
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:4
+      sell: point:1
+    # Lv.3 - 高级商品
+    nail:
+      id: sertraline:nail
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: point:7
+      sell: point:2
+    fuel:
+      id: sertraline:fuel
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: point:25
+      sell: point:8
+    diamond:
+      id: sertraline:diamond
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: point:125
+      sell: point:38
+
+    wifi:
+      id: "sertraline:wifi"
+      buy: point:25
+
+    radio:
+      id: "sertraline:radio"
+      buy: point:19
+
+    basic_wifi_sender:
+      id: "sertraline:basic_wifi_sender"
+      buy: point:44
+
+    advanced_wifi_sender:
+      id: "sertraline:advanced_wifi_sender"
+      buy: point:100
+
+    cpu:
+      id: "sertraline:cpu"
+      buy: point:50
+
+    light_bulb:
+      id: "sertraline:light_bulb"
+      buy: point:8
+
+    phone:
+      id: "sertraline:phone"
+      buy: point:63
+
+    rocket_tech:
+      id: "sertraline:advanced_ai_core"
+      requirements:
+        - mode: quest
+          value: Rocket
+          display: "需要完成任务「火箭」"
+      buy: point:438
+
+    gold_master:
+      id: "sertraline:golden_necklace"
+      requirements:
+        - mode: quest
+          value: FlashGoldCharge
+          display: "需要完成任务「闪金冲锋」"
+      buy: point:313
+
+    paper:
+      id: "sertraline:paper"
+      sell: point:1
+
+    screw:
+      id: "sertraline:screw"
+      sell: point:1
+
+    battery:
+      id: "sertraline:battery"
+      sell: point:1
+
+    broken_disk:
+      id: "sertraline:broken_disk"
+      sell: point:1
+
+    dust:
+      id: "sertraline:dust"
+      sell: point:1
+
+    rag:
+      id: "sertraline:rag"
+      sell: point:1
+
+    plastic:
+      id: "sertraline:plastic"
+      sell: point:1

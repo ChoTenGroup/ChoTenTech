@@ -9,6 +9,8 @@ import ink.ptms.chemdah.core.database.Database
 import ink.ptms.chemdah.core.quest.Quest
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
 import io.github.zzzyyylllty.chotentech.data.DataManager
+import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager
+import io.github.zzzyyylllty.chotentech.util.devLog
 import io.github.zzzyyylllty.chotentech.util.jsonUtils
 import org.bukkit.entity.Player
 import taboolib.common.LifeCycle
@@ -19,6 +21,9 @@ import java.util.concurrent.ConcurrentHashMap
 
 @Awake(LifeCycle.LOAD)
 fun initChotenChemdahProfile() {
+    // 关闭 Chemdah 默认进服加载:需等待 initData 完成(角色数据就绪)后再手动 loadProfile,
+    // 否则 select() 会读到未就绪的 playerDataMap,回落到旧 user_data 表导致档案数据串档
+    Database.isLoadInJoinEvent = false
     Chemdah.registerDatabaseImpl<Database>(ChotenChemdahProfile())
     ChotenChemdahProfile.loadVariables()
 }
@@ -96,7 +101,14 @@ class ChotenChemdahProfile : Database() {
     }
 
     override fun update(player: Player, playerProfile: PlayerProfile) {
-        val pData = playerDataMap[player.uniqueId.toString()] ?: return
+        val uuid = player.uniqueId.toString()
+        val pData = playerDataMap[uuid]
+        if (pData == null) {
+            // 退出流程(DataManager.onQuit -> releaseData)先于 Chemdah 保存执行时,内存数据已释放:
+            // 回退 DB 读取并写回档案行,防止本会话任务进度被静默丢弃
+            offlineUpdate(uuid, playerProfile)
+            return
+        }
 
         // 保存 profile 数据容器（Map -> JSON）
         pData.chemdahProfileData = jsonUtils.toJson(playerProfile.persistentDataContainer.toMap())
@@ -113,6 +125,36 @@ class ChotenChemdahProfile : Database() {
         // 重置变更追踪
         playerProfile.persistentDataContainer.flush()
         playerProfile.releaseQuests.clear()
+    }
+
+    /** playerDataMap 无该玩家(退出流程已释放内存)时的回退保存:从 DB 读取最新档案,合并任务数据后写回 */
+    private fun offlineUpdate(uuid: String, playerProfile: PlayerProfile) {
+        try {
+            val shared = ProfileManager.getSharedData(uuid)
+            val profileId = shared.activeProfileId
+            if (profileId.isNotEmpty()) {
+                val dbData = ProfileManager.loadProfileData(uuid, profileId)
+                if (dbData != null) {
+                    dbData.chemdahProfileData = jsonUtils.toJson(playerProfile.persistentDataContainer.toMap())
+
+                    val questMap = linkedMapOf<String, Map<String, Any>>()
+                    playerProfile.getQuests().forEach { quest ->
+                        quest.newQuest = false
+                        questMap[quest.id] = quest.persistentDataContainer.toMap()
+                        quest.persistentDataContainer.flush()
+                    }
+                    dbData.chemdahQuestData = if (questMap.isNotEmpty()) jsonUtils.toJson(questMap) else null
+
+                    playerProfile.persistentDataContainer.flush()
+                    playerProfile.releaseQuests.clear()
+                    ProfileManager.saveProfileData(uuid, profileId, ProfileManager.stripSharedFields(dbData))
+                }
+            }
+            // 离线回退路径不留 SharedData 缓存,避免离线玩家长期占用内存
+            ProfileManager.releaseSharedData(uuid)
+        } catch (e: Exception) {
+            devLog("[Chemdah] 离线档案保存失败 $uuid: ${e.message}")
+        }
     }
 
     override fun releaseQuest(player: Player, playerProfile: PlayerProfile, quest: Quest) {

@@ -21,26 +21,210 @@ BlackMarket:
         value: 5000
 
   items:
-    # 使用PAPI占位符作为lore的商品
-    vip_pass:
-      id: sertraline:vip_pass
-      requirements:
-        - mode: papi
-          papi: "%player_level%"
-          value: ">=10"
-          display: 玩家等级>=10
+    # ════════════════════════════════════════
+    # 军火（贸易点）
+    # ════════════════════════════════════════
+    gunpowder_kangel:
+      id: sertraline:gunpowder_kangel
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
       buy:
         - currency: point
-          amount: 500
-        - currency: money
-          amount: 1000
+          amount: 60
       sell:
-        - currency: tape
-          amount: 50
+        - currency: point
+          amount: 24
+      limit:
+        player: 2
+        player-reset: 24h
 
-    # 纯以物易物：用5个木头换1个石头
-    refined_stone:
-      id: sertraline:refined_stone
+    gunpowder_player:
+      id: sertraline:gunpowder_player
+      buy:
+        - currency: point
+          amount: 30
+      sell:
+        - currency: point
+          amount: 12
+
+    gunpowder_rain:
+      id: sertraline:gunpowder_rain
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy:
+        - currency: point
+          amount: 60
+      sell:
+        - currency: point
+          amount: 24
+      limit:
+        player: 2
+        player-reset: 24h
+
+    thermite:
+      id: sertraline:thermite
+      buy:
+        - currency: point
+          amount: 20
+      sell:
+        - currency: point
+          amount: 8
+
+    atomic_gunpowder:
+      id: sertraline:atomic_gunpowder
+      buy:
+        - currency: point
+          amount: 32
+      sell:
+        - currency: point
+          amount: 13
+
+    6ch_grenade:
+      id: sertraline:6ch_grenade
+      buy:
+        - currency: point
+          amount: 20
+      sell:
+        - currency: point
+          amount: 8
+
+    shakalaka_grenade:
+      id: sertraline:shakalaka_grenade
+      buy:
+        - currency: point
+          amount: 35
+      sell:
+        - currency: point
+          amount: 14
+
+    b_shakalaka_grenade:
+      id: sertraline:b_shakalaka_grenade
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy:
+        - currency: point
+          amount: 75
+      sell:
+        - currency: point
+          amount: 30
+      limit:
+        player: 1
+        player-reset: 24h
+
+    hqlm_petrol:
+      id: sertraline:hqlm_petrol
+      buy:
+        - currency: point
+          amount: 18
+      sell:
+        - currency: point
+          amount: 7
+
+    firesalt_petrol:
+      id: sertraline:firesalt_petrol
+      buy:
+        - currency: point
+          amount: 32
+      sell:
+        - currency: point
+          amount: 13
+
+    strong_firesalt_petrol:
+      id: sertraline:strong_firesalt_petrol
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy:
+        - currency: point
+          amount: 70
+      sell:
+        - currency: point
+          amount: 28
+      limit:
+        player: 2
+        player-reset: 24h
+
+    frontroad_grenade:
+      id: sertraline:frontroad_grenade
+      buy:
+        - currency: point
+          amount: 19
+      sell:
+        - currency: point
+          amount: 8
+
+    endroad_grenade:
+      id: sertraline:endroad_grenade
+      buy:
+        - currency: point
+          amount: 33
+      sell:
+        - currency: point
+          amount: 13
+
+    nizxc_flash:
+      id: sertraline:nizxc_flash
+      buy:
+        - currency: point
+          amount: 6
+      sell:
+        - currency: point
+          amount: 2
+
+    zx_stun:
+      id: sertraline:zx_stun
+      buy:
+        - currency: point
+          amount: 6
+      sell:
+        - currency: point
+          amount: 2
+
+    ice_stun:
+      id: sertraline:ice_stun
+      buy:
+        - currency: point
+          amount: 6
+      sell:
+        - currency: point
+          amount: 2
+
+    shengguang_grenade:
+      id: sertraline:shengguang_grenade
+      buy:
+        - currency: point
+          amount: 6
+      sell:
+        - currency: point
+          amount: 2
+
+    # ════════════════════════════════════════
+    # 磁带货币商品（磁带币）
+    # ════════════════════════════════════════
+    red_tape:
+      id: sertraline:red_tape
+      buy:
+        - currency: tape
+          amount: 100
+
+    blue_tape:
+      id: sertraline:blue_tape
+      buy:
+        - currency: tape
+          amount: 100
+
+    # ════════════════════════════════════════
+    # 以物易物：5 木头换 1 燧石
+    # ════════════════════════════════════════
+    flint:
+      id: sertraline:flint
       buy:
         - item: "sertraline:wood"
           amount: 5
@@ -49,69 +233,35 @@ BlackMarket:
           amount: 2
 
     # 多货币购买 + 动态定价
-    energy_drink:
-      id: sertraline:energy_drink
+    cola:
+      id: sertraline:cola
       buy:
-        - currency: money
-          amount: 200
+        - currency: point
+          amount: 14
           dynamic-pricing:
-            max: 300
-            min: 100
-        - currency: tape
+            max: 20
+            min: 10
+
+    # ════════════════════════════════════════
+    # 旧物回收（仅收购，付现金）
+    # ════════════════════════════════════════
+    dust:
+      id: sertraline:dust
+      sell:
+        - currency: money
           amount: 2
+
+    trash_bag:
+      id: sertraline:trash_bag
       sell:
         - currency: money
-          amount: 50
-      limit:
-        global: 100
-        player: 10
-        global-reset: 24h
-        player-reset: 1h
+          amount: 3
 
-    # 仅出售模式（玩家卖东西给商店）
-    scrap_metal:
-      id: sertraline:scrap_metal
+    plastic:
+      id: sertraline:plastic
       sell:
         - currency: money
-          amount: 30
-        - currency: point
-          amount: 5
-
-    # 限购 + 混合支付（货币+物品）
-    ancient_relic:
-      id: sertraline:ancient_relic
-      requirements:
-        - mode: papi
-          papi: "%player_health%"
-          value: ">=20"
-          display: 血量>=20
-      buy:
-        - currency: point
-          amount: 1000
-        - item: "sertraline:wood"
-          amount: 10
-      limit:
-        global: 50
-        player: 1
-        global-reset: 24h
-        player-reset: 24h
-
-    # 磁带购买
-    classified_doc:
-      id: sertraline:classified_doc
-      buy:
-        - currency: tape
-          amount: 100
-      sell:
-        - currency: point
-          amount: 200
-
-    # 纯出售物品（无购买价格）
-    rotten_flesh:
-      id: sertraline:rotten_flesh
-      sell:
-        - currency: money
-          amount: 5
+          amount: 16
 
     # ════════════════════════════════════════
     # 礼包类商品

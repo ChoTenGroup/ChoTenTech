@@ -26,6 +26,14 @@ object ReachLevelObjective : ObjectiveCountableI<NoclipEvent>() {
         addSimpleCondition("target") { data, e ->
             data.asList().any { it.equals(e.target, true) }
         }
+
+        addSimpleCondition("from") { data, e ->
+            data.asList().any { it.equals(e.level, true) }
+        }
+
+        addSimpleCondition("name") { data, e ->
+            data.asList().any { it.equals(e.name, true) }
+        }
     }
 
     override fun getCount(profile: PlayerProfile, task: Task, event: NoclipEvent): Int {

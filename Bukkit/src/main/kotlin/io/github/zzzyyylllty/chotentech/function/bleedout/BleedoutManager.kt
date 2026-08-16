@@ -207,8 +207,8 @@ object BleedoutManager {
             bar.viewers().toSet().forEach { bar.removeViewer(it as net.kyori.adventure.audience.Audience) }
         }
         bleedoutBossBars.clear()
-        barrierPositions.forEach { (uuid, loc) ->
-            Bukkit.getPlayer(uuid)?.let { sendRealBlock(loc, it) }
+        barrierPositions.forEach { (_, loc) ->
+            sendRealBlock(loc)
         }
         barrierPositions.clear()
         downedPlayers.clear()
@@ -326,34 +326,35 @@ object BleedoutManager {
 
             // 位置变了 → 还原旧位置，设置新位置
             if (old != null && (old.blockX != headLoc.blockX || old.blockY != headLoc.blockY || old.blockZ != headLoc.blockZ)) {
-                sendRealBlock(old, player)
+                sendRealBlock(old)
             }
             if (old == null || old.blockX != headLoc.blockX || old.blockY != headLoc.blockY || old.blockZ != headLoc.blockZ) {
-                sendFakeBarrier(headLoc, player)
+                sendFakeBarrier(headLoc)
                 barrierPositions[uuid] = headLoc
             }
         }
     }
 
-    private fun sendFakeBarrier(loc: Location, target: Player) {
+    private fun sendFakeBarrier(loc: Location) {
         val barrier = org.bukkit.Material.BARRIER.createBlockData()
-        target.sendBlockChange(loc, barrier)
+        // 倒地头部屏障发给所有玩家,其他玩家也能看到倒地者位置
+        Bukkit.getOnlinePlayers().forEach { it.sendBlockChange(loc, barrier) }
     }
 
-    private fun sendRealBlock(loc: Location, target: Player) {
+    private fun sendRealBlock(loc: Location) {
         val real = loc.world?.getBlockAt(loc)?.blockData ?: return
-        target.sendBlockChange(loc, real)
+        Bukkit.getOnlinePlayers().forEach { it.sendBlockChange(loc, real) }
     }
 
     private fun setDownedPose(player: Player, downed: Boolean) {
         if (downed) {
             // 进入倒地 → 在头部位置放屏障
             val headLoc = player.location.clone().apply { y = floor(y + 1.8).toDouble() }
-            sendFakeBarrier(headLoc, player)
+            sendFakeBarrier(headLoc)
             barrierPositions[player.uniqueId] = headLoc
         } else {
             // 恢复 → 还原方块
-            barrierPositions.remove(player.uniqueId)?.let { sendRealBlock(it, player) }
+            barrierPositions.remove(player.uniqueId)?.let { sendRealBlock(it) }
         }
     }
 

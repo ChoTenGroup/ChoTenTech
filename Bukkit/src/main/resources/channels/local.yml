@@ -1,0 +1,13 @@
+# 本地聊天频道（按距离可见）
+key: local
+display-name: "<gray>[<green>本地</green>]</gray>"
+formats:
+  default: "<gray>[<green>本地</green>]</gray> <username><gray>: </gray><message>"
+  console: "[本地] <username>: <message>"
+quick-prefix: ".l"
+# 半径 100 格内可见
+radius: 100
+cooldown: 1
+cooldown-overrides: {}
+party: false
+permission: ""

@@ -1,91 +1,119 @@
 Sylvia:
-  name: "<aqua>西尔维娅"
+  name: "<gold>西尔维亚"
   items:
-    # Lv.1 - 基础材料
-    paper:
-      id: sertraline:paper
-      buy: money:20
-      sell: money:5
-    tape:
-      id: sertraline:tape
-      buy: money:30
-      sell: money:8
-    wood:
-      id: sertraline:wood
-      buy: money:25
-      sell: money:6
-    # Lv.2 - 中级通信零件
-    copper_wire:
-      id: sertraline:copper_wire
-      buy-requirements:
-        - mode: level
-          level: 2
-          display: 需要商人等级 Lv.2
+    # Lv.1 - 基础设备
+    examination_paper:
+      id: sertraline:examination_paper
       buy: money:150
-      sell: money:45
-    silver_wire:
-      id: sertraline:silver_wire
+      sell: money:60
+    simple_watch:
+      id: sertraline:simple_watch
+      buy: money:320
+      sell: money:128
+    # Lv.2 - 通信设备
+    basic_wifi_sender:
+      id: sertraline:basic_wifi_sender
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: money:250
-      sell: money:75
-    battery:
-      id: sertraline:battery
+      buy: money:200
+    advanced_wifi_sender:
+      id: sertraline:advanced_wifi_sender
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: money:150
-      sell: money:45
+      buy: money:360
     radio:
       id: sertraline:radio
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: money:350
-      sell: money:100
-      limit:
-        player: 5
-        player-reset: 24h
-    # Lv.3 - 高级通信设备
-    capacitor:
-      id: sertraline:capacitor
-      buy-requirements:
-        - mode: level
-          level: 3
-          display: 需要商人等级 Lv.3
-      buy: money:200
-      sell: money:60
-    power_supply:
-      id: sertraline:power_supply
-      buy-requirements:
-        - mode: level
-          level: 3
-          display: 需要商人等级 Lv.3
-      buy: money:400
-      sell: money:120
-    cpu:
-      id: sertraline:cpu
-      buy-requirements:
-        - mode: level
-          level: 3
-          display: 需要商人等级 Lv.3
-      buy: money:500
-      sell: money:150
       limit:
         player: 3
         player-reset: 24h
-    advanced_wifi_sender:
-      id: sertraline:advanced_wifi_sender
+      buy: money:900
+    ram_stick:
+      id: sertraline:ram_stick
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      limit:
+        player: 3
+        player-reset: 24h
+      buy: money:800
+    wifi:
+      id: sertraline:wifi
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      limit:
+        player: 1
+        player-reset: 24h
+      buy: money:2000
+    phone:
+      id: sertraline:phone
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:300
+    # Lv.3 - 高级设备
+    sound_card:
+      id: sertraline:sound_card
       buy-requirements:
         - mode: level
           level: 3
           display: 需要商人等级 Lv.3
-      buy: money:2000
-      sell: money:600
       limit:
-        player: 1
+        player: 2
         player-reset: 24h
+      buy: money:900
+    hearing_aid:
+      id: sertraline:hearing_aid
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      limit:
+        player: 2
+        player-reset: 24h
+      buy: money:900
+    ultraviolet_lamp:
+      id: sertraline:ultraviolet_lamp
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:350
+    soundproof_panel:
+      id: sertraline:soundproof_panel
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:340
+    record_player:
+      id: sertraline:record_player
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      limit:
+        player: 2
+        player-reset: 24h
+      buy: money:950
+    3d_vision_glasses:
+      id: sertraline:3d_vision_glasses
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      limit:
+        player: 2
+        player-reset: 24h
+      buy: money:1000

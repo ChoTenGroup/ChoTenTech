@@ -15,6 +15,7 @@ import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
 import org.bukkit.potion.PotionEffectType
 import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager
+import io.github.zzzyyylllty.chotentech.data.profile.SettingRegistry
 import io.github.zzzyyylllty.chotentech.function.AchievementManager
 import io.github.zzzyyylllty.chotentech.function.BaseManager
 import io.github.zzzyyylllty.chotentech.function.CurrencyManager
@@ -542,7 +543,10 @@ object ExamplePapiHook : PlaceholderExpansion {
             "setting" -> {
                 if (player == null || list.size < 2) return ""
                 val key = list[1].lowercase()
-                return ProfileManager.getSharedData(player.uniqueId.toString()).settings.get(key)
+                // 大小写不敏感匹配注册表 id;未注册的 key 返回空而不是 "unknown"
+                val settingId = SettingRegistry.byId.keys.firstOrNull { it.lowercase() == key }
+                    ?: return ""
+                return ProfileManager.getSharedData(player.uniqueId.toString()).settings.get(settingId)
             }
         }
         return "Error"

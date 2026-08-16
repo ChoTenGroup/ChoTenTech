@@ -3,6 +3,7 @@ package io.github.zzzyyylllty.chotentech.function.noclip
 import io.github.zzzyyylllty.chotentech.ChoTenTech
 import io.github.zzzyyylllty.chotentech.data.*
 import io.github.zzzyyylllty.chotentech.listener.checkPlayerIsInNoclipPoint
+import io.github.zzzyyylllty.chotentech.shop.ShopMenu
 import io.github.zzzyyylllty.chotentech.util.CurrencyUtil
 import io.github.zzzyyylllty.chotentech.util.toComponent
 import io.github.zzzyyylllty.sertraline.Sertraline
@@ -64,6 +65,42 @@ object NoclipConditionChecker {
     fun needsSubmission(noclipPoint: NoclipPoint): Boolean {
         val c = noclipPoint.conditions ?: return false
         return c.item != null || c.car != null
+    }
+
+    /** 获取切出点当前最相关的条件提示文本(与 actionbar 提示一致);条件已满足或无条件时返回 null */
+    fun getConditionHint(player: Player, noclipPoint: NoclipPoint): String? {
+        val result = checkConditions(player, noclipPoint)
+        return when (result) {
+            is ConditionResult.Blocked -> result.message
+            is ConditionResult.NeedsSubmission -> result.message
+            else -> null
+        }
+    }
+
+    /** 构建切出点条件指引聊天文本:告诉玩家如何提交物品满足条件 */
+    fun buildConditionGuide(noclipPoint: NoclipPoint): String {
+        val c = noclipPoint.conditions ?: return "<#FFCC66>此处切出需要满足条件"
+        val sb = StringBuilder("<#FFCC66>切出点 <white>${noclipPoint.name ?: "未命名"}<#FFCC66> 需要满足条件:")
+        c.item?.let { cond ->
+            val items = cond.items.joinToString(", ") { "${ShopMenu.lookupItemName(it.id)} x${it.amount}" }
+            sb.append("\n<gray>- <aqua>提交物品: <white>$items <gray>(携带所需物品站在切出点内,下蹲后自动提交)")
+        }
+        c.car?.let { cond ->
+            sb.append("\n<gray>- <aqua>支付: <white>${cond.cost} x${cond.amount} <gray>(下蹲时自动扣除)")
+        }
+        c.coop?.let { cond ->
+            sb.append("\n<gray>- <aqua>合作: <white>需要 ${cond.require} 人同时站在切出点内")
+        }
+        c.signal?.let {
+            sb.append("\n<gray>- <aqua>信号: <white>在指定区域手持信号物品")
+        }
+        c.dropbag?.let {
+            sb.append("\n<gray>- <aqua>空包: <white>清空指定栏位后切出")
+        }
+        c.condition?.let {
+            sb.append("\n<gray>- <aqua>条件: <white>满足特殊条件")
+        }
+        return sb.toString()
     }
 
     private fun unlockKey(player: Player, noclipPoint: NoclipPoint): String {

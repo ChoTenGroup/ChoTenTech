@@ -1,0 +1,220 @@
+package io.github.zzzyyylllty.chotentech.chat
+
+import io.github.zzzyyylllty.chotentech.ChoTenTech
+import io.github.zzzyyylllty.chotentech.player.sendComponent
+import org.bukkit.Bukkit
+import org.bukkit.entity.Player
+import taboolib.common.platform.command.CommandBody
+import taboolib.common.platform.command.CommandHeader
+import taboolib.common.platform.command.PermissionDefault
+import taboolib.common.platform.command.mainCommand
+import taboolib.common.platform.command.player
+import taboolib.common.platform.command.subCommand
+import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
+
+private object WhisperUtil {
+
+    val cooldowns = ConcurrentHashMap<UUID, Long>()
+
+    fun format(key: String, def: String): String =
+        ChoTenTech.chatSettings.getString("whisper.$key", def) ?: def
+
+    fun send(sender: Player, target: Player, message: String) {
+        if (sender.uniqueId in ChatPlayerDataManager.get(target).ignoredPlayers) {
+            sender.sendComponent("<red>对方已将你屏蔽，无法发送私聊。")
+            return
+        }
+
+        // 私聊冷却
+        val cooldown = ChoTenTech.chatSettings.getDouble("whisper.cooldown", 1.0)
+        if (cooldown > 0 && !sender.hasPermission("chotentech.chat.cooldown.whisper.bypass")) {
+            val last = cooldowns[sender.uniqueId] ?: 0L
+            val elapsedSec = (System.currentTimeMillis() - last) / 1000.0
+            if (elapsedSec < cooldown) {
+                sender.sendComponent("<red>私聊冷却中，请 <yellow>${"%.1f".format(cooldown - elapsedSec)}<red> 秒后再试。")
+                return
+            }
+        }
+
+        val filtered = TabooFilter.filter(sender, message)
+        if (filtered.isBlank()) return
+        val messageComponent = ChatFormatter.parseMessage(sender, filtered)
+
+        val sendComponent = ChatFormatter.buildWithTags(
+            formatStr = format("send", "<gray>[私聊 → <white><target></white>]</gray> <message>"),
+            player = sender,
+            messageComponent = messageComponent,
+            tags = mapOf("target" to target.displayName()),
+        )
+        val receiveComponent = ChatFormatter.buildWithTags(
+            formatStr = format("receive", "<gray>[私聊 ← <white><sender></white>]</gray> <message>"),
+            player = target,
+            messageComponent = messageComponent,
+            tags = mapOf("sender" to sender.displayName()),
+        )
+
+        // 回复目标（双方互写，便于 /reply）
+        val senderData = ChatPlayerDataManager.get(sender)
+        senderData.lastWhisperTarget = target.uniqueId
+        val targetData = ChatPlayerDataManager.get(target)
+        targetData.lastWhisperTarget = sender.uniqueId
+        ChatPlayerDataManager.save(sender.uniqueId)
+        ChatPlayerDataManager.save(target.uniqueId)
+
+        sender.sendMessage(sendComponent)
+        target.sendMessage(receiveComponent)
+        cooldowns[sender.uniqueId] = System.currentTimeMillis()
+        Bukkit.getConsoleSender().sendMessage("[私聊] ${sender.name} -> ${target.name}: $filtered")
+    }
+}
+
+@CommandHeader(
+    name = "msg",
+    aliases = ["whisper", "w", "pm"],
+    permission = "chotentech.command.msg",
+    permissionDefault = PermissionDefault.TRUE,
+    permissionMessage = "",
+    newParser = false,
+)
+object MsgCommand {
+
+    @CommandBody
+    val main = mainCommand {
+        player("target") {
+            dynamic("message") {
+                execute<Player> { sender, context, _ ->
+                    val target = context.player("target") as? Player
+                    if (target == null) {
+                        sender.sendComponent("<red>目标玩家不在线。")
+                        return@execute
+                    }
+                    if (target == sender) {
+                        sender.sendComponent("<red>不能给自己发送私聊。")
+                        return@execute
+                    }
+                    WhisperUtil.send(sender, target, context["message"])
+                }
+            }
+        }
+    }
+}
+
+@CommandHeader(
+    name = "reply",
+    aliases = ["r"],
+    permission = "chotentech.command.msg",
+    permissionDefault = PermissionDefault.TRUE,
+    permissionMessage = "",
+    newParser = false,
+)
+object ReplyCommand {
+
+    @CommandBody
+    val main = mainCommand {
+        dynamic("message") {
+            execute<Player> { sender, context, _ ->
+                val targetId = ChatPlayerDataManager.get(sender).lastWhisperTarget
+                val target = targetId?.let { Bukkit.getPlayer(it) }
+                if (target == null || !target.isOnline) {
+                    sender.sendComponent("<red>没有可回复的对象。")
+                    return@execute
+                }
+                WhisperUtil.send(sender, target, context["message"])
+            }
+        }
+    }
+}
+
+@CommandHeader(
+    name = "ignore",
+    aliases = ["block"],
+    permission = "chotentech.command.msg",
+    permissionDefault = PermissionDefault.TRUE,
+    permissionMessage = "",
+    newParser = false,
+)
+object IgnoreCommand {
+
+    @CommandBody
+    val main = mainCommand {
+        player("target") {
+            execute<Player> { sender, context, _ ->
+                val target = context.player("target") as? Player
+                if (target == null) {
+                    sender.sendComponent("<red>目标玩家不在线。")
+                    return@execute
+                }
+                if (target == sender) {
+                    sender.sendComponent("<red>不能屏蔽自己。")
+                    return@execute
+                }
+                val data = ChatPlayerDataManager.get(sender)
+                if (!data.ignoredPlayers.add(target.uniqueId)) {
+                    sender.sendComponent("<yellow>你已屏蔽 <white>${target.name}<yellow>。")
+                    return@execute
+                }
+                ChatPlayerDataManager.save(sender.uniqueId)
+                sender.sendComponent("<green>已屏蔽 <white>${target.name}<green>，将不再看到其频道消息与私聊。")
+            }
+        }
+    }
+}
+
+@CommandHeader(
+    name = "unignore",
+    aliases = ["unblock"],
+    permission = "chotentech.command.msg",
+    permissionDefault = PermissionDefault.TRUE,
+    permissionMessage = "",
+    newParser = false,
+)
+object UnignoreCommand {
+
+    @CommandBody
+    val main = mainCommand {
+        player("target") {
+            execute<Player> { sender, context, _ ->
+                val target = context.player("target") as? Player
+                if (target == null) {
+                    sender.sendComponent("<red>目标玩家不在线。")
+                    return@execute
+                }
+                val data = ChatPlayerDataManager.get(sender)
+                if (!data.ignoredPlayers.remove(target.uniqueId)) {
+                    sender.sendComponent("<yellow>你没有屏蔽 <white>${target.name}<yellow>。")
+                    return@execute
+                }
+                ChatPlayerDataManager.save(sender.uniqueId)
+                sender.sendComponent("<green>已解除屏蔽 <white>${target.name}<green>。")
+            }
+        }
+    }
+}
+
+@CommandHeader(
+    name = "ignorelist",
+    aliases = ["listignores"],
+    permission = "chotentech.command.msg",
+    permissionDefault = PermissionDefault.TRUE,
+    permissionMessage = "",
+    newParser = false,
+)
+object IgnoreListCommand {
+
+    @CommandBody
+    val main = mainCommand {
+        execute<Player> { sender, _, _ ->
+            val ignored = ChatPlayerDataManager.get(sender).ignoredPlayers
+            if (ignored.isEmpty()) {
+                sender.sendComponent("<gray>你当前没有屏蔽任何玩家。")
+                return@execute
+            }
+            sender.sendComponent("<gold>===== 屏蔽列表 (${ignored.size}) =====")
+            ignored.forEach { id ->
+                val name = Bukkit.getOfflinePlayer(id).name ?: id.toString()
+                sender.sendComponent("<gray>- <white>$name")
+            }
+        }
+    }
+}

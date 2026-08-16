@@ -2,6 +2,7 @@ package io.github.zzzyyylllty.chotentech.feature
 
 import ink.ptms.um.Mythic
 import io.github.zzzyyylllty.chotentech.ChoTenTech.config
+import io.github.zzzyyylllty.chotentech.isSafeWorld
 import io.github.zzzyyylllty.chotentech.data.ChoTenDataHelper
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
@@ -34,6 +35,7 @@ fun startMMSanityDrain() {
 
         for (player in Bukkit.getOnlinePlayers()) {
             if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) continue
+            if (isSafeWorld(player)) continue
             if (player.isDead) continue
 
             val nearbyEntities = player.getNearbyEntities(range, range, range)

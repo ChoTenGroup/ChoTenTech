@@ -167,12 +167,12 @@ object WhManageCommand {
         action(data)
 
         val json = jsonUtils.toJson(data, PlayerData::class.java)
-        DataManager.userDataMapper.insertOrUpdate(UserDataRow().also {
+        DataManager.saveUserDataRow(UserDataRow().also {
             it.uuid = data.uuid
             it.playerName = data.playerName
             it.cid = data.cid.id.toString()
             it.cidType = data.cid.type
             it.data = json
-        }) { "uuid" eq data.uuid }
+        })
     }
 }

@@ -52,6 +52,8 @@ data class ConsumableEffect(
     val deathMark: Boolean = false,
     // random chance to trigger (percentage, 100 = always)
     val chance: Double = 100.0,
+    // health 效果的回血上限(最大生命的百分比,0 = 无上限)
+    val cap: Double = 0.0,
 )
 
 /** Track active tick_task PlatformTask references per player UUID. Cancelled on death. */
@@ -100,10 +102,26 @@ data class ConsumableConfig(
                 "health" -> {
                     val hp = player.health
                     val maxHp = player.maxHealth
+                    val capHp = if (ef.cap > 0.0) maxHp * (ef.cap / 100.0) else maxHp
                     when (ef.mode) {
-                        "add" -> player.health = minOf(hp + ef.value, maxHp)
-                        "set" -> player.health = ef.value.coerceIn(0.0, maxHp)
-                        "percent" -> player.health = minOf(hp + maxHp * (ef.value / 100.0), maxHp)
+                        "add" -> {
+                            val target = hp + ef.value
+                            // 回血(正数)不高于 cap、不高于满血,且不低于当前血量(高于 cap 时不回也不降)
+                            player.health = if (ef.value >= 0) {
+                                maxOf(minOf(target, capHp, maxHp), hp)
+                            } else {
+                                target.coerceIn(0.0, maxHp)
+                            }
+                        }
+                        "set" -> player.health = ef.value.coerceIn(0.0, minOf(capHp, maxHp))
+                        "percent" -> {
+                            val target = hp + maxHp * (ef.value / 100.0)
+                            player.health = if (ef.value >= 0) {
+                                maxOf(minOf(target, capHp, maxHp), hp)
+                            } else {
+                                target.coerceIn(0.0, maxHp)
+                            }
+                        }
                     }
                 }
                 "hunger" -> {
@@ -315,18 +333,16 @@ fun getConsumableConfig(id: String): ConsumableConfig? = consumableConfigs[id]
 fun loadConsumableConfigs() {
     consumableConfigs.clear()
     val dir = File(getDataFolder(), "consumables")
-    if (!dir.exists()) {
-        dir.mkdirs()
-        io.github.zzzyyylllty.chotentech.ChoTenTech::class.java.classLoader.getResource("consumables")?.let { res ->
-            val jarDir = File(res.path)
-            if (jarDir.isDirectory) {
-                jarDir.listFiles { f -> f.extension in listOf("yml", "yaml") }?.forEach { f ->
-                    val target = File(dir, f.name)
-                    if (!target.exists()) f.copyTo(target)
-                }
+    if (!dir.exists()) dir.mkdirs()
+    // 资源中缺失的配置文件复制到数据目录(仅复制不覆盖,保留服务端修改)
+    io.github.zzzyyylllty.chotentech.ChoTenTech::class.java.classLoader.getResource("consumables")?.let { res ->
+        val jarDir = File(res.path)
+        if (jarDir.isDirectory) {
+            jarDir.listFiles { f -> f.extension in listOf("yml", "yaml") }?.forEach { f ->
+                val target = File(dir, f.name)
+                if (!target.exists()) f.copyTo(target)
             }
         }
-        return
     }
     val files = dir.listFiles { f -> f.extension in listOf("yml", "yaml") } ?: return
     for (file in files) {
@@ -449,6 +465,7 @@ private fun loadConsumableFile(file: File) {
                     else -> effects.add(ConsumableEffect(
                         effect = effectType, mode = mode, value = value,
                         chance = chance,
+                        cap = (map["cap"]?.toString()?.toDoubleOrNull()) ?: 0.0,
                     ))
                 }
             }
@@ -469,7 +486,11 @@ private fun parseSingleEffect(map: Map<*, *>): ConsumableEffect? {
     val value = (map["value"]?.toString()?.toDoubleOrNull()) ?: 0.0
     val chance = (map["chance"]?.toString()?.toDoubleOrNull()) ?: 100.0
     return when (type) {
-        "health", "hunger", "saturation", "consumption", "sanity", "darkness",
+        "health" -> ConsumableEffect(
+            effect = type, mode = mode, value = value, chance = chance,
+            cap = (map["cap"]?.toString()?.toDoubleOrNull()) ?: 0.0,
+        )
+        "hunger", "saturation", "consumption", "sanity", "darkness",
         "stress", "stamina", "hand_stamina", "handstamina",
         "external_injury", "externalinjury", "internal_injury", "internalinjury" ->
             ConsumableEffect(effect = type, mode = mode, value = value, chance = chance)

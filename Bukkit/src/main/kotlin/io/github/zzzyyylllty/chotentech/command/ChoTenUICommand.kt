@@ -6,14 +6,17 @@ import io.github.zzzyyylllty.chotentech.gui.CosmeticMenu
 import io.github.zzzyyylllty.chotentech.gui.FriendMenu
 import io.github.zzzyyylllty.chotentech.gui.LevelBrowseMenu
 import io.github.zzzyyylllty.chotentech.gui.OrganizationMenu
+import io.github.zzzyyylllty.chotentech.gui.ProfileInfoGUI
 import io.github.zzzyyylllty.chotentech.gui.ProfileSelectionGUI
 import io.github.zzzyyylllty.chotentech.gui.RankSelectionMenu
 import io.github.zzzyyylllty.chotentech.gui.SettingsMenu
 import io.github.zzzyyylllty.chotentech.gui.TeamMenu
+import io.github.zzzyyylllty.chotentech.player.sendComponent
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import taboolib.common.platform.command.CommandBody
 import taboolib.common.platform.command.CommandHeader
+import taboolib.common.platform.command.component.CommandComponent
 import taboolib.common.platform.command.PermissionDefault
 import taboolib.common.platform.command.mainCommand
 import taboolib.common.platform.command.player
@@ -37,92 +40,81 @@ object ChoTenUICommand {
 
     @CommandBody
     val settings = subCommand {
-        execute<Player> { sender, _, _ ->
-            SettingsMenu().open(sender)
-        }
+        playerArg("设置") { SettingsMenu().open(it) }
     }
+
+//    @CommandBody
+//    val menu = subCommand {
+//        player("target") {
+//            execute<CommandSender> { sender, context, _ ->
+//                val target = context.player("target").castSafely<Player>() ?: return@execute
+//                val viewer = if (sender is Player) sender else target
+//                ProfileInfoGUI(target).open(viewer)
+//                if (sender != viewer) {
+//                    sender.sendComponent("<green>已为 ${target.name} 打开玩家菜单")
+//                }
+//            }
+//        }
+//    }
 
     @CommandBody
     val quests = subCommand {
-        player("user") {
-            execute<CommandSender> { sender, context, _ ->
-                val user = context.player("user").castSafely<Player>() ?: return@execute
-                AllQuestMenu().open(user)
-            }
-        }
+        playerArg("任务列表") { AllQuestMenu().open(it) }
     }
 
     @CommandBody
     val profile = subCommand {
-        execute<Player> { sender, _, _ ->
-            ProfileSelectionGUI().open(sender)
-        }
+        playerArg("角色档案") { ProfileSelectionGUI().open(it) }
     }
 
     @CommandBody
     val rank = subCommand {
-        execute<Player> { sender, _, _ ->
-            RankSelectionMenu().open(sender)
-        }
-        player("target") {
-            execute<CommandSender> { sender, context, _ ->
-                val target = context.player("target").castSafely<Player>() ?: return@execute
-                RankSelectionMenu().open(target)
-            }
-        }
+        playerArg("称号") { RankSelectionMenu().open(it) }
     }
 
     @CommandBody
     val levels = subCommand {
-        execute<Player> { sender, _, _ ->
-            LevelBrowseMenu().open(sender)
-        }
-        player("target") {
-            execute<CommandSender> { sender, context, _ ->
-                val target = context.player("target").castSafely<Player>() ?: return@execute
-                LevelBrowseMenu().open(target)
-            }
-        }
+        playerArg("层级") { LevelBrowseMenu().open(it) }
     }
 
     @CommandBody
     val cosmetics = subCommand {
-        execute<Player> { sender, _, _ ->
-            CosmeticMenu().open(sender)
-        }
+        playerArg("装扮") { CosmeticMenu().open(it) }
     }
 
     @CommandBody
     val achievement = subCommand {
-        execute<Player> { sender, _, _ ->
-            AchievementMenu().open(sender)
-        }
-        player("target") {
-            execute<CommandSender> { sender, context, _ ->
-                val target = context.player("target").castSafely<Player>() ?: return@execute
-                AchievementMenu().open(target)
-            }
-        }
+        playerArg("成就") { AchievementMenu().open(it) }
     }
 
     @CommandBody
     val team = subCommand {
-        execute<Player> { sender, _, _ ->
-            TeamMenu().open(sender)
-        }
+        playerArg("队伍") { TeamMenu().open(it) }
     }
 
     @CommandBody
     val friend = subCommand {
-        execute<Player> { sender, _, _ ->
-            FriendMenu().open(sender)
-        }
+        playerArg("好友") { FriendMenu().open(it) }
     }
 
     @CommandBody
     val org = subCommand {
+        playerArg("组织") { OrganizationMenu().open(it) }
+    }
+
+    /** 为子命令生成两个分支:/cttui <子命令> 打开自己的界面,/cttui <子命令> <玩家> 为目标玩家打开 */
+    private fun CommandComponent.playerArg(title: String, open: (Player) -> Unit) {
         execute<Player> { sender, _, _ ->
-            OrganizationMenu().open(sender)
+            open(sender)
+        }
+        player("target") {
+            execute<CommandSender> { sender, context, _ ->
+                val target = context.player("target").castSafely<Player>() ?: return@execute
+                open(target)
+                if (sender != target) {
+                    sender.sendComponent("<green>已为 <yellow>${target.name} <green>打开${title}界面")
+                }
+            }
         }
     }
 }

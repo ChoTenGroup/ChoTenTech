@@ -3,12 +3,14 @@ package io.github.zzzyyylllty.chotentech.function.timer
 import io.github.zzzyyylllty.chotentech.ChoTenTech.config
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerRegions
+import io.github.zzzyyylllty.chotentech.isSafeWorld
 import io.github.zzzyyylllty.chotentech.data.ChoTenDataHelper
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerQuitEvent
+import org.bukkit.potion.PotionEffectType
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.event.SubscribeEvent
@@ -40,6 +42,12 @@ fun stressesTimer() {
             val uuid = player.uniqueId
             val data = playerDataMap[uuid.toString()] ?: continue
 
+            // 安全世界:由 foodTimer 维持满值,跳过压力/掉精神逻辑
+            if (isSafeWorld(player)) {
+                removeStressBossBar(player, uuid)
+                continue
+            }
+
             val regions = playerRegions[uuid.toString()]
             val inBase = regions?.any { it.startsWith("base-") } == true
 
@@ -49,7 +57,8 @@ fun stressesTimer() {
                 continue
             }
 
-            val lightLevel = player.location.block.lightLevel
+            // 有夜视时视作满亮度:黑暗环境不再增加压力,也不会因光照强度扣理智
+            val lightLevel = if (player.hasPotionEffect(PotionEffectType.NIGHT_VISION)) 15 else player.location.block.lightLevel
             val stressChange = maxStressGain - (maxStressGain + maxStressReduce) * (lightLevel.toDouble() / 15.0)
 
             if (stressChange > 0) {

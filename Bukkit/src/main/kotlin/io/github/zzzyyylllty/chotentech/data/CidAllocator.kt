@@ -11,6 +11,8 @@ import taboolib.expansion.TableName
 import taboolib.expansion.UniqueKey
 import taboolib.expansion.db
 import taboolib.expansion.mapper
+import io.github.zzzyyylllty.chotentech.util.TTLCache
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.atomic.AtomicLong
 
@@ -64,6 +66,17 @@ object CidAllocator {
     private val stepCache = AtomicLong(0)
     /** 已成功落盘的步进，避免重复写入 */
     private val lastPersistedStep = AtomicLong(-1)
+
+    /** 已占用 CID 集合(启动时从 cid_reservation/user_data/player_profiles 三表全量加载):
+     *  分配探测循环只查内存,不再每次探测发起 DB 连接。
+     *  新占用经 reserve() 成功后加入,释放经 releaseReservation() 移除,与 DB 保持一致 */
+    private val takenCids = ConcurrentHashMap<String, Boolean>()
+
+    /** 探测回退路径的负数缓存(固定短 TTL):内存集合 miss 时避免同一候选对三表逐次查库。
+     *  负数误判是安全的:即使真实已被占用,reserve() 的唯一键插入仍会失败并触发重试 */
+    private val reservationMissCache = TTLCache<String, Unit>(MISS_CACHE_TTL)
+
+    private const val MISS_CACHE_TTL = 30 * 1000L
     @Volatile
     private var fallbackOnly = false
     @Volatile
@@ -79,6 +92,14 @@ object CidAllocator {
 
     @Awake(LifeCycle.ENABLE)
     fun init() {
+        try {
+            // 全量加载已占用 CID 到内存(三来源),分配探测不再逐次查库
+            getAllReservedCids().forEach { takenCids[it] = true }
+            io.github.zzzyyylllty.chotentech.data.DataManager.getAllUserCids().forEach { takenCids[it] = true }
+            ProfileManager.getAllProfileCids().forEach { takenCids[it] = true }
+        } catch (e: Exception) {
+            warning("[CidAllocator] 加载已占用 CID 集合失败(探测将回退逐次查询): ${e.message}")
+        }
         try {
             val row = stateMapper.findById(STATE_KEY)
             val dbStep = row?.cidStep ?: 0L
@@ -199,9 +220,15 @@ object CidAllocator {
 
     // ==================== 占用检查 / 原子闸门 ====================
 
-    /** 三表检查：旧 user_data + player_profiles + cid_reservation */
+    /** 三表检查：旧 user_data + player_profiles + cid_reservation(内存集合优先,miss 回退查库并填充) */
     fun isCidTaken(cid: String): Boolean {
-        return ProfileManager.isCIDTaken(cid) || cidMapper.findById(cid) != null
+        if (takenCids.containsKey(cid)) return true
+        if (reservationMissCache.get(cid) != null) return false
+        // 启动加载失败或出现新来源时的回退路径
+        val taken = ProfileManager.isCIDTaken(cid) || cidMapper.findById(cid) != null
+        if (taken) takenCids[cid] = true
+        else reservationMissCache.put(cid, Unit)
+        return taken
     }
 
     /**
@@ -217,6 +244,8 @@ object CidAllocator {
                 it.uuid = uuid
                 it.createTime = System.currentTimeMillis()
             })
+            takenCids[key] = true
+            reservationMissCache.remove(key)
             true
         } catch (e: Exception) {
             try {
@@ -236,6 +265,7 @@ object CidAllocator {
     fun releaseReservation(cid: Long) {
         try {
             cidMapper.deleteById(cid.toString())
+            takenCids.remove(cid.toString())
         } catch (e: Exception) {
             warning("[CidAllocator] 释放预留 $cid 失败: ${e.message}")
         }

@@ -1,0 +1,122 @@
+Greybird:
+  name: "<gold>灰绑"
+  items:
+    # Lv.1 - 基础矿物
+    iron_ingot:
+      id: sertraline:iron_ingot
+      buy: point:19
+      sell: point:6
+    gold_ingot_low:
+      id: sertraline:gold_ingot_low
+      buy: point:38
+      sell: point:12
+    copper_ingot:
+      id: sertraline:copper_ingot
+      buy: point:13
+      sell: point:4
+    # Lv.2 - 中级珠宝
+    gold_ingot_medium:
+      id: sertraline:gold_ingot_medium
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:63
+      sell: point:19
+    silver_ingot:
+      id: sertraline:silver_ingot
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:32
+      sell: point:10
+    diamond:
+      id: sertraline:diamond
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:125
+      sell: point:38
+      limit:
+        player: 3
+        player-reset: 24h
+    sapphire:
+      id: sertraline:sapphire
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:100
+      sell: point:30
+      limit:
+        player: 3
+        player-reset: 24h
+    ruby:
+      id: sertraline:ruby
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:100
+      sell: point:30
+      limit:
+        player: 3
+        player-reset: 24h
+    # Lv.3 - 高级珠宝
+    emerald:
+      id: sertraline:emerald
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: point:63
+      sell: point:19
+      limit:
+        player: 5
+        player-reset: 24h
+    gold_ingot_high:
+      id: sertraline:gold_ingot_high
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: point:100
+      sell: point:30
+    synthetic_diamond:
+      id: sertraline:synthetic_diamond
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: point:75
+      sell: point:23
+    rainbow_alloy_ingot:
+      id: sertraline:rainbow_alloy_ingot
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: point:250
+      sell: point:75
+
+    black_diamond:
+      id: "sertraline:black_diamond"
+      buy: point:100
+
+    mythril_ingot:
+      id: "sertraline:mythril_ingot"
+      buy: point:125
+
+    ultra_alloy:
+      id: "sertraline:ultra_alloy_ingot"
+      requirements:
+        - mode: quest
+          value: NewTypeOfMedication
+          display: "需要完成任务「新型药品」"
+      buy: point:250
+
+    coal:
+      id: "sertraline:coal"
+      sell: point:1

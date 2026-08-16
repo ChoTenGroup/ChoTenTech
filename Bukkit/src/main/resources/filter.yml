@@ -1,0 +1,12 @@
+# 敏感词过滤
+# 替换字符：单字符时按匹配长度重复（如 "*" -> "****"）；多字符时整体替换
+replacement: "*"
+# 持有此权限的玩家绕过过滤
+bypass-permission: "chotentech.chat.filter.bypass"
+# 普通敏感词（大小写不敏感匹配）
+words:
+  - "fuck"
+  - "shit"
+  - "草泥马"
+# 正则敏感词（完整正则表达式，可带 (?i) 前缀）
+regex: []

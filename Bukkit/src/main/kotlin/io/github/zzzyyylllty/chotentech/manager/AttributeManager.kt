@@ -26,7 +26,8 @@ import taboolib.common.platform.Awake
 import taboolib.common.platform.function.submit
 import taboolib.common.platform.service.PlatformExecutor
 import taboolib.expansion.CustomType
-import taboolib.expansion.dbFile
+import taboolib.expansion.CustomTypeFactory
+import taboolib.expansion.db
 import taboolib.expansion.mapper
 import taboolib.module.database.ColumnTypePostgreSQL
 import taboolib.module.database.ColumnTypeSQL
@@ -36,69 +37,53 @@ import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.abs
 
 
-object AttributeModifierType : CustomType {
-    override val type = AttributeModifier::class.java
+/** modifiers 列表扁平化存储为单列 JSON。PTC 只对"成员字段类型"查 CustomType,不对 mapper 根类型查,因此必须用 List+elementType 注册,否则 MySQL 下会为 List 字段建子表导致读写异常。列类型用 VARCHAR+长度:MySQL 的 TEXT 系列带长度参数会语法错误(DatabaseDialect 的 CustomType 分支总是拼接 length) */
+object AttributeModifierListType : CustomType {
+    override val type: Class<*> = List::class.java
+    override val elementType: Class<*> = AttributeModifier::class.java
     override val typeSQL = ColumnTypeSQL.LONGTEXT
     override val typeSQLite = ColumnTypeSQLite.TEXT
     override val typePostgreSQL = ColumnTypePostgreSQL.TEXT
-    override val length = 6
+    // length=0 时 ColumnSQL 不拼接括号参数,输出纯 "LONGTEXT"(TEXT 系列带长度参数在 MySQL 是语法错误)
+    override val length = 0
 
-    override fun serialize(value: Any) = jsonUtils.toJson(value as AttributeModifier, AttributeModifier::class.java)
-    override fun deserialize(value: Any): AttributeModifier {
+    private val listType = object : com.google.gson.reflect.TypeToken<List<AttributeModifier>>() {}.type
+
+    override fun serialize(value: Any): Any = jsonUtils.toJson(value)
+
+    override fun deserialize(value: Any): Any {
         val raw = value.toString()
+        if (raw.isBlank()) return emptyList<AttributeModifier>()
         // If the string is double-encoded JSON (starts and ends with quotes), parse as JsonElement first to unwrap
         val jsonStr = if (raw.startsWith("\"") && raw.endsWith("\"")) {
             jsonUtils.fromJson(raw, String::class.java) ?: raw
         } else {
             raw
         }
-        // Guard: if the string doesn't look like a JSON object, return a placeholder
-        if (!jsonStr.trimStart().startsWith("{")) {
-            warningS("AttributeModifierType: cannot deserialize non-JSON value: $jsonStr")
-            return AttributeModifier(
-                attributeId = "unknown",
-                value = 0.0,
-                type = ModifierType.ADD,
-                source = ModifierSource.OTHER
-            )
+        // Guard: if the string doesn't look like a JSON array, return an empty list
+        if (!jsonStr.trimStart().startsWith("[")) {
+            warningS("AttributeModifierListType: cannot deserialize non-JSON value: $jsonStr")
+            return emptyList<AttributeModifier>()
         }
-        return jsonUtils.fromJson(jsonStr, AttributeModifier::class.java)
+        return jsonUtils.fromJson(jsonStr, listType) ?: emptyList<AttributeModifier>()
     }
 }
 
-object PlayerAttributeDataType : CustomType {
-    override val type = PlayerAttributeData::class.java
-    override val typeSQL = ColumnTypeSQL.LONGTEXT
-    override val typeSQLite = ColumnTypeSQLite.TEXT
-    override val typePostgreSQL = ColumnTypePostgreSQL.TEXT
-    override val length = 6
-
-    override fun serialize(value: Any) = jsonUtils.toJson(value as PlayerAttributeData, PlayerAttributeData::class.java)
-    override fun deserialize(value: Any): PlayerAttributeData {
-        val raw = value.toString()
-        val jsonStr = if (raw.startsWith("\"") && raw.endsWith("\"")) {
-            jsonUtils.fromJson(raw, String::class.java) ?: raw
-        } else {
-            raw
-        }
-        if (!jsonStr.trimStart().startsWith("{")) {
-            warningS("PlayerAttributeDataType: cannot deserialize non-JSON value: $jsonStr")
-            throw IllegalStateException("PlayerAttributeDataType: invalid JSON: $jsonStr")
-        }
-        return jsonUtils.fromJson(jsonStr, PlayerAttributeData::class.java)
-    }
+/** 显式注册自定义类型。自动发现在某些环境下不可靠,兜底保证 modifiers 单列 JSON 存储(否则 MySQL 下会产生子表并读写失败) */
+@Awake(LifeCycle.INIT)
+fun registerCustomTypeFactory() {
+    CustomTypeFactory.registeredCollectionTypes.computeIfAbsent(List::class.java) { ConcurrentHashMap() }[AttributeModifier::class.java] = AttributeModifierListType
 }
-
-// tmd，改了自动注册，注释掉这段
-//@Awake(LifeCycle.INIT)
-//fun registerCustomTypeFactory() {
-//// 注册
-//    CustomTypeFactory.reg.(DateType)
-//}
 
 object AttributeManager {
 
-    val dataMapper by mapper<PlayerAttributeData>(dbFile("attributes.db"))
+    // 跟随 config.yml 的 database 配置 (enable=true 时走 MySQL)
+    val dataMapper by mapper<PlayerAttributeData>(db("config.yml", "database", "attributes.db"))
+
+    /** 玩家持久化行缓存(uuid -> PlayerAttributeData):
+     *  regen/expiry/weight/nutrition 等周期任务每秒×N 玩家读属性行,缓存消除主线程 DB 读。
+     *  写路径(savePlayerData)同步更新,玩家退出时由 clearCache 清理,规模与在线玩家数一致 */
+    private val persistentDataCache = ConcurrentHashMap<String, PlayerAttributeData>()
 
     // 缓存最终计算结果。UUID -> (AttributeID -> Value)
     private val attributeCache = ConcurrentHashMap<UUID, Map<String, Double>>()
@@ -118,6 +103,7 @@ object AttributeManager {
     // 周期性任务引用
     private var regenTask: PlatformExecutor.PlatformTask? = null
     private var entityCacheTask: PlatformExecutor.PlatformTask? = null
+    private var expiryTask: PlatformExecutor.PlatformTask? = null
 
     // 属性注册表
     val attributeRegistry = ConcurrentHashMap<String, AttributeType>()
@@ -153,6 +139,7 @@ object AttributeManager {
             AttributeType("mining_efficiency", "挖掘效率", "mining_efficiency", 0.0),
             AttributeType("mining_power", "挖掘强度", null, 1.0, minValue = 0.0),
             AttributeType("movement_efficiency", "移动效率", "movement_efficiency", 0.0),
+            AttributeType("jump_strength", "跳跃强度", "jump_strength", 0.42),
             AttributeType("oxygen_bonus", "氧气加成", "oxygen_bonus", 0.0),
             AttributeType("player_block_break_speed", "方块破坏速度", "player_block_break_speed", 1.0),
             AttributeType("player_block_interaction_range", "方块交互距离", "player_block_interaction_range", 4.5),
@@ -243,6 +230,8 @@ object AttributeManager {
             AttributeType("defense_toughness", "防御韧性", null, 0.0, minValue = 0.0),
             // 负重限制倍率：负重系统阈值乘以此值，默认1.0
             AttributeType("weight_limit_multiplier", "负重限制", null, 1.0, minValue = 0.0),
+            // 禁止移动:值 >= 1.0 时拦截 PlayerMoveEvent
+            AttributeType("deny_move", "禁止移动", null, 0.0, minValue = 0.0),
         )
         for (type in builtins) {
             registerAttribute(type, RegistrationSource.BUILTIN)
@@ -617,14 +606,32 @@ object AttributeManager {
             refreshEntityCache()
         }
         devLog("AttributeManager: started entity attribute cache task (period=30s)")
+
+        // 周期性过期修饰符清理（每 1 秒）：一次性延迟任务在 tick 边界触发时可能早于 expireOn 几毫秒,
+        // isExpired 判定为 false 后没有任何兜底重试,修饰符会永久残留,因此必须周期扫描
+        expiryTask = submit(period = 20L) {
+            for (player in org.bukkit.Bukkit.getOnlinePlayers()) {
+                val uuid = player.uniqueId
+                val data = getPlayerPersistentData(uuid)
+                val mods = data.modifiers.toMutableList()
+                if (mods.removeIf { it.isExpired }) {
+                    data.modifiers = mods
+                    savePlayerData(data)
+                    updatePlayer(player)
+                }
+            }
+        }
+        devLog("AttributeManager: started expired modifier cleanup task (period=1s)")
     }
 
     @Awake(LifeCycle.DISABLE)
     fun cancelTasks() {
         regenTask?.cancel()
         entityCacheTask?.cancel()
+        expiryTask?.cancel()
         regenTask = null
         entityCacheTask = null
+        expiryTask = null
     }
 
     /**
@@ -655,16 +662,23 @@ object AttributeManager {
      * 获取玩家数据
      */
     fun getPlayerPersistentData(uuid: UUID): PlayerAttributeData {
-        val a1aa = dataMapper.findById(uuid)
-        return a1aa ?: createDefaultPlayerData(uuid)
+        val key = uuid.toString()
+        persistentDataCache[key]?.let { return it }
+        val data = dataMapper.findById(uuid) ?: createDefaultPlayerData(uuid)
+        persistentDataCache[key] = data
+        return data
     }
 
     /**
      * 保存玩家数据
+     * filter 必须绑定 uuid 的字符串形式:insertOrUpdate 的 check-then-act 里主键条件会经 Any.value() 转成 String,
+     * 若此处绑定原始 UUID 对象,JDBC 驱动(MySQL 按 BINARY(16),SQLite 序列化成字节)与 char(36) 列永不相等,
+     * 导致每次保存都走 INSERT,同一 uuid 堆积多行且 findById 永远读到最旧行。
      */
     fun savePlayerData(data: PlayerAttributeData) {
         data.lastUpdate = System.currentTimeMillis()
-        dataMapper.insertOrUpdate(data) { "uuid" eq data.uuid }
+        dataMapper.insertOrUpdate(data) { "uuid" eq data.uuid.toString() }
+        persistentDataCache[data.uuid.toString()] = data
     }
 
     /**
@@ -1192,6 +1206,7 @@ object AttributeManager {
     }
 
     fun clearCache(uuid: UUID) {
+        persistentDataCache.remove(uuid.toString())
         attributeCache.remove(uuid)
         lastSyncedValues.remove(uuid)
         entityCache.remove(uuid)

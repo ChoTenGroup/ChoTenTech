@@ -1,120 +1,99 @@
 ZhongHai:
-  name: "<yellow>中海"
+  name: "<gold>钟海"
   items:
-    # Lv.1
+    # Lv.1 - 基础物资
     bandage:
       id: sertraline:bandage
-      buy: money:80
+      buy: money:240
+      sell: money:96
+    sterile_bandage:
+      id: sertraline:sterile_bandage
+      buy: money:260
+      sell: money:104
+    bread:
+      id: sertraline:bread
+      buy: money:60
+      sell: money:24
+    cracker:
+      id: sertraline:cracker
+      buy: money:50
       sell: money:20
-    wood:
-      id: sertraline:wood
-      buy: money:25
-      sell: money:6
-    stone:
-      id: sertraline:stone
-      buy: money:40
-      sell: money:12
-    # Lv.2
-    iron_ingot:
-      id: sertraline:iron_ingot
+    painkiller_pills:
+      id: sertraline:painkiller_pills
+      buy: money:160
+      sell: money:64
+    # Lv.1 - 掉落物收购
+    bone:
+      id: sertraline:bone
+      sell: money:14
+    hound_paw:
+      id: sertraline:hound_paw
+      sell: money:18
+    smilers_head:
+      id: sertraline:smilers_head
+      sell: money:120
+    scale:
+      id: sertraline:scale
+      sell: money:18
+    # Lv.2 - 材料
+    gold_ingot_medium:
+      id: sertraline:gold_ingot_medium
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: money:150
-      sell: money:45
-    iron_pickaxe:
-      id: sertraline:iron_pickaxe
+      buy: money:340
+    steel_ingot:
+      id: sertraline:steel_ingot
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: money:500
-      sell: money:150
+      buy: money:400
+    # Lv.2 - 装备
     iron_sword:
       id: sertraline:iron_sword
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: money:600
-      sell: money:180
-    # Lv.3
+      buy: money:8000
     iron_chestplate:
       id: sertraline:iron_chestplate
       buy-requirements:
         - mode: level
-          level: 3
-          display: 需要商人等级 Lv.3
-      buy: money:1200
-      sell: money:350
-    diamond:
-      id: sertraline:diamond
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:9600
+    iron_boots:
+      id: sertraline:iron_boots
       buy-requirements:
         - mode: level
-          level: 3
-          display: 需要商人等级 Lv.3
-      buy: money:1000
-      sell: money:300
-      limit:
-        player: 3
-        player-reset: 24h
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:6400
+    # Lv.3 - 医疗
     onefirst_medkit:
       id: sertraline:onefirst_medkit
       buy-requirements:
         - mode: level
           level: 3
           display: 需要商人等级 Lv.3
-      buy: money:600
-      sell: money:180
       limit:
-        player: 3
+        player: 2
         player-reset: 24h
-
-    bone:
-      id: "sertraline:bone"
-      sell: money:30
-
-    hound_paw:
-      id: "sertraline:hound_paw"
-      sell: money:80
-
-    smilers_head:
-      id: "sertraline:smilers_head"
-      sell: money:150
-
-    scale:
-      id: "sertraline:scale"
-      sell: money:100
-
-    bursters_shell:
-      id: "sertraline:bursters_shell"
-      sell: money:200
-
-    bandage:
-      id: "sertraline:bandage"
-      buy: money:150
-
-    sterile_bandage:
-      id: "sertraline:sterile_bandage"
-      buy: money:300
-
-    onefirst_medkit:
-      id: "sertraline:onefirst_medkit"
       buy: money:1500
-
-    iron_sword:
-      id: "sertraline:iron_sword"
-      buy: money:2000
-
-    diamond_sword:
-      id: "sertraline:diamond_sword"
-      buy: money:10000
-
-    premium_armor:
-      id: "sertraline:ultra_alloy_chestplate"
-      requirements:
+    # Lv.3 - 解锁商品
+    steel_chestplate:
+      id: sertraline:steel_chestplate
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
         - mode: quest
           value: UncommonAbility4
-          display: "需要完成任务「非常能力·四」"
-      buy: money:30000
+          display: 需要完成任务「非常能力·四」
+      limit:
+        player: 1
+        player-reset: 24h
+      buy: money:18000

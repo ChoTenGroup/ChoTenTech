@@ -1,0 +1,135 @@
+JiShi:
+  name: "<red>吉士"
+  items:
+    # Lv.1
+    bandage:
+      id: sertraline:bandage
+      buy: money:80
+      sell: money:20
+    tape:
+      id: sertraline:tape
+      buy: money:30
+      sell: money:8
+    paper:
+      id: sertraline:paper
+      buy: money:20
+      sell: money:5
+    # Lv.2
+    sterile_bandage:
+      id: sertraline:sterile_bandage
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:200
+      sell: money:60
+    iron_ingot:
+      id: sertraline:iron_ingot
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:150
+      sell: money:45
+    mre:
+      id: sertraline:mre
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:300
+      sell: money:90
+    # Lv.3
+    diamond_sword:
+      id: sertraline:diamond_sword
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:3000
+      sell: money:900
+      limit:
+        player: 1
+        player-reset: 24h
+    onefirst_medkit:
+      id: sertraline:onefirst_medkit
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:600
+      sell: money:180
+    iron_chestplate:
+      id: sertraline:iron_chestplate
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:1200
+      sell: money:350
+      limit:
+        player: 1
+        player-reset: 24h
+    diamond:
+      id: sertraline:diamond
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:1000
+      sell: money:300
+      limit:
+        player: 3
+        player-reset: 24h
+
+    bone:
+      id: "sertraline:bone"
+      sell: money:30
+
+    hound_paw:
+      id: "sertraline:hound_paw"
+      sell: money:80
+
+    smilers_head:
+      id: "sertraline:smilers_head"
+      sell: money:150
+
+    scale:
+      id: "sertraline:scale"
+      sell: money:100
+
+    bursters_shell:
+      id: "sertraline:bursters_shell"
+      sell: money:200
+
+    dullers_core:
+      id: "sertraline:dullers_core"
+      sell: money:300
+
+    dullers_tissue:
+      id: "sertraline:dullers_tissue"
+      sell: money:120
+
+    deathmoths_mucus:
+      id: "sertraline:deathmoths_mucus"
+      sell: money:100
+
+    iron_sword:
+      id: "sertraline:iron_sword"
+      buy: money:2000
+
+    steel_sword:
+      id: "sertraline:steel_sword"
+      buy: money:4000
+
+    diamond_sword:
+      id: "sertraline:diamond_sword"
+      buy: money:10000
+
+    elite_weapon:
+      id: "sertraline:sapphire_sword"
+      requirements:
+        - mode: quest
+          value: Capable
+          display: "需要完成任务「有能力的」"
+      buy: money:20000

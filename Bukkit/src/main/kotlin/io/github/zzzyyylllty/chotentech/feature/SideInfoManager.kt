@@ -1,6 +1,7 @@
 package io.github.zzzyyylllty.chotentech.feature
 
 import io.github.zzzyyylllty.chotentech.data.*
+import io.github.zzzyyylllty.chotentech.function.noclip.NoclipConditionChecker
 import io.github.zzzyyylllty.chotentech.listener.checkPlayerIsInNoclipPoint
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -170,7 +171,12 @@ object SideInfoManager {
                 } else if (hasCoop) {
                     lines.add(" <gray>-> <gray>需要与其他人合作切出...")
                 } else if (hasOtherConditions) {
-                    lines.add(" <gray>-> <gray>需要满足条件")
+                    val hint = NoclipConditionChecker.getConditionHint(player, np)
+                    if (hint != null) {
+                        lines.add(" <gray>-> <gray>$hint")
+                    } else {
+                        lines.add(" <gray>-> <green>已满足条件")
+                    }
                 }
             }
         }

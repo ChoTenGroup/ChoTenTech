@@ -1,45 +1,15 @@
-# Custom currency, Ex: CoinsEngine
-vault:
-  type: VAULT
-  display-name: "Coins"
+# 货币配置。type:
+#   PLUGIN - 插件自带经济（PlayerData 字段，存数据库），id 对应 money/point/tape/goldentape
+#   PAPI   - 其他插件占位符 + Kether 脚本扣除（papi + actions.remove）
 money:
-  type: PAPI
-  display-name: "积分"
-  papi: "%coinsengine_balance_raw_money%"
-  actions:
-    add: |-
-      command inline "money give {{ sender }} {{ &money }}" as console
-      tell inline "&a{{ &buyer }} purchased {{ &amount }} of &f{{ &display-name }}&a, you received &e{{ &money }}"
-    remove: |-
-      command inline "money take {{ sender }} {{ &money }}" as console
-      tell inline "&aYou purchased {{ &amount }} of &f{{ &display-name }}&a from {{ &seller }}, costing &e{{ &money }}"
-    deny: |-
-      tell color "&cInsufficient funds! Need &e{{ &need-money }}&c, you only have &e{{ &money }}"
-
+  type: PLUGIN
+  display-name: "MEG积分"
 point:
-  type: PAPI
+  type: PLUGIN
   display-name: "贸易点"
-  papi: "%coinsengine_balance_raw_point%"
-  actions:
-    add: |-
-      command inline "point give {{ sender }} {{ &money }}" as console
-      tell inline "&a{{ &buyer }} purchased {{ &amount }} of &f{{ &display-name }}&a, you received &e{{ &money }}"
-    remove: |-
-      command inline "point take {{ sender }} {{ &money }}" as console
-      tell inline "&aYou purchased {{ &amount }} of &f{{ &display-name }}&a from {{ &seller }}, costing &e{{ &money }}"
-    deny: |-
-      tell color "&cInsufficient funds! Need &e{{ &need-money }}&c, you only have &e{{ &money }}"
-
 tape:
-  type: PAPI
+  type: PLUGIN
   display-name: "磁带"
-  papi: "%coinsengine_balance_raw_tape%"
-  actions:
-    add: |-
-      command inline "tape give {{ sender }} {{ &money }}" as console
-      tell inline "&aYou received {{ &money }} tapes."
-    remove: |-
-      command inline "tape take {{ sender }} {{ &money }}" as console
-      tell inline "&aYou spent {{ &money }} tapes."
-    deny: |-
-      tell color "&cInsufficient tapes! Need &e{{ &need-money }}&c, you only have &e{{ &current-money }}"
+goldentape:
+  type: PLUGIN
+  display-name: "金磁带"

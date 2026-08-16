@@ -1,122 +1,69 @@
 HuGe:
-  name: "<gold>虎哥"
+  name: "<gold>胡哥"
   items:
-    # Lv.1 - 基础材料
+    # Lv.1 - 口粮
     bread:
       id: sertraline:bread
-      buy: point:7
+      buy: point:6
       sell: point:2
-    wood:
-      id: sertraline:wood
-      buy: point:4
-      sell: point:1
-    stone:
-      id: sertraline:stone
-      buy: point:5
-      sell: point:2
-    # Lv.2 - 中级物资
-    mre:
-      id: sertraline:mre
-      buy-requirements:
-        - mode: level
-          level: 2
-          display: 需要商人等级 Lv.2
-      buy: point:38
-      sell: point:12
+    cooked_porkchop:
+      id: sertraline:cooked_porkchop
+      buy: point:16
+      sell: point:6
+    cooked_beef:
+      id: sertraline:cooked_beef
+      buy: point:17
+      sell: point:7
+    cooked_chicken:
+      id: sertraline:cooked_chicken
+      buy: point:16
+      sell: point:6
+    cooked_mutton:
+      id: sertraline:cooked_mutton
+      buy: point:16
+      sell: point:7
+    apple_can:
+      id: sertraline:apple_can
+      buy: point:15
+      sell: point:6
+    beef_can:
+      id: sertraline:beef_can
+      buy: point:28
+      sell: point:11
+    # Lv.1 - 食材收购
+    porkchop:
+      id: sertraline:porkchop
+      sell: point:5
+    beef:
+      id: sertraline:beef
+      sell: point:6
+    chicken:
+      id: sertraline:chicken
+      sell: point:5
+    mutton:
+      id: sertraline:mutton
+      sell: point:5
+    potato:
+      id: sertraline:potato
+      sell: point:4
+    carrot:
+      id: sertraline:carrot
+      sell: point:4
+    wheat:
+      id: sertraline:wheat
+      sell: point:4
+    # Lv.2 - 军粮
     iron_ingot:
       id: sertraline:iron_ingot
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: point:19
-      sell: point:6
-    brick_plate:
-      id: sertraline:brick_plate
+      buy: point:6
+    gold_ingot_medium:
+      id: sertraline:gold_ingot_medium
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: point:13
-      sell: point:4
-    # Lv.3 - 高级装备
-    iron_chestplate:
-      id: sertraline:iron_chestplate
-      buy-requirements:
-        - mode: level
-          level: 3
-          display: 需要商人等级 Lv.3
-      buy: point:150
-      sell: point:44
-    diamond:
-      id: sertraline:diamond
-      buy-requirements:
-        - mode: level
-          level: 3
-          display: 需要商人等级 Lv.3
-      buy: point:125
-      sell: point:38
-
-    cooked_porkchop:
-      id: "sertraline:cooked_porkchop"
-      buy: point:19
-
-    cooked_beef:
-      id: "sertraline:cooked_beef"
-      buy: point:25
-
-    cooked_chicken:
-      id: "sertraline:cooked_chicken"
-      buy: point:15
-
-    cooked_mutton:
-      id: "sertraline:cooked_mutton"
-      buy: point:23
-
-    baked_potato:
-      id: "sertraline:cooked_potato"
-      buy: point:10
-
-    apple_can:
-      id: "sertraline:apple_can"
-      buy: point:25
-
-    beef_can:
-      id: "sertraline:beef_can"
-      buy: point:32
-
-    porkchop:
-      id: "sertraline:porkchop"
-      sell: point:5
-
-    beef:
-      id: "sertraline:beef"
-      sell: point:7
-
-    chicken:
-      id: "sertraline:chicken"
-      sell: point:4
-
-    mutton:
-      id: "sertraline:mutton"
-      sell: point:6
-
-    potato:
-      id: "sertraline:potato"
-      sell: point:2
-
-    carrot:
-      id: "sertraline:carrot"
-      sell: point:3
-
-    wheat:
-      id: "sertraline:wheat"
-      sell: point:2
-
-    mre_supply:
-      id: "sertraline:mre"
-      requirements:
-        - mode: quest
-          value: YiYanWanNian
-          display: "需要完成任务「一眼万年」"
-      buy: point:375
+      buy: point:34

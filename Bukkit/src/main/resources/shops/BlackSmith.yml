@@ -1,133 +1,299 @@
 BlackSmith:
-  name: "<gold>布莱克史密斯"
+  name: "<gold>铁匠"
   items:
     # Lv.1 - 基础材料
+    coal:
+      id: sertraline:coal
+      buy: money:110
+      sell: money:44
+    charcoal:
+      id: sertraline:charcoal
+      buy: money:100
+      sell: money:40
+    flint:
+      id: sertraline:flint
+      buy: money:100
+      sell: money:40
+    clay_ball:
+      id: sertraline:clay_ball
+      buy: money:130
+      sell: money:52
+    carbon:
+      id: sertraline:carbon
+      buy: money:140
+      sell: money:56
+    # Lv.1 - 锭材
+    bronze_ingot:
+      id: sertraline:bronze_ingot
+      buy: money:240
+      sell: money:96
+    brass_ingot:
+      id: sertraline:brass_ingot
+      buy: money:260
+      sell: money:104
+    billon_ingot:
+      id: sertraline:billon_ingot
+      buy: money:270
+      sell: money:108
+    lead_ingot:
+      id: sertraline:lead_ingot
+      buy: money:120
+      sell: money:48
+    silver_ingot:
+      id: sertraline:silver_ingot
+      buy: money:150
+      sell: money:60
+    gold_ingot_low:
+      id: sertraline:gold_ingot_low
+      buy: money:280
+      sell: money:112
+    gold_ingot_medium:
+      id: sertraline:gold_ingot_medium
+      buy: money:340
+      sell: money:136
+    basic_alloy_ingot:
+      id: sertraline:basic_alloy_ingot
+      buy: money:220
+      sell: money:88
+    steel_ingot:
+      id: sertraline:steel_ingot
+      buy: money:400
+      sell: money:160
+    # Lv.1 - 材料回收
     wood:
       id: sertraline:wood
-      buy: money:30
-      sell: money:8
+      sell: money:12
     stone:
       id: sertraline:stone
-      buy: money:40
-      sell: money:12
-    copper_ingot:
-      id: sertraline:copper_ingot
-      buy: money:100
-      sell: money:30
+      sell: money:10
     iron_ingot:
       id: sertraline:iron_ingot
-      buy: money:150
-      sell: money:45
-    # Lv.2 - 工具
-    iron_pickaxe:
-      id: sertraline:iron_pickaxe
+      sell: money:24
+    raw_iron:
+      id: sertraline:raw_iron
+      sell: money:48
+    raw_copper:
+      id: sertraline:raw_copper
+      sell: money:44
+    raw_gold:
+      id: sertraline:raw_gold
+      sell: money:60
+    raw_coal:
+      id: sertraline:raw_coal
+      sell: money:40
+    # Lv.2 - 基础装备
+    leather_helmet:
+      id: sertraline:leather_helmet
+      buy: money:90
+      sell: money:36
+    leather_chestplate:
+      id: sertraline:leather_chestplate
+      buy: money:120
+      sell: money:48
+    leather_leggings:
+      id: sertraline:leather_leggings
+      buy: money:105
+      sell: money:42
+    leather_boots:
+      id: sertraline:leather_boots
+      buy: money:80
+      sell: money:32
+    flint_sword:
+      id: sertraline:flint_sword
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: money:500
-      sell: money:150
+      buy: money:120
+    flint_pickaxe:
+      id: sertraline:flint_pickaxe
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:110
+    flint_axe:
+      id: sertraline:flint_axe
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:110
+    # Lv.2 - 青铜与金装备
+    bronze_sword:
+      id: sertraline:bronze_sword
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:2000
+    bronze_chestplate:
+      id: sertraline:bronze_chestplate
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:2400
+    bronze_leggings:
+      id: sertraline:bronze_leggings
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:2100
+    bronze_boots:
+      id: sertraline:bronze_boots
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:1600
+    gold_sword:
+      id: sertraline:gold_sword
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:2400
+    gold_chestplate:
+      id: sertraline:gold_chestplate
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:2800
+    gold_leggings:
+      id: sertraline:gold_leggings
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:2500
+    gold_boots:
+      id: sertraline:gold_boots
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:2000
+    # Lv.3 - 铁制装备
     iron_sword:
       id: sertraline:iron_sword
       buy-requirements:
         - mode: level
-          level: 2
-          display: 需要商人等级 Lv.2
-      buy: money:600
-      sell: money:180
-    copper_wire:
-      id: sertraline:copper_wire
-      buy-requirements:
-        - mode: level
-          level: 2
-          display: 需要商人等级 Lv.2
-      buy: money:200
-      sell: money:60
-    silver_wire:
-      id: sertraline:silver_wire
-      buy-requirements:
-        - mode: level
-          level: 2
-          display: 需要商人等级 Lv.2
-      buy: money:300
-      sell: money:90
-    # Lv.3 - 高级装备
-    iron_chestplate:
-      id: sertraline:iron_chestplate
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:8000
+    iron_helmet:
+      id: sertraline:iron_helmet
       buy-requirements:
         - mode: level
           level: 3
           display: 需要商人等级 Lv.3
-      buy: money:1200
-      sell: money:350
-      limit:
-        player: 1
-        player-reset: 24h
+      buy: money:7200
+    iron_leggings:
+      id: sertraline:iron_leggings
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:8400
     iron_boots:
       id: sertraline:iron_boots
       buy-requirements:
         - mode: level
           level: 3
           display: 需要商人等级 Lv.3
-      buy: money:800
-      sell: money:250
-    flat_stone:
-      id: sertraline:flat_stone
-      buy-requirements:
-        - mode: level
-          level: 3
-          display: 需要商人等级 Lv.3
-      buy: money:500
-      sell: money:150
-    basic_alloy_ingot:
-      id: sertraline:basic_alloy_ingot
-      buy-requirements:
-        - mode: level
-          level: 3
-          display: 需要商人等级 Lv.3
-      buy: money:800
-      sell: money:240
-
-    iron_ingot:
-      id: "sertraline:iron_ingot"
-      buy: money:400
-
-    steel_ingot:
-      id: "sertraline:steel_ingot"
-      buy: money:500
-
-    iron_sword:
-      id: "sertraline:iron_sword"
-      buy: money:1500
-
+      buy: money:6400
     iron_axe:
-      id: "sertraline:iron_axe"
-      buy: money:1200
-
-    iron_pickaxe:
-      id: "sertraline:iron_pickaxe"
-      buy: money:1000
-
-    armor_unlock:
-      id: "sertraline:iron_chestplate"
-      requirements:
+      id: sertraline:iron_axe
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:7200
+    # Lv.3 - 高级合金装备
+    basic_alloy_sword:
+      id: sertraline:basic_alloy_sword
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:11000
+    basic_alloy_chestplate:
+      id: sertraline:basic_alloy_chestplate
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:13200
+    basic_alloy_leggings:
+      id: sertraline:basic_alloy_leggings
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:11550
+    basic_alloy_helmet:
+      id: sertraline:basic_alloy_helmet
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:9900
+    basic_alloy_boots:
+      id: sertraline:basic_alloy_boots
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:8800
+    steel_sword:
+      id: sertraline:steel_sword
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:15000
+    steel_helmet:
+      id: sertraline:steel_helmet
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:13500
+    steel_leggings:
+      id: sertraline:steel_leggings
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:15750
+    steel_boots:
+      id: sertraline:steel_boots
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:12000
+    steel_pickaxe:
+      id: sertraline:steel_pickaxe
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:12750
+    # Lv.3 - 解锁商品
+    iron_chestplate:
+      id: sertraline:iron_chestplate
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
         - mode: quest
           value: MaterialSupply
-          display: "需要完成任务「材料供应」"
-      buy: money:2000
-
-    raw_iron:
-      id: "sertraline:raw_iron"
-      sell: money:30
-
-    coal:
-      id: "sertraline:coal"
-      sell: money:15
-
-    flint:
-      id: "sertraline:flint"
-      sell: money:8
-
-    stone:
-      id: "sertraline:stone"
-      sell: money:5
+          display: 需要完成任务「材料供应」
+      limit:
+        player: 1
+        player-reset: 24h
+      buy: money:9600

@@ -1,0 +1,133 @@
+BlackSmith:
+  name: "<gold>布莱克史密斯"
+  items:
+    # Lv.1 - 基础材料
+    wood:
+      id: sertraline:wood
+      buy: money:30
+      sell: money:8
+    stone:
+      id: sertraline:stone
+      buy: money:40
+      sell: money:12
+    copper_ingot:
+      id: sertraline:copper_ingot
+      buy: money:100
+      sell: money:30
+    iron_ingot:
+      id: sertraline:iron_ingot
+      buy: money:150
+      sell: money:45
+    # Lv.2 - 工具
+    iron_pickaxe:
+      id: sertraline:iron_pickaxe
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:500
+      sell: money:150
+    iron_sword:
+      id: sertraline:iron_sword
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:600
+      sell: money:180
+    copper_wire:
+      id: sertraline:copper_wire
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:200
+      sell: money:60
+    silver_wire:
+      id: sertraline:silver_wire
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:300
+      sell: money:90
+    # Lv.3 - 高级装备
+    iron_chestplate:
+      id: sertraline:iron_chestplate
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:1200
+      sell: money:350
+      limit:
+        player: 1
+        player-reset: 24h
+    iron_boots:
+      id: sertraline:iron_boots
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:800
+      sell: money:250
+    flat_stone:
+      id: sertraline:flat_stone
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:500
+      sell: money:150
+    basic_alloy_ingot:
+      id: sertraline:basic_alloy_ingot
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:800
+      sell: money:240
+
+    iron_ingot:
+      id: "sertraline:iron_ingot"
+      buy: money:400
+
+    steel_ingot:
+      id: "sertraline:steel_ingot"
+      buy: money:500
+
+    iron_sword:
+      id: "sertraline:iron_sword"
+      buy: money:1500
+
+    iron_axe:
+      id: "sertraline:iron_axe"
+      buy: money:1200
+
+    iron_pickaxe:
+      id: "sertraline:iron_pickaxe"
+      buy: money:1000
+
+    armor_unlock:
+      id: "sertraline:iron_chestplate"
+      requirements:
+        - mode: quest
+          value: MaterialSupply
+          display: "需要完成任务「材料供应」"
+      buy: money:2000
+
+    raw_iron:
+      id: "sertraline:raw_iron"
+      sell: money:30
+
+    coal:
+      id: "sertraline:coal"
+      sell: money:15
+
+    flint:
+      id: "sertraline:flint"
+      sell: money:8
+
+    stone:
+      id: "sertraline:stone"
+      sell: money:5

@@ -65,6 +65,7 @@ import org.bukkit.Location
 import org.bukkit.command.CommandSender
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
+import org.bukkit.entity.Player
 import org.bukkit.generator.ChunkGenerator
 import taboolib.common.LifeCycle
 import taboolib.common.env.RuntimeDependencies
@@ -118,6 +119,12 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
     @Config("currency.yml")
     lateinit var currencyConfig: Configuration
 
+    @Config("filter.yml")
+    lateinit var filterConfig: Configuration
+
+    @Config("chat-settings.yml")
+    lateinit var chatSettings: Configuration
+
     val console by lazy { console() }
     val consoleSender by lazy { console.castSafely<CommandSender>()!! }
     val sdClassList: LinkedHashMap<String, SurvivalDifficulty> = linkedMapOf()
@@ -150,9 +157,13 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
 
         info("Enable")
         Language.enableSimpleComponent = true
-        EconomyUtil.setup()
 
         reloadCustomConfig()
+
+        // Initialize chat system
+        io.github.zzzyyylllty.chotentech.chat.TabooFilter.reload(filterConfig)
+        io.github.zzzyyylllty.chotentech.chat.ChannelManager.reload()
+        io.github.zzzyyylllty.chotentech.chat.ChatPlayerDataManager
 
         // Initialize backpack system (merged ChoTenBackpack)
         BackpackListener
@@ -308,7 +319,11 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
 
             baseConfig.reload()
             currencyConfig.reload()
+            filterConfig.reload()
+            chatSettings.reload()
             onReload()
+            io.github.zzzyyylllty.chotentech.chat.TabooFilter.reload(filterConfig)
+            io.github.zzzyyylllty.chotentech.chat.ChannelManager.reload()
             accountTypesList.clear()
             levelsList.clear()
             loadPowerFiles()
@@ -361,6 +376,11 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
 
 
 }
+
+
+/** 安全世界:在这些世界中玩家无敌且不消耗饱食度/精神/压力/体力等 */
+fun isSafeWorld(player: Player): Boolean =
+    ChoTenTech.config.getStringList("safe-worlds").any { it.equals(player.world.name, ignoreCase = true) }
 
 
 fun loadSDClassFile() {

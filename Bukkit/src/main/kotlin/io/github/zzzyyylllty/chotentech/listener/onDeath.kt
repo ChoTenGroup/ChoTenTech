@@ -20,7 +20,7 @@ import org.bukkit.event.player.PlayerRespawnEvent
 import taboolib.common.platform.event.SubscribeEvent
 
 private val DEFAULT_SPAWN by lazy {
-    Bukkit.getWorld("Area0")?.let { Location(it, -7.0, 14.0, 6.0) }
+    Bukkit.getWorld("Area0")?.let { Location(it, -6.0, 14.0, 9.0) }
 }
 
 @SubscribeEvent

@@ -1,0 +1,82 @@
+Qisi:
+  name: "<blue>起司"
+  items:
+    # Lv.1 - 基础医疗用品
+    bandage:
+      id: sertraline:bandage
+      buy: point:10
+      sell: point:3
+    painkiller_pills:
+      id: sertraline:painkiller_pills
+      buy: point:15
+      sell: point:5
+    paper:
+      id: sertraline:paper
+      buy: point:3
+      sell: point:1
+    # Lv.2 - 中级医疗用品
+    sterile_bandage:
+      id: sertraline:sterile_bandage
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:25
+      sell: point:8
+    almond_water_red:
+      id: sertraline:almond_water_red
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:50
+      sell: point:15
+    antibiotic:
+      id: sertraline:antibiotic
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:38
+      sell: point:12
+    # Lv.3 - 高级医疗用品
+    onefirst_medkit:
+      id: sertraline:onefirst_medkit
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: point:75
+      sell: point:23
+    mre:
+      id: sertraline:mre
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: point:38
+      sell: point:12
+
+    almond_bandage:
+      id: "sertraline:almond_bandage"
+      buy: point:15
+
+    elite_medkit:
+      id: "sertraline:akacandy_medkit"
+      requirements:
+        - mode: quest
+          value: WorkForFuture4
+          display: "需要完成任务「为了今后的工作 - IV」"
+      buy: point:188
+
+    rag:
+      id: "sertraline:rag"
+      sell: point:1
+
+    glass_bottle:
+      id: "sertraline:glass_bottle"
+      sell: point:1
+
+    fabric_skin:
+      id: "sertraline:fabric_skin"
+      sell: point:7

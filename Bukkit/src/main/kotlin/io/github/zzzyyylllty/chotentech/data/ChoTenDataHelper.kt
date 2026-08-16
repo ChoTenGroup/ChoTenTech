@@ -18,8 +18,10 @@ import io.github.zzzyyylllty.chotentech.data.AttributeModifier
 import io.github.zzzyyylllty.chotentech.data.ModifierSource
 import io.github.zzzyyylllty.chotentech.data.ModifierType
 import io.github.zzzyyylllty.chotentech.manager.AttributeManager
+import io.github.zzzyyylllty.chotentech.util.TTLCache
 import io.github.zzzyyylllty.chotentech.util.jsonUtils
 import taboolib.expansion.TableName
+import java.util.Optional
 import java.util.UUID
 import io.github.zzzyyylllty.chotentech.util.toComponent
 import net.kyori.adventure.key.Key as AdventureKey
@@ -88,6 +90,22 @@ class UserDataRow {
 object DataManager {
 
     val userDataMapper by mapper<UserDataRow>(db("config.yml", "database", "chotentech.db"))
+
+    /** user_data 行缓存(uuid -> 行):PapiHook 占位符每秒解析时按 name/cid 查询,缓存命中后不再发起 DB 连接。
+     *  Optional 包装用于缓存"行不存在",避免不存在的 key 反复查库。
+     *  固定 TTL:负数条目(行不存在)到期自动失效,新注册玩家不会被旧负数遮蔽;热点行每 TTL 周期只回源一次 */
+    private val userDataCache = TTLCache<String, Optional<UserDataRow>>(USER_DATA_CACHE_TTL)
+    /** name -> uuid 索引(正数缓存,写路径同步) */
+    private val userNameIndex = ConcurrentHashMap<String, String>()
+    /** cid -> uuid 索引(正数缓存,写路径同步) */
+    private val userCidIndex = ConcurrentHashMap<String, String>()
+    /** name 查无此人的负数缓存(固定短 TTL):占位符按 name 反复查询不存在玩家时不再逐次发起 DB 连接 */
+    private val nameMissCache = TTLCache<String, Unit>(MISS_CACHE_TTL)
+    /** cid 查无此人的负数缓存(固定短 TTL) */
+    private val cidMissCache = TTLCache<String, Unit>(MISS_CACHE_TTL)
+
+    private const val USER_DATA_CACHE_TTL = 10 * 60 * 1000L
+    private const val MISS_CACHE_TTL = 30 * 1000L
 
     // 待加载区块，改成 ChunkPos，避免持有 Bukkit Chunk 对象
     val prepareLoadChunk = Collections.synchronizedSet(HashSet<ChunkPos>())
@@ -293,13 +311,69 @@ object DataManager {
     }
 
     fun getRawDataByUUID(uuid: String): String? {
-        return userDataMapper.findById(uuid)?.data
+        return getUserDataRow(uuid)?.data
     }
 
     fun getRawDataByName(name: String): String? {
-        return userDataMapper.findOne {
+        val cachedUuid = userNameIndex[name]
+        if (cachedUuid != null) return getUserDataRow(cachedUuid)?.data
+        if (nameMissCache.get(name) != null) return null
+        val row = userDataMapper.findOne {
             "player_name" eq name
-        }?.data
+        }
+        if (row != null) {
+            indexUserDataRow(row)
+            return row.data
+        }
+        nameMissCache.put(name, Unit)
+        return null
+    }
+
+    /** 读 user_data 行:缓存优先,miss 时查库并填充(含"不存在"标记,避免反复连接) */
+    private fun getUserDataRow(uuid: String): UserDataRow? {
+        userDataCache.get(uuid)?.let { return it.orElse(null) }
+        val row = userDataMapper.findById(uuid)
+        if (row != null) {
+            indexUserDataRow(row)
+        } else {
+            userDataCache.put(uuid, Optional.empty())
+        }
+        return row
+    }
+
+    /** 行写入内存索引(所有写/读路径统一走这里,保证缓存一致) */
+    private fun indexUserDataRow(row: UserDataRow) {
+        userDataCache.put(row.uuid, Optional.of(row))
+        if (row.playerName.isNotBlank()) {
+            userNameIndex[row.playerName] = row.uuid
+            nameMissCache.remove(row.playerName)
+        }
+        if (row.cid.isNotBlank()) {
+            userCidIndex[row.cid] = row.uuid
+            cidMissCache.remove(row.cid)
+        }
+    }
+
+    /** 失效某个玩家的 user_data 缓存(行被直接删除时调用) */
+    fun invalidateUserData(uuid: String) {
+        userDataCache.remove(uuid)
+    }
+
+    /** 完整行写入(含 data JSON)+ 同步内存索引:离线玩家数据修改等整行覆盖场景统一走这里 */
+    fun saveUserDataRow(row: UserDataRow) {
+        userDataMapper.insertOrUpdate(row) { "uuid" eq row.uuid }
+        indexUserDataRow(row)
+    }
+
+    /** 全量已占 CID(供 CidAllocator 启动时加载内存占用集合,避免探测循环逐次查库) */
+    fun getAllUserCids(): Set<String> {
+        return try {
+            userDataMapper.rawQuery({ rows("cid") }) { rs ->
+                buildSet { while (rs.next()) add(rs.getString(1)) }
+            }
+        } catch (e: Exception) {
+            emptySet()
+        }
     }
 
     private fun PlayerData.fixDefaults(): PlayerData = copy(
@@ -349,9 +423,18 @@ object DataManager {
     }
 
     fun getRawDataByCID(cid: String): String? {
-        return userDataMapper.findOne {
+        val cachedUuid = userCidIndex[cid]
+        if (cachedUuid != null) return getUserDataRow(cachedUuid)?.data
+        if (cidMissCache.get(cid) != null) return null
+        val row = userDataMapper.findOne {
             "cid" eq cid
-        }?.data
+        }
+        if (row != null) {
+            indexUserDataRow(row)
+            return row.data
+        }
+        cidMissCache.put(cid, Unit)
+        return null
     }
 
     fun saveData(player: Player) {
@@ -391,11 +474,21 @@ object DataManager {
         val newData = playerData.copy(cid = userID)
         playerDataMap[uuid] = newData
 
+        // 保持原有写库语义:仅更新 cid/cidType 列,不覆盖 data JSON
         userDataMapper.insertOrUpdate(UserDataRow().also {
             it.uuid = uuid
             it.cid = newData.cid.id.toString()
             it.cidType = newData.cid.type
         }) { "uuid" eq uuid }
+
+        // 同步内存索引(行缓存里的 cid 字段跟上,旧 cid 索引移除)
+        userCidIndex.remove(playerData.cid.id.toString())
+        userCidIndex[newData.cid.id.toString()] = uuid
+        cidMissCache.remove(newData.cid.id.toString())
+        userDataCache.get(uuid)?.ifPresent { row ->
+            row.cid = newData.cid.id.toString()
+            row.cidType = newData.cid.type
+        }
 
         // 同步到 SharedData（全 profile 共用）
         ProfileManager.getSharedData(uuid).also { shared ->
@@ -409,11 +502,21 @@ object DataManager {
         val newData = playerData.copy(cid = playerData.cid.copy(id = userID))
         playerDataMap[uuid] = newData
 
+        // 保持原有写库语义:仅更新 cid/cidType 列,不覆盖 data JSON
         userDataMapper.insertOrUpdate(UserDataRow().also {
             it.uuid = uuid
             it.cid = newData.cid.id.toString()
             it.cidType = newData.cid.type
         }) { "uuid" eq uuid }
+
+        // 同步内存索引(行缓存里的 cid 字段跟上,旧 cid 索引移除)
+        userCidIndex.remove(playerData.cid.id.toString())
+        userCidIndex[newData.cid.id.toString()] = uuid
+        cidMissCache.remove(newData.cid.id.toString())
+        userDataCache.get(uuid)?.ifPresent { row ->
+            row.cid = newData.cid.id.toString()
+            row.cidType = newData.cid.type
+        }
 
         // 同步到 SharedData（全 profile 共用）
         ProfileManager.getSharedData(uuid).also { shared ->
@@ -423,13 +526,28 @@ object DataManager {
     }
 
     fun isIDExist(cid: String): Boolean {
-        return userDataMapper.findOne {
+        if (userCidIndex.containsKey(cid)) return true
+        if (cidMissCache.get(cid) != null) return false
+        val row = userDataMapper.findOne {
             "cid" eq cid
-        } != null
+        }
+        if (row != null) {
+            indexUserDataRow(row)
+            return true
+        }
+        cidMissCache.put(cid, Unit)
+        return false
     }
 
     fun isUUIDExist(uuid: String): Boolean {
-        return userDataMapper.findById(uuid) != null
+        userDataCache.get(uuid)?.let { return it.isPresent }
+        val row = userDataMapper.findById(uuid)
+        if (row != null) {
+            indexUserDataRow(row)
+            return true
+        }
+        userDataCache.put(uuid, Optional.empty())
+        return false
     }
 
     fun initData(player: Player): PlayerData {
@@ -443,6 +561,8 @@ object DataManager {
         // Increment join count
         ProfileManager.getSharedData(player.uniqueId.toString()).joinCount++
         saveData(player)
+        // 角色数据就绪后手动加载 Chemdah 任务数据(进服自动加载已禁用)
+        ink.ptms.chemdah.core.database.Database.loadProfile(player)
         return data
     }
 
@@ -478,7 +598,7 @@ object DataManager {
         // Apply join message from rank system (condition-based, no profile data needed)
         val joinMsg = io.github.zzzyyylllty.chotentech.function.RankManager.getEligibleRankDisplay(player, "joinmessage")
         if (joinMsg.isNotEmpty()) {
-            e.joinMessage(joinMsg.replace("<player>", player.name).toComponent())
+            e.joinMessage(joinMsg.replace("<player>", io.github.zzzyyylllty.chotentech.function.RankManager.buildPlayerListName(player)).toComponent())
         }
 
         player.addPotionEffect(PotionEffect(PotionEffectType.SLOWNESS, 100, 10))
@@ -488,13 +608,30 @@ object DataManager {
 
         submitAsync {
             Thread.sleep(2000)
+            // 等待期间已退出:中止加载链,避免对离线玩家执行 initData/loadProfile 与写库
+            if (!player.isOnline) return@submitAsync
             submit { sendLoadingTips(player, "载入中...") }
             submit { sendLoadingTips(player, "正在拉取数据...") }
-            initData(player)
+            // initData 失败也不能中断后续流程:否则 setPending 不会执行,玩家将跳过强制选择自由移动
+            var loaded: PlayerData? = null
+            try {
+                loaded = initData(player)
+            } catch (e: Exception) {
+                warning("initData 失败 ${player.name}: ${e.message}")
+            }
+            // initData 执行期间玩家退出:清理 initData 重新塞回的 map 条目。
+            // 引用比对后再移除,避免误删退出期间重新加入的新连接数据
+            if (!player.isOnline) {
+                val uuid = player.uniqueId.toString()
+                playerDataMap.computeIfPresent(uuid) { _, cur -> if (cur === loaded) null else cur }
+                return@submitAsync
+            }
             submit {
                 io.github.zzzyyylllty.chotentech.listener.ProfileListener.setPending(player)
             }
             submit {
+                // 登录流程完成标记:此后才允许档案选择/传送,加载期发送的传送包会被客户端的陈旧位置包拉回
+                io.github.zzzyyylllty.chotentech.listener.ProfileListener.markLoginComplete(player.uniqueId.toString())
                 sendLoadingTips(player, "完成.")
                 player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, SoundCategory.MASTER, 1f, 1.7f)
                 player.showTitle(
@@ -534,7 +671,7 @@ object DataManager {
         // Apply quit message from rank system
         val quitMsg = io.github.zzzyyylllty.chotentech.function.RankManager.getEligibleRankDisplay(player, "quitmessage")
         if (quitMsg.isNotEmpty()) {
-            e.quitMessage(quitMsg.replace("<player>", player.name).toComponent())
+            e.quitMessage(quitMsg.replace("<player>", io.github.zzzyyylllty.chotentech.function.RankManager.buildPlayerListName(player)).toComponent())
         }
 
         cleanupNoclipState(uuid)
@@ -902,7 +1039,7 @@ class ChoTenDataHelper(val player: Player) {
         data.consumption = 0.0
     }
 
-    // === 好感 ===
+    // === 信任 ===
 
     fun getAffection(npcId: String): Long {
         return data.affection.getOrDefault(npcId, 0L)

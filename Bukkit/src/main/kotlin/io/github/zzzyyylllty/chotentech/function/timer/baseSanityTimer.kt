@@ -2,6 +2,7 @@ package io.github.zzzyyylllty.chotentech.function.timer
 
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerRegions
+import io.github.zzzyyylllty.chotentech.isSafeWorld
 import org.bukkit.Bukkit
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
@@ -16,7 +17,7 @@ fun baseSanityTimer() {
     baseSanityTask = submit(period = 200) {
         for (player in Bukkit.getOnlinePlayers()) {
             val regions = playerRegions[player.uniqueId.toString()]
-            val inBase = regions?.any { it.startsWith("base-") } == true
+            val inBase = regions?.any { it.startsWith("base-") } == true || isSafeWorld(player)
             if (!inBase) continue
 
             val data = playerDataMap[player.uniqueId.toString()] ?: continue

@@ -1,0 +1,106 @@
+Raven:
+  name: "<gold>乌鸦"
+  items:
+    # Lv.1 - 基础用品
+    bandage:
+      id: sertraline:bandage
+      buy: point:10
+      sell: point:3
+    bread:
+      id: sertraline:bread
+      buy: point:7
+      sell: point:2
+    wood:
+      id: sertraline:wood
+      buy: point:4
+      sell: point:1
+    # Lv.2 - 中级消耗品
+    painkiller_pills:
+      id: sertraline:painkiller_pills
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:15
+      sell: point:5
+    almond_water_gray:
+      id: sertraline:almond_water_gray
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:13
+      sell: point:4
+    paper:
+      id: sertraline:paper
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:3
+      sell: point:1
+    # Lv.3 - 高级消耗品
+    mre:
+      id: sertraline:mre
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: point:38
+      sell: point:12
+    sterile_bandage:
+      id: sertraline:sterile_bandage
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: point:25
+      sell: point:8
+    diamond:
+      id: sertraline:diamond
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: point:125
+      sell: point:38
+
+    almond_water_blue:
+      id: "sertraline:almond_water_blue"
+      buy: point:10
+
+    almond_water_red:
+      id: "sertraline:almond_water_red"
+      buy: point:10
+
+    almond_water_green:
+      id: "sertraline:almond_water_green"
+      buy: point:10
+
+    royal_rations:
+      id: "sertraline:royal_rations"
+      buy: point:25
+
+    rare_goods:
+      id: "sertraline:object_100"
+      requirements:
+        - mode: quest
+          value: SecretGoods
+          display: "需要完成任务「秘密货物」"
+      buy: point:188
+
+    coal:
+      id: "sertraline:coal"
+      sell: point:1
+
+    iron_ingot:
+      id: "sertraline:iron_ingot"
+      sell: point:4
+
+    copper_ingot:
+      id: "sertraline:copper_ingot"
+      sell: point:4
+
+    stone:
+      id: "sertraline:stone"
+      sell: point:1

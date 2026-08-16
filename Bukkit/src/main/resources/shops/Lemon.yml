@@ -1,62 +1,135 @@
 Lemon:
   name: "<gold>柠檬"
   items:
-    # Lv.1 - 基础物资
-    bandage:
-      id: sertraline:bandage
+    # Lv.1 - 皮革装备
+    leather_helmet:
+      id: sertraline:leather_helmet
+      buy: point:9
+      sell: point:4
+    leather_chestplate:
+      id: sertraline:leather_chestplate
+      buy: point:12
+      sell: point:5
+    leather_leggings:
+      id: sertraline:leather_leggings
       buy: point:10
+      sell: point:4
+    leather_boots:
+      id: sertraline:leather_boots
+      buy: point:8
       sell: point:3
-    wood:
-      id: sertraline:wood
-      buy: point:4
-      sell: point:1
-    # Lv.2 - 中级装备
+    # Lv.2 - 青铜与金装备
+    bronze_sword:
+      id: sertraline:bronze_sword
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:200
+    bronze_chestplate:
+      id: sertraline:bronze_chestplate
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:240
+    gold_sword:
+      id: sertraline:gold_sword
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:240
+    gold_chestplate:
+      id: sertraline:gold_chestplate
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:280
+    gold_leggings:
+      id: sertraline:gold_leggings
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:250
+    gold_boots:
+      id: sertraline:gold_boots
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:200
+    # Lv.3 - 铁制装备
     iron_sword:
       id: sertraline:iron_sword
       buy-requirements:
         - mode: level
-          level: 2
-          display: 需要商人等级 Lv.2
-      buy: point:75
-      sell: point:23
-    iron_boots:
-      id: sertraline:iron_boots
-      buy-requirements:
-        - mode: level
-          level: 2
-          display: 需要商人等级 Lv.2
-      buy: point:63
-      sell: point:19
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: point:800
     iron_helmet:
       id: sertraline:iron_helmet
       buy-requirements:
         - mode: level
-          level: 2
-          display: 需要商人等级 Lv.2
-      buy: point:63
-      sell: point:19
-    # Lv.3 - 高级装备
-    diamond_sword:
-      id: sertraline:diamond_sword
-      buy-requirements:
-        - mode: level
           level: 3
           display: 需要商人等级 Lv.3
-      buy: point:375
-      sell: point:113
+      buy: point:720
     iron_chestplate:
       id: sertraline:iron_chestplate
       buy-requirements:
         - mode: level
           level: 3
           display: 需要商人等级 Lv.3
-      buy: point:150
-      sell: point:44
+      buy: point:960
     iron_leggings:
       id: sertraline:iron_leggings
       buy-requirements:
         - mode: level
           level: 3
           display: 需要商人等级 Lv.3
-      buy: point:113
-      sell: point:34
+      buy: point:840
+    iron_boots:
+      id: sertraline:iron_boots
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: point:640
+    # Lv.3 - 钢制装备
+    steel_sword:
+      id: sertraline:steel_sword
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: point:1500
+    steel_helmet:
+      id: sertraline:steel_helmet
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: point:1350
+    steel_chestplate:
+      id: sertraline:steel_chestplate
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: point:1800
+    steel_leggings:
+      id: sertraline:steel_leggings
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: point:1575
+    steel_boots:
+      id: sertraline:steel_boots
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: point:1200

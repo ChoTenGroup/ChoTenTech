@@ -2,12 +2,14 @@ package io.github.zzzyyylllty.chotentech.listener
 
 import ink.ptms.um.Mythic
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
+import io.github.zzzyyylllty.chotentech.isSafeWorld
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.entity.Player
+import org.bukkit.event.entity.FoodLevelChangeEvent
 import org.bukkit.event.player.PlayerToggleSprintEvent
 import org.bukkit.potion.PotionEffectType
 import taboolib.common.LifeCycle
@@ -21,6 +23,9 @@ import java.util.concurrent.ConcurrentHashMap
 private val mm = MiniMessage.miniMessage()
 private const val NO_STAMINA_MSG = "<red>耐力不足，请稍作休息..."
 private const val MARSHMALLOW_DEATH_MSG = "<red>因摄入过量油腻棉花糖而死亡"
+// 体力低于此比例禁止疾跑。取消疾跑事件不会向客户端回发同步包,只拦截事件会导致客户端本地保持疾跑而服务端不扣体力(无限疾跑),
+// 因此必须配合饥饿值同步(<=6 时原版客户端无法疾跑)从源头禁止
+private const val LOW_STAMINA_RATIO = 0.25
 
 private val lastLocations = ConcurrentHashMap<String, Location>()
 private val pressureTickCounters = ConcurrentHashMap<String, Int>()
@@ -41,6 +46,7 @@ fun foodTimer() {
             marshmallowDecayCounter = 0
             for (player in Bukkit.getOnlinePlayers()) {
                 if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) continue
+                if (isSafeWorld(player)) continue
                 val data = playerDataMap[player.uniqueId.toString()] ?: continue
                 if (data.marshmallowCounter <= 0) continue
                 val decay = if (data.marshmallowCounter > 50) 8 else 2
@@ -54,6 +60,7 @@ fun foodTimer() {
             chocoDecayCounter = 0
             for (player in Bukkit.getOnlinePlayers()) {
                 if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) continue
+                if (isSafeWorld(player)) continue
                 val data = playerDataMap[player.uniqueId.toString()] ?: continue
                 if (data.chocoCounter <= 2) continue
                 data.chocoCounter -= 1
@@ -66,6 +73,7 @@ fun foodTimer() {
             nutritionDecayCounter = 0
             for (player in Bukkit.getOnlinePlayers()) {
                 if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) continue
+                if (isSafeWorld(player)) continue
                 val data = playerDataMap[player.uniqueId.toString()] ?: continue
                 data.grain = maxOf(data.grain - (if (data.grain > 50) 0.2 else 0.1), 0.0)
                 data.vitamin = maxOf(data.vitamin - (if (data.vitamin > 50) 0.2 else 0.1), 0.0)
@@ -79,6 +87,24 @@ fun foodTimer() {
             if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) continue
 
             val data = playerDataMap[player.uniqueId.toString()] ?: continue
+
+            // === 安全世界:不消耗,维持满值 ===
+            if (isSafeWorld(player)) {
+                data.sanity = data.effectiveMaxSanity
+                data.stress = 0.0
+                data.stamina = data.maxStamina
+                data.handStamina = data.maxHandStamina
+                data.customHunger = data.maxCustomHunger
+                data.customSaturation = minOf(data.maxCustomSaturation, data.customHunger)
+                data.consumption = 0.0
+                data.externalInjury = minOf(data.externalInjury + data.externalInjuryRegen, data.maxExternalInjury)
+                data.internalInjury = minOf(data.internalInjury + data.internalInjuryRegen, data.maxInternalInjury)
+                player.foodLevel = 20
+                player.saturation = 5f
+                player.exhaustion = 0f
+                continue
+            }
+
             val uuid = player.uniqueId.toString()
 
             // === Movement detection ===
@@ -97,8 +123,8 @@ fun foodTimer() {
                 val weightMult = io.github.zzzyyylllty.chotentech.function.WeightManager.getCachedWeight(player.uniqueId)
                     ?.let { w -> if (w > 20) 1.0 + (w - 20) * 0.025 else 1.0 } ?: 1.0
                 data.stamina = maxOf(data.stamina - 1.0 * weightMult, 0.0)
-                // 体力耗尽时停止奔跑并提示
-                if (data.stamina <= 0.0) {
+                // 体力低于阈值立即强制停止:若只靠事件拦截,客户端会保持本地疾跑且服务端不扣体力(无限疾跑)
+                if (data.stamina < data.maxStamina * LOW_STAMINA_RATIO) {
                     player.isSprinting = false
                     (player as Audience).sendActionBar(mm.deserialize(NO_STAMINA_MSG))
                 }
@@ -185,7 +211,8 @@ fun foodTimer() {
             }
 
             // === Vanilla food level sync ===
-            val stamThreshold = data.maxStamina * 0.15
+            // 体力低于阈值时饥饿值同步为 5:原版客户端饥饿 <=6 时无法疾跑,从源头禁止低体力疾跑
+            val stamThreshold = data.maxStamina * LOW_STAMINA_RATIO
             val hungerThreshold = data.maxCustomHunger * 0.1
             if (data.customHunger > hungerThreshold && data.stamina >= stamThreshold) {
                 player.foodLevel = 16
@@ -212,14 +239,28 @@ fun staminaBarSync() {
     }
 }
 
+/** 安全世界:原版饥饿强制满值,拦截一切饥饿变化(含其他插件来源) */
+@SubscribeEvent
+fun onFoodLevelChange(event: FoodLevelChangeEvent) {
+    if (event.entity !is Player) return
+    val player = event.entity as Player
+    if (!isSafeWorld(player)) return
+    event.isCancelled = true
+    if (player.foodLevel != 20) player.foodLevel = 20
+    player.saturation = 5f
+    player.exhaustion = 0f
+}
+
 @SubscribeEvent
 fun onPlayerToggleSprint(event: PlayerToggleSprintEvent) {
     if (!event.isSprinting) return
     val player = event.player
     if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) return
     val data = playerDataMap[player.uniqueId.toString()] ?: return
-    if (data.stamina < data.maxStamina * 0.25) {
+    if (data.stamina < data.maxStamina * LOW_STAMINA_RATIO) {
         event.isCancelled = true
+        // 若服务端仍在疾跑状态则立即复位并同步给客户端(数据实体写回,不触发事件)
+        player.isSprinting = false
         (player as Audience).sendActionBar(mm.deserialize(NO_STAMINA_MSG))
     }
 }

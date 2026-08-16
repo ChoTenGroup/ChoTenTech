@@ -179,16 +179,19 @@ object SavePointManager {
 
     // ---- Save logic ----
 
-    /** Get the respawn location based on player saves */
+    /** 复活优先级:基地存档点 -> 普通存档点 -> Area0 兜底;记录失效(配置删除/世界不存在)自动降级 */
     fun getRespawnLocation(player: Player): Location? {
         val data = player.getData() ?: return defaultSpawn()
-        val saveId = data.baseSave ?: data.normalSave ?: return defaultSpawn()
-        val sp = SavePointConfig.get(saveId) ?: return defaultSpawn()
-        return sp.respawnPos?.toLocation() ?: sp.effectiveHoloPos
+        for (saveId in listOfNotNull(data.baseSave, data.normalSave)) {
+            val sp = SavePointConfig.get(saveId) ?: continue
+            if (Bukkit.getWorld(sp.world) == null) continue
+            return sp.respawnPos?.toLocation() ?: sp.effectiveHoloPos
+        }
+        return defaultSpawn()
     }
 
     private fun defaultSpawn(): Location? {
-        return Bukkit.getWorld("Area1")?.let { Location(it, 10176.0, 3.0, 269.0) }
+        return Bukkit.getWorld("Area0")?.let { Location(it, -6.0, 14.0, 9.0) }
     }
 
     /** Called every second: check player zone and handle input */

@@ -1,0 +1,112 @@
+HaLei:
+  name: "<gold>哈雷"
+  items:
+    # Lv.1
+    bandage:
+      id: sertraline:bandage
+      buy: money:80
+      sell: money:20
+    wood:
+      id: sertraline:wood
+      buy: money:25
+      sell: money:6
+    # Lv.2
+    iron_sword:
+      id: sertraline:iron_sword
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:600
+      sell: money:180
+    iron_boots:
+      id: sertraline:iron_boots
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:500
+      sell: money:150
+    painkiller_pills:
+      id: sertraline:painkiller_pills
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:120
+      sell: money:35
+    # Lv.3
+    diamond_sword:
+      id: sertraline:diamond_sword
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:3000
+      sell: money:900
+      limit:
+        player: 1
+        player-reset: 24h
+    iron_chestplate:
+      id: sertraline:iron_chestplate
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:1200
+      sell: money:350
+    onefirst_medkit:
+      id: sertraline:onefirst_medkit
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:600
+      sell: money:180
+      limit:
+        player: 3
+        player-reset: 24h
+
+    bone:
+      id: "sertraline:bone"
+      sell: money:30
+
+    hound_paw:
+      id: "sertraline:hound_paw"
+      sell: money:80
+
+    smilers_head:
+      id: "sertraline:smilers_head"
+      sell: money:150
+
+    scale:
+      id: "sertraline:scale"
+      sell: money:100
+
+    bursters_shell:
+      id: "sertraline:bursters_shell"
+      sell: money:200
+
+    iron_sword:
+      id: "sertraline:iron_sword"
+      buy: money:2000
+
+    steel_sword:
+      id: "sertraline:steel_sword"
+      buy: money:4000
+
+    bronze_sword:
+      id: "sertraline:bronze_sword"
+      buy: money:3000
+
+    diamond_sword:
+      id: "sertraline:diamond_sword"
+      buy: money:10000
+
+    veteran_weapon:
+      id: "sertraline:emerald_sword"
+      requirements:
+        - mode: quest
+          value: XiangLiCar
+          display: "需要完成任务「箱里车」"
+      buy: money:15000

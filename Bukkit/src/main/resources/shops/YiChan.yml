@@ -1,102 +1,62 @@
 YiChan:
-  name: "<light_purple>遗产"
+  name: "<gold>一蝉"
   items:
-    # Lv.1 - 基础零件
+    # Lv.1 - 电子元件
     copper_wire:
       id: sertraline:copper_wire
-      buy: point:19
-      sell: point:6
+      buy: point:13
+      sell: point:5
     capacitor:
       id: sertraline:capacitor
-      buy: point:25
-      sell: point:8
-    tape:
-      id: sertraline:tape
-      buy: point:4
+      buy: point:6
+      sell: point:2
+    battery:
+      id: sertraline:battery
+      buy: point:14
+      sell: point:6
+    u_disk:
+      id: sertraline:u_disk
+      buy: point:16
+      sell: point:6
+    # Lv.1 - 旧件收购
+    broken_disk:
+      id: sertraline:broken_disk
+      sell: point:2
+    screw:
+      id: sertraline:screw
       sell: point:1
-    # Lv.2 - 中级配件
+    nail:
+      id: sertraline:nail
+      sell: point:1
+    plastic:
+      id: sertraline:plastic
+      sell: point:2
+    rag:
+      id: sertraline:rag
+      sell: point:2
+    # Lv.2 - 核心元件
     cpu:
       id: sertraline:cpu
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: point:63
-      sell: point:19
+      buy: point:28
     power_supply:
       id: sertraline:power_supply
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: point:50
-      sell: point:15
-    ram_stick:
-      id: sertraline:ram_stick
-      buy-requirements:
-        - mode: level
-          level: 2
-          display: 需要商人等级 Lv.2
-      buy: point:38
-      sell: point:12
-    # Lv.3 - 高级配件
-    vpx:
-      id: sertraline:vpx
-      buy-requirements:
-        - mode: level
-          level: 3
-          display: 需要商人等级 Lv.3
-      buy: point:100
-      sell: point:30
-    cpufan:
-      id: sertraline:cpufan
-      buy-requirements:
-        - mode: level
-          level: 3
-          display: 需要商人等级 Lv.3
-      buy: point:25
-      sell: point:8
-    disk:
-      id: sertraline:disk
-      buy-requirements:
-        - mode: level
-          level: 3
-          display: 需要商人等级 Lv.3
-      buy: point:44
-      sell: point:13
-
-    battery:
-      id: "sertraline:battery"
-      buy: point:25
-
-    u_disk:
-      id: "sertraline:u_disk"
-      buy: point:38
-
-    broken_disk:
-      id: "sertraline:broken_disk"
-      sell: point:3
-
-    screw:
-      id: "sertraline:screw"
-      sell: point:1
-
-    nail:
-      id: "sertraline:nail"
-      sell: point:1
-
-    plastic:
-      id: "sertraline:plastic"
-      sell: point:2
-
-    rag:
-      id: "sertraline:rag"
-      sell: point:1
-
-    premium_computer:
-      id: "sertraline:pro_ai_core"
+      buy: point:16
+    # Lv.3 - 解锁商品
+    pro_ai_core:
+      id: sertraline:pro_ai_core
       requirements:
         - mode: quest
           value: DutyLeave
           display: "需要完成任务「休假责任」"
-      buy: point:3125
+      limit:
+        player: 1
+        player-reset: 24h
+      buy: point:300
