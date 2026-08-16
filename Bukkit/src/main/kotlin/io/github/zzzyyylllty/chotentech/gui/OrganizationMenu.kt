@@ -27,7 +27,7 @@ class OrganizationMenu {
         val data = player.getData() ?: return
 
         player.openMenu<Chest>(mmJsonUtil.serialize("<white><shift:-16><image:kangelicon:list><shift:-176><aqua><font:minecraft:fusionpixel10>超级组织".toComponent())) {
-            rows(3)
+            rows(6)
 
             map(
                 "CCC     ",

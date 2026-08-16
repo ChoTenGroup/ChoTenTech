@@ -1,100 +1,74 @@
 HeDe:
-  name: "<gold>何德"
+  name: "<gold>赫德"
   items:
-    # Lv.1 - 基础培训用品
-    paper:
-      id: sertraline:paper
-      buy: point:3
-      sell: point:1
+    # Lv.1 - 培训物资
     bandage:
       id: sertraline:bandage
-      buy: point:10
-      sell: point:3
+      buy: point:24
+      sell: point:10
     bread:
       id: sertraline:bread
-      buy: point:7
+      buy: point:6
       sell: point:2
-    # Lv.2 - 培训教材
     painkiller_pills:
       id: sertraline:painkiller_pills
-      buy-requirements:
-        - mode: level
-          level: 2
-          display: 需要商人等级 Lv.2
-      buy: point:15
-      sell: point:5
+      buy: point:16
+      sell: point:6
     sterile_bandage:
       id: sertraline:sterile_bandage
-      buy-requirements:
-        - mode: level
-          level: 2
-          display: 需要商人等级 Lv.2
-      buy: point:25
-      sell: point:8
+      buy: point:26
+      sell: point:10
+    # Lv.1 - 旧物收购
+    rag:
+      id: sertraline:rag
+      sell: point:2
+    # Lv.2 - 训练物资
     iron_ingot:
       id: sertraline:iron_ingot
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: point:19
-      sell: point:6
-    # Lv.3 - 高级培训装备
+      buy: point:6
     iron_sword:
       id: sertraline:iron_sword
       buy-requirements:
         - mode: level
-          level: 3
-          display: 需要商人等级 Lv.3
-      buy: point:75
-      sell: point:23
-      limit:
-        player: 1
-        player-reset: 24h
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:800
+    mre:
+      id: sertraline:mre
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:32
+    antibiotic:
+      id: sertraline:antibiotic
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:30
+    book:
+      id: sertraline:book
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:14
+    # Lv.3 - 解锁商品
     onefirst_medkit:
       id: sertraline:onefirst_medkit
       buy-requirements:
         - mode: level
           level: 3
           display: 需要商人等级 Lv.3
-      buy: point:75
-      sell: point:23
-      limit:
-        player: 3
-        player-reset: 24h
-    mre:
-      id: sertraline:mre
-      buy-requirements:
-        - mode: level
-          level: 3
-          display: 需要商人等级 Lv.3
-      buy: point:38
-      sell: point:12
-
-    antibiotic:
-      id: "sertraline:antibiotic"
-      buy: point:100
-
-    book:
-      id: "sertraline:book"
-      buy: point:13
-
-    sell_book:
-      id: "sertraline:book"
-      sell: point:4
-
-    rag:
-      id: "sertraline:rag"
-      sell: point:1
-
-    bandage_used:
-      id: "sertraline:bandage"
-      sell: point:4
-
-    advanced_training:
-      id: "sertraline:onefirst_medkit"
-      requirements:
         - mode: quest
           value: AuxTraining
-          display: "需要完成任务「辅助训练」"
-      buy: point:125
+          display: 需要完成任务「辅助训练」
+      limit:
+        player: 1
+        player-reset: 24h
+      buy: point:150

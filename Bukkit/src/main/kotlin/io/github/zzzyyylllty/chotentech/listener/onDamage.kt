@@ -8,6 +8,7 @@ import io.github.zzzyyylllty.chotentech.damage.getDamageTypeTag
 import io.github.zzzyyylllty.chotentech.manager.AttributeManager
 import io.github.zzzyyylllty.chotentech.ChoTenTech
 import io.github.zzzyyylllty.chotentech.function.WeightManager
+import io.github.zzzyyylllty.chotentech.isSafeWorld
 import io.github.zzzyyylllty.chotentech.util.devLog
 import org.bukkit.GameMode
 import org.bukkit.Particle
@@ -29,12 +30,17 @@ private data class InjuryRatios(
     val internalRatio: Double
 )
 
-/** 基地内无敌 —— 玩家在 base- 区域中免疫所有伤害 */
+/** 安全世界/基地内无敌 —— 玩家在 safe-worlds 或 base- 区域中免疫所有伤害 */
 @SubscribeEvent(priority = EventPriority.HIGH)
 fun onBaseInvincible(event: EntityDamageEvent) {
     if (event.entity !is Player) return
     if (event.isCancelled) return
-    val uuid = event.entity.uniqueId.toString()
+    val player = event.entity as Player
+    if (isSafeWorld(player)) {
+        event.isCancelled = true
+        return
+    }
+    val uuid = player.uniqueId.toString()
     val regions = playerRegions[uuid]
     if (regions.isNullOrEmpty()) return
     if (regions.any { it.startsWith("base-") }) {

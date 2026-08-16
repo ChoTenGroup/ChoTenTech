@@ -1,122 +1,71 @@
 LiuWei:
-  name: "<gold>刘维"
+  name: "<gold>刘威"
   items:
-    # Lv.1 - 基础材料
+    # Lv.1 - 电站材料
     wood:
       id: sertraline:wood
-      buy: money:25
-      sell: money:6
-    paper:
-      id: sertraline:paper
-      buy: money:20
-      sell: money:5
-    tape:
-      id: sertraline:tape
       buy: money:30
-      sell: money:8
-    # Lv.2 - 中级工具
-    iron_ingot:
-      id: sertraline:iron_ingot
+      sell: money:12
+    stone:
+      id: sertraline:stone
+      buy: money:25
+      sell: money:10
+    coal:
+      id: sertraline:coal
+      buy: money:110
+      sell: money:44
+    raw_iron:
+      id: sertraline:raw_iron
+      buy: money:120
+      sell: money:48
+    steel_ingot:
+      id: sertraline:steel_ingot
+      buy: money:400
+      sell: money:160
+    # Lv.1 - 旧件收购
+    screw:
+      id: sertraline:screw
+      sell: money:12
+    nail:
+      id: sertraline:nail
+      sell: money:12
+    # Lv.2 - 机电设备
+    motor:
+      id: sertraline:motor
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
       buy: money:150
-      sell: money:45
-    iron_pickaxe:
-      id: sertraline:iron_pickaxe
+    cpu:
+      id: sertraline:cpu
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: money:500
-      sell: money:150
-    light_bulb:
-      id: sertraline:light_bulb
+      buy: money:280
+    battery:
+      id: sertraline:battery
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: money:100
-      sell: money:30
-    # Lv.3 - 高级工具
-    steel_ingot:
-      id: sertraline:steel_ingot
-      buy-requirements:
-        - mode: level
-          level: 3
-          display: 需要商人等级 Lv.3
-      buy: money:400
-      sell: money:120
+      buy: money:140
     copper_wire:
       id: sertraline:copper_wire
       buy-requirements:
         - mode: level
-          level: 3
-          display: 需要商人等级 Lv.3
-      buy: money:150
-      sell: money:45
-    iron_sword:
-      id: sertraline:iron_sword
-      buy-requirements:
-        - mode: level
-          level: 3
-          display: 需要商人等级 Lv.3
-      buy: money:600
-      sell: money:180
-
-    steel_ingot:
-      id: "sertraline:steel_ingot"
-      buy: money:150
-
-    motor:
-      id: "sertraline:motor"
-      buy: money:300
-
-    cpu:
-      id: "sertraline:cpu"
-      buy: money:400
-
-    battery:
-      id: "sertraline:battery"
-      buy: money:80
-
-    light_bulb:
-      id: "sertraline:light_bulb"
-      buy: money:60
-
-    industrial_part:
-      id: "sertraline:graphics_card"
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:130
+    # Lv.3 - 解锁商品
+    graphics_card:
+      id: sertraline:graphics_card
       requirements:
         - mode: quest
           value: Panopticoal4
           display: "需要完成任务「煤炭监狱·四」"
-      buy: money:3000
-
-    coal:
-      id: "sertraline:coal"
-      sell: money:5
-
-    raw_iron:
-      id: "sertraline:raw_iron"
-      sell: money:20
-
-    stone:
-      id: "sertraline:stone"
-      sell: money:3
-
-    wood:
-      id: "sertraline:wood"
-      sell: money:4
-
-    copper_wire:
-      id: "sertraline:copper_wire"
-      sell: money:15
-
-    screw:
-      id: "sertraline:screw"
-      sell: money:3
-
-    nail:
-      id: "sertraline:nail"
-      sell: money:2
+      limit:
+        player: 1
+        player-reset: 24h
+      buy: money:1100

@@ -13,8 +13,12 @@ import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager.deleteProfil
 import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager.getProfileInfos
 import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager.loadProfileData
 import io.github.zzzyyylllty.chotentech.listener.GameTimeManager
+import io.github.zzzyyylllty.chotentech.listener.ProfileListener
+import io.github.zzzyyylllty.chotentech.listener.ProfileListener.dismissGui
 import io.github.zzzyyylllty.chotentech.listener.ProfileListener.releaseFromPending
+import io.github.zzzyyylllty.chotentech.util.guiItem
 import io.github.zzzyyylllty.chotentech.util.toComponent
+import io.github.zzzyyylllty.chotentech.util.devLog
 import io.github.zzzyyylllty.chotentech.util.loreDash
 import io.github.zzzyyylllty.chotentech.util.loreInfo
 import io.github.zzzyyylllty.chotentech.util.loreSection
@@ -26,9 +30,11 @@ import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import taboolib.common.platform.function.submit
+import taboolib.common.platform.function.submitAsync
 import taboolib.library.xseries.XMaterial
 import taboolib.module.ui.openMenu
-import taboolib.module.ui.type.Chest
+import taboolib.module.ui.type.PageableChest
 import java.time.Instant
 import java.time.ZoneId
 import java.util.concurrent.ConcurrentHashMap
@@ -125,74 +131,110 @@ private data class ProfileDisplayData(
 
 class ProfileSelectionGUI {
 
+    companion object {
+        /** 打开中的玩家(含异步预加载期间):防止移动事件/ESC 重开竞态导致的重复打开 */
+        private val opening = ConcurrentHashMap.newKeySet<String>()
+
+        /** 档案展示数据缓存(uuid -> 加载时间戳 + 每个档案的展示数据):命中时界面可即时弹出,无需等待 DB */
+        private val displayCache = ConcurrentHashMap<String, Pair<Long, Map<String, ProfileDisplayData>>>()
+
+        /** 展示数据为选择界面用,允许 30s 内的轻微滞后(货币/游玩时间),换取打开零等待 */
+        private const val DISPLAY_CACHE_TTL_MS = 30_000L
+
+        private fun loadDisplayMap(uuid: String, infos: List<ProfileInfo>): Map<String, ProfileDisplayData> {
+            return infos.associate { info ->
+                val pData = loadProfileData(uuid, info.profileId)
+                info.profileId to ProfileDisplayData(
+                    reputation = pData?.reputation?.toMap() ?: emptyMap(),
+                    exploredLevels = pData?.exploreredLevels?.size ?: 0,
+                    discoveredBases = pData?.discoveredBases?.size ?: 0,
+                    money = pData?.money ?: 0L,
+                    point = pData?.point ?: 0L,
+                    playTime = pData?.playTime ?: 0L,
+                    activeLevelStr = pData?.activeLevelStr,
+                    gameTimeHours = pData?.gameTimeHours ?: 0L
+                )
+            }
+        }
+    }
+
     fun open(player: Player) {
+        if (!player.isOnline) return
         val uuid = player.uniqueId.toString()
+        if (!opening.add(uuid)) return
+
+        // 主线程只读缓存数据(共享数据/档案列表/上限),零 DB 查询
         val shared = ProfileManager.getSharedData(uuid)
         val infos = getProfileInfos(uuid)
         val activeProfileId = shared.activeProfileId
         val maxProfiles = getMaxProfiles(player)
+        val sharedCid = shared.cid.id
 
-        // Load per-profile display data (reputation, stats)
-        val displayMap = infos.associate { info ->
-            val pData = loadProfileData(uuid, info.profileId)
-            info.profileId to ProfileDisplayData(
-                reputation = pData?.reputation?.toMap() ?: emptyMap(),
-                exploredLevels = pData?.exploreredLevels?.size ?: 0,
-                discoveredBases = pData?.discoveredBases?.size ?: 0,
-                money = pData?.money ?: 0L,
-                point = pData?.point ?: 0L,
-                playTime = pData?.playTime ?: 0L,
-                activeLevelStr = pData?.activeLevelStr,
-                gameTimeHours = pData?.gameTimeHours ?: 0L
-            )
+        // 缓存命中:同一 tick 内同步弹出,不给排队中的陈旧玩家包(移动/交互)留出打断窗口
+        val cached = displayCache[uuid]
+        if (cached != null && System.currentTimeMillis() - cached.first < DISPLAY_CACHE_TTL_MS) {
+            opening.remove(uuid)
+            devLog("[ProfileGUI] ${player.name} 打开(缓存) ${infos.size} 档案")
+            openMenuWith(player, infos, cached.second, activeProfileId, maxProfiles, sharedCid)
+            return
         }
 
-        val rowCount = maxOf(3, 2 + (infos.size + 8) / 9)
+        // 打开时是否处于强制选择状态:加载完成后若已被释放(如聊天创建了档案),不再弹出
+        val wasPending = ProfileListener.pendingSelection[uuid] === player
 
-        player.openMenu<Chest>(
-            mmJsonUtil.serialize(
-                "<black><font:minecraft:fusionpixel10>选择玩家档案".toComponent()
-            )
-        ) {
-            this.rows(rowCount)
-
-            val bg = Array(rowCount) { "#".repeat(9) }
-            map(*bg)
-
-            set('#', XMaterial.BLACK_STAINED_GLASS_PANE) { name = " " }
-
-            // Existing profiles
-            infos.forEachIndexed { index, info ->
-                val isActive = info.profileId == activeProfileId
-                val display = displayMap[info.profileId] ?: ProfileDisplayData(emptyMap(), 0, 0, 0L, 0L, 0L, null, 0L)
-                val item = buildProfileItem(player, info, display, isActive)
-                set(index, item) {
-                    clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
-
-                    if (!isActive) {
-                        // Click to switch
-                        clicker.closeInventory()
-                        switchProfile(clicker, info.profileId)
-                        releaseFromPending(clicker)
-                        clicker.sendMessage("<green>已切换到玩家档案: <yellow>${info.profileName}".toComponent())
-                        clicker.playSound(clicker.location, Sound.BLOCK_RESPAWN_ANCHOR_SET_SPAWN, 1f, 1f)
-                    } else if (infos.size > 1) {
-                        // Click active profile when multiple exist — prompt deletion
-                        ProfileDeletionPending.register(clicker) {
-                            val profileName = info.profileName
-                            deleteProfile(clicker, info.profileId)
-                            clicker.sendMessage("<gold>已删除玩家档案: <yellow>$profileName".toComponent())
-                            clicker.playSound(clicker.location, Sound.ENTITY_ITEM_BREAK, 1f, 1f)
-                        }
-                    } else {
-                        clicker.sendMessage("<gray>当前已是此玩家档案".toComponent())
+        // 缓存未命中:每个档案的展示数据(声望/进度/货币)在异步线程预加载:
+        // 在线玩家多/自动保存高峰时 DB 变慢,若在主线程同步查询会冻结主线程
+        devLog("[ProfileGUI] ${player.name} 打开(异步加载) ${infos.size} 档案")
+        submitAsync {
+            try {
+                val displayMap = loadDisplayMap(uuid, infos)
+                displayCache[uuid] = System.currentTimeMillis() to displayMap
+                submit {
+                    try {
+                        if (!player.isOnline) return@submit
+                        // 加载期间玩家可能已掉线/选定档案,不再强行弹出
+                        if (wasPending && ProfileListener.pendingSelection[uuid] !== player) return@submit
+                        openMenuWith(player, infos, displayMap, activeProfileId, maxProfiles, sharedCid)
+                    } finally {
+                        opening.remove(uuid)
                     }
                 }
+            } catch (e: Exception) {
+                opening.remove(uuid)
+                devLog("[ProfileGUI] 档案数据预加载失败: ${e.message}")
+            }
+        }
+    }
+
+    private fun openMenuWith(
+        player: Player,
+        infos: List<ProfileInfo>,
+        displayMap: Map<String, ProfileDisplayData>,
+        activeProfileId: String,
+        maxProfiles: Int,
+        sharedCid: Long
+    ) {
+        player.openMenu<PageableChest<ProfileInfo>>(
+            mmJsonUtil.serialize("<white><shift:-16><image:kangelicon:list><shift:-176><aqua><font:minecraft:fusionpixel10>选择玩家档案".toComponent())
+        ) {
+            rows(6)
+
+            map(
+                "CCC   D<>",
+                "         ",
+                " @@@@@@@ ",
+                " @@@@@@@ ",
+                " @@@@@@@ ",
+                "         "
+            )
+
+            set('C', guiItem(XMaterial.BARRIER, "<red><bold>关闭", listOf("<!i> <yellow>点击 <red>关闭界面"), model = "kangelitem:void")) {
+                clicker.closeInventory()
+                // 未选择档案时保持 pending,移动时会再次弹出选择窗口
+                dismissGui(clicker)
             }
 
-            // Create Profile button
-            val createSlot = minOf(infos.size, 7)
-            set(createSlot, buildCreateItem(infos.size, maxProfiles)) {
+            set('D', buildCreateItem(infos.size, maxProfiles)) {
                 if (infos.size >= maxProfiles) {
                     clicker.sendMessage("<red>已达到最大玩家档案数量 ($maxProfiles)".toComponent())
                     clicker.playSound(clicker.location, Sound.ENTITY_VILLAGER_NO, 1f, 1f)
@@ -231,20 +273,68 @@ class ProfileSelectionGUI {
                 }
             }
 
-            // Info slot
-            val infoSlot = 8
-            set(infoSlot, buildInfoItem(player, infos.size, maxProfiles)) {
+            slotsBy('@')
+
+            elements { infos }
+
+            onGenerate { _, info, _, _ ->
+                val isActive = info.profileId == activeProfileId
+                val display = displayMap[info.profileId] ?: ProfileDisplayData(emptyMap(), 0, 0, 0L, 0L, 0L, null, 0L)
+                buildProfileItem(info, display, isActive, sharedCid, infos.size)
+            }
+
+            onClick { event, info ->
+                event.isCancelled = true
+                val clicker = event.clicker
                 clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
-                clicker.closeInventory()
-                val activeInfo = infos.find { it.profileId == activeProfileId }
-                if (activeInfo != null) {
-                    clicker.sendMessage("<green>当前玩家档案: <yellow>${activeInfo.profileName}".toComponent())
+
+                val isActive = info.profileId == activeProfileId
+                if (!isActive) {
+                    // Click to switch
+                    clicker.closeInventory()
+                    switchProfile(clicker, info.profileId)
+                    releaseFromPending(clicker)
+                    clicker.sendMessage("<green>已切换到玩家档案: <yellow>${info.profileName}".toComponent())
+                    clicker.playSound(clicker.location, Sound.BLOCK_RESPAWN_ANCHOR_SET_SPAWN, 1f, 1f)
+                } else if (infos.size > 1) {
+                    // Click active profile when multiple exist — prompt deletion
+                    ProfileDeletionPending.register(clicker) {
+                        val profileName = info.profileName
+                        if (deleteProfile(clicker, info.profileId)) {
+                            clicker.sendMessage("<gold>已删除玩家档案: <yellow>$profileName".toComponent())
+                            clicker.playSound(clicker.location, Sound.ENTITY_ITEM_BREAK, 1f, 1f)
+                        } else {
+                            clicker.sendMessage("<red>删除玩家档案失败".toComponent())
+                        }
+                        // 删除激活档案后玩家仍处于 pending 且无界面,重新打开选择界面避免软锁
+                        open(clicker)
+                    }
+                } else {
+                    clicker.sendMessage("<gray>当前已是此玩家档案".toComponent())
                 }
+            }
+
+            onPageChange { p ->
+                p.playSound(p.location, Sound.ITEM_BOOK_PAGE_TURN, 1f, 1f)
+            }
+
+            setPreviousPage(7) { _, page ->
+                guiItem(XMaterial.ARROW, "<green>上一页", model = if (page) "kangelitem:previous" else "kangelitem:previous_no")
+            }
+
+            setNextPage(8) { _, page ->
+                guiItem(XMaterial.ARROW, "<green>下一页", model = if (page) "kangelitem:next" else "kangelitem:next_no")
             }
         }
     }
 
-    private fun buildProfileItem(player: Player, info: ProfileInfo, display: ProfileDisplayData, isActive: Boolean): ItemStack {
+    private fun buildProfileItem(
+        info: ProfileInfo,
+        display: ProfileDisplayData,
+        isActive: Boolean,
+        sharedCid: Long,
+        profileCount: Int
+    ): ItemStack {
         val mat = if (isActive) XMaterial.PLAYER_HEAD else XMaterial.OAK_SIGN
         val item = mat.parseItem() ?: ItemStack(Material.PLAYER_HEAD)
         val meta = item.itemMeta ?: return item
@@ -254,7 +344,6 @@ class ProfileSelectionGUI {
         meta.displayName("${statusColor}<bold>${info.profileName}".toComponent())
 
         val lore = mutableListOf<String>()
-        val sharedCid = ProfileManager.getSharedData(player.uniqueId.toString()).cid.id
         lore += loreInfo("CID", "<white>$sharedCid")
         lore += loreInfo("ID", "<white>${info.profileId}")
         lore += loreInfo("创建", "<white>${
@@ -298,7 +387,7 @@ class ProfileSelectionGUI {
         lore += loreSpace()
         if (isActive) {
             lore += loreInfo("状态", "<green>当前使用")
-            if (getProfileInfos(player.uniqueId.toString()).size > 1) {
+            if (profileCount > 1) {
                 lore += "<!i> <yellow>点击 <red>删除"
             }
         } else {
@@ -335,21 +424,4 @@ class ProfileSelectionGUI {
         return item
     }
 
-    private fun buildInfoItem(player: Player, current: Int, max: Int): ItemStack {
-        val item = XMaterial.COMPASS.parseItem() ?: ItemStack(Material.COMPASS)
-        val meta = item.itemMeta ?: return item
-
-        val shared = ProfileManager.getSharedData(player.uniqueId.toString())
-
-        meta.displayName("<gold><bold>玩家档案信息".toComponent())
-        meta.lore(listOf(
-            loreInfo("当前", "<yellow>$current <gray>/ <yellow>$max"),
-            loreInfo("活跃档案ID", "<yellow>${shared.activeProfileId}"),
-            loreSpace(),
-            "<!i> <yellow>点击 <red>关闭"
-        ).toComponent())
-
-        item.setItemMeta(meta)
-        return item
-    }
 }

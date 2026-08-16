@@ -4,107 +4,106 @@ Quinn:
     # Lv.1 - 基础食品
     bread:
       id: sertraline:bread
-      buy: point:7
+      buy: point:6
       sell: point:2
     cracker:
       id: sertraline:cracker
-      buy: point:7
+      buy: point:5
       sell: point:2
     potato_chips:
       id: sertraline:potato_chips
-      buy: point:9
-      sell: point:3
-    # Lv.2 - 精选食品
+      buy: point:12
+      sell: point:5
     chocolate:
       id: sertraline:chocolate
+      buy: point:13
+      sell: point:5
+    muffin:
+      id: sertraline:muffin
+      buy: point:13
+      sell: point:5
+    pie:
+      id: sertraline:pie
+      buy: point:14
+      sell: point:5
+    # Lv.1 - 食材收购
+    wheat:
+      id: sertraline:wheat
+      sell: point:4
+    carrot:
+      id: sertraline:carrot
+      sell: point:4
+    potato:
+      id: sertraline:potato
+      sell: point:4
+    apple:
+      id: sertraline:apple
+      sell: point:5
+    # Lv.2 - 精选食品
+    cola:
+      id: sertraline:cola
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: point:10
-      sell: point:4
-    muffin:
-      id: sertraline:muffin
+      buy: point:14
+    mre:
+      id: sertraline:mre
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:32
+    apple_can:
+      id: sertraline:apple_can
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
       buy: point:15
-      sell: point:5
-    pie:
-      id: sertraline:pie
+    cooked_porkchop:
+      id: sertraline:cooked_porkchop
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: point:19
-      sell: point:5
-    # Lv.3 - 高级食品/饮料
-    cola:
-      id: sertraline:cola
-      buy-requirements:
-        - mode: level
-          level: 3
-          display: 需要商人等级 Lv.3
-      buy: point:25
-      sell: point:8
-    mre:
-      id: sertraline:mre
-      buy-requirements:
-        - mode: level
-          level: 3
-          display: 需要商人等级 Lv.3
-      buy: point:38
-      sell: point:12
-    apple_can:
-      id: sertraline:apple_can
-      buy-requirements:
-        - mode: level
-          level: 3
-          display: 需要商人等级 Lv.3
-      buy: point:19
-      sell: point:5
-
+      buy: point:16
     cooked_beef:
-      id: "sertraline:cooked_beef"
-      buy: point:5
-
-    cooked_porkchop:
-      id: "sertraline:cooked_porkchop"
-      buy: point:5
-
+      id: sertraline:cooked_beef
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:17
     cooked_chicken:
-      id: "sertraline:cooked_chicken"
-      buy: point:4
-
+      id: sertraline:cooked_chicken
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:16
     pizza:
-      id: "sertraline:pizza"
-      buy: point:8
-
+      id: sertraline:pizza
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:30
     almond_water_blue:
-      id: "sertraline:almond_water_blue"
-      buy: point:10
-
-    premium_food:
-      id: "sertraline:royal_rations"
+      id: sertraline:almond_water_blue
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:30
+    # Lv.3 - 解锁商品
+    royal_rations:
+      id: sertraline:royal_rations
       requirements:
         - mode: quest
           value: CherryBlossom
           display: "需要完成任务「樱花树」"
-      buy: point:75
-
-    wheat:
-      id: "sertraline:wheat"
-      sell: point:1
-
-    carrot:
-      id: "sertraline:carrot"
-      sell: point:1
-
-    potato:
-      id: "sertraline:potato"
-      sell: point:1
-
-    apple:
-      id: "sertraline:apple"
-      sell: point:2
+      limit:
+        player: 1
+        player-reset: 24h
+      buy: point:200

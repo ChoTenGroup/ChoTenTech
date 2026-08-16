@@ -1,0 +1,31 @@
+# 全服聊天频道
+# key 用于命令与存储（/ch global、activeChannel），建议保持与文件名一致
+key: global
+# 频道显示名（MiniMessage）
+display-name: "<gray>[<aqua>全服</aqua>]</gray>"
+# 聊天格式（MiniMessage）。
+#  - default: 默认格式（必填）
+#  - console: 控制台显示格式（可选，纯文本标签会被剥离）
+#  - 其余 key 为分组格式：玩家持有 chotentech.chat.format.<key> 权限则使用该格式，否则回退 default
+# 可用自定义标签：<username> <display_name> <message> <channel> <team_name>
+# PAPI 占位符（%player_level% 等）只会在格式层解析，玩家消息内容绝不会被解析
+formats:
+  default: "<gray>[<yellow>%player_level%</yellow> <#E3D4D1>L%chotentech_level_number%</#E3D4D1>]%chotentech_prefix%%chotentech_namecolor%<username><reset>%chotentech_suffix%<reset><gray>: <reset>%chotentech_chatcolor%<message>%luckperms_meta_messagesuffix%<reset>"
+  console: "[%player_level%] %player_name%: <message>"
+  # 示例：给持有 chotentech.chat.format.vip 权限的玩家使用
+  # vip: "<gold>[VIP]</gold> <username><gray>: </gray><message>"
+# 快速前缀：聊天时输入 ".g 消息" 直接发送到本频道；留空禁用
+quick-prefix: ".g"
+# 可见半径：-1 全服可见 / 0 仅同世界 / >0 方块距离
+radius: -1
+# 频道默认冷却（秒）；-1 无冷却
+cooldown: 3
+# 冷却覆盖：permission -> 秒数（-1 = 无冷却，用于减少/绕过冷却）
+# 另有内置权限：chotentech.chat.cooldown.bypass（全部频道）与 chotentech.chat.cooldown.<key>.bypass（本频道）
+cooldown-overrides:
+  chotentech.chat.cooldown.vip: 1
+  chotentech.chat.cooldown.admin: -1
+# 是否组队频道（收件人为队伍成员，需要 <team_name> 标签）
+party: false
+# 使用本频道所需权限；留空则所有玩家可用
+permission: ""

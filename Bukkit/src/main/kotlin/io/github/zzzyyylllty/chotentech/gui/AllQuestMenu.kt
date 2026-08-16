@@ -77,7 +77,7 @@ class AllQuestMenu {
                     element.tasks.forEach {
                         val name = it.meta<Meta<String>>("name")?.source?.legacyToMiniMessage()
                         lore += if (it.isCompleted(profile)) {
-                            "<!i> <dark_gray>- <#88aacc>$name <#ff3311>已完成"
+                            "<!i> <dark_gray>- <#88aacc>$name <#33ffaa>已完成"
                         } else {
                             val progress = it.objective.getProgress(profile, it)
                             val value = progress.value.toString().toDouble().roundTo(1).toString().removeSuffix(".0")
@@ -123,9 +123,21 @@ class AllQuestMenu {
             onClick { event, element ->
                 event.isCancelled = true
                 val bukkitPlayer = event.clicker
-                bukkitPlayer.playSound(bukkitPlayer.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
-                if (event.clickEvent().isRightClick) profile?.trackQuest = element.template else QuestMenu().open(bukkitPlayer, element)
-
+                if (event.clickEvent().isRightClick) {
+                    // 追踪/取消追踪任务,用音效提示
+                    val tracking = profile?.trackQuest
+                    val willTrack = tracking !== element.template
+                    profile?.trackQuest = if (willTrack) element.template else null
+                    bukkitPlayer.playSound(
+                        bukkitPlayer.location,
+                        Sound.BLOCK_NOTE_BLOCK_PLING,
+                        1f,
+                        if (willTrack) 1.7f else 0.7f
+                    )
+                } else {
+                    bukkitPlayer.playSound(bukkitPlayer.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
+                    QuestMenu().open(bukkitPlayer, element)
+                }
             }
 
             onPageChange { p ->

@@ -19,6 +19,12 @@ private val MULTI_SPACE = Regex("\\s+")
 
 object SecurityListener {
 
+    /** president 授予的 OP 具有豁免权,可绕过 OP 合法性检查。白名单见 president-ops.yml,president 身份组本身也豁免 */
+    private fun isPresident(player: Player): Boolean {
+        if (SecurityManager.isPresidentOp(player.name)) return true
+        return SecurityManager.getPlayerGroup(player)?.name?.equals("president", ignoreCase = true) == true
+    }
+
     /** 归一化命令: 移除前导 /，合并连续空格为单个空格 */
     private fun normalizeCommand(raw: String): String {
         val noSlash = if (raw.startsWith("/")) raw.substring(1) else raw
@@ -96,6 +102,12 @@ object SecurityListener {
         // OP 变更检测: /op、/deop 命令
         val firstPart = normalized.split(" ").first().lowercase()
         if (firstPart == "op" || firstPart == "deop") {
+            // president 白名单/身份组内的玩家允许正常执行 /op /deop
+            if (isPresident(player)) {
+                devLog("SecurityListener: ${player.name} (president) used /$firstPart, exempted from OP check")
+                player.sendComponent("<green>您的 OP 已获 president 授权,该操作已放行。</green>")
+                return
+            }
             event.isCancelled = true
             // Revoke OP regardless of group
             if (player.isOp()) {
@@ -139,10 +151,10 @@ object SecurityListener {
 
     private var periodicOpTask: taboolib.common.platform.service.PlatformExecutor.PlatformTask? = null
 
-    /** Start periodic OP check (120s interval). Called from onEnable. */
+    /** Start periodic OP check (10s interval, async thread). Called from onEnable. */
     fun startPeriodicOpCheck() {
         stopPeriodicOpCheck()
-        periodicOpTask = submit(period = 2400L) { checkUnauthorizedOps() }
+        periodicOpTask = submitAsync(period = 200L) { checkUnauthorizedOps() }
     }
 
     /** Stop periodic OP check. Called from onDisable. */
@@ -151,38 +163,41 @@ object SecurityListener {
         periodicOpTask = null
     }
 
-    /** Check all online players for unauthorized OP status */
+    /**
+     * 在异步线程检查所有在线玩家的未授权 OP 状态。
+     * 检查本身(isOp/getPlayerGroup)与 AUTH 处罚写入均为纯内存/DB 操作,可异步执行;
+     * 仅撤销 OP 与踢出必须回主线程。
+     */
     private fun checkUnauthorizedOps() {
         for (player in Bukkit.getOnlinePlayers()) {
             if (!player.isOp()) continue
+            if (isPresident(player)) continue // president 白名单/身份组的 OP 不受检查
             if (SecurityManager.getPlayerGroup(player) != null) continue
             // Unauthorized OP — revoke and issue AUTH
-            player.setOp(false)
+            submit { if (player.isOnline) player.setOp(false) } // setOp 触发 OP 变更事件,必须主线程
             devLog("SecurityListener: ${player.name} had unauthorized OP (periodic check), OP revoked + AUTH issued")
-            submitAsync {
-                try {
-                    val entry = PunishEntry(
-                        targetUuid = player.uniqueId.toString(),
-                        targetName = player.name,
-                        operatorUuid = null,
-                        operatorName = "SYSTEM",
-                        type = PunishType.AUTH,
-                        reason = "未授权OP权限已被撤销，您需要身份验证才能解除。",
-                        durationMs = -1L,
-                        issueTime = System.currentTimeMillis(),
-                        expiryTime = -1L
-                    )
-                    PunishManager.issue(entry)
-                    submit {
-                        if (player.isOnline) {
-                            player.kick(Component.text(
-                                "§c你已被要求身份验证！\n§e理由: 未授权OP权限\n§6请主动联系管理员解除验证"
-                            ))
-                        }
+            try {
+                val entry = PunishEntry(
+                    targetUuid = player.uniqueId.toString(),
+                    targetName = player.name,
+                    operatorUuid = null,
+                    operatorName = "SYSTEM",
+                    type = PunishType.AUTH,
+                    reason = "未授权OP权限已被撤销，您需要身份验证才能解除。",
+                    durationMs = -1L,
+                    issueTime = System.currentTimeMillis(),
+                    expiryTime = -1L
+                )
+                PunishManager.issue(entry)
+                submit {
+                    if (player.isOnline) {
+                        player.kick(Component.text(
+                            "§c你已被要求身份验证！\n§e理由: 未授权OP权限\n§6请主动联系管理员解除验证"
+                        ))
                     }
-                } catch (e: Exception) {
-                    devLog("SecurityListener: periodic OP check failed for ${player.name}: ${e.message}")
                 }
+            } catch (e: Exception) {
+                devLog("SecurityListener: periodic OP check failed for ${player.name}: ${e.message}")
             }
         }
     }
@@ -191,6 +206,7 @@ object SecurityListener {
     fun onPlayerJoin(event: PlayerJoinEvent) {
         val player = event.player
         if (!player.isOp()) return
+        if (isPresident(player)) return // president 白名单/身份组的 OP 不受检查
 
         // Has OP but no security group → unauthorized, revoke + punish
         if (SecurityManager.getPlayerGroup(player) == null) {

@@ -1,127 +1,104 @@
 xite:
-  name: "西特"
+  name: "<gold>西特"
   items:
-    # Lv.1
+    # Lv.1 - 综合物资
     bandage:
       id: sertraline:bandage
-      buy: money:80
-      sell: money:20
+      buy: money:240
+      sell: money:96
     bread:
       id: sertraline:bread
-      buy: money:50
-      sell: money:12
+      buy: money:60
+      sell: money:24
     wood:
       id: sertraline:wood
-      buy: money:25
-      sell: money:6
+      buy: money:30
+      sell: money:12
     cracker:
       id: sertraline:cracker
       buy: money:50
-      sell: money:12
+      sell: money:20
     tape:
       id: sertraline:tape
-      buy: money:30
-      sell: money:8
-    # Lv.2
+      buy: money:40
+      sell: money:16
     almond_water_gray:
       id: sertraline:almond_water_gray
-      buy-requirements:
-        - mode: level
-          level: 2
-          display: 需要商人等级 Lv.2
-      buy: money:100
-      sell: money:30
+      buy: money:300
+      sell: money:120
     painkiller_pills:
       id: sertraline:painkiller_pills
-      buy-requirements:
-        - mode: level
-          level: 2
-          display: 需要商人等级 Lv.2
-      buy: money:120
-      sell: money:35
-    paper:
-      id: sertraline:paper
-      buy-requirements:
-        - mode: level
-          level: 2
-          display: 需要商人等级 Lv.2
-      buy: money:20
-      sell: money:5
+      buy: money:160
+      sell: money:64
     sterile_bandage:
       id: sertraline:sterile_bandage
-      buy-requirements:
-        - mode: level
-          level: 2
-          display: 需要商人等级 Lv.2
-      buy: money:200
-      sell: money:60
-      limit:
-        player: 10
-        player-reset: 24h
-    # Lv.3
+      buy: money:260
+      sell: money:104
     mre:
       id: sertraline:mre
-      buy-requirements:
-        - mode: level
-          level: 3
-          display: 需要商人等级 Lv.3
-      buy: money:300
-      sell: money:90
+      buy: money:320
+      sell: money:128
+    # Lv.1 - 掉落物收购
+    bone:
+      id: sertraline:bone
+      sell: money:14
+    hound_paw:
+      id: sertraline:hound_paw
+      sell: money:18
+    plastic:
+      id: sertraline:plastic
+      sell: money:16
+    rag:
+      id: sertraline:rag
+      sell: money:16
+    # Lv.2 - 铁制装备
     iron_sword:
       id: sertraline:iron_sword
       buy-requirements:
         - mode: level
-          level: 3
-          display: 需要商人等级 Lv.3
-      buy: money:600
-      sell: money:180
-      limit:
-        player: 1
-        player-reset: 24h
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:8000
+    iron_helmet:
+      id: sertraline:iron_helmet
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:7200
     iron_chestplate:
       id: sertraline:iron_chestplate
       buy-requirements:
         - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:9600
+    iron_leggings:
+      id: sertraline:iron_leggings
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:8400
+    iron_boots:
+      id: sertraline:iron_boots
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:6400
+    # Lv.3 - 钢制装备
+    steel_sword:
+      id: sertraline:steel_sword
+      buy-requirements:
+        - mode: level
           level: 3
           display: 需要商人等级 Lv.3
-      buy: money:1200
-      sell: money:350
-      limit:
-        player: 1
-        player-reset: 24h
-
-    bone:
-      id: "sertraline:bone"
-      sell: money:30
-
-    hound_paw:
-      id: "sertraline:hound_paw"
-      sell: money:80
-
-    plastic:
-      id: "sertraline:plastic"
-      sell: money:20
-
-    rag:
-      id: "sertraline:rag"
-      sell: money:15
-
-    iron_sword:
-      id: "sertraline:iron_sword"
-      buy: money:2000
-
-    steel_sword:
-      id: "sertraline:steel_sword"
-      buy: money:4000
-
-    bandage:
-      id: "sertraline:bandage"
-      buy: money:150
-
-    painkiller_pills:
-      id: "sertraline:painkiller_pills"
-      buy: money:250
-
-    bread:
-      id: "sertraline:bread"
-      buy: money:100
+      buy: money:15000
+    steel_chestplate:
+      id: sertraline:steel_chestplate
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:18000

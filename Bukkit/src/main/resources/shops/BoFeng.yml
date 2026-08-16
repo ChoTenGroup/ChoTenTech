@@ -2,120 +2,224 @@ BoFeng:
   name: "<gold>波风"
   items:
     # Lv.1 - 基础食品
-    bread:
-      id: sertraline:bread
-      buy: money:60
-      sell: money:15
-    cracker:
-      id: sertraline:cracker
+    pizza_soup:
+      id: sertraline:pizza_soup
+      buy: money:45
+      sell: money:18
+    soda:
+      id: sertraline:soda
       buy: money:50
-      sell: money:12
-    potato_chips:
-      id: sertraline:potato_chips
-      buy: money:70
       sell: money:20
-    chocolate:
-      id: sertraline:chocolate
-      buy: money:80
-      sell: money:25
-    # Lv.2 - 精选食品
-    muffin:
-      id: sertraline:muffin
+    oatmeal:
+      id: sertraline:oatmeal
+      buy: money:50
+      sell: money:20
+    bread_cubes:
+      id: sertraline:bread_cubes
+      buy: money:55
+      sell: money:22
+    konjac:
+      id: sertraline:konjac
+      buy: money:55
+      sell: money:22
+    emergency_water_pack:
+      id: sertraline:emergency_water_pack
+      buy: money:160
+      sell: money:64
+    # Lv.1 - 食材收购
+    wheat:
+      id: sertraline:wheat
+      sell: money:44
+    carrot:
+      id: sertraline:carrot
+      sell: money:44
+    potato:
+      id: sertraline:potato
+      sell: money:44
+    porkchop:
+      id: sertraline:porkchop
+      sell: money:52
+    beef:
+      id: sertraline:beef
+      sell: money:56
+    chicken:
+      id: sertraline:chicken
+      sell: money:50
+    mutton:
+      id: sertraline:mutton
+      sell: money:52
+    sugar_cane:
+      id: sertraline:sugar_cane
+      sell: money:46
+    cocoa_beans:
+      id: sertraline:cocoa_beans
+      sell: money:48
+    brown_mushroom:
+      id: sertraline:brown_mushroom
+      sell: money:52
+    red_mushroom:
+      id: sertraline:red_mushroom
+      sell: money:52
+    spider_leg:
+      id: sertraline:spider_leg
+      sell: money:16
+    berry:
+      id: sertraline:berry
+      sell: money:12
+    # Lv.2 - 家常菜
+    cooked_porkchop:
+      id: sertraline:cooked_porkchop
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: money:120
-      sell: money:35
-    french_fries:
-      id: sertraline:french_fries
+      buy: money:160
+    cooked_beef:
+      id: sertraline:cooked_beef
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: money:100
-      sell: money:30
-    pie:
-      id: sertraline:pie
+      buy: money:170
+    cooked_chicken:
+      id: sertraline:cooked_chicken
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:160
+    cooked_mutton:
+      id: sertraline:cooked_mutton
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:165
+    cooked_potato:
+      id: sertraline:cooked_potato
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:140
+    cooked_carrot:
+      id: sertraline:cooked_carrot
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:135
+    cooked_beetroot:
+      id: sertraline:cooked_beetroot
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:140
+    cooked_cactus:
+      id: sertraline:cooked_cactus
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:145
+    cooked_brown_mushroom:
+      id: sertraline:cooked_brown_mushroom
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:140
+    cooked_red_mushroom:
+      id: sertraline:cooked_red_mushroom
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:140
+    baked_potato:
+      id: sertraline:baked_potato
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:140
+    scits:
+      id: sertraline:scits
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:140
+    jerky:
+      id: sertraline:jerky
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
       buy: money:150
-      sell: money:40
-    # Lv.3 - 高级食品/饮料
-    cola:
-      id: sertraline:cola
+    # Lv.3 - 高级食品
+    honey:
+      id: sertraline:honey
       buy-requirements:
         - mode: level
           level: 3
           display: 需要商人等级 Lv.3
-      buy: money:200
-      sell: money:60
-    ice_tea:
-      id: sertraline:ice_tea
+      buy: money:280
+    royal_jelly:
+      id: sertraline:royal_jelly
       buy-requirements:
         - mode: level
           level: 3
           display: 需要商人等级 Lv.3
-      buy: money:180
-      sell: money:50
-    milk:
-      id: sertraline:milk
+      buy: money:280
+    herring_can:
+      id: sertraline:herring_can
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:300
+    scits_can:
+      id: sertraline:scits_can
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:300
+    manba_tea:
+      id: sertraline:manba_tea
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:280
+    konjac_shuang:
+      id: sertraline:konjac_shuang
       buy-requirements:
         - mode: level
           level: 3
           display: 需要商人等级 Lv.3
       buy: money:160
-      sell: money:45
-    apple_can:
-      id: sertraline:apple_can
+    # Lv.3 - 珍稀糖果
+    candy_almond_mints:
+      id: sertraline:candy_almond_mints
       buy-requirements:
         - mode: level
           level: 3
           display: 需要商人等级 Lv.3
-      buy: money:250
-      sell: money:80
-    # 食材收购
-    wheat:
-      id: sertraline:wheat
-      sell: money:10
-    wheat_seeds:
-      id: sertraline:wheat_seeds
-      sell: money:5
-    carrot:
-      id: sertraline:carrot
-      sell: money:8
-    potato:
-      id: sertraline:potato
-      sell: money:10
-    porkchop:
-      id: sertraline:porkchop
-      sell: money:15
-    beef:
-      id: sertraline:beef
-      sell: money:15
-    chicken:
-      id: sertraline:chicken
-      sell: money:12
-    sugar_cane:
-      id: sertraline:sugar_cane
-      sell: money:8
-    cocoa_beans:
-      id: sertraline:cocoa_beans
-      sell: money:10
-    # 解锁商品
-    chef_special:
-      id: sertraline:mcdonald
-      buy-requirements:
-        - mode: quest
-          value: FoodGod9
-          display: 需要完成任务「食神·九」
-      buy: money:1500
-    summit_souvenir:
+      limit:
+        player: 1
+        player-reset: 24h
+      buy: money:1600
+    # Lv.3 - 解锁商品
+    pro_gold_bar:
       id: sertraline:pro_gold_bar
-      buy-requirements:
+      requirements:
         - mode: quest
           value: NianZhangShi
-          display: 需要完成任务「念张师」
-      buy: money:20000
+          display: "需要完成任务「念张师」"
+      limit:
+        player: 1
+        player-reset: 24h
+      buy: money:15000

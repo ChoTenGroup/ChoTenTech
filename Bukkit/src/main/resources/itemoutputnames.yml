@@ -344,6 +344,7 @@ glowstone_bulb: <!i><#FFFF00>荧石灯管
 led: <!i><#CECACA>LED单元
 resistor_simple: <!i><#CECACA>简易电阻
 raspberry_pi: <!i><#55FF55>树莓派
+tutorial_sound_card: <!i><#55FF55>奇怪的声卡
 sound_card: <!i><#55FF55>声卡
 hearing_aid: <!i><#DDD605>助听器
 ultraviolet_lamp: <!i><#AA00AA>紫外线灯

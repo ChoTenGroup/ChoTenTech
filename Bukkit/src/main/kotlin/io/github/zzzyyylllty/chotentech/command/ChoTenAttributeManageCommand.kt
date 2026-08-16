@@ -38,25 +38,41 @@ object ChoTenAttributeManageCommand {
                     suggestion<CommandSender> { _, _ -> ModifierType.entries.map { it.name } }
                     dynamic("value") {
                         execute<CommandSender> { sender, context, _ ->
-                            val player = Bukkit.getPlayer(context["player"]) ?: return@execute sender.sendStringAsComponent(sender.asLangText("Command_Error_Player_Not_Found", context["player"]))
-                            val attrId = context["attrId"]
-                            val type = runCatching { ModifierType.valueOf(context["type"].uppercase()) }.getOrNull() ?: return@execute sender.sendStringAsComponent(sender.asLangText("Command_Error_Invalid_Type", context["type"]))
-                            val value = context["value"].toDoubleOrNull() ?: return@execute sender.sendStringAsComponent(sender.asLangText("Command_Error_Invalid_Value", context["value"]))
-
-                            val modifier = AttributeModifier(
-                                attributeId = attrId,
-                                value = value,
-                                type = type,
-                                source = ModifierSource.OTHER
-                            )
-
-                            ChoTenAttributeAPI.instance.addModifier(player.uniqueId, modifier)
-                            val displayName = getAttributeDisplayName(sender, attrId)
-                            sender.sendStringAsComponent(sender.asLangText("Command_Manage_Add_Success", displayName, value, type.name, player.name))
+                            addModifier(sender, context["player"], context["attrId"], context["type"], context["value"], null)
+                        }
+                        dynamic("duration") {
+                            execute<CommandSender> { sender, context, _ ->
+                                addModifier(sender, context["player"], context["attrId"], context["type"], context["value"], context["duration"].toLongOrNull())
+                            }
                         }
                     }
                 }
             }
+        }
+    }
+
+    /** 添加修饰符,duration 为 null 时永久;有持续时间时到期自动刷新移除(过期修饰符只在 updatePlayer 时清理) */
+    private fun addModifier(sender: CommandSender, playerName: String, attrId: String, typeStr: String, valueStr: String, duration: Long?) {
+        val player = Bukkit.getPlayer(playerName) ?: return sender.sendStringAsComponent(sender.asLangText("Command_Error_Player_Not_Found", playerName))
+        val type = runCatching { ModifierType.valueOf(typeStr.uppercase()) }.getOrNull() ?: return sender.sendStringAsComponent(sender.asLangText("Command_Error_Invalid_Type", typeStr))
+        val value = valueStr.toDoubleOrNull() ?: return sender.sendStringAsComponent(sender.asLangText("Command_Error_Invalid_Value", valueStr))
+
+        val modifier = AttributeModifier(
+            attributeId = attrId,
+            value = value,
+            type = type,
+            source = ModifierSource.OTHER,
+            expireOn = duration?.let { System.currentTimeMillis() + it * 1000 }
+        )
+
+        ChoTenAttributeAPI.instance.addModifier(player.uniqueId, modifier)
+        val displayName = getAttributeDisplayName(sender, attrId)
+        sender.sendStringAsComponent(sender.asLangText("Command_Manage_Add_Success", displayName, value, type.name, player.name))
+
+        // 到期移除由 AttributeManager 的周期性过期清理任务兜底(不在此处用一次性延迟任务:
+        // tick 边界触发可能早于 expireOn,判定未过期后没有任何重试,修饰符会永久残留)
+        if (duration != null) {
+            sender.sendStringAsComponent("§7持续 §e$duration §7秒,到期自动移除")
         }
     }
 

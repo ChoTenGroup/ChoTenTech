@@ -13,7 +13,7 @@ import org.bukkit.entity.Player
  * 普通伤害（NORMAL）基类
  * 计算逻辑：防御因子 × 易伤系数 → 属性防御 → 全伤害减免
  *   防御因子 = d / (d + 2*def + tough*d/20)
- *   易伤系数 = (1 - extRatio*intRatio)*0.5 + (1 - tough/(tough+20))*0.5 + 0.5
+ *   易伤系数 = (extRatio*intRatio)*0.5 + (1 - tough/(tough+20))*0.5 + 0.5
  */
 abstract class NormalDamageHandler(override val type: DamageType) : DamageTypeHandler {
 
@@ -51,7 +51,7 @@ abstract class NormalDamageHandler(override val type: DamageType) : DamageTypeHa
             externalInjuryRatio = 0.0
             internalInjuryRatio = 0.0
         }
-        val A = (1.0 - externalInjuryRatio * internalInjuryRatio) * 0.5
+        val A = (externalInjuryRatio * internalInjuryRatio) * 0.5
         val B = (1.0 - toughness / (toughness + 20.0)) * 0.5
         val vulnerability = A + B + 0.5
 

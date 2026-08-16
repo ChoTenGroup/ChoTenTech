@@ -33,7 +33,7 @@ fun onPlayerInteractWithDisabledBlocks(event: PlayerInteractEvent) {
 
     if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) return
 
-    if (block.contains("CANDLE") || block.contains("POT") || block == "CAULDRON" || block.contains("COPPER") || block.contains("SIGN") || block == "CHISELED_BOOKSHELF" || block == "LODESTONE") {
+    if (block.contains("CANDLE") || block.contains("POT") || block == "CAULDRON"  || block == "CAKE" || block.contains("COPPER") || block.contains("SIGN") || block == "CHISELED_BOOKSHELF" || block == "LODESTONE") {
         event.isCancelled = true
     }
 

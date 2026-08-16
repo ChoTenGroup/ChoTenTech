@@ -128,7 +128,7 @@ class InsuranceMenu {
             if (!EconomyUtil.has(player, totalCost)) {
                 player.sendMessage(
                     mmUtil.deserialize(
-                        "<red>余额不足！需要 <yellow>$totalCost</yellow>，当前余额 <yellow>${EconomyUtil.getEconomy()?.getBalance(player)?.toLong() ?: 0}</yellow>"
+                        "<red>余额不足！需要 <yellow>$totalCost</yellow>，当前余额 <yellow>${EconomyUtil.getBalance(player)}</yellow>"
                     )
                 )
                 return

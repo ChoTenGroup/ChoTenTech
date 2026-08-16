@@ -242,7 +242,7 @@ object ChoTenDataCommand {
                     val player = context.player("user").castSafely<Player>()!!
                     val npc = context["npc"]
                     val value = ReputationManager.getAffection(player, npc)
-                    sender.sendComponent("<gold>$npc <gray>- 好感度: <yellow>$value")
+                    sender.sendComponent("<gold>$npc <gray>- 信任度: <yellow>$value")
                 }
                 dynamic("operation") {
                     int("value", listOf("100", "500", "1000", "-500")) {
@@ -264,7 +264,7 @@ object ChoTenDataCommand {
                                 }
                             }
                             val current = ReputationManager.getAffection(player, npc)
-                            sender.sendComponent("<green>已将 ${player.name} 对 $npc 的好感度设为 <yellow>$current")
+                            sender.sendComponent("<green>已将 ${player.name} 对 $npc 的信任度设为 <yellow>$current")
                         }
                     }
                     suggestion<CommandSender> { _, _ ->

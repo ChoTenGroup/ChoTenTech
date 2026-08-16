@@ -1,0 +1,243 @@
+[hoist] BNTG\Level_1\AkaRain.yml
+  OLD:     - if: "all [ { quest select EaseUp quest accepted } { check profile data FirstTalk_Ice default 0 == 1 } { check quest progress value task 1 < 1 } ]"
+  NEW:     - if: "quest select EaseUp all [ { quest accepted } { check profile data FirstTalk_Ice default 0 == 1 } { check quest progress value task 1 < 1 } ]"
+[hoist] BNTG\Level_1\HeDe.yml
+  OLD:     - if: "all [ { quest select WantGoodPerson quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 >= 1 } { check quest progress value task 3 < 1 } ]"
+  NEW:     - if: "quest select WantGoodPerson all [ { quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 >= 1 } { check quest progress value task 3 < 1 } ]"
+[hoist] BNTG\Level_1\HeDe.yml
+  OLD:     - if: "all [ { quest select AuxTraining quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 >= 1 } { check quest progress value task 3 < 1 } ]"
+  NEW:     - if: "quest select AuxTraining all [ { quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 >= 1 } { check quest progress value task 3 < 1 } ]"
+[dedup] BNTG\Level_1\MiZhen.yml
+  OLD:     - if: "quest select WantAll all [ { quest select WantAll quest accepted } { check quest progress value task 1 < 1 } ]"
+  NEW:     - if: "quest select WantAll all [ { quest accepted } { check quest progress value task 1 < 1 } ]"
+[hoist] BNTG\Level_1\MiZhen.yml
+  OLD:     - if: "all [ { quest select KongChengJi quest accepted } { check quest progress value task 3 >= 1 } { check quest progress value task 4 < 1 } ]"
+  NEW:     - if: "quest select KongChengJi all [ { quest accepted } { check quest progress value task 3 >= 1 } { check quest progress value task 4 < 1 } ]"
+[hoist] BNTG\Level_1\MiZhen.yml
+  OLD:     - if: "all [ { quest select FakeAlmondWater2 quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+  NEW:     - if: "quest select FakeAlmondWater2 all [ { quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+[hoist] BNTG\Level_1\MiZhen.yml
+  OLD:     - if: "all [ { quest select OnTheJob quest accepted } { check quest progress value task 1 < 1 } ]"
+  NEW:     - if: "quest select OnTheJob all [ { quest accepted } { check quest progress value task 1 < 1 } ]"
+[hoist] BNTG\Level_1\YiChan.yml
+  OLD:     - if: "all [ { quest select DutyLeave quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 >= 1 } { check quest progress value task 3 >= 1 } { check quest progress value task 4 >= 1 } { check quest progress value task 5 < 1 } ]"
+  NEW:     - if: "quest select DutyLeave all [ { quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 >= 1 } { check quest progress value task 3 >= 1 } { check quest progress value task 4 >= 1 } { check quest progress value task 5 < 1 } ]"
+[hoist] BNTG\Level_1\YiChan.yml
+  OLD:     - if: "all [ { quest select Paronychia quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+  NEW:     - if: "quest select Paronychia all [ { quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+[hoist] BNTG\Level_1\YiChan.yml
+  OLD:     - if: "all [ { quest select CustomsTour quest accepted } { check quest progress value task 3 < 1 } ]"
+  NEW:     - if: "quest select CustomsTour all [ { quest accepted } { check quest progress value task 3 < 1 } ]"
+[hoist] BNTG\level_10\Greybird.yml
+  OLD:     - if: "all [ { quest select GatewayLeading_Raven quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+  NEW:     - if: "quest select GatewayLeading_Raven all [ { quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+[hoist] BNTG\level_10\Greybird.yml
+  OLD:     - if: "all [ { quest select SecretGoods quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+  NEW:     - if: "quest select SecretGoods all [ { quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+[hoist] BNTG\level_11\Raven.yml
+  OLD:     - if: "all [ { quest select FakeAlmondWater1 quest accepted } { check quest progress value task 1 < 1 } ]"
+  NEW:     - if: "quest select FakeAlmondWater1 all [ { quest accepted } { check quest progress value task 1 < 1 } ]"
+[hoist] BNTG\level_11\Raven.yml
+  OLD:     - if: "all [ { quest select FakeAlmondWater2 quest accepted } { check quest progress value task 1 < 1 } ]"
+  NEW:     - if: "quest select FakeAlmondWater2 all [ { quest accepted } { check quest progress value task 1 < 1 } ]"
+[hoist] BNTG\level_11\xinan.yml
+  OLD:     - if: "all [ { quest select ResourceAssurance_Level11 quest accepted } { check quest progress value task 1 >= 1 } ]"
+  NEW:     - if: "quest select ResourceAssurance_Level11 all [ { quest accepted } { check quest progress value task 1 >= 1 } ]"
+[hoist] BNTG\level_11\xinan.yml
+  OLD:     - if: "all [ { quest select ResourceAssurance_Level11_2 quest accepted } { check quest progress value task 1 >= 1 } ]"
+  NEW:     - if: "quest select ResourceAssurance_Level11_2 all [ { quest accepted } { check quest progress value task 1 >= 1 } ]"
+[hoist] BNTG\Level_2\DaoGe.yml
+  OLD:     - if: "all [ { quest select SatTeeTouy quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+  NEW:     - if: "quest select SatTeeTouy all [ { quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+[hoist] BNTG\Level_2\LiuHuo.yml
+  OLD:     - if: "all [ { quest select OnTheJob quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+  NEW:     - if: "quest select OnTheJob all [ { quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+[hoist] BNTG\Level_2\LiuHuo.yml
+  OLD:     - if: "all [ { quest select CourageToInnovate quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+  NEW:     - if: "quest select CourageToInnovate all [ { quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+[hoist] BNTG\Level_2\ZhangShun.yml
+  OLD:     - if: "all [ { quest select OhYeah quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+  NEW:     - if: "quest select OhYeah all [ { quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+[hoist] BNTG\Level_2\ZhangShun.yml
+  OLD:     - if: "all [ { quest select BellyHurts quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+  NEW:     - if: "quest select BellyHurts all [ { quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+[hoist] BNTG\Level_2\ZhangShun.yml
+  OLD:     - if: "all [ { quest select Rocket quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 >= 1 } { check quest progress value task 3 >= 1 } { check quest progress value task 4 >= 1 } { check quest progress value task 5 >= 1 } { check quest progress value task 6 >= 1 } { check quest progress value task 7 >= 1 } { check quest progress value task 8 < 1 } ]"
+  NEW:     - if: "quest select Rocket all [ { quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 >= 1 } { check quest progress value task 3 >= 1 } { check quest progress value task 4 >= 1 } { check quest progress value task 5 >= 1 } { check quest progress value task 6 >= 1 } { check quest progress value task 7 >= 1 } { check quest progress value task 8 < 1 } ]"
+[hoist] BNTG\Level_2\ZhangShun.yml
+  OLD:     - if: "all [ { quest select Panopticoal1 quest accepted } { check quest progress value task 1 < 1 } ]"
+  NEW:     - if: "quest select Panopticoal1 all [ { quest accepted } { check quest progress value task 1 < 1 } ]"
+[hoist] BNTG\Level_2\ZhangShun.yml
+  OLD:     - if: "all [ { quest select LastShift quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+  NEW:     - if: "quest select LastShift all [ { quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+[hoist] BNTG\Level_2\ZhangShun.yml
+  OLD:     - if: "all [ { quest select FlashGoldCharge quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+  NEW:     - if: "quest select FlashGoldCharge all [ { quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+[hoist] MEG\Level_1\Adon.yml
+  OLD:     - if: "all [ { quest select TaiKuLa quest accepted } { check quest progress value task 1 < 1 } ]"
+  NEW:     - if: "quest select TaiKuLa all [ { quest accepted } { check quest progress value task 1 < 1 } ]"
+[hoist] MEG\Level_1\BlackSmith.yml
+  OLD:     - if: "all [ { quest select StoneBreakChest quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 >= 1 } { check quest progress value task 3 < 1 } ]"
+  NEW:     - if: "quest select StoneBreakChest all [ { quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 >= 1 } { check quest progress value task 3 < 1 } ]"
+[hoist] MEG\Level_1\BlackSmith.yml
+  OLD:     - if: "all [ { quest select StoneBreakChest quest accepted } { check quest progress value task 3 >= 1 } { quest select AlsoElectricity not any [ quest accepted quest completed ] } ]"
+  NEW:     - if: "quest select StoneBreakChest all [ { quest accepted } { check quest progress value task 3 >= 1 } { quest select AlsoElectricity not any [ quest accepted quest completed ] } ]"
+[hoist] MEG\Level_1\BoFeng.yml
+  OLD:     - if: "all [ { quest select SurvivalOfTheFittest quest accepted } { check quest progress value task 3 < 1 } ]"
+  NEW:     - if: "quest select SurvivalOfTheFittest all [ { quest accepted } { check quest progress value task 3 < 1 } ]"
+[hoist] MEG\Level_1\Kael.yml
+  OLD:     - if: "all [ { quest select AdultChoice quest accepted } { check quest progress value task 1 < 1 } ]"
+  NEW:     - if: "quest select AdultChoice all [ { quest accepted } { check quest progress value task 1 < 1 } ]"
+[hoist] MEG\Level_1\Lefty.yml
+  OLD:     - if: "all [ { quest select DriftNorth quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+  NEW:     - if: "quest select DriftNorth all [ { quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+[hoist] MEG\Level_1\Lefty.yml
+  OLD:     - if: "all [ { quest select CityWall quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+  NEW:     - if: "quest select CityWall all [ { quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+[hoist] MEG\Level_1\MaoSe.yml
+  OLD:     - if: "all [ { quest select SurvivalOfTheFittest quest accepted } { check quest progress value task 2 < 1 } ]"
+  NEW:     - if: "quest select SurvivalOfTheFittest all [ { quest accepted } { check quest progress value task 2 < 1 } ]"
+[hoist] MEG\Level_1\MaoSe.yml
+  OLD:     - if: "all [ { quest select YouCanDoIt quest accepted } { check quest progress percent task 1 >= 1 } { check profile data ItemReward_YouCanDoIt default 0 == 0 } ]"
+  NEW:     - if: "quest select YouCanDoIt all [ { quest accepted } { check quest progress percent task 1 >= 1 } { check profile data ItemReward_YouCanDoIt default 0 == 0 } ]"
+[hoist] MEG\Level_1\MaoSe.yml
+  OLD:     - if: "all [ { quest select OurPath quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } { check profile data ItemReward_OurPath default 0 == 0 } ]"
+  NEW:     - if: "quest select OurPath all [ { quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } { check profile data ItemReward_OurPath default 0 == 0 } ]"
+[dedup] MEG\Level_1\MinZe.yml
+  OLD:     - if: quest select TakeOffPlane all [ { quest select TakeOffPlane quest accepted } { check quest progress percent task 1 >= 1 } { check quest progress percent task 2 >= 1 } { check profile data TakeOffPlaneTalk default 0 != 1 } ]
+  NEW:     - if: quest select TakeOffPlane all [ { quest accepted } { check quest progress percent task 1 >= 1 } { check quest progress percent task 2 >= 1 } { check profile data TakeOffPlaneTalk default 0 != 1 } ]
+[hoist] MEG\Level_1\MinZe.yml
+  OLD:     - if: "all [ { quest select SurvivalOfTheFittest quest accepted } { check quest progress value task 1 < 1 } ]"
+  NEW:     - if: "quest select SurvivalOfTheFittest all [ { quest accepted } { check quest progress value task 1 < 1 } ]"
+[hoist] MEG\Level_1\Rhodes.yml
+  OLD:     - if: "all [ { quest select TuiTuiTui quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 >= 1 } { check quest progress value task 3 < 1 } ]"
+  NEW:     - if: "quest select TuiTuiTui all [ { quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 >= 1 } { check quest progress value task 3 < 1 } ]"
+[hoist] MEG\Level_1\Rhodes.yml
+  OLD:     - if: "all [ { quest select TuiTuiTui quest accepted } { check quest progress value task 3 < 1 } ]"
+  NEW:     - if: "quest select TuiTuiTui all [ { quest accepted } { check quest progress value task 3 < 1 } ]"
+[hoist] MEG\Level_1\Rhodes.yml
+  OLD:     - if: "all [ { quest select AdultChoice quest accepted } { check quest progress value task 2 < 1 } ]"
+  NEW:     - if: "quest select AdultChoice all [ { quest accepted } { check quest progress value task 2 < 1 } ]"
+[hoist] MEG\Level_1\Rhodes.yml
+  OLD:     - if: "all [ { quest select LonelyWalk quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 3 < 1 } ]"
+  NEW:     - if: "quest select LonelyWalk all [ { quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 3 < 1 } ]"
+[hoist] MEG\Level_1\TeLin.yml
+  OLD:     - if: "all [ { quest select DistantFriend quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 >= 1 } { check quest progress value task 3 < 1 } ]"
+  NEW:     - if: "quest select DistantFriend all [ { quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 >= 1 } { check quest progress value task 3 < 1 } ]"
+[hoist] MEG\Level_1\TeLin.yml
+  OLD:     - if: "all [ { quest select SurvivalOfTheFittest quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 >= 1 } { check quest progress value task 3 >= 1 } { check quest progress value task 4 < 1 } ]"
+  NEW:     - if: "quest select SurvivalOfTheFittest all [ { quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 >= 1 } { check quest progress value task 3 >= 1 } { check quest progress value task 4 < 1 } ]"
+[hoist] MEG\Level_1\TeLin.yml
+  OLD:     - if: "all [ { quest select TheaterEffect quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+  NEW:     - if: "quest select TheaterEffect all [ { quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+[hoist] MEG\Level_1\TeLin.yml
+  OLD:     - if: "all [ { quest select TheFirstRow quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 >= 1 } { check quest progress value task 3 < 1 } ]"
+  NEW:     - if: "quest select TheFirstRow all [ { quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 >= 1 } { check quest progress value task 3 < 1 } ]"
+[hoist] MEG\Level_1\Vance.yml
+  OLD:     - if: "all [ { quest select WantAll quest accepted } { check quest progress value task 3 < 1 } ]"
+  NEW:     - if: "quest select WantAll all [ { quest accepted } { check quest progress value task 3 < 1 } ]"
+[hoist] MEG\Level_1\Vance.yml
+  OLD:     - if: "all [ { quest select AdultChoice quest accepted } { check quest progress value task 3 < 1 } ]"
+  NEW:     - if: "quest select AdultChoice all [ { quest accepted } { check quest progress value task 3 < 1 } ]"
+[hoist] MEG\Level_1\Zero.yml
+  OLD:     - if: "all [ { quest select DaLaBengBa quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+  NEW:     - if: "quest select DaLaBengBa all [ { quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+[hoist] MEG\Level_1\Zero.yml
+  OLD:     - if: "all [ { quest select DaLaBengBa quest accepted } { check quest progress value task 2 >= 1 } { check quest progress value task 3 < 1 } ]"
+  NEW:     - if: "quest select DaLaBengBa all [ { quest accepted } { check quest progress value task 2 >= 1 } { check quest progress value task 3 < 1 } ]"
+[dedup] MEG\Level_1\Zero.yml
+  OLD:     - if: "quest select StrangeAdventure all [ { quest select StrangeAdventure quest accepted } { check quest progress value task 1 < 1 } ]"
+  NEW:     - if: "quest select StrangeAdventure all [ { quest accepted } { check quest progress value task 1 < 1 } ]"
+[dedup] MEG\Level_1\Zero.yml
+  OLD:     - if: "quest select StrangeAdventure all [ { quest select StrangeAdventure quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+  NEW:     - if: "quest select StrangeAdventure all [ { quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+[hoist] MEG\Level_1\Zero.yml
+  OLD:     - if: "all [ { quest select MachineCustomerService quest accepted } { check quest progress value task 1 < 1 } ]"
+  NEW:     - if: "quest select MachineCustomerService all [ { quest accepted } { check quest progress value task 1 < 1 } ]"
+[hoist] MEG\Level_1\Zero.yml
+  OLD:     - if: "all [ { quest select MachineCustomerService quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+  NEW:     - if: "quest select MachineCustomerService all [ { quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+[hoist] MEG\Level_1\Zero.yml
+  OLD:     - if: "all [ { quest select MachineCustomerService quest accepted } { check quest progress value task 2 >= 1 } { check quest progress value task 3 < 1 } ]"
+  NEW:     - if: "quest select MachineCustomerService all [ { quest accepted } { check quest progress value task 2 >= 1 } { check quest progress value task 3 < 1 } ]"
+[hoist] MEG\Level_1\Zero.yml
+  OLD:     - if: "all [ { quest select MachineCustomerService quest accepted } { check quest progress value task 3 >= 1 } { check quest progress value task 4 < 1 } ]"
+  NEW:     - if: "quest select MachineCustomerService all [ { quest accepted } { check quest progress value task 3 >= 1 } { check quest progress value task 4 < 1 } ]"
+[hoist] MEG\Level_11\LingFeng.yml
+  OLD:     - if: all [ { quest select DontLaughChallenge3 quest accepted } { check profile data LingFeng_TalkRound default 0 == 0 } { check quest progress value task 1 < 1 } ]
+  NEW:     - if: quest select DontLaughChallenge3 all [ { quest accepted } { check profile data LingFeng_TalkRound default 0 == 0 } { check quest progress value task 1 < 1 } ]
+[hoist] MEG\Level_11\LingFeng.yml
+  OLD:     - if: all [ { quest select DontLaughChallenge3 quest accepted } { check profile data LingFeng_TalkRound default 0 == 1 } { check quest progress value task 1 < 1 } ]
+  NEW:     - if: quest select DontLaughChallenge3 all [ { quest accepted } { check profile data LingFeng_TalkRound default 0 == 1 } { check quest progress value task 1 < 1 } ]
+[hoist] MEG\Level_11\LingFeng.yml
+  OLD:     - if: all [ { quest select DontLaughChallenge3 quest accepted } { check profile data LingFeng_TalkRound default 0 == 2 } { check quest progress value task 1 < 1 } ]
+  NEW:     - if: quest select DontLaughChallenge3 all [ { quest accepted } { check profile data LingFeng_TalkRound default 0 == 2 } { check quest progress value task 1 < 1 } ]
+[hoist] MEG\Level_11\QianXia.yml
+  OLD:     - if: "all [ { quest select MysteriousObservatory quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+  NEW:     - if: "quest select MysteriousObservatory all [ { quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+[hoist] MEG\Level_11\QianXia.yml
+  OLD:     - if: "all [ { quest select SeabuckthornJuice quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+  NEW:     - if: "quest select SeabuckthornJuice all [ { quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+[hoist] MEG\Level_11\QianXia.yml
+  OLD:     - if: "all [ { check profile data KnownLingFeng default 0 == 1 } { quest select DontLaughChallenge1 quest accepted } { check quest progress value task 1 < 1 } ]"
+  NEW:     - if: "quest select DontLaughChallenge1 all [ { check profile data KnownLingFeng default 0 == 1 } { quest accepted } { check quest progress value task 1 < 1 } ]"
+[hoist] MEG\Level_11\QianXia.yml
+  OLD:     - if: "all [ { check profile data KnownLingFeng default 0 == 1 } { quest select DontLaughChallenge2 quest accepted } { check quest progress value task 1 < 1 } ]"
+  NEW:     - if: "quest select DontLaughChallenge2 all [ { check profile data KnownLingFeng default 0 == 1 } { quest accepted } { check quest progress value task 1 < 1 } ]"
+[hoist] MEG\Level_11\QianXia.yml
+  OLD:     - if: "all [ { check profile data KnownLingFeng default 0 == 1 } { quest select DontLaughChallenge3 quest accepted } { check quest progress value task 3 < 1 } ]"
+  NEW:     - if: "quest select DontLaughChallenge3 all [ { check profile data KnownLingFeng default 0 == 1 } { quest accepted } { check quest progress value task 3 < 1 } ]"
+[hoist] MEG\Level_3\Ice.yml
+  OLD:     - if: "all [ { quest select EaseUp quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+  NEW:     - if: "quest select EaseUp all [ { quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+[hoist] MEG\Level_3\Ice.yml
+  OLD:     - if: "all [ { quest select BBQDone quest accepted } { check quest progress value task 1 < 1 } ]"
+  NEW:     - if: "quest select BBQDone all [ { quest accepted } { check quest progress value task 1 < 1 } ]"
+[hoist] MEG\Level_3\Luka.yml
+  OLD:     - if: "all [ { quest select CantSleep quest accepted } { check quest progress value task 1 < 1 } ]"
+  NEW:     - if: "quest select CantSleep all [ { quest accepted } { check quest progress value task 1 < 1 } ]"
+[hoist] MEG\Level_3\Luka.yml
+  OLD:     - if: "all [ { quest select CantSleep quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+  NEW:     - if: "quest select CantSleep all [ { quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+[hoist] MEG\Level_4\AkaCandy.yml
+  OLD:     - if: "all [ { quest select OldRoomBlues quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } { check profile data ItemReward_OldRoomBlues default 0 == 0 } ]"
+  NEW:     - if: "quest select OldRoomBlues all [ { quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } { check profile data ItemReward_OldRoomBlues default 0 == 0 } ]"
+[hoist] MEG\Level_4\AkaCandy.yml
+  OLD:     - if: "all [ { quest select DontSurf quest accepted } { check quest progress value task 4 < 1 } { check quest progress value task 3 >= 1 } { check profile data ItemReward_DontSurf default 0 == 0 } ]"
+  NEW:     - if: "quest select DontSurf all [ { quest accepted } { check quest progress value task 4 < 1 } { check quest progress value task 3 >= 1 } { check profile data ItemReward_DontSurf default 0 == 0 } ]"
+[hoist] MEG\Level_4\AkaCandy.yml
+  OLD:     - if: "all [ { quest select CuttingRoomFloor quest accepted } { check quest progress value task 3 < 1 } { check quest progress value task 1 >= 1 } { check quest progress value task 2 >= 1 } { check profile data ItemReward_Cutting default 0 == 0 } ]"
+  NEW:     - if: "quest select CuttingRoomFloor all [ { quest accepted } { check quest progress value task 3 < 1 } { check quest progress value task 1 >= 1 } { check quest progress value task 2 >= 1 } { check profile data ItemReward_Cutting default 0 == 0 } ]"
+[hoist] MEG\Level_4\AkaCandy.yml
+  OLD:     - if: "all [ { quest select AfterMidnight quest accepted } { check quest progress value task 3 < 1 } { check quest progress value task 1 >= 1 } { check quest progress value task 2 >= 1 } { check profile data ItemReward_AfterMidnight default 0 == 0 } ]"
+  NEW:     - if: "quest select AfterMidnight all [ { quest accepted } { check quest progress value task 3 < 1 } { check quest progress value task 1 >= 1 } { check quest progress value task 2 >= 1 } { check profile data ItemReward_AfterMidnight default 0 == 0 } ]"
+[hoist] MEG\Level_4\AkaCandy.yml
+  OLD:     - if: "all [ { quest select ToolboxTheory quest accepted } { check quest progress value task 2 < 1 } { check quest progress value task 1 >= 1 } { check profile data ItemReward_Toolbox default 0 == 0 } ]"
+  NEW:     - if: "quest select ToolboxTheory all [ { quest accepted } { check quest progress value task 2 < 1 } { check quest progress value task 1 >= 1 } { check profile data ItemReward_Toolbox default 0 == 0 } ]"
+[hoist] MEG\Level_4\AmeRain.yml
+  OLD:     - if: "all [ { quest select InternetTravel2 quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 >= 1 } { check quest progress value task 3 >= 1 } { check quest progress value task 4 < 1 } ]"
+  NEW:     - if: "quest select InternetTravel2 all [ { quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 >= 1 } { check quest progress value task 3 >= 1 } { check quest progress value task 4 < 1 } ]"
+[hoist] MEG\Level_4\Ling.yml
+  OLD:     - if: "all [ { quest select MachineCustomerService quest accepted } { check quest progress value task 1 < 1 } ]"
+  NEW:     - if: "quest select MachineCustomerService all [ { quest accepted } { check quest progress value task 1 < 1 } ]"
+[hoist] MEG\Level_4\Ling.yml
+  OLD:     - if: "all [ { quest select MachineCustomerService quest accepted } { check quest progress value task 2 >= 1 } { check quest progress value task 3 < 1 } ]"
+  NEW:     - if: "quest select MachineCustomerService all [ { quest accepted } { check quest progress value task 2 >= 1 } { check quest progress value task 3 < 1 } ]"
+[hoist] MEG\Level_4\TheAchu.yml
+  OLD:     - if: "all [ { quest select WantAll quest accepted } { check quest progress value task 2 < 1 } ]"
+  NEW:     - if: "quest select WantAll all [ { quest accepted } { check quest progress value task 2 < 1 } ]"
+[hoist] MEG\Level_4\TheAchu.yml
+  OLD:     - if: "all [ { quest select TheaterEffect quest accepted } { check quest progress value task 1 < 1 } ]"
+  NEW:     - if: "quest select TheaterEffect all [ { quest accepted } { check quest progress value task 1 < 1 } ]"
+[hoist] NonAligned\Level_11\LiuWei.yml
+  OLD:     - if: "all [ { quest select CourageToInnovate quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+  NEW:     - if: "quest select CourageToInnovate all [ { quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+[hoist] NonAligned\Level_11\LiuWei.yml
+  OLD:     - if: "all [ { quest select Panopticoal1 quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+  NEW:     - if: "quest select Panopticoal1 all [ { quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+[hoist] NonAligned\Level_11\LiuWei.yml
+  OLD:     - if: "all [ { quest select Panopticoal4 quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+  NEW:     - if: "quest select Panopticoal4 all [ { quest accepted } { check quest progress value task 1 >= 1 } { check quest progress value task 2 < 1 } ]"
+
+files changed: 30  lines: 80  kinds: {'hoist': 76, 'dedup': 4}
+(dry-run; rerun with --apply to write)

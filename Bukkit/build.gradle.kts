@@ -26,7 +26,6 @@ taboolib {
             name("Chemdah").optional(true)
             name("WorldGuard").optional(true)
             name("Sertraline").optional(true)
-            name("Vault").optional(true)
             // name("ProtocolLib").optional(true)
             // 可选依赖.
             // name("XXX").optional(true)
@@ -174,7 +173,7 @@ dependencies {
 //    compileOnly(files("$rootDir/libs/Se-common-3.8.19.4-api.jar"))
     compileOnly("de.oliver:FancyNpcs:2.7.0")
     compileOnly("de.oliver:FancyHolograms:2.9.1")
-    compileOnly("ink.ptms.chemdah:api:1.1.17")
+    compileOnly("ink.ptms.chemdah:api:1.1.34")
     compileOnly("net.luckperms:api:5.4")
     compileOnly("net.momirealms:craft-engine-core:0.0.65") // 将 "{version}" 替换为插件稳定版本
     compileOnly("net.momirealms:craft-engine-bukkit:0.0.65") // 例如 0.0.60
@@ -189,7 +188,6 @@ dependencies {
     // ItemBridge (optional)
     taboo("cn.gtemc:itembridge:1.0.31")
     implementation("com.sk89q.worldguard:worldguard-bukkit:7.0.10-SNAPSHOT")
-    compileOnly("com.github.MilkBowl:VaultAPI:1.7") { isTransitive = false }
     compileOnly(kotlin("stdlib"))
     compileOnly(fileTree("libs"))
     // Quetiapine merge dependencies

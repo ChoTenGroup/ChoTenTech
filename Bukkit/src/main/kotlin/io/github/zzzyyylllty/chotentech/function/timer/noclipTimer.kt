@@ -48,6 +48,7 @@ private val lastNoclipSuccessTime = ConcurrentHashMap<String, Long>()
 private val rapidNoclipCounter = ConcurrentHashMap<String, Int>()
 private val lastNoclipSuccessHistory = ConcurrentHashMap<String, MutableList<String>>()
 private val consecutiveFailures = ConcurrentHashMap<String, Int>()
+private val autoNoclipGuideSent = ConcurrentHashMap<String, String>()
 
 private var noclipTask: PlatformExecutor.PlatformTask? = null
 private var autoNoclipTask: PlatformExecutor.PlatformTask? = null
@@ -189,12 +190,14 @@ fun noclipTime() {
                 val lastNoclip = playerInNoclip[k]
 
                 if (foundNoclip != null) {
+                    val firstEnter = noclipName != null && noclipName != lastNoclip
+                    if (firstEnter) playerInNoclip[k] = noclipName
+
                     val condResult = NoclipConditionChecker.checkConditions(player, foundNoclip)
                     if (condResult is ConditionResult.Allowed) {
-                        if (noclipName != null && noclipName != lastNoclip) {
+                        if (firstEnter) {
                             player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1F, 1.7F)
                             player.sendComponent("<#66CCFF>已找到切出点<white>$noclipName</white>，低头下蹲确认。")
-                            playerInNoclip[k] = noclipName
                         }
                     } else {
                         val msg = when (condResult) {
@@ -203,7 +206,10 @@ fun noclipTime() {
                             else -> null
                         } ?: "需要满足条件"
                         player.sendActionBar(msg.toComponent())
-                        playerInNoclip.remove(k)
+                        // 首次进入条件切出点:聊天提示如何提交物品满足条件(之后仅显示 actionbar,不刷屏)
+                        if (firstEnter) {
+                            player.sendComponent(NoclipConditionChecker.buildConditionGuide(foundNoclip))
+                        }
                     }
                 } else if (lastNoclip != null) {
                     playerInNoclip.remove(k)
@@ -226,10 +232,12 @@ fun autoNoclipTimer() {
 
             val level = data.activeLevel ?: continue
             val enabledNames = RandomNoclipSelector.getEnabledNoclips(player.uniqueId.toString(), level)
+            var inAutoPoint = false
             for (noclipPoint in level.noclips) {
                 if (!noclipPoint.autoNoclip) continue
                 if (noclipPoint.name != null && noclipPoint.name !in enabledNames) continue
                 if (!checkPlayerIsInNoclipPoint(player, noclipPoint)) continue
+                inAutoPoint = true
 
                 val condResult = NoclipConditionChecker.checkConditions(player, noclipPoint)
                 if (condResult !is ConditionResult.Allowed) {
@@ -239,6 +247,13 @@ fun autoNoclipTimer() {
                         else -> null
                     } ?: "需要满足条件"
                     player.sendActionBar(msg.toComponent())
+                    // 首次进入条件切出点:聊天提示如何提交物品满足条件
+                    val k = player.uniqueId.toString()
+                    val npName = noclipPoint.name ?: "unnamed"
+                    if (autoNoclipGuideSent[k] != npName) {
+                        autoNoclipGuideSent[k] = npName
+                        player.sendComponent(NoclipConditionChecker.buildConditionGuide(noclipPoint))
+                    }
                     continue
                 }
 
@@ -253,6 +268,7 @@ fun autoNoclipTimer() {
                 player.sendActionBar("<green>保持在切出点内".toComponent())
                 break
             }
+            if (!inAutoPoint) autoNoclipGuideSent.remove(player.uniqueId.toString())
         }
     }
 }
@@ -298,6 +314,7 @@ fun cancelNoclipTimers() {
     rapidNoclipCounter.clear()
     lastNoclipSuccessHistory.clear()
     consecutiveFailures.clear()
+    autoNoclipGuideSent.clear()
 }
 
 private fun selectTargetLocation(player: Player, noclipPoint: NoclipPoint): Location? {

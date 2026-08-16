@@ -1,0 +1,14 @@
+# 组队聊天频道
+key: partychat
+display-name: "<gray>[<light_purple>队伍</light_purple>]</gray>"
+formats:
+  default: "<gray>[<light_purple>队伍<gray>-<white><team_name></white>]</gray> <username><gray>: </gray><message>"
+  console: "[队伍] <username>: <message>"
+quick-prefix: ".pc"
+radius: -1
+cooldown: 1
+cooldown-overrides:
+  chotentech.chat.cooldown.admin: -1
+# 组队频道：收件人 = 队伍成员（复用 /team 组队系统）
+party: true
+permission: ""

@@ -83,8 +83,9 @@ almond_bandage:
   id: "almond_bandage"
   effects:
     - effect: health
-      mode: percent
-      value: 10
+      mode: add
+      value: 20
+      cap: 75
     - effect: external_injury
       mode: percent
       value: 20
@@ -95,6 +96,10 @@ almond_bandage:
 sterile_bandage:
   id: "sterile_bandage"
   effects:
+    - effect: health
+      mode: add
+      value: 12
+      cap: 75
     - effect: external_injury
       mode: percent
       value: 15
@@ -102,6 +107,10 @@ sterile_bandage:
 bandage:
   id: "bandage"
   effects:
+    - effect: health
+      mode: add
+      value: 5
+      cap: 75
     - effect: external_injury
       mode: percent
       value: 10

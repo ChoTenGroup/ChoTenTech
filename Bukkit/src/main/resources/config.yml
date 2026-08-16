@@ -1,6 +1,10 @@
 # chotentech Configuration
 debug: false
 
+# 安全世界:在这些世界中玩家无敌,且不消耗饱食度/精神/压力/体力等
+safe-worlds:
+  - world
+
 # 语言 language (quetiapine)
 lang: zh_CN
 

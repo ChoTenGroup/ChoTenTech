@@ -1,118 +1,110 @@
 MinZe:
-  name: "<gold>闽则"
+  name: "<gold>悯泽"
   items:
-    # Lv.1 - 基础材料
-    paper:
-      id: sertraline:paper
-      buy: money:20
-      sell: money:5
-    iron_ingot:
-      id: sertraline:iron_ingot
-      buy: money:150
-      sell: money:45
-    copper_ingot:
-      id: sertraline:copper_ingot
-      buy: money:100
-      sell: money:30
-    # Lv.2 - 金属锭
+    # Lv.1 - 基础矿物
     silver_ingot:
       id: sertraline:silver_ingot
-      buy-requirements:
-        - mode: level
-          level: 2
-          display: 需要商人等级 Lv.2
-      buy: money:250
-      sell: money:75
+      buy: money:150
+      sell: money:60
     gold_ingot_low:
       id: sertraline:gold_ingot_low
-      buy-requirements:
-        - mode: level
-          level: 2
-          display: 需要商人等级 Lv.2
-      buy: money:300
-      sell: money:90
+      buy: money:280
+      sell: money:112
     gold_ingot_medium:
       id: sertraline:gold_ingot_medium
+      buy: money:340
+      sell: money:136
+    bronze_ingot:
+      id: sertraline:bronze_ingot
+      buy: money:240
+      sell: money:96
+    lead_ingot:
+      id: sertraline:lead_ingot
+      buy: money:120
+      sell: money:48
+    # Lv.1 - 研究材料收购
+    examination_paper:
+      id: sertraline:examination_paper
+      sell: money:60
+    disk:
+      id: sertraline:disk
+      sell: money:112
+    u_disk:
+      id: sertraline:u_disk
+      sell: money:64
+    basic_ai_core:
+      id: sertraline:basic_ai_core
+      sell: money:80
+    dullers_core:
+      id: sertraline:dullers_core
+      sell: money:320
+    # Lv.2 - 研究设备
+    steel_ingot:
+      id: sertraline:steel_ingot
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: money:500
-      sell: money:150
-    # Lv.3 - 高级矿物
-    gold_ingot_high:
-      id: sertraline:gold_ingot_high
-      buy-requirements:
-        - mode: level
-          level: 3
-          display: 需要商人等级 Lv.3
-      buy: money:800
-      sell: money:240
-    diamond:
-      id: sertraline:diamond
-      buy-requirements:
-        - mode: level
-          level: 3
-          display: 需要商人等级 Lv.3
-      buy: money:1000
-      sell: money:300
-    synthetic_diamond:
-      id: sertraline:synthetic_diamond
-      buy-requirements:
-        - mode: level
-          level: 3
-          display: 需要商人等级 Lv.3
-      buy: money:600
-      sell: money:180
-
-    3d_vision_glasses:
-      id: "sertraline:3d_vision_glasses"
-      buy: money:1500
-
-    hearing_aid:
-      id: "sertraline:hearing_aid"
-      buy: money:800
-
+      buy: money:400
     ultraviolet_lamp:
-      id: "sertraline:ultraviolet_lamp"
-      buy: money:1200
-
+      id: sertraline:ultraviolet_lamp
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:350
     soundproof_panel:
-      id: "sertraline:soundproof_panel"
-      buy: money:1000
-
-    record_player:
-      id: "sertraline:record_player"
-      buy: money:2500
-
+      id: sertraline:soundproof_panel
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:340
     raspberry_pi:
-      id: "sertraline:raspberry_pi"
-      buy: money:600
-
-    research_unlock:
-      id: "sertraline:pro_ai_core"
+      id: sertraline:raspberry_pi
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:260
+    hearing_aid:
+      id: sertraline:hearing_aid
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      limit:
+        player: 2
+        player-reset: 24h
+      buy: money:900
+    3d_vision_glasses:
+      id: sertraline:3d_vision_glasses
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      limit:
+        player: 2
+        player-reset: 24h
+      buy: money:1000
+    record_player:
+      id: sertraline:record_player
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      limit:
+        player: 2
+        player-reset: 24h
+      buy: money:950
+    # Lv.3 - 高级研究
+    pro_ai_core:
+      id: sertraline:pro_ai_core
       requirements:
         - mode: quest
           value: TakeOffPlane
           display: "需要完成任务「Take Off 飞机」"
-      buy: money:5000
-
-    examination_paper:
-      id: "sertraline:examination_paper"
-      sell: money:10
-
-    disk:
-      id: "sertraline:disk"
-      sell: money:20
-
-    u_disk:
-      id: "sertraline:u_disk"
-      sell: money:30
-
-    basic_ai_core:
-      id: "sertraline:basic_ai_core"
-      sell: money:200
-
-    dullers_core:
-      id: "sertraline:dullers_core"
-      sell: money:100
+      limit:
+        player: 1
+        player-reset: 24h
+      buy: money:3000

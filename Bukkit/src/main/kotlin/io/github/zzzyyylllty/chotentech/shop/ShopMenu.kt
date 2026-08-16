@@ -61,6 +61,14 @@ object ShopMenu : Listener {
         return itemOutputNames[key] ?: itemId
     }
 
+    /** 供其他模块查询物品显示名(itemoutputnames.yml),查不到时返回原 ID */
+    fun lookupItemName(itemId: String): String {
+        // 缓存懒加载只发生在商店 GUI 打开时,其他模块(如切出点条件提示)可能先于商店访问,
+        // 这里自行确保已加载,否则永远查不到名称
+        if (itemOutputNames.isEmpty()) loadItemOutputNames()
+        return formatItemName(itemId)
+    }
+
     fun open(player: Player, shopId: String) {
         if (itemOutputNames.isEmpty()) loadItemOutputNames()
         val shop = ShopManager.getShop(shopId) ?: run {
@@ -720,7 +728,7 @@ object ShopMenu : Listener {
                             }
                             "affection" -> {
                                 val current = ReputationManager.getAffection(player, req.affection)
-                                loreLines.add("<!i> ${style}好感度 $current / ${req.value}")
+                                loreLines.add("<!i> ${style}信任度 $current / ${req.value}")
                             }
                             "quota" -> {
                                 val current = ShopManager.getPlayerSales(shop.idef, player.uniqueId.toString())
@@ -911,6 +919,12 @@ object ShopMenu : Listener {
         for ((itemKey, qty) in selected) {
             val entry = shop.items[itemKey] ?: continue
 
+            // 兜底:未标注购买价格的商品不允许免费购买
+            if (entry.buy.isEmpty()) {
+                player.sendMessage("<red>商品 ${formatItemName(entry.id)} 未标注购买价格,无法购买<white>".toComponent())
+                return
+            }
+
             for (req in entry.buyRequirements) {
                 if (!checkRequirement(player, req, shop)) {
                     player.sendMessage("<red>不满足购买 <yellow>${formatItemName(entry.id)} <red>的条件: ${req.display}<white>".toComponent())
@@ -1001,6 +1015,13 @@ object ShopMenu : Listener {
 
         for ((itemKey, qty) in selected) {
             val entry = shop.items[itemKey] ?: continue
+
+            // 兜底:未标注出售价格的商品不允许白送
+            if (entry.sell.isEmpty()) {
+                player.sendMessage("<red>商品 ${formatItemName(entry.id)} 未标注出售价格,无法出售<white>".toComponent())
+                return
+            }
+
             for (req in entry.sellRequirements) {
                 if (!checkRequirement(player, req, shop)) {
                     player.sendMessage("<red>不满足出售 <yellow>${formatItemName(entry.id)} <red>的条件: ${req.display}<white>".toComponent())
@@ -1304,6 +1325,9 @@ object ShopMenu : Listener {
     private fun getFilteredItems(player: Player, shop: ShopConfig, session: PlayerShopSession): List<ShopItemEntry> {
         val items = shop.items.values.toList()
         return items.filter { entry ->
+            // 未标注购买价格/出售价格的商品直接不渲染(防止零元购/白送物品)
+            if (session.isBuyMode && entry.buy.isEmpty()) return@filter false
+            if (!session.isBuyMode && entry.sell.isEmpty()) return@filter false
             // 解锁过滤：有 unlock 但玩家未解锁的配方不显示
             val unlock = entry.unlock
             if (unlock != null) {

@@ -44,6 +44,9 @@ object MainCommand {
             sender.sendComponent("<gradient:aqua:yellow>reloading...")
             try {
                 reloadCustomConfig()
+                // saves.yml 热重载(主线程执行,异步 reloadCustomConfig 不包含存档点)
+                io.github.zzzyyylllty.chotentech.function.savepoint.SavePointConfig.load()
+                io.github.zzzyyylllty.chotentech.function.savepoint.SavePointManager.createHolograms()
                 sender.sendComponent("<gradient:aqua:yellow>reloading... Complete.")
             } catch (e: Exception) {
                 sender.sendComponent("<red>Error thrown. check console for info.</red>")

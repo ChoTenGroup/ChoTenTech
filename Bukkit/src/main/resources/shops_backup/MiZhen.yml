@@ -1,0 +1,122 @@
+MiZhen:
+  name: "<gold>密振"
+  items:
+    # Lv.1 - 基础材料
+    tape:
+      id: sertraline:tape
+      buy: point:4
+      sell: point:1
+    paper:
+      id: sertraline:paper
+      buy: point:3
+      sell: point:1
+    wood:
+      id: sertraline:wood
+      buy: point:4
+      sell: point:1
+    # Lv.2 - 中级物资
+    iron_ingot:
+      id: sertraline:iron_ingot
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:19
+      sell: point:6
+    bandage:
+      id: sertraline:bandage
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:10
+      sell: point:3
+    mre:
+      id: sertraline:mre
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:38
+      sell: point:12
+    # Lv.3 - 高级装备
+    diamond:
+      id: sertraline:diamond
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: point:125
+      sell: point:38
+    iron_chestplate:
+      id: sertraline:iron_chestplate
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: point:150
+      sell: point:44
+    onefirst_medkit:
+      id: sertraline:onefirst_medkit
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: point:75
+      sell: point:23
+
+    almond_water:
+      id: "sertraline:almond_water_green"
+      buy: point:38
+
+    bread:
+      id: "sertraline:bread"
+      buy: point:13
+
+    apple_can:
+      id: "sertraline:apple_can"
+      buy: point:25
+
+    rope:
+      id: "sertraline:tape"
+      buy: point:7
+
+    flint_sharp:
+      id: "sertraline:flint_sharp"
+      buy: point:4
+
+    matches:
+      id: "sertraline:matches"
+      buy: point:5
+
+    rag:
+      id: "sertraline:rag"
+      sell: point:1
+
+    dust:
+      id: "sertraline:dust"
+      sell: point:1
+
+    bone:
+      id: "sertraline:bone"
+      sell: point:2
+
+    nail:
+      id: "sertraline:nail"
+      sell: point:1
+
+    screw:
+      id: "sertraline:screw"
+      sell: point:1
+
+    flint:
+      id: "sertraline:flint"
+      sell: point:1
+
+    leather_unprocessed:
+      id: "sertraline:leather_unprocessed"
+      sell: point:4
+
+    premium_gear:
+      id: "sertraline:gold_ingot_high"
+      buy: point:625

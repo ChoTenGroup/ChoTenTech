@@ -1,36 +1,60 @@
 TheAchu:
-  name: "<light_purple>阿初"
+  name: "<gold>阿初"
   items:
-    # Lv.1 - 基础杏仁水
-    almond_water_gray:
-      id: sertraline:almond_water_gray
-      buy: money:80
-      sell: money:25
-    bread:
-      id: sertraline:bread
-      buy: money:50
-      sell: money:12
-    bandage:
-      id: sertraline:bandage
-      buy: money:80
-      sell: money:20
-    # Lv.2 - 各色杏仁水
+    # Lv.1 - 杏仁水
     almond_water_blue:
       id: sertraline:almond_water_blue
-      buy-requirements:
-        - mode: level
-          level: 2
-          display: 需要商人等级 Lv.2
-      buy: money:200
-      sell: money:60
+      buy: money:300
+      sell: money:120
+    almond_water_green:
+      id: sertraline:almond_water_green
+      buy: money:300
+      sell: money:120
     almond_water_red:
       id: sertraline:almond_water_red
+      buy: money:300
+      sell: money:120
+    bandage:
+      id: sertraline:bandage
+      buy: money:240
+      sell: money:96
+    bread:
+      id: sertraline:bread
+      buy: money:60
+      sell: money:24
+    # Lv.1 - 瓶材收购
+    glass_bottle:
+      id: sertraline:glass_bottle
+      sell: money:16
+    rag:
+      id: sertraline:rag
+      sell: money:16
+    leather_unprocessed:
+      id: sertraline:leather_unprocessed
+      sell: money:18
+    # Lv.2 - 进阶杏仁水
+    boiled_almond_water:
+      id: sertraline:boiled_almond_water
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: money:400
-      sell: money:120
+      buy: money:320
+    sterile_bandage:
+      id: sertraline:sterile_bandage
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:260
+    painkiller_pills:
+      id: sertraline:painkiller_pills
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:160
+    # Lv.2 - 口粮
     apple_can:
       id: sertraline:apple_can
       buy-requirements:
@@ -38,89 +62,21 @@ TheAchu:
           level: 2
           display: 需要商人等级 Lv.2
       buy: money:150
-      sell: money:40
-    # Lv.3 - 稀有杏仁水 + 补给
-    almond_water_green:
-      id: sertraline:almond_water_green
-      buy-requirements:
-        - mode: level
-          level: 3
-          display: 需要商人等级 Lv.3
-      buy: money:600
-      sell: money:180
-    boiled_almond_water:
-      id: sertraline:boiled_almond_water
-      buy-requirements:
-        - mode: level
-          level: 3
-          display: 需要商人等级 Lv.3
-      buy: money:800
-      sell: money:240
     mre:
       id: sertraline:mre
       buy-requirements:
         - mode: level
-          level: 3
-          display: 需要商人等级 Lv.3
-      buy: money:300
-      sell: money:90
-    sterile_bandage:
-      id: sertraline:sterile_bandage
-      buy-requirements:
-        - mode: level
-          level: 3
-          display: 需要商人等级 Lv.3
-      buy: money:200
-      sell: money:60
-
-    glass_bottle:
-      id: "sertraline:glass_bottle"
-      sell: money:10
-
-    rag:
-      id: "sertraline:rag"
-      sell: money:15
-
-    leather_unprocessed:
-      id: "sertraline:leather_unprocessed"
-      sell: money:50
-
-    almond_water_blue:
-      id: "sertraline:almond_water_blue"
-      buy: money:300
-
-    almond_water_gray:
-      id: "sertraline:almond_water_gray"
-      buy: money:250
-
-    almond_water_green:
-      id: "sertraline:almond_water_green"
-      buy: money:300
-
-    almond_water_red:
-      id: "sertraline:almond_water_red"
-      buy: money:350
-
-    boiled_almond_water:
-      id: "sertraline:boiled_almond_water"
-      buy: money:400
-
-    bandage:
-      id: "sertraline:bandage"
-      buy: money:150
-
-    painkiller_pills:
-      id: "sertraline:painkiller_pills"
-      buy: money:250
-
-    apple_can:
-      id: "sertraline:apple_can"
-      buy: money:200
-
-    super_almond:
-      id: "sertraline:object_100"
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:320
+    # Lv.3 - 解锁商品
+    object_100:
+      id: sertraline:object_100
       requirements:
         - mode: quest
           value: TrainTravel3
           display: "需要完成任务「火车旅行·三」"
-      buy: money:10000
+      limit:
+        player: 1
+        player-reset: 24h
+      buy: money:3000

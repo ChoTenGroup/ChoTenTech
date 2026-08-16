@@ -73,6 +73,9 @@ object SecurityManager {
     /** playerName -> groupName 缓存 */
     private val playerGroupCache = ConcurrentHashMap<String, String>()
 
+    /** president 授予 OP 的玩家名（小写），来自 president-ops.yml */
+    private val presidentOps = ConcurrentHashMap.newKeySet<String>()
+
 data class ResolvedGroup(
         val safemode: Boolean,
         /** (check, isRelaxed) 列表, isRelaxed 标记该条 check 是否整体宽松 */
@@ -98,6 +101,7 @@ data class ResolvedGroup(
         resolvedGroupChecks.clear()
         rawCheckNamesCache.clear()
         playerGroupCache.clear()
+        presidentOps.clear()
 
         val file = File(getDataFolder(), "security.yml")
         if (!file.exists()) {
@@ -142,7 +146,33 @@ data class ResolvedGroup(
             resolveGroup(groupName, mutableSetOf())
         }
 
-        devLog("SecurityManager: loaded ${groups.size} groups, ${checks.size} checks")
+        // 4. 加载 president OP 白名单
+        loadPresidentOps()
+
+        devLog("SecurityManager: loaded ${groups.size} groups, ${checks.size} checks, ${presidentOps.size} president ops")
+    }
+
+    /** 从 president-ops.yml 加载 president 授予 OP 的玩家名单（首次运行从 JAR 释放默认文件） */
+    private fun loadPresidentOps() {
+        val file = File(getDataFolder(), "president-ops.yml")
+        if (!file.exists()) {
+            try {
+                ChoTenTech::class.java.classLoader.getResource("president-ops.yml")?.openStream()?.use { input ->
+                    file.outputStream().use { output -> input.copyTo(output) }
+                }
+                devLog("SecurityManager: released default president-ops.yml")
+            } catch (e: Exception) {
+                warningS("SecurityManager: failed to release president-ops.yml: ${e.message}")
+                return
+            }
+        }
+        val config = try {
+            Configuration.loadFromFile(file)
+        } catch (e: Exception) {
+            warningS("SecurityManager: failed to load president-ops.yml: ${e.message}")
+            return
+        }
+        config.getStringList("ops").forEach { presidentOps.add(it.trim().lowercase()) }
     }
 
     private fun loadChecks(section: ConfigurationSection) {
@@ -382,6 +412,12 @@ data class ResolvedGroup(
         playerGroupCache[playerName] = "__none__"
         return null
     }
+
+    /**
+     * 判断玩家是否在 president OP 白名单中（president-ops.yml 的 ops 列表）。
+     * 白名单内的玩家可绕过 OP 合法性检查。
+     */
+    fun isPresidentOp(playerName: String): Boolean = presidentOps.contains(playerName.lowercase())
 
     fun getResolvedGroup(player: Player): ResolvedGroup? {
         val group = getPlayerGroup(player) ?: return null

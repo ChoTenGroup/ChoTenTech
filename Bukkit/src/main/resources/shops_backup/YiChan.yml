@@ -1,0 +1,102 @@
+YiChan:
+  name: "<light_purple>遗产"
+  items:
+    # Lv.1 - 基础零件
+    copper_wire:
+      id: sertraline:copper_wire
+      buy: point:19
+      sell: point:6
+    capacitor:
+      id: sertraline:capacitor
+      buy: point:25
+      sell: point:8
+    tape:
+      id: sertraline:tape
+      buy: point:4
+      sell: point:1
+    # Lv.2 - 中级配件
+    cpu:
+      id: sertraline:cpu
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:63
+      sell: point:19
+    power_supply:
+      id: sertraline:power_supply
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:50
+      sell: point:15
+    ram_stick:
+      id: sertraline:ram_stick
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:38
+      sell: point:12
+    # Lv.3 - 高级配件
+    vpx:
+      id: sertraline:vpx
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: point:100
+      sell: point:30
+    cpufan:
+      id: sertraline:cpufan
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: point:25
+      sell: point:8
+    disk:
+      id: sertraline:disk
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: point:44
+      sell: point:13
+
+    battery:
+      id: "sertraline:battery"
+      buy: point:25
+
+    u_disk:
+      id: "sertraline:u_disk"
+      buy: point:38
+
+    broken_disk:
+      id: "sertraline:broken_disk"
+      sell: point:3
+
+    screw:
+      id: "sertraline:screw"
+      sell: point:1
+
+    nail:
+      id: "sertraline:nail"
+      sell: point:1
+
+    plastic:
+      id: "sertraline:plastic"
+      sell: point:2
+
+    rag:
+      id: "sertraline:rag"
+      sell: point:1
+
+    premium_computer:
+      id: "sertraline:pro_ai_core"
+      requirements:
+        - mode: quest
+          value: DutyLeave
+          display: "需要完成任务「休假责任」"
+      buy: point:3125

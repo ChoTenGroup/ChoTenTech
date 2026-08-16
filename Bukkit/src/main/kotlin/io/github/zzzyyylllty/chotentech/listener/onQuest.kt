@@ -3,6 +3,7 @@ package io.github.zzzyyylllty.chotentech.listener
 import ink.ptms.chemdah.api.event.collect.ObjectiveEvents
 import ink.ptms.chemdah.api.event.collect.QuestEvents
 import ink.ptms.chemdah.core.quest.addon.AddonTrack.Companion.trackQuest
+import ink.ptms.chemdah.core.quest.meta.Meta
 import ink.ptms.chemdah.core.quest.meta.MetaName
 import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager
 import io.github.zzzyyylllty.chotentech.util.NotificationQueue
@@ -15,6 +16,10 @@ import taboolib.common.platform.event.SubscribeEvent
 
 private fun questStatusMode(player: org.bukkit.entity.Player): String =
     ProfileManager.getSharedData(player.uniqueId.toString()).settings.get("showQuestStatus")
+
+/** 玩家是否处于未选择档案(强制选择)状态 —— 此时不显示任何任务提示 */
+private fun isProfilePending(player: org.bukkit.entity.Player): Boolean =
+    ProfileListener.pendingSelection.containsKey(player.uniqueId.toString())
 
 private fun sendQuestNotification(player: org.bukkit.entity.Player, titleText: String, subtitleText: String) {
     when (questStatusMode(player)) {
@@ -35,6 +40,7 @@ private fun sendQuestNotification(player: org.bukkit.entity.Player, titleText: S
 fun onQuestAccept(e: QuestEvents.Accept.Post) {
     val profile = e.playerProfile
     val player = profile.player
+    if (isProfilePending(player)) return
     val quest = e.quest
     player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BANJO, SoundCategory.MASTER, 1f, 0.5f)
     val name = quest.template.meta<MetaName>("name")?.displayName?.legacyToMiniMessage() ?: "未知"
@@ -49,14 +55,28 @@ fun onQuestAccept(e: QuestEvents.Accept.Post) {
 fun onQuestComplete(e: QuestEvents.Complete.Post) {
     val player = e.playerProfile.player
     val quest = e.quest
-    player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 1f, 0.8f)
-    val name = quest.template.meta<MetaName>("name")?.displayName?.legacyToMiniMessage() ?: "未知"
-    sendQuestNotification(player, "<gradient:#99ffff:#66ccff>任务已完成", "<white>$name")
+    // 未选择档案时只屏蔽提示,任务完成的数据标记(如教学)不受影响
+    if (!isProfilePending(player)) {
+        player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 1f, 0.8f)
+        val name = quest.template.meta<MetaName>("name")?.displayName?.legacyToMiniMessage() ?: "未知"
+        sendQuestNotification(player, "<gradient:#99ffff:#66ccff>任务已完成", "<white>$name")
+    }
+
+    // 完成教学任务后标记共享数据(任一 profile 完成即全局生效)
+    val rawName = quest.template.meta<Meta<String>>("name")?.source
+    if (quest.template.id.equals("tutorial", ignoreCase = true) || rawName?.equals("Tutorial", ignoreCase = true) == true) {
+        val shared = ProfileManager.getSharedData(player.uniqueId.toString())
+        if (!shared.isCompletedTutorial) {
+            shared.isCompletedTutorial = true
+            ProfileManager.saveSharedData(player.uniqueId.toString())
+        }
+    }
 }
 
 @SubscribeEvent
 fun onQuestFail(e: QuestEvents.Fail.Post) {
     val player = e.playerProfile.player
+    if (isProfilePending(player)) return
     val quest = e.quest
     player.playSound(player, Sound.BLOCK_LAVA_EXTINGUISH, SoundCategory.MASTER, 1f, 0.5f)
     val name = quest.template.meta<MetaName>("name")?.displayName?.legacyToMiniMessage() ?: "未知"
@@ -67,6 +87,7 @@ fun onQuestFail(e: QuestEvents.Fail.Post) {
 @SubscribeEvent
 fun onTaskComplete(e: ObjectiveEvents.Complete.Post) {
     val player = e.playerProfile.player
+    if (isProfilePending(player)) return
     val quest = e.quest
     val task = e.task
     player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, SoundCategory.MASTER, 1f, 1.2f)

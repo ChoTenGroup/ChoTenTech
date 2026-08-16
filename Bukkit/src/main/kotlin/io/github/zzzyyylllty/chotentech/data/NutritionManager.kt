@@ -129,9 +129,11 @@ object NutritionManager {
             )
         }
 
-        // 4. 一次性写入并重算
-        attrData.modifiers = mods
-        AttributeManager.savePlayerData(attrData)
+        // 4. 一次性写入并重算:营养值未变化时修饰符列表相等,跳过 DB 写(每 10 秒×N 玩家的周期同步不再频繁连接)
+        if (mods != attrData.modifiers) {
+            attrData.modifiers = mods
+            AttributeManager.savePlayerData(attrData)
+        }
         AttributeManager.updatePlayer(player)
     }
 

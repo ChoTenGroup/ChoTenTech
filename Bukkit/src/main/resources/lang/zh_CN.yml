@@ -145,6 +145,7 @@ Attribute_decay_extra_damage_Name: 衰退伤害加成
 Attribute_decay_damage_Name: 衰退伤害
 Attribute_stamina_regen_multiplier_Name: 体力回复倍率
 Attribute_health_regen_multiplier_Name: 生命回复倍率
+Attribute_deny_move_Name: 禁止移动
 
 # : : : : :  属性描述 : : : : :
 Attribute_max_health_Description: 最大生命值
@@ -231,3 +232,4 @@ Attribute_decay_extra_damage_Description: 衰退伤害加成
 Attribute_decay_damage_Description: 衰退伤害
 Attribute_stamina_regen_multiplier_Description: 体力回复倍率
 Attribute_health_regen_multiplier_Description: 生命回复倍率
+Attribute_deny_move_Description: 值为 1 及以上时禁止玩家移动

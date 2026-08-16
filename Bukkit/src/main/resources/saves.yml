@@ -5,11 +5,238 @@ gamma-base:
   name: Gamma 基地
   type: BASE
   base: GAM
-
+# null
+tutorial2:
+  level: tutorial
+  pos: world 30069 21 77 30066 24 80
+  holoPos: world 30067 23 79
+  respawn: world 30069 20 77
+  name: 示例存档点
+  type: NORMAL
 garden-entrance:
   level: level-1
-  pos: Area1 10185 19 458 10189 24 454
+  pos: Area1 10185 20 458 10189 25 454
   holoPos: Area1 10187 23 456
   respawn: Area1 10171 20 464
   name: 花园段入口
+  type: NORMAL
+alpha-base:
+  level: level-1
+  pos: Area1 10081 66 185 10085 68 189
+  holoPos: Area1 10083 69 187
+  respawn: Area1 10083 66 187
+  name: Alpha基地
+  type: BASE
+  base: ALP
+el3a-base:
+  level: level-2
+  pos: Area2 20066 12 209 20070 14 213
+  holoPos: Area2 20068 15 211
+  respawn: Area2 20068 12 211
+  name: EL3A
+  type: BASE
+  base: ELA
+omega-base:
+  level: level-4
+  pos: Area3 39938 55 -4 39942 57 0
+  holoPos: Area3 39940 58 -2
+  respawn: Area3 39940 55 -2
+  name: Omega基地
+  type: BASE
+  base: OMG
+hotel-base:
+  level: level-5
+  pos: Area3 50142 119 246 50146 121 250
+  holoPos: Area3 50144 122 248
+  respawn: Area3 50144 119 248
+  name: 家政服务基地
+  type: BASE
+bunker-entrance:
+  level: level-10
+  pos: Area3 100331 6 -291 100335 8 -287
+  holoPos: Area3 100333 9 -289
+  respawn: Area3 100333 6 -289
+  name: 地堡入口
+  type: NORMAL
+unnumbered-barn:
+  level: level-10
+  pos: Area3 99949 6 -190 99953 8 -186
+  holoPos: Area3 99951 9 -188
+  respawn: Area3 99951 6 -188
+  name: 未编号谷仓
+  type: NORMAL
+shengguang:
+  level: level-10
+  pos: Area3 99952 6 303 99956 8 307
+  holoPos: Area3 99954 9 305
+  respawn: Area3 99954 6 305
+  name: “圣光”辖区
+  type: NORMAL
+beta-base:
+  level: level-11
+  pos: Area4 110051 -36 165 110055 -34 169
+  holoPos: Area4 110053 -33 167
+  respawn: Area4 110053 -36 167
+  name: Beta基地
+  type: BASE
+fountain-camp:
+  level: level-11
+  pos: Area4 110186 -36 311 110190 -34 315
+  holoPos: Area4 110188 -33 313
+  respawn: Area4 110188 -36 313
+  name: 喷泉营地
+  type: NORMAL
+lake-road:
+  level: level-11
+  pos: Area4 110583 -35 491 110587 -33 495
+  holoPos: Area4 110585 -32 493
+  respawn: Area4 110585 -35 493
+  name: 湖边小道
+  type: NORMAL
+ship-corner:
+  level: level-17
+  pos: Area4 170134 -7 73 170138 -5 77
+  holoPos: Area4 170136 -4 75
+  respawn: Area4 170136 -7 75
+  name: 舰船拐角
+  type: NORMAL
+rest-area:
+  level: level-19
+  pos: Area4 190215 24 70 190219 26 74
+  holoPos: Area4 190217 27 72
+  respawn: Area4 190217 24 72
+  name: 歇脚处
+  type: NORMAL
+past-illusion:
+  level: level-15
+  pos: Area4 149657 42 388 149661 44 392
+  holoPos: Area4 149659 45 390
+  respawn: Area4 149659 42 390
+  name: 昔日幻像
+  type: NORMAL
+warehouse-highlands:
+  level: level-20
+  pos: Area4 200054 21 81 200058 23 85
+  holoPos: Area4 200056 25 83
+  respawn: Area4 200056 22 83
+  name: 仓库高处
+  type: NORMAL
+temporary-residence:
+  level: level-22
+  pos: Area4 220165 121 309 220169 123 313
+  holoPos: Area4 220167 124 311
+  respawn: Area4 220167 121 311
+  name: 暂居点
+  type: NORMAL
+overlook-point:
+  level: level-22
+  pos: Area4 220062 110 346 220066 112 350
+  holoPos: Area4 220064 113 348
+  respawn: Area4 220064 110 348
+  name: 俯瞰点
+  type: NORMAL
+stormstone-fortress:
+  level: level-28
+  pos: Area5 280194 12 133 280198 14 137
+  holoPos: Area5 280196 15 135
+  respawn: Area5 280196 12 135
+  name: 嵐石要塞
+  type: NORMAL
+dining-point:
+  level: level-31
+  pos: Area5 310061 2 87 310065 4 91
+  holoPos: Area5 310063 5 89
+  respawn: Area5 310063 2 89
+  name: 用餐点
+  type: NORMAL
+spiral-stairs:
+  level: level-33
+  pos: Area5 330030 2 177 330034 4 181
+  holoPos: Area5 330032 5 179
+  respawn: Area5 330032 2 179
+  name: 螺旋阶梯
+  type: NORMAL
+mall-corner:
+  level: level-33
+  pos: Area5 330017 2 12 330021 4 16
+  holoPos: Area5 330019 5 14
+  respawn: Area5 330019 2 14
+  name: 商场角落
+  type: NORMAL
+pavilion-entrance:
+  level: level-43
+  pos: Area5 430055 2 51 430059 4 55
+  holoPos: Area5 430057 5 53
+  respawn: Area5 430057 2 53
+  name: 展馆入口
+  type: NORMAL
+empty-hall:
+  level: level-43
+  pos: Area5 429964 2 -42 429968 4 -38
+  holoPos: Area5 429966 5 -40
+  respawn: Area5 429966 2 -40
+  name: 空荡的大厅
+  type: NORMAL
+road-start:
+  level: level-45
+  pos: Area5 450142.0 58.0 179.0 450146.0 60.0 183.0
+  holoPos: Area5 450144 -44 181
+  respawn: Area5 450144 -47 181
+  name: 路途起点
+  type: NORMAL
+company-entrance:
+  level: level-45
+  pos: Area5 450299.0 27.0 180.0 450303.0 29.0 184.0
+  holoPos: Area5 450301 -34 182
+  respawn: Area5 450301 -37 182
+  name: 公司入口
+  type: NORMAL
+water-source:
+  level: level-46
+  pos: Area5 460051.0 13.0 138.0 460055.0 15.0 142.0
+  holoPos: Area5 460053 15 140
+  respawn: Area5 460053 12 140
+  name: 水源旁
+  type: NORMAL
+sand-ruins:
+  level: level-46
+  pos: Area5 460224.0 22.0 128.0 460228.0 24.0 132.0
+  holoPos: Area5 460226 22 130
+  respawn: Area5 460226 19 130
+  name: 沙中废墟
+  type: NORMAL
+kitchen:
+  level: level-53
+  pos: Area6 530009.0 8.0 10.0 530013.0 10.0 14.0
+  holoPos: Area6 530011 4 12
+  respawn: Area6 530011 1 12
+  name: 厨房
+  type: NORMAL
+storage-room:
+  level: level-53
+  pos: Area6 530029.0 -3.0 10.0 530033.0 -1.0 14.0
+  holoPos: Area6 530031 -2 12
+  respawn: Area6 530031 -5 12
+  name: 储藏室
+  type: NORMAL
+storage-area:
+  level: level-58
+  pos: Area6 580053.0 55.0 2.0 580057.0 57.0 6.0
+  holoPos: Area6 580055 58 4
+  respawn: Area6 580055 55 4
+  name: 储藏室
+  type: NORMAL
+indoor-pool:
+  level: level-58
+  pos: Area6 580201.0 57.0 -69.0 580205.0 59.0 -65.0
+  holoPos: Area6 580203 58 -67
+  respawn: Area6 580203 55 -67
+  name: 室内泳池
+  type: NORMAL
+level-0:
+  level: level-0
+  pos: Area0 -7.0 15.0 18.0 -3.0 19.0 22.0
+  holoPos: Area0 -5 18 20
+  respawn: Area0 -6 14 9
+  name: level-0
   type: NORMAL

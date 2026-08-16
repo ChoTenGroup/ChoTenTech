@@ -1,8 +1,8 @@
 package io.github.zzzyyylllty.chotentech.util
 
+import io.github.zzzyyylllty.chotentech.function.CurrencyManager
 import io.github.zzzyyylllty.chotentech.kether.evalKether
 import me.clip.placeholderapi.PlaceholderAPI
-import net.milkbowl.vault.economy.Economy
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import taboolib.common.platform.function.warning
@@ -21,8 +21,6 @@ object CurrencyUtil {
 
     private val currencies = linkedMapOf<String, CurrencyEntry>()
 
-    private var vaultEconomy: Economy? = null
-
     fun load(config: Configuration) {
         currencies.clear()
         for (key in config.getKeys(false)) {
@@ -39,11 +37,6 @@ object CurrencyUtil {
                 warning("加载货币 $key 失败: ${e.message}")
             }
         }
-        // 初始化 Vault
-        if (currencies.values.any { it.type == "VAULT" }) {
-            val provider = Bukkit.getServicesManager().getRegistration(Economy::class.java)
-            vaultEconomy = provider?.provider
-        }
     }
 
     fun getCurrency(id: String): CurrencyEntry? = currencies[id]
@@ -51,7 +44,7 @@ object CurrencyUtil {
     fun getBalance(player: Player, currencyId: String): Double {
         val entry = currencies[currencyId] ?: return 0.0
         return when (entry.type) {
-            "VAULT" -> vaultEconomy?.getBalance(player) ?: 0.0
+            "PLUGIN" -> CurrencyManager.getBalance(player, entry.id).toDouble()
             "PAPI" -> {
                 if (entry.papi != null && Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
                     PlaceholderAPI.setPlaceholders(player, entry.papi).toDoubleOrNull() ?: 0.0
@@ -68,12 +61,7 @@ object CurrencyUtil {
     fun remove(player: Player, currencyId: String, amount: Double): Boolean {
         val entry = currencies[currencyId] ?: return false
         return when (entry.type) {
-            "VAULT" -> {
-                if (vaultEconomy == null) return false
-                if (!vaultEconomy!!.has(player, amount)) return false
-                vaultEconomy!!.withdrawPlayer(player, amount)
-                true
-            }
+            "PLUGIN" -> CurrencyManager.removeBalance(player, entry.id, amount.toLong())
             "PAPI" -> {
                 val scripts = entry.actionsRemove
                 if (scripts.isNullOrEmpty()) return false

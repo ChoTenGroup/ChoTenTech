@@ -1,0 +1,109 @@
+Adon:
+  name: "<gold>亚当"
+  items:
+    # Lv.1 - 基础电子零件
+    copper_wire:
+      id: sertraline:copper_wire
+      buy: money:150
+      sell: money:45
+    silver_wire:
+      id: sertraline:silver_wire
+      buy: money:250
+      sell: money:75
+    capacitor:
+      id: sertraline:capacitor
+      buy: money:200
+      sell: money:60
+    # Lv.1 - 旧件回收
+    screw:
+      id: sertraline:screw
+      sell: money:3
+    broken_disk:
+      id: sertraline:broken_disk
+      sell: money:15
+    u_disk:
+      id: sertraline:u_disk
+      sell: money:20
+    phone:
+      id: sertraline:phone
+      sell: money:25
+    # Lv.2 - 电子元件
+    cpu:
+      id: sertraline:cpu
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:500
+      sell: money:150
+    power_supply:
+      id: sertraline:power_supply
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:400
+      sell: money:120
+    ram_stick:
+      id: sertraline:ram_stick
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:300
+      sell: money:90
+    # Lv.2 - 精选设备（仅售）
+    advanced_wifi_sender:
+      id: sertraline:advanced_wifi_sender
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:600
+    pro_ai_core:
+      id: sertraline:pro_ai_core
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:1000
+    # Lv.3 - 高级电子设备
+    vpx:
+      id: sertraline:vpx
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:800
+      sell: money:240
+    cpufan:
+      id: sertraline:cpufan
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:200
+      sell: money:60
+    disk:
+      id: sertraline:disk
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:350
+      sell: money:100
+    # 解锁商品
+    moonshine:
+      id: sertraline:moonshine
+      buy-requirements:
+        - mode: quest
+          value: TaiKuLa
+          display: 需要完成任务「太苦啦」
+      buy: money:500
+    vodka:
+      id: sertraline:vodka
+      buy-requirements:
+        - mode: quest
+          value: TaiKuLa
+          display: 需要完成任务「太苦啦」
+      buy: money:600

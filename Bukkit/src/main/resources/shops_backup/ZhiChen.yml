@@ -1,0 +1,94 @@
+ZhiChen:
+  name: "<gold>知陈"
+  items:
+    # Lv.1 - 医疗与口粮
+    bandage:
+      id: sertraline:bandage
+      buy: money:80
+      sell: money:20
+    bread:
+      id: sertraline:bread
+      buy: money:60
+      sell: money:15
+    cracker:
+      id: sertraline:cracker
+      buy: money:50
+      sell: money:12
+    # Lv.2 - 武器与工具
+    iron_sword:
+      id: sertraline:iron_sword
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:600
+      sell: money:180
+    iron_pickaxe:
+      id: sertraline:iron_pickaxe
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: money:500
+      sell: money:150
+    # Lv.3 - 高级防具与口粮
+    iron_chestplate:
+      id: sertraline:iron_chestplate
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:1200
+      sell: money:350
+    mre:
+      id: sertraline:mre
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: money:300
+      sell: money:90
+
+    steel_ingot:
+      id: "sertraline:steel_ingot"
+      buy: money:500
+
+    bronze_ingot:
+      id: "sertraline:bronze_ingot"
+      buy: money:400
+
+    brass_ingot:
+      id: "sertraline:brass_ingot"
+      buy: money:350
+
+    copper_ingot:
+      id: "sertraline:copper_ingot"
+      buy: money:300
+
+    premium_metal:
+      id: "sertraline:damascus_steel_ingot"
+      requirements:
+        - mode: quest
+          value: ScrapMetal
+          display: "需要完成任务「废金属」"
+      buy: money:2500
+
+    raw_iron:
+      id: "sertraline:raw_iron"
+      sell: money:30
+
+    raw_copper:
+      id: "sertraline:raw_copper"
+      sell: money:25
+
+    raw_gold:
+      id: "sertraline:raw_gold"
+      sell: money:50
+
+    coal:
+      id: "sertraline:coal"
+      sell: money:15
+
+    charcoal:
+      id: "sertraline:charcoal"
+      sell: money:10

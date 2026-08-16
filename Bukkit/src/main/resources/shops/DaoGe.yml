@@ -1,106 +1,105 @@
 DaoGe:
   name: "<gold>刀哥"
   items:
-    # Lv.1 - 基础食品
-    bread:
-      id: sertraline:bread
-      buy: point:7
+    # Lv.1 - 美食
+    barbecue:
+      id: sertraline:barbecue
+      buy: point:32
+      sell: point:13
+    cooked_porkchop:
+      id: sertraline:cooked_porkchop
+      buy: point:16
+      sell: point:6
+    cooked_beef:
+      id: sertraline:cooked_beef
+      buy: point:17
+      sell: point:7
+    cooked_chicken:
+      id: sertraline:cooked_chicken
+      buy: point:16
+      sell: point:6
+    cooked_mutton:
+      id: sertraline:cooked_mutton
+      buy: point:16
+      sell: point:7
+    # Lv.1 - 掉落物收购
+    bone:
+      id: sertraline:bone
+      sell: point:1
+    hound_paw:
+      id: sertraline:hound_paw
       sell: point:2
-    cracker:
-      id: sertraline:cracker
-      buy: point:7
+    spider_silk:
+      id: sertraline:spider_silk
+      sell: point:6
+    scale:
+      id: sertraline:scale
       sell: point:2
-    bandage:
-      id: sertraline:bandage
-      buy: point:10
-      sell: point:3
-    # Lv.2 - 中级物资
+    smilers_head:
+      id: sertraline:smilers_head
+      sell: point:12
+    dullers_core:
+      id: sertraline:dullers_core
+      sell: point:32
+    # Lv.2 - 刀剑
+    bronze_sword:
+      id: sertraline:bronze_sword
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:200
     iron_sword:
       id: sertraline:iron_sword
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: point:75
-      sell: point:23
-    barbecue:
-      id: sertraline:barbecue
-      buy-requirements:
-        - mode: level
-          level: 2
-          display: 需要商人等级 Lv.2
-      buy: point:25
-      sell: point:8
-    mre:
-      id: sertraline:mre
-      buy-requirements:
-        - mode: level
-          level: 2
-          display: 需要商人等级 Lv.2
-      buy: point:38
-      sell: point:12
-    # Lv.3 - 高级装备
+      buy: point:800
     iron_chestplate:
       id: sertraline:iron_chestplate
       buy-requirements:
         - mode: level
-          level: 3
-          display: 需要商人等级 Lv.3
-      buy: point:150
-      sell: point:44
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:960
     medium_rare_steak:
       id: sertraline:medium_rare_steak
       buy-requirements:
         - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:34
+    taco:
+      id: sertraline:taco
+      buy-requirements:
+        - mode: level
+          level: 2
+          display: 需要商人等级 Lv.2
+      buy: point:30
+    # Lv.3 - 钢制装备
+    steel_sword:
+      id: sertraline:steel_sword
+      buy-requirements:
+        - mode: level
           level: 3
           display: 需要商人等级 Lv.3
-      buy: point:63
-      sell: point:19
-
-    diamond_sword:
-      id: "sertraline:diamond_sword"
-      buy: point:1250
-
-    cooked_porkchop:
-      id: "sertraline:cooked_porkchop"
-      buy: point:19
-
-    cooked_beef:
-      id: "sertraline:cooked_beef"
-      buy: point:25
-
-    cooked_chicken:
-      id: "sertraline:cooked_chicken"
-      buy: point:15
-
-    bone:
-      id: "sertraline:bone"
-      sell: point:2
-
-    hound_paw:
-      id: "sertraline:hound_paw"
-      sell: point:10
-
-    spider_silk:
-      id: "sertraline:spider_silk"
-      sell: point:3
-
-    scale:
-      id: "sertraline:scale"
-      sell: point:13
-
-    smilers_head:
-      id: "sertraline:smilers_head"
-      sell: point:19
-
-    dullers_core:
-      id: "sertraline:dullers_core"
-      sell: point:38
-
-    night_blade:
-      id: "sertraline:katana"
+      buy: point:1500
+    steel_chestplate:
+      id: sertraline:steel_chestplate
+      buy-requirements:
+        - mode: level
+          level: 3
+          display: 需要商人等级 Lv.3
+      buy: point:1800
+    # Lv.3 - 解锁商品
+    katana:
+      id: sertraline:katana
       requirements:
         - mode: quest
           value: RunningToTheNight
           display: "需要完成任务「向着夜奔跑」"
-      buy: point:3125
+      limit:
+        player: 1
+        player-reset: 24h
+      buy: point:48
