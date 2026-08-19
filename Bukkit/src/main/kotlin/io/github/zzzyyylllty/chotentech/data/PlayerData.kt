@@ -4,6 +4,7 @@ import io.github.zzzyyylllty.chotentech.ChoTenTech.config
 import io.github.zzzyyylllty.chotentech.ChoTenTech.levelsList
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerHudMap
 import io.github.zzzyyylllty.chotentech.function.hideout.HideoutPlayerData
+import io.github.zzzyyylllty.chotentech.station.StationQueueItem
 import io.github.zzzyyylllty.chotentech.manager.AttributeManager
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -31,6 +32,7 @@ val defInternalInjury by lazy { config.getDouble("default.internal-injury", 100.
 val defExternalInjuryRegen by lazy { config.getDouble("default.external-injury-regen", 0.0) }
 val defInternalInjuryRegen by lazy { config.getDouble("default.internal-injury-regen", 0.0) }
 val defSanityRegen by lazy { config.getDouble("default.sanity-regen", 0.0) }
+val defHealthRegen by lazy { config.getDouble("default.health-regen", 0.2) }
 val defNutritionGrain by lazy { config.getDouble("default.nutrition-grain", 50.0) }
 val defNutritionVitamin by lazy { config.getDouble("default.nutrition-vitamin", 50.0) }
 val defNutritionProtein by lazy { config.getDouble("default.nutrition-protein", 50.0) }
@@ -63,6 +65,8 @@ data class PlayerData (
     var achievements: LinkedHashMap<String, AchievementProgress> = linkedMapOf(),
     // key: global 或 base idef (ALP/BET/...), value: slot -> serialized item
     var warehouseContents: LinkedHashMap<String, LinkedHashMap<Int, String>> = linkedMapOf(),
+    // 已发放过初始物资的基地 idef(一次性标记,搬空仓库也不会再发)
+    var grantedStartItems: HashSet<String> = hashSetOf(),
     // 安全箱 (塔科夫式)：slot -> serialized item，死亡不掉落
     var secureContainer: LinkedHashMap<Int, String> = linkedMapOf(),
     // 背包物品：slot -> serialized item（profile独立）
@@ -76,6 +80,8 @@ data class PlayerData (
     var respawnPoint: RespawnPoint? = null,
     var warehouseBaseSlots: Int? = null,
     var hideoutData: MutableMap<String, HideoutPlayerData> = linkedMapOf(),
+    // 合成站: stationId -> 队列任务
+    var stationQueues: MutableMap<String, MutableList<StationQueueItem>> = mutableMapOf(),
     var statusEffects: MutableList<PlayerStatusEffect> = mutableListOf(),
     // Shared fields — synced from SharedData by ProfileManager
 
@@ -182,12 +188,14 @@ data class PlayerData (
         if (exploreredNoclips == null) exploreredNoclips = linkedMapOf()
         if (achievements == null) achievements = linkedMapOf()
         if (warehouseContents == null) warehouseContents = linkedMapOf()
+        if (grantedStartItems == null) grantedStartItems = hashSetOf()
         if (secureContainer == null) secureContainer = linkedMapOf()
         if (inventoryContents == null) inventoryContents = mutableMapOf()
         if (insuredItems == null) insuredItems = linkedMapOf()
         if (returnedInsuranceItems == null) returnedInsuranceItems = mutableListOf()
         if (deathKeepItems == null) deathKeepItems = mutableListOf()
         if (hideoutData == null) hideoutData = linkedMapOf()
+        if (stationQueues == null) stationQueues = linkedMapOf()
         if (statusEffects == null) statusEffects = mutableListOf()
         if (affection == null) affection = mutableMapOf()
         if (affectionMarks == null) affectionMarks = mutableMapOf()
@@ -229,6 +237,7 @@ data class PlayerData (
     val maxInternalInjury: Double get() = attrMax("internal_injury", defMaxInternalInjury)
     val externalInjuryRegen: Double get() = attrMax("external_injury_regen", defExternalInjuryRegen)
     val internalInjuryRegen: Double get() = attrMax("internal_injury_regen", defInternalInjuryRegen)
+    val healthRegen: Double get() = attrMax("health_regen", defHealthRegen)
     val maxStamina: Double get() = attrMax("stamina_max", defMaxStamina)
     val maxHandStamina: Double get() = attrMax("hand_stamina_max", defMaxHandStamina)
     val maxCustomHunger: Double get() = attrMax("max_custom_hunger", defMaxCustomHunger)

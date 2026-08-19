@@ -1,10 +1,12 @@
-package io.github.zzzyyylllty.chotentech.quetiapine.util.minimessage
+package io.github.zzzyyylllty.chotentech.quetiapine.util
 
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 
 val mmUtil = MiniMessage.miniMessage()
+val mmPlainUtil = PlainTextComponentSerializer.plainText()
 val mmStrictUtil = MiniMessage.builder().strict(true).build()
 val mmLegacyAmpersandUtil = LegacyComponentSerializer.legacyAmpersand()
 val mmLegacySectionUtil = LegacyComponentSerializer.legacySection()

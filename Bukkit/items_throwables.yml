@@ -6,6 +6,8 @@ nizxc_flash:
     name: '<!i><#ff6b6b>"Nizxc" 闪光弹'
     material: PAPER
     item-model: "kangelitem:nizxc_flash"
+  minecraft:
+    max_stack_size: 4
   sertraline:
     tier: A
     lore-format: default
@@ -24,6 +26,8 @@ zx_stun:
     name: '<!i><#ffd93d>"ZX" "和平建服" 震撼弹'
     material: PAPER
     item-model: "kangelitem:zx_stun"
+  minecraft:
+    max_stack_size: 4
   sertraline:
     tier: A
     lore-format: default
@@ -43,6 +47,8 @@ ice_stun:
     name: '<!i><#74b9ff>"ICEGame" "冰块" 震撼弹'
     material: PAPER
     item-model: "kangelitem:ice_stun"
+  minecraft:
+    max_stack_size: 4
   sertraline:
     tier: A
     lore-format: default
@@ -60,6 +66,8 @@ frontroad_grenade:
     name: '<!i><#55efc4>"FrontRoad" "前路" 手榴弹'
     material: PAPER
     item-model: "kangelitem:frontroad_grenade"
+  minecraft:
+    max_stack_size: 4
   sertraline:
     tier: A
     lore-format: default
@@ -79,6 +87,8 @@ endroad_grenade:
     name: '<!i><#fd79a8>"EndRoad" "末路" 手榴弹'
     material: PAPER
     item-model: "kangelitem:endroad_grenade"
+  minecraft:
+    max_stack_size: 4
   sertraline:
     tier: A
     lore-format: default
@@ -99,6 +109,8 @@ endroad_grenade:
     name: '<!i><#a29bfe>"6CHM" "遗母" 手榴弹'
     material: PAPER
     item-model: "kangelitem:6ch_grenade"
+  minecraft:
+    max_stack_size: 4
   sertraline:
     tier: A
     lore-format: default
@@ -118,6 +130,8 @@ shakalaka_grenade:
     name: '<!i><#fdcb6e>"Shakalaka" 手榴弹'
     material: PAPER
     item-model: "kangelitem:shakalaka_grenade"
+  minecraft:
+    max_stack_size: 4
   sertraline:
     tier: A
     lore-format: default
@@ -137,6 +151,8 @@ b_shakalaka_grenade:
     name: '<!i><#e17055>"B-Shakalaka" 手榴弹'
     material: PAPER
     item-model: "kangelitem:b_shakalaka_grenade"
+  minecraft:
+    max_stack_size: 4
   sertraline:
     tier: A
     lore-format: default
@@ -156,6 +172,8 @@ shengguang_grenade:
     name: '<!i><#ffeaa7>"圣光" 荧光标记手榴弹'
     material: PAPER
     item-model: "kangelitem:shengguang_grenade"
+  minecraft:
+    max_stack_size: 4
   sertraline:
     tier: A
     lore-format: default
@@ -174,6 +192,8 @@ hqlm_petrol:
     name: '<!i><#e17055>"火钳刘明" 燃烧瓶'
     material: PAPER
     item-model: "kangelitem:hqlm_petrol"
+  minecraft:
+    max_stack_size: 4
   sertraline:
     tier: A
     lore-format: default
@@ -192,6 +212,8 @@ firesalt_petrol:
     name: '<!i><#e17055>火盐燃烧瓶'
     material: PAPER
     item-model: "kangelitem:firesalt_petrol"
+  minecraft:
+    max_stack_size: 4
   sertraline:
     tier: A
     lore-format: default
@@ -210,6 +232,8 @@ strong_firesalt_petrol:
     name: '<!i><#d63031>强火盐燃烧瓶'
     material: PAPER
     item-model: "kangelitem:strong_firesalt_petrol"
+  minecraft:
+    max_stack_size: 4
   sertraline:
     tier: A
     lore-format: default

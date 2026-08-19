@@ -1,6 +1,7 @@
 package io.github.zzzyyylllty.chotentech.shop
 
 import ink.ptms.chemdah.api.ChemdahAPI
+import io.github.zzzyyylllty.sertraline.Sertraline
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
 import io.github.zzzyyylllty.chotentech.function.CurrencyManager
 import io.github.zzzyyylllty.chotentech.function.ReputationManager
@@ -94,10 +95,8 @@ object ShopMenu : Listener {
             } else {
                 val reqs = entry.sellRequirements
                 if (reqs.isNotEmpty() && reqs.any { !checkRequirement(player, it, shop) }) return@any true
-                val count = countItem(player, entry.id)
-                entry.sell.forEach { reward ->
-                    if (reward.type == CostType.ITEM && count < reward.amount) return@any true
-                }
+                // 出售模式:已选数量不超过背包持有数即可出售(原逻辑拿出售物数量对比奖励物品数量,属于笔误)
+                if (countItem(player, entry.id) < session.getQuantity(itemKey)) return@any true
             }
             false
         }
@@ -287,6 +286,7 @@ object ShopMenu : Listener {
                 clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
                 session.filterReq = cycleFilter(session.filterReq, FilterRequirement.entries.toTypedArray())
                 session.currentPage = 0
+                page(0) // 同步 PageableChest 内部页码, 避免显示页与实际页脱节
                 resetElementsCache()
                 val inv = clicker.openInventory.topInventory
                 inv.setItem(46, buildFilterItem(clicker, session.filterReq.displayName, FilterRequirement.entries.map { it.displayName }, "条件筛选", "COMPARATOR", filterReqModel(session.filterReq)))
@@ -300,6 +300,7 @@ object ShopMenu : Listener {
                 clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
                 session.filterInv = cycleFilter(session.filterInv, FilterInventory.entries.toTypedArray())
                 session.currentPage = 0
+                page(0) // 同步 PageableChest 内部页码
                 resetElementsCache()
                 val inv = clicker.openInventory.topInventory
                 inv.setItem(46, buildFilterItem(clicker, session.filterReq.displayName, FilterRequirement.entries.map { it.displayName }, "条件筛选", "COMPARATOR", filterReqModel(session.filterReq)))
@@ -313,6 +314,7 @@ object ShopMenu : Listener {
                 clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
                 session.filterAfford = cycleFilter(session.filterAfford, FilterAffordability.entries.toTypedArray())
                 session.currentPage = 0
+                page(0) // 同步 PageableChest 内部页码
                 resetElementsCache()
                 val inv = clicker.openInventory.topInventory
                 inv.setItem(46, buildFilterItem(clicker, session.filterReq.displayName, FilterRequirement.entries.map { it.displayName }, "条件筛选", "COMPARATOR", filterReqModel(session.filterReq)))
@@ -561,7 +563,8 @@ object ShopMenu : Listener {
             !canAffordTotalWithExtra(player, shop, session, entry, 1)
         } else {
             entry.sellRequirements.any { !checkRequirement(player, it, shop) } ||
-            countItem(player, entry.id) < qtyNow + 1
+            // 已选数量超过背包持有数才算"条件不足";等于持有数(全选)时仍可正常出售
+            countItem(player, entry.id) < qtyNow
         }
         if (cannotAddMore) {
             lore.add("<!i><red>条件不足")
@@ -1470,21 +1473,34 @@ object ShopMenu : Listener {
     }
 
     private fun matchesItemId(item: ItemStack, itemId: String): Boolean {
-        // Check via sertraline item ID
+        // Check via Sertraline API
         try {
-            val clazz = Class.forName("io.github.zzzyyylllty.sertraline.util.ItemStackUtil")
-            val method = clazz.getMethod("getItemId", ItemStack::class.java)
-            val id = method.invoke(null, item) as? String
-            if (id == itemId) return true
+            val sertralineId = Sertraline.api().getId(item)
+            if (sertralineId != null) {
+                // 直接匹配（如 "coal" == "coal"）
+                if (sertralineId == itemId) return true
+                // 商店配置带 "sertraline:" 前缀，Sertraline API 返回纯 ID
+                // 尝试去掉前缀后匹配（如 "coal" == "sertraline:coal" 的后缀 "coal"）
+                val colonIdx = itemId.lastIndexOf(':')
+                if (colonIdx >= 0 && sertralineId == itemId.substring(colonIdx + 1)) return true
+            }
         } catch (_: Exception) { /* fall through */ }
 
         // Check by material name
-        return item.type.name.equals(itemId.uppercase(), ignoreCase = true)
+        val materialName = item.type.name
+        if (materialName.equals(itemId.uppercase(), ignoreCase = true)) return true
+        val colonIdx = itemId.lastIndexOf(':')
+        if (colonIdx >= 0) {
+            val suffix = itemId.substring(colonIdx + 1)
+            if (materialName.equals(suffix.uppercase(), ignoreCase = true)) return true
+        }
+        return false
     }
 
     private fun countItem(player: Player, itemId: String): Long {
         var count = 0L
-        for (item in player.inventory.contents) {
+        // 只统计主背包(36 格), 避免把护甲/副手也算进可出售数量
+        for (item in player.inventory.storageContents) {
             if (item == null || item.type.isAir) continue
             if (matchesItemId(item, itemId)) {
                 count += item.amount
@@ -1495,7 +1511,7 @@ object ShopMenu : Listener {
 
     private fun takeItem(player: Player, itemId: String, amount: Long) {
         var remaining = amount
-        for (i in player.inventory.contents.indices) {
+        for (i in player.inventory.storageContents.indices) {
             val item = player.inventory.getItem(i) ?: continue
             if (item.type.isAir) continue
             if (!matchesItemId(item, itemId)) continue

@@ -1,15 +1,25 @@
 package io.github.zzzyyylllty.chotentech.function
 
+import com.sk89q.worldedit.bukkit.BukkitAdapter
+import com.sk89q.worldguard.WorldGuard
 import io.github.zzzyyylllty.chotentech.ChoTenTech
 import io.github.zzzyyylllty.chotentech.data.Base
 import io.github.zzzyyylllty.chotentech.data.BaseSpawn
+import io.github.zzzyyylllty.chotentech.data.BaseStartItemsConfig
+import io.github.zzzyyylllty.chotentech.data.DataManager
 import io.github.zzzyyylllty.chotentech.data.PlayerData
+import io.github.zzzyyylllty.chotentech.data.WarehouseConfig
 import io.github.zzzyyylllty.chotentech.data.getData
 import io.github.zzzyyylllty.chotentech.function.player.sendComponent
+import io.github.zzzyyylllty.chotentech.util.ExternalItemHelper
+import io.github.zzzyyylllty.chotentech.util.ItemSerializer
 import org.bukkit.Bukkit
 import org.bukkit.Location
+import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import taboolib.common.platform.function.warning
+import taboolib.library.xseries.XMaterial
 import taboolib.module.configuration.Configuration
 
 object BaseManager {
@@ -45,9 +55,11 @@ object BaseManager {
                     dev = sec.getString("dev") ?: "",
                     lore = sec.getStringList("lore"),
                     start = sec.getString("start") ?: "",
+                    title = sec.getString("title") ?: "",
                     region = sec.getString("region") ?: "base-${idef.lowercase()}",
                     spawn = spawn,
                     savePointRegion = sec.getString("save-point.region"),
+                    autoGrant = sec.getBoolean("auto-grant", false),
                 )
                 baseMap[idef] = base
             } catch (e: Exception) {
@@ -59,6 +71,21 @@ object BaseManager {
 
     fun getBaseByRegion(regionId: String): Base? {
         return baseMap.values.firstOrNull { it.region.equals(regionId, ignoreCase = true) }
+    }
+
+    /**
+     * 副职业经验/升级的安全区判定:world 主世界或任意基地区域内。
+     * 基地内可通过岩浆等自伤源无限刷经验(耐力/健康),因此经验与升级都在此拦截。
+     */
+    fun isInLevelSafeZone(player: Player): Boolean {
+        if (player.world.name.equals("world", ignoreCase = true)) return true
+        return try {
+            val regions = WorldGuard.getInstance().platform.regionContainer.createQuery()
+                .getApplicableRegions(BukkitAdapter.adapt(player.location)).regions
+            regions.any { rg -> baseMap.values.any { it.region.equals(rg.id, ignoreCase = true) } }
+        } catch (_: Exception) {
+            false
+        }
     }
 
     fun getBasesByFaction(faction: String): List<Base> {
@@ -94,6 +121,7 @@ object BaseManager {
 
         data.mainTag = base.faction
         data.subTag = base.idef
+        grantBaseStartItems(player, data, idef)
 
         player.sendComponent("<green>你已加入 <gold>${base.name}")
         player.sendComponent("<gray>阵营: ${base.faction} | 基地: ${base.name}")
@@ -105,6 +133,94 @@ object BaseManager {
         }
 
         return true
+    }
+
+    /** 自动发放初始物资的基地(auto-grant: true):玩家即使未加入该基地,进服加载数据时也会自动发放 */
+    fun grantAutoStartItems(player: Player, data: PlayerData) {
+        if (!player.isOnline) return
+        for (base in baseMap.values) {
+            if (!base.autoGrant) continue
+            grantBaseStartItems(player, data, base.idef)
+        }
+    }
+
+    /** 重置指定基地仓库到初始状态:清空内容与发放标记;玩家在线则立即重新发放 */
+    fun resetBaseWarehouse(player: Player?, data: PlayerData, idef: String): Boolean {
+        val base = baseMap[idef] ?: return false
+        data.warehouseContents.remove(idef)
+        data.grantedStartItems.remove(idef)
+        if (player != null && base.enable) {
+            grantBaseStartItems(player, data, idef)
+        }
+        return true
+    }
+
+    /** 重置全部仓库到初始状态;玩家在线则立即重新发放 auto-grant 基地的物资 */
+    fun resetAllWarehouses(player: Player?, data: PlayerData) {
+        data.warehouseContents.clear()
+        data.grantedStartItems.clear()
+        if (player != null) {
+            grantAutoStartItems(player, data)
+        }
+    }
+
+    /** 发放初始物资:仓库为空且无发放标记才放入(仅首次;搬空仓库后也不会重复发放) */
+    private fun grantBaseStartItems(player: Player, data: PlayerData, idef: String) {
+        val items = BaseStartItemsConfig.getStartItems(idef)
+        if (items.isEmpty()) return
+        val contents = data.warehouseContents.getOrPut(idef) { linkedMapOf() }
+        // 已有发放标记,或仓库非空(旧档迁移:视为已发放)则跳过并补标记,防止搬空仓库后重复发放
+        if (idef in data.grantedStartItems || contents.isNotEmpty()) {
+            if (data.grantedStartItems.add(idef)) {
+                DataManager.saveData(player)
+            }
+            return
+        }
+
+        val maxSlots = WarehouseConfig.getMaxSlots(player, idef)
+        var slot = 1
+        for ((itemId, amount) in items) {
+            val template = resolveStartItem(player, itemId) ?: continue
+            val maxStack = template.maxStackSize
+            var remaining = amount
+            while (remaining > 0 && slot <= maxSlots) {
+                val stackSize = minOf(remaining, maxStack)
+                val stack = template.clone().apply { this.amount = stackSize }
+                val serialized = ItemSerializer.serializeNbt(stack) ?: break
+                contents[slot] = serialized
+                slot++
+                remaining -= stackSize
+            }
+            if (slot > maxSlots) break
+        }
+
+        if (slot > 1) {
+            data.grantedStartItems.add(idef)
+            DataManager.saveData(player)
+            player.sendComponent("<gold>■ <yellow>基地仓库已放入初始物资,打开仓库查看")
+        }
+    }
+
+    /** 解析初始物资物品 ID:sertraline:xxx 插件物品 -> 原版 -> XSeries */
+    private fun resolveStartItem(player: Player, itemId: String): ItemStack? {
+        if (itemId.contains(":")) {
+            val parts = itemId.split(":", limit = 2)
+            if (parts.size == 2) {
+                try {
+                    val result = ExternalItemHelper.build(player, parts[0], parts[1])
+                    if (result != null && !result.type.isAir) return result
+                } catch (_: Exception) { /* fall through */ }
+            }
+        }
+        try {
+            val mat = Material.valueOf(itemId.uppercase())
+            return ItemStack(mat)
+        } catch (_: Exception) { /* fall through */ }
+        try {
+            val xmat = XMaterial.valueOf(itemId.uppercase())
+            return xmat.parseItem()
+        } catch (_: Exception) { /* fall through */ }
+        return null
     }
 
     fun getPlayerBase(data: PlayerData): Base? {

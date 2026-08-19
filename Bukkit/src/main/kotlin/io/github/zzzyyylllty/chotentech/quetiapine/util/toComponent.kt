@@ -1,8 +1,6 @@
 package io.github.zzzyyylllty.chotentech.quetiapine.util
 
 import io.github.zzzyyylllty.chotentech.ChoTenTech.config
-import io.github.zzzyyylllty.chotentech.quetiapine.util.minimessage.mmJsonUtil
-import io.github.zzzyyylllty.chotentech.quetiapine.util.minimessage.mmUtil
 import net.kyori.adventure.text.Component
 import kotlin.collections.component1
 import kotlin.collections.component2

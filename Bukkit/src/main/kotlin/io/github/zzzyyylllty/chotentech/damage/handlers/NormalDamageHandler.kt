@@ -32,8 +32,8 @@ abstract class NormalDamageHandler(override val type: DamageType) : DamageTypeHa
         val defense = AttributeManager.getAttributeValue(victim, "defense").coerceAtLeast(0.0)
         val toughness = AttributeManager.getAttributeValue(victim, "defense_toughness").coerceAtLeast(0.0)
 
-        // 防御因子 = 伤害 / (伤害 + 2*防御 + 韧性*伤害/20)
-        val defenseFactor = baseDamage / (baseDamage + 2.0 * defense + toughness * baseDamage / 20.0)
+        // 防御因子 = 伤害 / (伤害 + 4*防御 + 韧性*伤害/20)
+        val defenseFactor = baseDamage / (baseDamage + 4.0 * defense + toughness * baseDamage / 20.0)
 
         // 伤势易伤系数
         val externalInjuryRatio: Double

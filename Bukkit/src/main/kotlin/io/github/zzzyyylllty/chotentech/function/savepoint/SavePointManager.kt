@@ -9,6 +9,7 @@ import de.oliver.fancyholograms.api.data.TextHologramData
 import io.github.zzzyyylllty.chotentech.util.devLog
 import io.github.zzzyyylllty.chotentech.util.toComponent
 import org.bukkit.Bukkit
+import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Particle
@@ -36,7 +37,6 @@ object SavePointManager {
     private val playersInZone = ConcurrentHashMap<UUID, String>()
 
     /** Players who have been hinted about the first-time mechanic */
-    private val hintedPlayers = ConcurrentHashMap.newKeySet<UUID>()
 
     /** Created hologram IDs */
     private val hologramIds = ConcurrentHashMap.newKeySet<String>()
@@ -105,6 +105,20 @@ object SavePointManager {
 
     // ---- Zone border particles ----
 
+    /** FALLING_DUST 着色 BlockData 缓存:不可变对象,复用避免每 10 tick 重复创建 */
+    private val baseShades = arrayOf(
+        Material.LIGHT_BLUE_CONCRETE.createBlockData(),
+        Material.CYAN_CONCRETE.createBlockData()
+    )
+    private val normalShades = arrayOf(
+        Material.LIME_CONCRETE.createBlockData(),
+        Material.GREEN_CONCRETE.createBlockData()
+    )
+
+    /** ENTITY_EFFECT 粒子颜色缓存 */
+    private val baseParticleColor = Color.fromRGB(80, 190, 255)
+    private val normalParticleColor = Color.fromRGB(80, 255, 80)
+
     private fun displayZoneParticles() {
         for (sp in SavePointConfig.getAll()) {
             val world = Bukkit.getWorld(sp.world) ?: continue
@@ -121,11 +135,7 @@ object SavePointManager {
 
             // FALLING_DUST 粒子以方块颜色着色，每次生成随机浅/深色：
             // 普通存档点绿色（浅绿/深绿混凝土）、基地存档点青色（浅蓝/青色混凝土）
-            val shades = if (sp.isBase) {
-                arrayOf(Material.LIGHT_BLUE_CONCRETE.createBlockData(), Material.CYAN_CONCRETE.createBlockData())
-            } else {
-                arrayOf(Material.LIME_CONCRETE.createBlockData(), Material.GREEN_CONCRETE.createBlockData())
-            }
+            val shades = if (sp.isBase) baseShades else normalShades
             val step = 0.5
             fun spawn(loc: Location) {
                 val blockData = shades[ThreadLocalRandom.current().nextInt(shades.size)]
@@ -138,6 +148,22 @@ object SavePointManager {
             val maxY = maxOf(sp.pos1.y, sp.pos2.y)
             val minZ = minOf(sp.pos1.z, sp.pos2.z)
             val maxZ = maxOf(sp.pos1.z, sp.pos2.z)
+
+            // 存档点中心向外发散粒子:普通存档点亮绿,基地存档点亮蓝
+            val center = Location(
+                world,
+                (sp.pos1.x + sp.pos2.x) / 2,
+                (minY + maxY) / 2,
+                (sp.pos1.z + sp.pos2.z) / 2
+            )
+            val color = if (sp.isBase) baseParticleColor else normalParticleColor
+            for (i in 0 until 10) {
+                val theta = ThreadLocalRandom.current().nextDouble(0.0, 2.0 * Math.PI)
+                val vx = Math.cos(theta) * 0.5
+                val vz = Math.sin(theta) * 0.5
+                val vy = ThreadLocalRandom.current().nextDouble(0.5)
+                world.spawnParticle(Particle.ENTITY_EFFECT, center, 5, vx, vy, vz, 1.0, color)
+            }
 
             // Bottom and top horizontal edges (X axis)
             var x = minX
@@ -217,8 +243,8 @@ object SavePointManager {
 
         val inZone = sp != null
 
-        // 60s recall takes priority over saving (limited time window)
-        val canRecall = inZone && sp!!.isBase && data.baseSaveSpawnTime != 0L && data.normalSave != null
+        // Recall (no time limit) — takes priority over saving
+        val canRecall = inZone && sp!!.isBase && data.normalSave != null
 
         if (inZone && player.isSneaking && player.location.pitch <= -80) {
             if (canRecall) {
@@ -242,7 +268,10 @@ object SavePointManager {
             }
             prog.ticks++
             val pct = prog.ticks * 100 / prog.maxTicks
-            player.sendActionBar("<green>✦ 正在建立存档... $pct%".toComponent())
+            val totalBars = 10
+            val filled = (prog.ticks * totalBars / prog.maxTicks).toInt().coerceIn(0, totalBars)
+            val bar = "<green>${"▌".repeat(filled)}<gray>${"▌".repeat(totalBars - filled)}"
+            player.sendActionBar("<green>✦ 正在建立存档... $bar <white>$pct%".toComponent())
             if (prog.ticks >= prog.maxTicks) {
                 prog.callback()
                 savingPlayers.remove(player.uniqueId)
@@ -261,11 +290,9 @@ object SavePointManager {
     }
 
     private fun onEnterSaveZone(player: Player, sp: SavePoint) {
-        // First-time mechanic hint
-        if (hintedPlayers.add(player.uniqueId)) {
-            player.sendMessage("<gold>■ <yellow>你发现了一个存档点！".toComponent())
-            player.sendMessage("<gray>蹲下并抬头 <white>${if (sp.isBase) 5 else 3}秒<gray> 可在此建立存档。".toComponent())
-        }
+        // 每次进入存档点区域都显示提示
+        player.sendMessage("<gold>■ <yellow>你发现了一个存档点！".toComponent())
+        player.sendMessage("<gray>蹲下并抬头 <white>${if (sp.isBase) 5 else 3}秒<gray> 可在此建立存档。".toComponent())
 
         val typeName = if (sp.isBase) "<aqua>基地存档点" else "<green>存档点"
         player.showTitle(net.kyori.adventure.title.Title.title(
@@ -298,26 +325,21 @@ object SavePointManager {
         ))
     }
 
-    // ---- 60s recall ----
+    // ---- Recall ----
 
     fun onBaseSpawn(player: Player, data: PlayerData) {
         if (data.baseSave == null) return
-        data.baseSaveSpawnTime = System.currentTimeMillis()
         if (data.normalSave != null) {
             val setting = ProfileManager.getSharedData(player.uniqueId.toString()).settings
             if (setting.getBoolean("recallMessage")) {
-                player.sendMessage("<yellow>✦ 你可在60秒内，在当前的基地存档点内抬头3秒，返回上个普通存档点。".toComponent())
+                player.sendMessage("<red>✦ 看起来你不太走运...".toComponent())
+                player.sendMessage("<yellow>✦ 在蓝色的基地存档点内抬头，即可返回上个普通的绿色存档点。".toComponent())
             }
         }
     }
 
     private fun tickRecall(player: Player, data: PlayerData, sp: SavePoint) {
-        if (data.baseSaveSpawnTime == 0L || data.normalSave == null) {
-            recallingPlayers.remove(player.uniqueId)
-            return
-        }
-        if (System.currentTimeMillis() - data.baseSaveSpawnTime > 60_000) {
-            data.baseSaveSpawnTime = 0L
+        if (data.normalSave == null) {
             recallingPlayers.remove(player.uniqueId)
             return
         }
@@ -339,7 +361,6 @@ object SavePointManager {
     private fun doRecall(player: Player, data: PlayerData) {
         val normalSp = SavePointConfig.get(data.normalSave ?: return) ?: return
         player.teleportAsync(normalSp.effectiveHoloPos)
-        data.baseSaveSpawnTime = 0L
         player.sendMessage("<green>■ 已返回普通存档点: <yellow>${normalSp.name}".toComponent())
     }
 
@@ -371,7 +392,6 @@ object SavePointManager {
         savingPlayers.clear()
         recallingPlayers.clear()
         playersInZone.clear()
-        hintedPlayers.clear()
     }
 
     fun clearPlayerState(player: Player) {

@@ -10,6 +10,7 @@ import io.github.zzzyyylllty.chotentech.data.DataManager.getDataByCID
 import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager
 import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager.saveAll
 import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager.releaseAll
+import io.github.zzzyyylllty.chotentech.function.BaseManager
 import io.github.zzzyyylllty.chotentech.function.player.getPlayerLevel
 import io.github.zzzyyylllty.chotentech.function.timer.cleanupNoclipState
 import io.github.zzzyyylllty.chotentech.util.devLog
@@ -20,6 +21,7 @@ import io.github.zzzyyylllty.chotentech.data.ModifierType
 import io.github.zzzyyylllty.chotentech.manager.AttributeManager
 import io.github.zzzyyylllty.chotentech.util.TTLCache
 import io.github.zzzyyylllty.chotentech.util.jsonUtils
+import ink.ptms.chemdah.api.ChemdahAPI
 import taboolib.expansion.TableName
 import java.util.Optional
 import java.util.UUID
@@ -390,6 +392,7 @@ object DataManager {
         deathKeepItems = deathKeepItems ?: mutableListOf(),
         inventoryContents = inventoryContents ?: mutableMapOf(),
         hideoutData = hideoutData ?: linkedMapOf(),
+        stationQueues = stationQueues ?: linkedMapOf(),
         statusEffects = statusEffects ?: mutableListOf(),
         affection = affection ?: mutableMapOf(),
         reputation = reputation ?: mutableMapOf(),
@@ -555,6 +558,8 @@ object DataManager {
         val data = ProfileManager.ensureProfile(player)
         data.lastLoginTime = System.currentTimeMillis()
         playerDataMap[player.uniqueId.toString()] = data
+        // auto-grant 基地(如 ALP)不加入也自动发放初始物资;物品构建需主线程,统一调度执行
+        submit { BaseManager.grantAutoStartItems(player, data) }
         // Initialize quetiapine skill defaults ONLY after profile data is loaded,
         // so existing saved levels/exp are not overwritten by stale detached-map writes.
         io.github.zzzyyylllty.chotentech.quetiapine.data.QuetiapineDataBridge.initProfile(player)
@@ -681,6 +686,14 @@ object DataManager {
         cancelConsumableTasks(uuid)
         // 清理会话级 HUD 缓存
         playerHudMap.remove(uuid)
+        // Chemdah 默认退出释放与自动保存已关闭,由本插件控制档案生命周期。
+        // 显式 Player 参数保存不会访问 PlayerProfile.player 的离线懒加载属性。
+        ChemdahAPI.playerProfile[player.name]?.let { profile ->
+            profile.isReleased = true
+            profile.push(player)
+            // 触发 Released 事件,清理 Chemdah 缓存并等待其它监听器完成。
+            ink.ptms.chemdah.core.database.Database.releaseProfile(player).join()
+        }
         // Save synchronously — submitAsync may not execute during shutdown
         releaseData(player)
         submitAsync {

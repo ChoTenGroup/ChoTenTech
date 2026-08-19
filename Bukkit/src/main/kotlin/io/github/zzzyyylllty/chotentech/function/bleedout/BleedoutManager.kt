@@ -14,6 +14,8 @@ import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.bukkit.entity.Projectile
+import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerGameModeChangeEvent
@@ -31,6 +33,14 @@ import taboolib.common.platform.service.PlatformExecutor
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.floor
+
+/** 判断伤害是否由玩家(或其弹射物)造成:倒地者对玩家攻击免疫用 */
+fun isPlayerInflicted(event: EntityDamageEvent): Boolean {
+    if (event !is EntityDamageByEntityEvent) return false
+    val damager = event.damager
+    if (damager is Player) return true
+    return damager is Projectile && damager.shooter is Player
+}
 
 object BleedoutManager {
 
@@ -155,6 +165,30 @@ object BleedoutManager {
         if (reviverUuid != null) {
             Bukkit.getPlayer(reviverUuid)?.sendMessage("<green>✅ 成功救援 ${player.name}！".toComponent())
         }
+    }
+
+    /** 指令直接拉起倒地玩家:跳过救援进度,立即清理倒地状态并恢复血量(管理员/运营用) */
+    fun reviveDowned(uuid: UUID): Boolean {
+        val state = downedPlayers[uuid] ?: return false
+        val player = Bukkit.getPlayer(uuid) ?: return false
+        val reviverUuid = state.beingRevivedBy
+
+        cleanupState(uuid)
+
+        val pct = config.getDouble("bleedout.revive-health", 0.2)
+        val maxHp = player.getAttribute(org.bukkit.attribute.Attribute.MAX_HEALTH)?.value ?: 20.0
+        player.health = (maxHp * pct).coerceAtLeast(1.0)
+
+        player.showTitle(net.kyori.adventure.title.Title.title(
+            "<green>✅ 已复苏".toComponent(),
+            "<gray>你被拉了起来".toComponent()
+        ))
+        player.sendMessage("<green>✅ 你已被拉起！".toComponent())
+
+        if (reviverUuid != null) {
+            Bukkit.getPlayer(reviverUuid)?.sendMessage("<gray>${player.name} 已被拉起，救援结束".toComponent())
+        }
+        return true
     }
 
     // ---- Bleedout expiry ----
@@ -385,7 +419,8 @@ object BleedoutManager {
         val state = downedPlayers[uuid]
         if (state != null) {
             event.isCancelled = true
-            if (config.getBoolean("bleedout.damage-accelerates-bleedout", true)) {
+            // 倒地者对玩家攻击免疫:来自玩家的伤害不加速失血、不中断救援
+            if (!isPlayerInflicted(event) && config.getBoolean("bleedout.damage-accelerates-bleedout", true)) {
                 val penalty = config.getInt("bleedout.damage-penalty", 10) * 2
                 state.bleedoutTicks = maxOf(state.bleedoutTicks - penalty, 0)
                 if (state.beingRevivedBy != null) cancelRevival(uuid, "目标再次受伤，救援中断")

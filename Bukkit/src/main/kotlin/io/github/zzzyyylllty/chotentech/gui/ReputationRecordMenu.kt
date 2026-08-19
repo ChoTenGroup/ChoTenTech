@@ -83,8 +83,11 @@ class ReputationRecordMenu(private val faction: FactionInfo) {
             rows(3)
 
             map(
+                "CCC    <>",
                 "         ",
-                "  X     Y",
+                " @@@@@@@ ",
+                " @@@X@@@ ",
+                " @@@@@@@ ",
                 "         "
             )
 

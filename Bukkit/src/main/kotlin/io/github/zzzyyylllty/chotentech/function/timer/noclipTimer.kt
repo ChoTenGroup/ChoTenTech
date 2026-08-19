@@ -191,13 +191,24 @@ fun noclipTime() {
 
                 if (foundNoclip != null) {
                     val firstEnter = noclipName != null && noclipName != lastNoclip
-                    if (firstEnter) playerInNoclip[k] = noclipName
+                    if (firstEnter) {
+                        playerInNoclip[k] = noclipName
+                        // 进入切出点即触发 NoclipEnterEvent(而不是执行切出时)
+                        submit { NoclipEnterEvent(player, level.id, foundNoclip.name).call() }
+                    }
 
                     val condResult = NoclipConditionChecker.checkConditions(player, foundNoclip)
                     if (condResult is ConditionResult.Allowed) {
                         if (firstEnter) {
                             player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1F, 1.7F)
                             player.sendComponent("<#66CCFF>已找到切出点<white>$noclipName</white>，低头下蹲确认。")
+                            val target = ChoTenTech.levelsList[foundNoclip.targetLevel]
+                            target?.let {
+                                player.sendComponent("<#66CCFF>本切出点预计通往：${target.prefix}${target.name}")
+                            } ?: {
+
+                                player.sendComponent("<#66CCFF>无法找到本切出点的目标。")
+                            }
                         }
                     } else {
                         val msg = when (condResult) {

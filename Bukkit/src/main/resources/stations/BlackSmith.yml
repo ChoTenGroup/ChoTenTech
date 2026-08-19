@@ -1,0 +1,20 @@
+BlackSmith:
+  name: "<gold>铁匠"
+  queue: 9
+  extra-queue:
+    affection2:
+      affection:
+        id: "BlackSmith"
+        required: 100
+      slots: 9
+    perm:
+      permission: "chotentech.aaa"
+      slots: 9
+  recipes:
+    iron_ingot:
+      id: sertraline:iron_sword
+      buy:
+        - sertraline:iron_ingot:2
+        - sertraline:wood:1
+        - money:100
+      time: 100

@@ -466,9 +466,9 @@ object ProfileManager {
         if (infos.any { it.profileName == profileName }) return null
         if (loadArchivedProfileInfos(uuid).any { it.profileName == profileName }) return null
 
-        // Find next available profile ID
+        // Find next available profile ID (auto-increment, never reuse)
         val existingIds: Set<Int> = infos.map { it.profileId.toIntOrNull() ?: 0 }.toSet()
-        val newId = (1..99).first { it !in existingIds }.toString()
+        val newId = ((existingIds.maxOrNull() ?: 0) + 1).toString()
 
         // NOTE: Do NOT save old profile here — switchProfile below handles it
         // with proper inventory capture. Saving here without captureInventory
@@ -855,6 +855,8 @@ object ProfileManager {
         val uuid = player.uniqueId.toString()
         val data = playerDataMap[uuid] ?: return
 
+        grantHudAfterTutorialIfMissing(player)
+
         data.profileLocation?.toLocation()?.let { loc ->
             // 加载区块，防止掉落虚空
             val chunk = loc.chunk
@@ -877,6 +879,27 @@ object ProfileManager {
             else Location(world, 0.5, 1.0, 0.5)
         data.profileLocation = RespawnPoint.fromLocation(fallback)
         player.teleport(fallback)
+    }
+
+    /** 档案加载后检查:延迟 3 秒,若玩家已完成教学任务且缺少 hudshow.health 权限,则授予 hudshow.* 权限 */
+    fun grantHudAfterTutorialIfMissing(player: Player) {
+        val uuid = player.uniqueId.toString()
+        submit(delay = 60) { // 3 秒 = 60 tick
+            try {
+                if (!player.isOnline) return@submit
+                val shared = try { getSharedData(uuid) } catch (_: Exception) { null } ?: return@submit
+                if (!shared.isCompletedTutorial) return@submit
+                if (player.hasPermission("hudshow.health")) return@submit
+                // 通过 lp 命令授予 hudshow 权限
+                Bukkit.dispatchCommand(
+                    Bukkit.getConsoleSender(),
+                    "lp user ${player.name} permission set hudshow.* true"
+                )
+                devLog("[档案] 玩家 ${player.name} 已完成教学,已授予 hudshow 权限")
+            } catch (t: Throwable) {
+                devLog("[档案] 授予 hudshow 权限失败 ${player.name}: ${t.message}")
+            }
+        }
     }
 
     /** 教学关卡起点传送位置(world x y z yaw pitch) */

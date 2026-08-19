@@ -181,6 +181,7 @@ dependencies {
     implementation("net.kyori:adventure-text-serializer-legacy:4.19.0")
     implementation("net.kyori:adventure-text-serializer-gson:4.19.0")
     implementation("net.kyori:adventure-api:4.19.0")
+    implementation("net.kyori:adventure-text-serializer-plain:4.19.0")
     implementation("net.kyori:adventure-text-minimessage:4.19.0")
     compileOnly("com.google.code.gson:gson:2.10.1")
     implementation("me.clip:placeholderapi:2.11.6")

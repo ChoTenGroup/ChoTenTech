@@ -57,20 +57,21 @@ object DeathDropManager {
             val owner = InsuranceManager.getInsuredOwner(item)
             if (owner != null && owner == player.name) {
                 val cleaned = InsuranceManager.untagItem(item.clone())
-                ItemSerializer.serialize(cleaned)?.let { returns.add(it) }
-                val serialized = ItemSerializer.serialize(item) ?: continue
-                data.insuredItems.entries.removeAll { it.value.itemData == serialized }
+                ItemSerializer.serializeNbt(cleaned)?.let { returns.add(it) }
+                // 保险由物品 NBT 标签承担，不再使用 data.insuredItems 副本。
+                // 清除遗留的 insuredItems 记录，避免旧版本存储的副本被还原造成刷物品。
+                data.insuredItems.clear()
                 player.inventory.setItem(slot, ItemStack(Material.AIR))
                 continue
             }
 
             if (Math.random() * 100 < chance) {
                 // 掉落
-                ItemSerializer.serialize(item)?.let { drops[slot] = it }
+                ItemSerializer.serializeNbt(item)?.let { drops[slot] = it }
                 player.inventory.setItem(slot, ItemStack(Material.AIR))
             } else {
                 // 保留在身上
-                ItemSerializer.serialize(item)?.let { keeps.add(it) }
+                ItemSerializer.serializeNbt(item)?.let { keeps.add(it) }
                 player.inventory.setItem(slot, ItemStack(Material.AIR))
             }
         }
@@ -124,7 +125,7 @@ object DeathDropManager {
         saveData(player)
 
         for (serialized in keepItems) {
-            val item = ItemSerializer.deserialize(serialized) ?: continue
+            val item = ItemSerializer.deserializeAny(serialized) ?: continue
             player.inventory.addItem(item).values.forEach { leftover ->
                 player.world.dropItemNaturally(player.location, leftover)
             }
@@ -162,7 +163,7 @@ object DeathDropManager {
         val world = Bukkit.getWorld(data.world) ?: return
 
         data.items.forEach { (_, serialized) ->
-            ItemSerializer.deserialize(serialized)?.let { item ->
+            ItemSerializer.deserializeAny(serialized)?.let { item ->
                 world.dropItemNaturally(Location(world, data.x, data.y, data.z), item)
             }
         }

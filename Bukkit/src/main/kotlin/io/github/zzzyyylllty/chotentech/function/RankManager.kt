@@ -200,6 +200,12 @@ object RankManager {
         return "$prefix${player.name}$suffix"
     }
 
+    fun buildPlayerListNameExtra(player: Player, prefix: String = "", suffix: String = ""): String {
+        val prefix = getEffectiveRankDisplay(player, "prefix") + prefix
+        val suffix = suffix + getEffectiveRankDisplay(player, "suffix")
+        return "$prefix${player.name}$suffix"
+    }
+
     /** Get display string from the highest-priority eligible rank (condition-based only) */
     fun getEligibleRankDisplay(player: Player, type: String, displayKey: String = "current"): String {
         return getEligibleRanks(player, type).firstOrNull()?.display?.get(displayKey) ?: ""

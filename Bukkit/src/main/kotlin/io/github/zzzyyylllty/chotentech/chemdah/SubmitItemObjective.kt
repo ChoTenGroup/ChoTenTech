@@ -1,6 +1,7 @@
 package io.github.zzzyyylllty.chotentech.chemdah
 
 import ink.ptms.chemdah.core.PlayerProfile
+import ink.ptms.chemdah.core.quest.Quest
 import ink.ptms.chemdah.core.quest.QuestLoader.register
 import ink.ptms.chemdah.core.quest.Task
 import ink.ptms.chemdah.core.quest.objective.ObjectiveCountableI
@@ -46,12 +47,8 @@ object SubmitItemObjective : ObjectiveCountableI<SubmitItemEvent>() {
                 if (e.item != null) {
 
                     val item = task.condition["item"]!!.asList().toInferItem()
-                    val amount = task.condition["amount"]?.toInt() ?: 1
-                    val consume = task.condition["consume"]?.toBoolean() ?: true
                     val kether = task.condition["kether"]?.toString()
                     val player = e.player
-                    // val items = player.inventory
-                    // val hasItem = items.hasItem(amount) { item.isItem(it) }
                     val hasItem = item.isItem(e.item)
                     if (hasItem && kether != null) {
                         val bool = kether.evalKetherBoolean(player, linkedMapOf("@QuestContainer" to quest?.template))
@@ -59,10 +56,6 @@ object SubmitItemObjective : ObjectiveCountableI<SubmitItemEvent>() {
                             task.condition["deny-message"]?.toString()?.let { player.sendComponent(it) }
                             return@addFullCondition false
                         }
-                    }
-                    if (hasItem && consume) {
-                        // items.takeItem(amount) { item.isItem(it) }
-                        e.item.amount -= amount
                     }
                     hasItem
                     } else {
@@ -91,7 +84,22 @@ object SubmitItemObjective : ObjectiveCountableI<SubmitItemEvent>() {
     }
 
     override fun getCount(profile: PlayerProfile, task: Task, event: SubmitItemEvent): Int {
-        return event.item?.amount ?: 0
+        val item = event.item ?: return 0
+        val consume = task.condition["consume"]?.toBoolean() ?: true
+        if (!consume) return item.amount
+        // 只扣除任务还需要(goal - 当前进度)的数量,避免超额提交浪费物品(多余的留在提交区)
+        val goal = task.goal.get("amount", 1).toInt()
+        val current = profile.dataOperator(task).get("amount", 0).toInt()
+        val remaining = maxOf(goal - current, 0)
+        // amount 未配置时提交尽可能多(但不超过剩余需求);配置了则每次最多提交 amount 个
+        val amount = task.condition["amount"]?.toInt()
+        val taken = if (amount == null) minOf(item.amount, remaining) else minOf(amount, item.amount, remaining)
+        item.amount -= taken
+        return taken
+    }
+
+    override fun onContinue(profile: PlayerProfile, task: Task, quest: Quest, event: Any) {
+        super.onContinue(profile, task, quest, event)
     }
 }
 

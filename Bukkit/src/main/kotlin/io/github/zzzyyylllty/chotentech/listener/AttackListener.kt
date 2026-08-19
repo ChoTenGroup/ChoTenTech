@@ -9,6 +9,7 @@ import io.github.zzzyyylllty.chotentech.damage.DamageType
 import io.github.zzzyyylllty.chotentech.damage.DamageTypeRegistry
 import io.github.zzzyyylllty.chotentech.damage.getDamageTypeTag
 import io.github.zzzyyylllty.chotentech.damage.removeDamageTypeTag
+import io.github.zzzyyylllty.chotentech.function.bleedout.BleedoutManager
 import io.github.zzzyyylllty.chotentech.logger.sendStringAsComponent
 import io.github.zzzyyylllty.chotentech.manager.AttributeManager
 import org.bukkit.enchantments.Enchantment
@@ -191,6 +192,9 @@ object AttackListener {
         // 1. 获取攻击者玩家
         val attacker = getAttackerPlayer(damager)
         if (attacker == null || victim.isDead) return
+
+        // 倒地者对玩家攻击免疫:跳过全部伤害计算与效果应用
+        if (victim is Player && BleedoutManager.isDowned(victim.uniqueId)) return
 
         val originalDamage = event.damage
         var modifiedDamage = originalDamage

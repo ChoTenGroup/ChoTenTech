@@ -18,7 +18,7 @@ lightningbottle_humanmade:
   effects:
     - type: lightning_strike
       range: 10
-      amount: 3
+      amount: 2
       power: 3
       damage:
         shock: 8
@@ -47,7 +47,7 @@ lightningbottle_blue:
   effects:
     - type: lightning_strike
       range: 15
-      amount: 6
+      amount: 3
       power: 4
       damage:
         shock: 20
@@ -76,7 +76,7 @@ lightningbottle_black:
   effects:
     - type: lightning_strike
       range: 20
-      amount: 12
+      amount: 6
       power: 6
       damage:
         shock: 40

@@ -27,6 +27,7 @@ import io.github.zzzyyylllty.chotentech.feature.EndManager
 import io.github.zzzyyylllty.chotentech.function.RankManager
 import io.github.zzzyyylllty.chotentech.function.hideout.HideoutConfig
 import io.github.zzzyyylllty.chotentech.function.hideout.ItemNameHelper
+import io.github.zzzyyylllty.chotentech.station.StationManager
 import io.github.zzzyyylllty.chotentech.data.backpack.BackpackConfig
 import io.github.zzzyyylllty.chotentech.listener.BackpackListener
 import io.github.zzzyyylllty.chotentech.data.cancelAllConsumableTasks
@@ -334,6 +335,9 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
             val hideoutDir = File(getDataFolder(), "hideout")
             if (!hideoutDir.exists()) releaseResourceFolder("hideout")
             HideoutConfig.load(hideoutDir)
+            val stationDir = File(getDataFolder(), "stations")
+            if (!stationDir.exists()) releaseResourceFolder("stations")
+            StationManager.loadAll()
             ItemNameHelper.load()
             CurrencyUtil.load(currencyConfig)
             RankManager.load()

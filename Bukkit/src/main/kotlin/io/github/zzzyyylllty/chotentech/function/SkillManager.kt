@@ -1,6 +1,7 @@
 package io.github.zzzyyylllty.chotentech.function
 
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
+import io.github.zzzyyylllty.chotentech.function.BaseManager
 import io.github.zzzyyylllty.chotentech.quetiapine.data.PlayerDataManager
 import io.github.zzzyyylllty.chotentech.util.devLog
 import io.github.zzzyyylllty.sertraline.Sertraline
@@ -51,17 +52,17 @@ object SkillManager {
     internal val miningXp = ConcurrentHashMap<String, DoubleArray>()
 
     // 简单数值配置（配置文件加载）
-    internal var strengthDamageMultiplier = 2.0
-    internal var strengthMaxPerHit = 20.0
+    internal var strengthDamageMultiplier = 0.2
+    internal var strengthMaxPerHit = 10.0
     internal var enduranceDamageMultiplier = 1.0
     internal var enduranceMaxPerEvent = 50.0
     private var enduranceSprintExp = 0.2
     private var enduranceSwimExp = 0.3
     internal var healthHealMultiplier = 2.0
     internal var healthMaxPerEvent = 10.0
-    internal var agilityMoveExp = 0.1
-    internal var agilityJumpExp = 1.0
-    internal var agilityFallExp = 2.0
+    internal var agilityMoveExp = 0.04
+    internal var agilityJumpExp = 0.4
+    internal var agilityFallExp = 0.8
     private var lockpickingSuccessMin = 15.0
     private var lockpickingSuccessMax = 30.0
     private var lockpickingFailMin = 2.0
@@ -257,6 +258,8 @@ object SkillManager {
     fun giveSkillXp(player: Player, skill: String, xp: Double) {
         if (xp <= 0) return
         if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) return
+        // 基地内可用岩浆等自伤源无限刷耐力/健康经验,基地与 world 内一律不给经验
+        if (BaseManager.isInLevelSafeZone(player)) return
         try {
             val mgr = PlayerDataManager(player)
             mgr.addExp(skill, xp)
@@ -372,8 +375,8 @@ data class FishingLootEntry(
     val amountRange: IntRange
 )
 
-/** 采矿经验 — 破坏方块 */
-@SubscribeEvent
+/** 采矿经验 — 破坏方块(MONITOR：事件最终态，被其他插件取消则不给经验) */
+@SubscribeEvent(EventPriority.MONITOR, ignoreCancelled = true)
 fun onBlockBreakForMining(event: BlockBreakEvent) {
     val player = event.player
     if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) return
@@ -401,8 +404,8 @@ fun onEntityDamageForStrength(event: EntityDamageByEntityEvent) {
     if (xp > 0) SkillManager.giveSkillXp(player, "strength", xp)
 }
 
-/** 耐力经验 — 承受伤害 */
-@SubscribeEvent
+/** 耐力经验 — 承受伤害(MONITOR：事件最终态，忽略已取消事件) */
+@SubscribeEvent(EventPriority.MONITOR, ignoreCancelled = true)
 fun onEntityDamageForEndurance(event: EntityDamageEvent) {
     val player = event.entity as? Player ?: return
     if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) return
@@ -415,8 +418,8 @@ fun onEntityDamageForEndurance(event: EntityDamageEvent) {
     SkillManager.giveSkillXp(player, "endurance", xp)
 }
 
-/** 健康经验 — 生命恢复 */
-@SubscribeEvent
+/** 健康经验 — 生命恢复(MONITOR：事件最终态，忽略已取消事件) */
+@SubscribeEvent(EventPriority.MONITOR, ignoreCancelled = true)
 fun onEntityRegainHealth(event: EntityRegainHealthEvent) {
     val player = event.entity as? Player ?: return
     if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) return
@@ -426,8 +429,8 @@ fun onEntityRegainHealth(event: EntityRegainHealthEvent) {
     if (xp > 0) SkillManager.giveSkillXp(player, "health", xp)
 }
 
-/** 智力经验 — 附魔 */
-@SubscribeEvent
+/** 智力经验 — 附魔(MONITOR：事件最终态，忽略已取消事件) */
+@SubscribeEvent(EventPriority.MONITOR, ignoreCancelled = true)
 fun onEnchantForIntelligence(event: EnchantItemEvent) {
     val player = event.enchanter
     if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) return
@@ -437,8 +440,8 @@ fun onEnchantForIntelligence(event: EnchantItemEvent) {
     }
 }
 
-/** 智力经验 — 合成 */
-@SubscribeEvent
+/** 智力经验 — 合成(MONITOR：事件最终态，忽略已取消事件) */
+@SubscribeEvent(EventPriority.MONITOR, ignoreCancelled = true)
 fun onCraftForIntelligence(event: CraftItemEvent) {
     val player = event.whoClicked as? Player ?: return
     if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) return
@@ -448,8 +451,8 @@ fun onCraftForIntelligence(event: CraftItemEvent) {
     }
 }
 
-/** 智力经验 — 酿造 */
-@SubscribeEvent
+/** 智力经验 — 酿造(MONITOR：事件最终态，忽略已取消事件) */
+@SubscribeEvent(EventPriority.MONITOR, ignoreCancelled = true)
 fun onBrewForIntelligence(event: BrewEvent) {
     // 酿造完成后给所有附近玩家加经验
     val block = event.block
@@ -466,8 +469,8 @@ fun onBrewForIntelligence(event: BrewEvent) {
     }
 }
 
-/** 投掷经验 — 投射物命中 */
-@SubscribeEvent
+/** 投掷经验 — 投射物命中(MONITOR：事件最终态，忽略已取消事件) */
+@SubscribeEvent(EventPriority.MONITOR, ignoreCancelled = true)
 fun onProjectileHitForThrowing(event: ProjectileHitEvent) {
     val shooter = event.entity.shooter as? Player ?: return
     if (shooter.gameMode == GameMode.CREATIVE || shooter.gameMode == GameMode.SPECTATOR) return
@@ -511,8 +514,8 @@ fun onProjectileLaunchForAccuracy(event: ProjectileLaunchEvent) {
     ))
 }
 
-/** 钓鱼经验 — 钓到鱼/实体，使用战利品表覆盖掉落 */
-@SubscribeEvent
+/** 钓鱼经验 — 钓到鱼/实体，使用战利品表覆盖掉落(MONITOR：事件最终态，忽略已取消事件) */
+@SubscribeEvent(EventPriority.MONITOR, ignoreCancelled = true)
 fun onFishForFishing(event: PlayerFishEvent) {
     val player = event.player
     if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) return

@@ -37,6 +37,23 @@ private fun sendQuestNotification(player: org.bukkit.entity.Player, titleText: S
 }
 
 @SubscribeEvent
+fun onQuestAcceptPre(e: QuestEvents.Accept.Pre) {
+    val player = e.playerProfile.player
+    // 不在主世界且档案未载入时阻止接受教学任务:加载期数据不完整,接受会写入脏数据
+    if (!player.world.name.equals("world", ignoreCase = true) &&
+        io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap[player.uniqueId.toString()] == null
+    ) {
+        val quest = e.quest
+        val isTutorial = quest.id.equals("tutorial", ignoreCase = true) ||
+            quest.meta<Meta<String>>("name")?.source?.equals("Tutorial", ignoreCase = true) == true
+        if (isTutorial) {
+            e.isCancelled = true
+            e.reason = "<red>档案未载入,暂时无法接受任务"
+        }
+    }
+}
+
+@SubscribeEvent
 fun onQuestAccept(e: QuestEvents.Accept.Post) {
     val profile = e.playerProfile
     val player = profile.player

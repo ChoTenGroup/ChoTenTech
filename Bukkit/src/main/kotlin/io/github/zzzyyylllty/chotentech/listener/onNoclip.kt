@@ -11,7 +11,6 @@ import io.github.zzzyyylllty.chotentech.data.ChoTenDataHelper
 import io.github.zzzyyylllty.chotentech.data.Level
 import io.github.zzzyyylllty.chotentech.data.NoclipPoint
 import io.github.zzzyyylllty.chotentech.data.PlayerData
-import io.github.zzzyyylllty.chotentech.event.NoclipEnterEvent
 import io.github.zzzyyylllty.chotentech.function.noclip.ConditionResult
 import io.github.zzzyyylllty.chotentech.function.noclip.NoclipConditionChecker
 import io.github.zzzyyylllty.chotentech.function.noclip.RandomNoclipSelector
@@ -115,9 +114,7 @@ fun checkPlayerRegion(
                         noclipTimeEnd = System.currentTimeMillis() + (noclipPoint.noclippingTime * getNoclippingTimeMultiplier(player) * 1000).roundToLong(),
                         noclipCooldownEnd = System.currentTimeMillis() + (noclipPoint.cooldown * 1000).roundToLong(),
                         noclipping = true
-                    ), true).also {
-                        NoclipEnterEvent(player, playerLevel.id, noclipPoint.name).call()
-                    }
+                    ), true)
                 }
                 is ConditionResult.NeedsSubmission -> {
                     NoclipConditionChecker.trySubmitItems(player, noclipPoint)
@@ -130,9 +127,7 @@ fun checkPlayerRegion(
                                 noclipTimeEnd = System.currentTimeMillis() + (noclipPoint.noclippingTime * getNoclippingTimeMultiplier(player) * 1000).roundToLong(),
                                 noclipCooldownEnd = System.currentTimeMillis() + (noclipPoint.cooldown * 1000).roundToLong(),
                                 noclipping = true
-                            ), true).also {
-                                NoclipEnterEvent(player, playerLevel.id, noclipPoint.name).call()
-                            }
+                            ), true)
                         }
                         is ConditionResult.Blocked -> {
                             player.sendActionBar((finalCheck.message ?: "需要满足条件").toComponent())

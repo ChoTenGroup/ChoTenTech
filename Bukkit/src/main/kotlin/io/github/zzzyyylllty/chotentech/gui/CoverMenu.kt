@@ -33,7 +33,7 @@ class CoverMenu {
 
             onBuild { _, inv ->
                 items.forEachIndexed { index, serialized ->
-                    val item = ItemSerializer.deserialize(serialized)
+                    val item = ItemSerializer.deserializeAny(serialized)
                     if (item != null && index < inv.size) {
                         inv.setItem(index, item)
                     }
@@ -42,7 +42,10 @@ class CoverMenu {
 
             onClick(lock = false) { event ->
                 val slot = event.rawSlot
-                if (slot < 0 || slot >= event.view.topInventory.size) return@onClick
+                if (slot < 0 || slot >= event.view.topInventory.size) {
+                    event.isCancelled = true
+                    return@onClick
+                }
                 // 允许自由取走物品
             }
 
@@ -52,10 +55,11 @@ class CoverMenu {
 
                 // 重新序列化剩余物品
                 val remaining = mutableListOf<String>()
-                for (slot in 0 until event.view.topInventory.size) {
-                    val item = event.inventory.getItem(slot)
+                val topInv = event.view.topInventory
+                for (slot in 0 until topInv.size) {
+                    val item = topInv.getItem(slot)
                     if (item != null && !item.type.isAir) {
-                        ItemSerializer.serialize(item)?.let { remaining.add(it) }
+                        ItemSerializer.serializeNbt(item)?.let { remaining.add(it) }
                     }
                 }
                 pd.returnedInsuranceItems.clear()

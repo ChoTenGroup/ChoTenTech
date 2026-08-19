@@ -41,9 +41,9 @@ class ProfileInfoGUI(private val target: Player) {
                 "CCC      ",
                 "         ",
                 " ####### ",
-                "         ",
                 " LLLLLLL ",
-                " LLLLLLL "
+                " LLLLLLL ",
+                "         "
             )
 
             // Background
@@ -51,17 +51,8 @@ class ProfileInfoGUI(private val target: Player) {
             set('L', XMaterial.BLACK_STAINED_GLASS_PANE) { name = " " }
 
             // === 3 return icons (top-left) ===
-            set(0, guiItem(XMaterial.COMPASS, "<aqua><bold>菜单", listOf("<!i> <yellow>点击 <green>打开菜单"), model = "kangelitem:void")) {
+            set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>菜单", listOf("<!i> <yellow>点击 <green>打开菜单"), model = "kangelitem:void")) {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "invero menu open menu ${clicker.name}")
-                clicker.closeInventory()
-            }
-
-            set(1, guiItem(XMaterial.BOOK, "<gold><bold>玩家档案选择", listOf("<!i> <yellow>点击 <green>打开档案选择界面"))) {
-                clicker.closeInventory()
-                ProfileSelectionGUI().open(clicker)
-            }
-
-            set(2, guiItem(XMaterial.BARRIER, "<red><bold>关闭", listOf("<!i> <yellow>点击 <red>关闭界面"))) {
                 clicker.closeInventory()
             }
 
@@ -75,7 +66,7 @@ class ProfileInfoGUI(private val target: Player) {
             set(25, buildStatsPart2(data))
 
             // === Level icons (rows 4-5, L slots) ===
-            val levelSlots = listOf(37, 38, 39, 40, 41, 42, 43, 46, 47, 48, 49, 50, 51, 52)
+            val levelSlots = listOf(28, 29, 30, 31 ,32,33,34,37, 38, 39, 40, 41, 42, 43)
             var slotIdx = 0
             for ((id, template) in levels) {
                 if (slotIdx >= levelSlots.size) break

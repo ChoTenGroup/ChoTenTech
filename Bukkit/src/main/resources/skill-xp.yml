@@ -86,9 +86,9 @@ combat:
 # === 力量 (Strength) — 近战伤害 ===
 strength:
   # 每造成 1 点伤害（半颗心）获得的经验
-  damage_multiplier: 2.0
+  damage_multiplier: 0.2
   # 单次攻击最大经验
-  max_per_hit: 20.0
+  max_per_hit: 10.0
 
 # === 耐力 (Endurance) — 承受伤害 + 奔跑 ===
 endurance:
@@ -120,11 +120,11 @@ intelligence:
 # === 敏捷 (Agility) — 跳跃/移动 ===
 agility:
   # 每 tick 潜行/行走获得的经验
-  move_exp_per_tick: 0.1
+  move_exp_per_tick: 0.04
   # 跳跃经验
-  jump_exp: 1.0
+  jump_exp: 0.4
   # 每格坠落距离获得的经验（安全落地）
-  safe_fall_exp_per_block: 2.0
+  safe_fall_exp_per_block: 0.8
 
 # === 投掷 (Throwing) — 投掷物命中 ===
 throwing:

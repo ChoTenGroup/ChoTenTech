@@ -9,6 +9,7 @@ import io.papermc.paper.datacomponent.DataComponentTypes
 import kotlin.math.floor
 import org.bukkit.GameMode
 import org.bukkit.Material
+import org.bukkit.entity.Player
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.inventory.ItemStack
@@ -26,9 +27,14 @@ fun onPlayerEat(event: PlayerItemConsumeEvent) {
 
     val tag = item.getItemTag()
 
+    var restoreApplied = false
+
     // ===== Check for "restore" compound in ItemTag =====
     val restoreTag = tag?.get("restore")?.asCompound()
     if (restoreTag != null) {
+        // 先确定 replacement:医疗物品绝不残留玻璃瓶(原版会把整格按饮品替换成瓶子)
+        // 带耐久的医疗物品同样走耐久扣减:单个扣耐久留在手上,堆叠分出一个扣过耐久的
+        event.replacement = applyDurability(item, player)
         val data = player.getData() ?: return
         var nutritionChanged = false
 
@@ -71,13 +77,7 @@ fun onPlayerEat(event: PlayerItemConsumeEvent) {
         }
 
         if (nutritionChanged) NutritionManager.sync(player)
-
-        // 医疗物品不产生玻璃瓶（多数量保留剩余物品，单个则消耗掉）
-        event.replacement = if (item.amount > 1) {
-            item.clone().apply { amount = item.amount - 1 }
-        } else {
-            ItemStack(Material.AIR)
-        }
+        restoreApplied = true
     }
 
     // ===== Check consumable config by sertraline_id =====
@@ -87,51 +87,17 @@ fun onPlayerEat(event: PlayerItemConsumeEvent) {
         if (consumable != null) {
             consumable.apply(player)
 
-            val invTag = item.getItemTag() ?: return
-            val invData = invTag["sertraline_data"]?.asCompound()
-            if (invData?.get("durability") != null) {
-                val dur = invData["durability"]?.asInt() ?: 1
-                val newDur = dur - 1.0
-
-                if (newDur > 0) {
-                    if (item.amount > 1) {
-                        // 堆叠: 消耗当前物品，归还一个扣了耐久的
-                        val used = item.clone()
-                        used.amount = 1
-                        val usedTag = used.getItemTag() ?: return
-                        usedTag.putDeep("sertraline_data.durability", floor(newDur))
-                        usedTag.saveTo(used)
-                        used.rebuildDisplay(player)
-                        player.inventory.addItem(used).values.forEach {
-                            player.world.dropItem(player.location, it)
-                        }
-                        // 不残留玻璃瓶（原版会按药水处理整格替换，这里补回剩余数量）
-                        event.replacement = item.clone().apply { amount = item.amount - 1 }
-                    } else {
-                        invTag.putDeep("sertraline_data.durability", floor(newDur))
-                        invTag.saveTo(item)
-                        item.rebuildDisplay(player)
-                        event.replacement = item
-                    }
-                } else {
-                    // 耐久耗尽：物品删除，不残留玻璃瓶
-                    event.replacement = if (item.amount > 1) {
-                        item.clone().apply { amount = item.amount - 1 }
-                    } else {
-                        ItemStack(Material.AIR)
-                    }
-                }
-            } else {
-                // 无耐久物品：正常消耗（stack -1），replacement 设为 AIR
-                event.replacement = if (item.amount > 1) {
-                    item.clone().apply { amount = item.amount - 1 }
-                } else {
-                    ItemStack(Material.AIR)
-                }
+            // restore 分支已经处理过耐久,这里不重复扣减
+            if (!restoreApplied) {
+                event.replacement = applyDurability(item, player)
             }
             return
         }
     }
+
+    // restore 物品到此结束:不再落到原版食物回退,避免饥饿/饱食被重复计算
+    if (restoreApplied) return
+
     val data = player.getData() ?: return
 
     // Check NBT for custom hunger/saturation/health values
@@ -164,3 +130,48 @@ fun onPlayerEat(event: PlayerItemConsumeEvent) {
         data.customSaturation = minOf(data.customSaturation + saturation * 5.0, data.maxCustomHunger, data.customHunger)
     }
 }
+
+/**
+ * 带耐久的物品使用后扣 1 次耐久,耐久耗尽才被消耗:
+ * - 单个:扣耐久后留在手上
+ * - 堆叠:分出一个扣过耐久的(背包满则掉地上),手上保留剩余数量
+ * - 耗尽:按剩余数量消耗(单件消失/堆叠减一),绝不残留玻璃瓶
+ */
+private fun applyDurability(item: ItemStack, player: Player): ItemStack {
+    val invTag = item.getItemTag() ?: return consumeReplacement(item)
+    val dur = invTag.get("sertraline_data")?.asCompound()?.get("durability")
+        ?.let { it.asDouble() ?: it.asString()?.toDoubleOrNull() }
+        ?: return consumeReplacement(item)
+    val newDur = dur - 1.0
+    return when {
+        newDur > 0 && item.amount > 1 -> {
+            val used = item.clone().apply { amount = 1 }
+            // 克隆自带 tag,防御性判空:即使失败也要继续走分出去逻辑
+            used.getItemTag()?.let { usedTag ->
+                usedTag.putDeep("sertraline_data.durability", floor(newDur))
+                usedTag.saveTo(used)
+                used.rebuildDisplay(player)
+            }
+            // 优先放入背包,放不进去则把扣过耐久的单件作为 replacement
+            val leftover = player.inventory.addItem(used)
+            if (leftover.isEmpty()) {
+                // 放入成功：返回原物品减1作为 replacement
+                consumeReplacement(item)
+            } else {
+                // 背包满：直接返回扣过耐久的单件，保留耐久变化
+                used
+            }
+        }
+        newDur > 0 -> {
+            invTag.putDeep("sertraline_data.durability", floor(newDur))
+            invTag.saveTo(item)
+            item.rebuildDisplay(player)
+            item
+        }
+        else -> consumeReplacement(item)
+    }
+}
+
+/** 医疗物品消耗后的剩余:叠加保留 amount-1,单个清空(绝不产生玻璃瓶) */
+private fun consumeReplacement(item: ItemStack): ItemStack =
+    if (item.amount > 1) item.clone().apply { amount = item.amount - 1 } else ItemStack(Material.AIR)

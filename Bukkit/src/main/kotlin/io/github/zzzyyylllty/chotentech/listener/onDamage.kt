@@ -8,6 +8,8 @@ import io.github.zzzyyylllty.chotentech.damage.getDamageTypeTag
 import io.github.zzzyyylllty.chotentech.manager.AttributeManager
 import io.github.zzzyyylllty.chotentech.ChoTenTech
 import io.github.zzzyyylllty.chotentech.function.WeightManager
+import io.github.zzzyyylllty.chotentech.function.bleedout.BleedoutManager
+import io.github.zzzyyylllty.chotentech.function.bleedout.isPlayerInflicted
 import io.github.zzzyyylllty.chotentech.isSafeWorld
 import io.github.zzzyyylllty.chotentech.util.devLog
 import org.bukkit.GameMode
@@ -205,6 +207,9 @@ fun onPlayerDamage(event: EntityDamageEvent) {
     val player = event.entity as Player
     if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) return
 
+    // 倒地者对玩家攻击免疫:不结算伤势/精神损失
+    if (BleedoutManager.isDowned(player.uniqueId) && isPlayerInflicted(event)) return
+
     // 基地内无敌
     val regions = playerRegions[player.uniqueId.toString()]
     if (!regions.isNullOrEmpty() && regions.any { it.startsWith("base-") }) return
@@ -227,8 +232,8 @@ fun onPlayerDamage(event: EntityDamageEvent) {
         val mapping = damageTypeInjury[damageType] ?: InjurySanity(0.3, 0.2, 0.1)
         val actualSanityLoss = mapping.sanityLoss * (1.0 - sanityReduction)
         if (actualSanityLoss > 0) helper.removeSanity(actualSanityLoss)
-        val extLoss = damage * mapping.externalRatio
-        val intLoss = damage * mapping.internalRatio
+        val extLoss = damage * mapping.externalRatio / 3
+        val intLoss = damage * mapping.internalRatio / 3
         if (extLoss > 0) helper.removeExternalInjury(extLoss)
         if (intLoss > 0) helper.removeInternalInjury(intLoss)
 
@@ -247,8 +252,8 @@ fun onPlayerDamage(event: EntityDamageEvent) {
         val sanityLoss = getSanityLoss(event.cause)
         val actualSanityLoss = sanityLoss * (1.0 - sanityReduction)
         if (actualSanityLoss > 0) helper.removeSanity(actualSanityLoss)
-        val extLoss = damage * ratios.externalRatio
-        val intLoss = damage * ratios.internalRatio
+        val extLoss = damage * ratios.externalRatio / 3
+        val intLoss = damage * ratios.internalRatio / 3
         if (extLoss > 0) helper.removeExternalInjury(extLoss)
         if (intLoss > 0) helper.removeInternalInjury(intLoss)
 

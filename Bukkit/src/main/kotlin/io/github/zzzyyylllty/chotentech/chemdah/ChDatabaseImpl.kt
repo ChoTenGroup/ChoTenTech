@@ -21,9 +21,10 @@ import java.util.concurrent.ConcurrentHashMap
 
 @Awake(LifeCycle.LOAD)
 fun initChotenChemdahProfile() {
-    // 关闭 Chemdah 默认进服加载:需等待 initData 完成(角色数据就绪)后再手动 loadProfile,
-    // 否则 select() 会读到未就绪的 playerDataMap,回落到旧 user_data 表导致档案数据串档
+    // 由本插件在角色数据就绪后加载、在退出时释放并保存,避免 Chemdah 默认生命周期与 playerDataMap 释放顺序竞争
     Database.isLoadInJoinEvent = false
+    Database.isReleaseInQuitEvent = false
+    Database.isDisableAutoSave = true
     Chemdah.registerDatabaseImpl<Database>(ChotenChemdahProfile())
     ChotenChemdahProfile.loadVariables()
 }
