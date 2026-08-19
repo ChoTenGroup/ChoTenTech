@@ -83,7 +83,7 @@ object NoclipConditionChecker {
         val sb = StringBuilder("<#FFCC66>切出点 <white>${noclipPoint.name ?: "未命名"}<#FFCC66> 需要满足条件:")
         c.item?.let { cond ->
             val items = cond.items.joinToString(", ") { "${ShopMenu.lookupItemName(it.id)} x${it.amount}" }
-            sb.append("\n<gray>- <aqua>提交物品: <white>$items <gray>(携带所需物品站在切出点内,下蹲后自动提交)")
+            sb.append("\n<gray>- <aqua>提交物品: <white>$items <gray>(携带所需物品站在切出点内,低头下蹲切出后自动提交)")
         }
         c.car?.let { cond ->
             sb.append("\n<gray>- <aqua>支付: <white>${cond.cost} x${cond.amount} <gray>(下蹲时自动扣除)")

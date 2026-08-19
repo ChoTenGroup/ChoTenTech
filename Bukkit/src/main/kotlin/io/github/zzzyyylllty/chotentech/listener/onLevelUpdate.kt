@@ -9,16 +9,17 @@ import io.github.zzzyyylllty.chotentech.quetiapine.util.devLog
 import org.bukkit.Bukkit
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
+import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submit
 import taboolib.common.platform.service.PlatformExecutor
 
 private var levelCheckTask: PlatformExecutor.PlatformTask? = null
 
-@SubscribeEvent
+/** 经验增加 → 检查升级(MONITOR:仅监听事件最终态,被取消或安全区拦截则跳过) */
+@SubscribeEvent(EventPriority.MONITOR, ignoreCancelled = true)
 fun onExpAdd(e: QuetiapineAddExpEvent) {
-    val player = e.player
-    if (!e.isCancelled) submit {
+    submit {
         PlayerDataManager(e.player).checkUpdateLevel(e.levelName)
     }
 }

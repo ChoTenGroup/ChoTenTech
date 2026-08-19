@@ -58,20 +58,16 @@ object DropCommand {
     }
 }
 
-fun isDropLocked(uuid: String): Boolean = !dropLockEnabled.getOrDefault(uuid, false)
+/** Drop-lock always disabled: items can be dropped freely. */
+fun isDropLocked(uuid: String): Boolean = false
 
-/** Block item dropping when drop lock is off (default). Resets on join. */
+/** Block item dropping when drop lock is off. Disabled — 取消丢弃锁. */
 @SubscribeEvent
 fun onPlayerDropItem(event: PlayerDropItemEvent) {
-    val uuid = event.player.uniqueId.toString()
-    if (isDropLocked(uuid)) {
-        event.isCancelled = true
-        event.player.sendActionBar("<red>🔒 丢弃锁已关闭，使用 <yellow>/drop on <red>开启".toComponent())
-    }
+    // 丢弃锁已取消，不再阻止丢弃
 }
 
-/** Reset drop lock to off on every join */
+/** Reset drop lock to off on every join. Disabled — 取消丢弃锁. */
 @SubscribeEvent
 fun onJoinResetDropLock(event: PlayerJoinEvent) {
-    dropLockEnabled[event.player.uniqueId.toString()] = false
 }

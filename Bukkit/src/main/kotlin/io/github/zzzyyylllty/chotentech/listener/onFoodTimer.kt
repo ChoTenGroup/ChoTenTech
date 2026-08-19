@@ -2,6 +2,8 @@ package io.github.zzzyyylllty.chotentech.listener
 
 import ink.ptms.um.Mythic
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
+import io.github.zzzyyylllty.chotentech.ChoTenTech.playerRegions
+import io.github.zzzyyylllty.chotentech.data.PlayerData
 import io.github.zzzyyylllty.chotentech.isSafeWorld
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -36,6 +38,10 @@ private var chocoDecayCounter = 0
 
 private var foodTimerTask: PlatformExecutor.PlatformTask? = null
 private var staminaBarTask: PlatformExecutor.PlatformTask? = null
+
+/** 是否处于基地区域(base- 前缀的 WorldGuard 区域):基地内视为完整安全屋 */
+private fun isInBaseRegion(player: Player): Boolean =
+    playerRegions[player.uniqueId.toString()]?.any { it.startsWith("base-") } == true
 
 @Awake(LifeCycle.ACTIVE)
 fun foodTimer() {
@@ -73,7 +79,7 @@ fun foodTimer() {
             nutritionDecayCounter = 0
             for (player in Bukkit.getOnlinePlayers()) {
                 if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) continue
-                if (isSafeWorld(player)) continue
+                if (isSafeWorld(player) || isInBaseRegion(player)) continue
                 val data = playerDataMap[player.uniqueId.toString()] ?: continue
                 data.grain = maxOf(data.grain - (if (data.grain > 50) 0.2 else 0.1), 0.0)
                 data.vitamin = maxOf(data.vitamin - (if (data.vitamin > 50) 0.2 else 0.1), 0.0)
@@ -87,9 +93,10 @@ fun foodTimer() {
             if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) continue
 
             val data = playerDataMap[player.uniqueId.toString()] ?: continue
+            val uuid = player.uniqueId.toString()
 
-            // === 安全世界:不消耗,维持满值 ===
-            if (isSafeWorld(player)) {
+            // === 安全世界 或 基地区域:完整安全屋,不消耗,维持满值 ===
+            if (isSafeWorld(player) || isInBaseRegion(player)) {
                 data.sanity = data.effectiveMaxSanity
                 data.stress = 0.0
                 data.stamina = data.maxStamina
@@ -105,55 +112,29 @@ fun foodTimer() {
                 continue
             }
 
-            val uuid = player.uniqueId.toString()
-
-            // === Movement detection ===
-            val lastLoc = lastLocations[uuid]
-            val currentLoc = player.location
-            val moved = lastLoc != null && (currentLoc.x != lastLoc.x || currentLoc.z != lastLoc.z)
-            lastLocations[uuid] = currentLoc.clone()
-
-            // === Hand Stamina ===
-            data.handStamina = minOf(data.handStamina + 1.0, data.maxHandStamina)
-
-            // === Stamina (with nutrition regen multiplier) ===
-            val staminaRegenMult = io.github.zzzyyylllty.chotentech.manager.AttributeManager.getAttributeValue(player, "stamina_regen_multiplier")
-            if (player.isSprinting) {
-                // 负重体力消耗倍率：0-20kg 不变，之后每 kg +2.5%
-                val weightMult = io.github.zzzyyylllty.chotentech.function.WeightManager.getCachedWeight(player.uniqueId)
-                    ?.let { w -> if (w > 20) 1.0 + (w - 20) * 0.025 else 1.0 } ?: 1.0
-                data.stamina = maxOf(data.stamina - 1.0 * weightMult, 0.0)
-                // 体力低于阈值立即强制停止:若只靠事件拦截,客户端会保持本地疾跑且服务端不扣体力(无限疾跑)
-                if (data.stamina < data.maxStamina * LOW_STAMINA_RATIO) {
-                    player.isSprinting = false
-                    (player as Audience).sendActionBar(mm.deserialize(NO_STAMINA_MSG))
-                }
-            } else {
-                // 奔跑结束后 5 秒（100 tick）才开始恢复
-                val sprintEndTime = lastSprintEndTime[uuid]
-                if (sprintEndTime != null && System.currentTimeMillis() - sprintEndTime < 5000) {
-                    // 还在冷却中，不恢复
-                } else if (moved && player.isOnGround) {
-                    data.stamina = minOf(data.stamina + 2.0 * staminaRegenMult, data.maxStamina)
-                } else if (!moved) {
-                    data.stamina = minOf(data.stamina + 4.0 * staminaRegenMult, data.maxStamina)
-                }
-            }
-            // 记录奔跑结束时间
-            if (!player.isSprinting && lastSprintEndTime[uuid] == null) {
-                lastSprintEndTime[uuid] = System.currentTimeMillis()
-            }
-            if (player.isSprinting) {
-                lastSprintEndTime.remove(uuid)
-            }
-            // === Jump consumption (airborne, not sprinting) ===
-            if (!player.isOnGround && !player.isSprinting) {
-                data.stamina = maxOf(data.stamina - 0.5, 0.0)
-            }
+            // === 体力/手部体力:消耗与恢复 ===
+            applyStaminaTick(player, data, uuid)
 
             // === Injury regen (from attribute system) ===
             data.externalInjury = minOf(data.externalInjury + data.externalInjuryRegen, data.maxExternalInjury)
             data.internalInjury = minOf(data.internalInjury + data.internalInjuryRegen, data.maxInternalInjury)
+
+            // === 自然生命恢复:每秒恢复 health_regen × health_regen_multiplier,每次消耗 0.02 饱食/饥饿(优先扣饱和) ===
+            // (原版回复要求食物≥18,而本系统强制饥饿值为16/5,原版回复永不触发)
+            val regenMult = io.github.zzzyyylllty.chotentech.manager.AttributeManager.getAttributeValue(player, "health_regen_multiplier")
+            if (data.healthRegen > 0 && regenMult > 0 && !io.github.zzzyyylllty.chotentech.function.bleedout.BleedoutManager.isDowned(player.uniqueId)) {
+                val maxHp = player.getAttribute(org.bukkit.attribute.Attribute.MAX_HEALTH)?.value ?: 20.0
+                if (player.health < maxHp && data.customSaturation + data.customHunger >= 0.02) {
+                    val cost = 0.02
+                    if (data.customSaturation >= cost) {
+                        data.customSaturation -= cost
+                    } else {
+                        data.customHunger = maxOf(data.customHunger - (cost - data.customSaturation), 0.0)
+                        data.customSaturation = 0.0
+                    }
+                    player.health = minOf(player.health + data.healthRegen * regenMult, maxHp)
+                }
+            }
 
             // === Consumption accumulation ===
             data.consumption += 1.0
@@ -228,6 +209,56 @@ fun foodTimer() {
     }
 }
 
+/**
+ * 体力/手部体力 每 tick 消耗与恢复。
+ * 基地区域内体力不消耗(无限体力),故此处仅非基地区域、非安全世界执行。
+ */
+private fun applyStaminaTick(player: Player, data: PlayerData, uuid: String) {
+    // === Movement detection ===
+    val lastLoc = lastLocations[uuid]
+    val currentLoc = player.location
+    val moved = lastLoc != null && (currentLoc.x != lastLoc.x || currentLoc.z != lastLoc.z)
+    lastLocations[uuid] = currentLoc.clone()
+
+    // === Hand Stamina ===
+    data.handStamina = minOf(data.handStamina + 1.0, data.maxHandStamina)
+
+    // === Stamina (with nutrition regen multiplier) ===
+    val staminaRegenMult = io.github.zzzyyylllty.chotentech.manager.AttributeManager.getAttributeValue(player, "stamina_regen_multiplier")
+    if (player.isSprinting) {
+        // 负重体力消耗倍率：0-20kg 不变，之后每 kg +2.5%
+        val weightMult = io.github.zzzyyylllty.chotentech.function.WeightManager.getCachedWeight(player.uniqueId)
+            ?.let { w -> if (w > 20) 1.0 + (w - 20) * 0.025 else 1.0 } ?: 1.0
+        data.stamina = maxOf(data.stamina - 1.0 * weightMult, 0.0)
+        // 体力低于阈值立即强制停止:若只靠事件拦截,客户端会保持本地疾跑且服务端不扣体力(无限疾跑)
+        if (data.stamina < data.maxStamina * LOW_STAMINA_RATIO) {
+            player.isSprinting = false
+            (player as Audience).sendActionBar(mm.deserialize(NO_STAMINA_MSG))
+        }
+    } else {
+        // 奔跑结束后 5 秒（100 tick）才开始恢复
+        val sprintEndTime = lastSprintEndTime[uuid]
+        if (sprintEndTime != null && System.currentTimeMillis() - sprintEndTime < 5000) {
+            // 还在冷却中，不恢复
+        } else if (moved && player.isOnGround) {
+            data.stamina = minOf(data.stamina + 2.0 * staminaRegenMult, data.maxStamina)
+        } else if (!moved) {
+            data.stamina = minOf(data.stamina + 4.0 * staminaRegenMult, data.maxStamina)
+        }
+    }
+    // 记录奔跑结束时间
+    if (!player.isSprinting && lastSprintEndTime[uuid] == null) {
+        lastSprintEndTime[uuid] = System.currentTimeMillis()
+    }
+    if (player.isSprinting) {
+        lastSprintEndTime.remove(uuid)
+    }
+    // === Jump consumption (airborne, not sprinting) ===
+    if (!player.isOnGround && !player.isSprinting) {
+        data.stamina = maxOf(data.stamina - 0.5, 0.0)
+    }
+}
+
 @Awake(LifeCycle.ACTIVE)
 fun staminaBarSync() {
     staminaBarTask = submit(period = 5) {
@@ -239,12 +270,12 @@ fun staminaBarSync() {
     }
 }
 
-/** 安全世界:原版饥饿强制满值,拦截一切饥饿变化(含其他插件来源) */
+/** 安全世界/基地:原版饥饿强制满值,拦截一切饥饿变化(含其他插件来源) */
 @SubscribeEvent
 fun onFoodLevelChange(event: FoodLevelChangeEvent) {
     if (event.entity !is Player) return
     val player = event.entity as Player
-    if (!isSafeWorld(player)) return
+    if (!isSafeWorld(player) && !isInBaseRegion(player)) return
     event.isCancelled = true
     if (player.foodLevel != 20) player.foodLevel = 20
     player.saturation = 5f

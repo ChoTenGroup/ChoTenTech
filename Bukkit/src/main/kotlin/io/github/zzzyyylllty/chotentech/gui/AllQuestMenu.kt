@@ -13,7 +13,6 @@ import io.github.zzzyyylllty.chotentech.util.minimessage.legacyToMiniMessage
 import io.github.zzzyyylllty.chotentech.util.minimessage.mmJsonUtil
 import io.github.zzzyyylllty.chotentech.util.toComponent
 import org.bukkit.Bukkit
-import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.Sound
 import org.bukkit.entity.Player
@@ -63,7 +62,7 @@ class AllQuestMenu {
                     player.sendComponent("<red>您的数据正在加载，请耐心等待...")
                     null
                 }
-                val item = cui?.icon?.let { XMaterial.valueOf(it) }?.parseItem() ?: ItemStack(Material.PAPER)
+                val item = ChoTenUI.resolveIcon(cui?.icon, "任务 ${element.template.id}")
                 if (profile != null) {
                     val meta = item.itemMeta
                     meta.customName(("<!i><white>「<green>" + element.template.meta<Meta<String>>("name")?.source?.legacyToMiniMessage() + "<reset><!i>」").toComponent())

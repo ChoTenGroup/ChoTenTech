@@ -47,4 +47,10 @@ object ItemSerializer {
             null
         }
     }
+
+    /** 优先按 Paper NBT 反序列化(1.21.4+ 组件系统),失败回退旧 Gson 格式(存量数据) */
+    fun deserializeAny(data: String?): ItemStack? {
+        if (data == null) return null
+        return deserializeNbt(data) ?: deserialize(data)
+    }
 }

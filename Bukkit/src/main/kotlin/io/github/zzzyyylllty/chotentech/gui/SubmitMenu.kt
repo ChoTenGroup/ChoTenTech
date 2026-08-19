@@ -44,7 +44,7 @@ class SubmitMenu {
             rows(6)
 
             map(
-                "    I    ",
+                "CCCXIXXXX",
                 "XXXXXXXXX",
                 "X@@@@@@@X",
                 "X@@@@@@@X",
@@ -52,14 +52,12 @@ class SubmitMenu {
                 if (quest != null) " B  S  B " else "    S    "
             )
 
-            set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>菜单", listOf("<!i> <yellow>点击 <green>打开菜单"), model = "kangelitem:void")) {
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "invero menu open menu ${clicker.name}")
+            set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>菜单", listOf("<!i> <yellow>点击 <green>关闭"), model = "kangelitem:void")) {
                 clicker.closeInventory()
             }
 
 
             set('X', guiItem(XMaterial.STONE, "<dark_gray>-", listOf("<!i><white><b>|<reset> <!i><gray>这里什么都没有"), model = "kangelitem:void"))
-
 
             onBuild { _, inv ->
                 if (task != null) {
@@ -90,7 +88,9 @@ class SubmitMenu {
             onClick(lock = false) { event ->
                 val slot = event.rawSlot
                 val topSize = event.view.topInventory.size
-                if (slot !in 0 until topSize) return@onClick
+                if (slot !in 0 until topSize) {
+                    return@onClick
+                }
 
                 if (slot == 49) {
                     event.isCancelled = true
@@ -120,12 +120,14 @@ class SubmitMenu {
 
             onClose { event ->
                 val p = event.player as? Player ?: return@onClose
+                val topInv = event.view.topInventory
                 for (slot in DEPOSIT_SLOTS) {
-                    val item = event.inventory.getItem(slot)
+                    val item = topInv.getItem(slot)
                     if (item != null && !item.type.isAir) {
                         p.inventory.addItem(item).values.forEach { leftover ->
                             p.world.dropItemNaturally(p.location, leftover)
                         }
+                        topInv.setItem(slot, ItemStack(Material.AIR))
                     }
                 }
             }

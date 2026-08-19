@@ -1,0 +1,230 @@
+======================================================================
+FINDINGS（确定为问题的）
+======================================================================
+FIND: core/quest/BlackSmith/StoneBreakChest.yml 任务 StoneBreakChest 条目 3 goal.amount 非数字: '1'
+FIND: core/quest/MaoSe/AuthenticateHero.yml 任务 AuthenticateHero 条目 1 goal.amount 非数字: '1'
+FIND: core/quest/Tutorial.yml 任务 Tutorial 条目 8 未知 objective: 'player inventory'
+FIND: core/quest/baage/BeerHallFriedRice.yml 任务 BeerHallFriedRice 条目 1 npc 不存在于 NPC.md: xite
+FIND: core/quest/huxi/ResourceAssurance_Level5.yml 任务 ResourceAssurance_Level5 条目 1 npc 不存在于 NPC.md: huxi
+FIND: conv BNTG/Level_11/PenguinSong2.yml 根节点非 map
+FIND: conv BNTG/Level_11/xinan.yml xinan_1_2 goto 目标节点不存在(同文件): xinan_1_level4
+FIND: conv BNTG/Level_11/xinan.yml xinan_1_2 goto 目标节点不存在(同文件): xinan_1_level6
+FIND: conv BNTG/Level_11/xinan.yml xinan_1_2 goto 目标节点不存在(同文件): xinan_1_level3
+FIND: conv MEG/Level_1/Adon.yml Adon_FirstTalk_3 goto 目标节点不存在(同文件): Adon_6
+FIND: conv MEG/Level_1/Adon.yml Adon_0 goto 目标节点不存在(同文件): Adon_6
+FIND: conv MEG/Level_1/Adon.yml Adon_1_4_1 goto 目标节点不存在(同文件): Adon_6
+FIND: conv MEG/Level_1/Adon.yml Adon_1_4_2_1 goto 目标节点不存在(同文件): Adon_6
+FIND: conv MEG/Level_1/Adon.yml Adon_1_4_3 goto 目标节点不存在(同文件): Adon_6
+FIND: conv MEG/Level_1/Adon.yml Adon_3 goto 目标节点不存在(同文件): Adon_6
+FIND: conv MEG/Level_5/huxi.yml huxi_1_2 goto 目标节点不存在(同文件): huxi_1_level4
+FIND: conv MEG/Level_5/huxi.yml huxi_1_2 goto 目标节点不存在(同文件): huxi_1_level6
+FIND: conv MEG/Level_5/huxi.yml huxi_1_2 goto 目标节点不存在(同文件): huxi_1_level3
+FIND: conv MEG/Practiser.yml 根节点非 map
+FIND: conv external/conversation.yml ResourceMaster_1 goto 目标节点不存在(同文件): ResourceMaster_1_no
+FIND: conv external/conversation.yml ResourceMaster_1 goto 目标节点不存在(同文件): ResourceMaster_2_no
+FIND: conv external/conversation.yml ShouLie_1 goto 目标节点不存在(同文件): ShouLie_1_no
+FIND: conv external/conversation.yml ShouLie_1 goto 目标节点不存在(同文件): ShouLie_2_no
+
+共 23 条 FIND
+
+======================================================================
+INFO（疑似/需人工复核）共 65 条
+======================================================================
+INFO: core/quest/BlackSmith/RollingLog.yml 任务RollingLog agent[completed @ all] 未知动作关键字: scenes -> scenes file maosewood state 0
+INFO: core/quest/Tutorial.yml 任务Tutorial 条目1 agent[completed @ all] 未知动作关键字: for -> for mes in &messages then { minitell inline "{{ &prefix }} {{ &mes }}" sleep 1.5s }
+INFO: core/quest/Tutorial.yml 任务Tutorial 条目2 agent[completed @ all] 未知动作关键字: for -> for mes in &messages then { minitell inline "{{ &prefix }} {{ &mes }}" sleep 1.5s }
+INFO: core/quest/Tutorial.yml 任务Tutorial 条目3 agent[completed @ all] 未知动作关键字: minitell -> minitell inline "{{ &prefix }} 不错！感谢您的耐心。接下来我会减少限制您的移动。但这一部分很重要，我不得不这么做。" sleep 4s
+INFO: core/quest/Tutorial.yml 任务Tutorial 条目3 agent[completed @ all] 未知动作关键字: minitell -> minitell inline "{{ &prefix }} 请关注您的快捷栏上方的状态栏，我们取消了原版血量的显示，现在我将为您讲解我们的特殊属性等等。" sleep 4s
+INFO: core/quest/Tutorial.yml 任务Tutorial 条目3 agent[completed @ all] 未知动作关键字: minitell -> minitell inline "{{ &prefix }} 现在为您逐个启用模块。请您注意快捷栏上方的状态栏。" sleep 4s
+INFO: core/quest/Tutorial.yml 任务Tutorial 条目3 agent[completed @ all] 未知动作关键字: minitell -> minitell inline "{{ &prefix }} 当前启用的是血量模块。<b><red>血<green>量</b><#AADDFF>代表您的健康水平。如果它空了，您就死了。可通过医疗物品回
+INFO: core/quest/Tutorial.yml 任务Tutorial 条目3 agent[completed @ all] 未知动作关键字: minitell -> minitell inline "{{ &prefix }} 当前启用的是精神模块。<light_purple><b>精神</b><#AADDFF>用于评定您的理智水平。一般通过杏仁水回复。" sle
+INFO: core/quest/Tutorial.yml 任务Tutorial 条目3 agent[completed @ all] 未知动作关键字: minitell -> minitell inline "{{ &prefix }} 当前启用的是饱食模块。<#ff7300><b>饱食</b><#AADDFF>表示您目前有多需要进食。可以通过使用食物补充。" sleep 
+INFO: core/quest/Tutorial.yml 任务Tutorial 条目3 agent[completed @ all] 未知动作关键字: minitell -> minitell inline "{{ &prefix }} 当前启用的是内外伤模块。用于简单评定您受到的内外伤严重程度。" sleep 4s
+INFO: core/quest/Tutorial.yml 任务Tutorial 条目3 agent[completed @ all] 未知动作关键字: minitell -> minitell inline "{{ &prefix }} <#99cc33><b>内伤<#cc9933>外伤</b><#AADDFF>用于评定您的受伤程度。此数值不致命，但会导致承受伤害增加、敌方
+INFO: core/quest/Tutorial.yml 任务Tutorial 条目3 agent[completed @ all] 未知动作关键字: minitell -> minitell inline "{{ &prefix }} 注意：该值越高越好。" sleep 2s
+INFO: core/quest/Tutorial.yml 任务Tutorial 条目3 agent[completed @ all] 未知动作关键字: minitell -> minitell inline "{{ &prefix }} <gray><b>负重</b><#AADDFF>表示您穿戴的重量。较轻的重量带来额外的体力恢复和速度，超重则会大大减缓它们。" sleep
+INFO: core/quest/Tutorial.yml 任务Tutorial 条目3 agent[completed @ all] 未知动作关键字: minitell -> minitell inline "{{ &prefix }} 最后，<#AADDFF>经验条的<blue><b>体力</b><#AADDFF>一般回复很快。如果降低到极点，您将无法疾跑并大大增快食物的
+INFO: core/quest/Tutorial.yml 任务Tutorial 条目3 agent[completed @ all] 未知动作关键字: minitell -> minitell inline "{{ &prefix }} <yellow>存档点机制不复杂，但还请您阅读一下，以防日后造成困扰。" sleep 2s
+INFO: core/quest/Tutorial.yml 任务Tutorial 条目4 agent[completed @ all] 未知动作关键字: for -> for mes in &messages then { minitell inline "{{ &prefix }} {{ &mes }}" sleep 1.5s }
+INFO: core/quest/Tutorial.yml 任务Tutorial 条目5 agent[completed @ all] 未知动作关键字: for -> for mes in &messages then { minitell inline "{{ &prefix }} {{ &mes }}" sleep 1.5s }
+INFO: core/quest/Tutorial.yml 任务Tutorial 条目6 agent[completed @ all] 未知动作关键字: for -> for mes in &messages then { minitell inline "{{ &prefix }} {{ &mes }}" sleep 2s }
+INFO: core/quest/Tutorial.yml 任务Tutorial 条目7 agent[completed @ all] 未知动作关键字: for -> for mes in &messages then { minitell inline "{{ &prefix }} {{ &mes }}" sleep 1s }
+INFO: core/quest/Tutorial.yml 任务Tutorial 条目8 agent[completed @ all] 未知动作关键字: for -> for mes in &messages then { minitell inline "{{ &prefix }} {{ &mes }}" sleep 2s }
+INFO: core/quest/Tutorial.yml 任务Tutorial 条目9 agent[completed @ all] 未知动作关键字: for -> for mes in &messages then { minitell inline "{{ &prefix }} {{ &mes }}" sleep 1s }
+INFO: conv BNTG/Level_11/BurgerBoy.yml 节点 BurgerBoy_main npc id 不在 NPC.md: BurgerBoy
+INFO: conv BNTG/Level_11/FriedChicken.yml 节点 FriedChicken_main npc id 不在 NPC.md: FriedChicken
+INFO: conv BNTG/Level_11/FriedChicken.yml FriedChicken_1 trigger 未在任务中找到对应 condition.value: test
+INFO: conv BNTG/Level_11/KFC/KFC_customer_1.yml 节点 KFC_customer_1_main npc id 不在 NPC.md: KFC_customer_1
+INFO: conv BNTG/Level_11/xinan.yml xinan_2_1 player.then 未知动作关键字: case -> case &rands [
+INFO: conv BNTG/Level_11/xinan.yml xinan_2_1 player.then 未知动作关键字: when -> when 1 -> {
+INFO: conv BNTG/Level_11/xinan.yml xinan_2_1 player.then 未知动作关键字: when -> when 2 -> {
+INFO: conv BNTG/Level_1/feiba.yml 节点 feiba_2_main npc id 不在 NPC.md: feiba_2
+INFO: conv BNTG/Level_1/feiba2.yml 节点 feiba_main npc id 不在 NPC.md: feiba
+INFO: conv BNTG/Level_2/baage.yml 节点 baage_main npc id 不在 NPC.md: baage
+INFO: conv BNTG/Level_4/beixi.yml 节点 beixi_main npc id 不在 NPC.md: beixi
+INFO: conv BNTG/Level_4/xibei.yml 节点 xibei_main npc id 不在 NPC.md: xibei
+INFO: conv BNTG/Level_4/yuge.yml 节点 yuge_main npc id 不在 NPC.md: yuge
+INFO: conv MEG/Level_1/BlackSmith.yml BlackSmith_RollingLog_3 player.then 未知动作关键字: scenes -> scenes file maosewood cancel 0
+INFO: conv MEG/Level_1/BoFeng.yml BoFeng_BowlGame_1 player.then 未知动作关键字: case -> case &rands [
+INFO: conv MEG/Level_1/BoFeng.yml BoFeng_BowlGame_1 player.then 未知动作关键字: when -> when 1 -> {
+INFO: conv MEG/Level_1/BoFeng.yml BoFeng_BowlGame_1 player.then 未知动作关键字: when -> when [ 2 3 ] -> {
+INFO: conv MEG/Level_1/BoFeng.yml BoFeng_BowlGame_1 player.then 未知动作关键字: when -> when [ 4 5 6 ] -> {
+INFO: conv MEG/Level_1/BoFeng.yml BoFeng_BowlGame_1 player.then 未知动作关键字: when -> when [ 7 8 9 10 ] -> {
+INFO: conv MEG/Level_1/BoFeng.yml BoFeng_BowlGame_1 player.then 未知动作关键字: case -> case &rands [
+INFO: conv MEG/Level_1/BoFeng.yml BoFeng_BowlGame_1 player.then 未知动作关键字: when -> when 1 -> {
+INFO: conv MEG/Level_1/BoFeng.yml BoFeng_BowlGame_1 player.then 未知动作关键字: when -> when [ 2 3 ] -> {
+INFO: conv MEG/Level_1/BoFeng.yml BoFeng_BowlGame_1 player.then 未知动作关键字: when -> when [ 4 5 6 ] -> {
+INFO: conv MEG/Level_1/BoFeng.yml BoFeng_BowlGame_1 player.then 未知动作关键字: when -> when [ 7 8 9 10 ] -> {
+INFO: conv MEG/Level_1/BoFeng.yml BoFeng_BowlGame_1 player.then 未知动作关键字: case -> case &rands [
+INFO: conv MEG/Level_1/BoFeng.yml BoFeng_BowlGame_1 player.then 未知动作关键字: when -> when 1 -> {
+INFO: conv MEG/Level_1/BoFeng.yml BoFeng_BowlGame_1 player.then 未知动作关键字: when -> when [ 2 3 ] -> {
+INFO: conv MEG/Level_1/BoFeng.yml BoFeng_BowlGame_1 player.then 未知动作关键字: when -> when [ 4 5 6 ] -> {
+INFO: conv MEG/Level_1/BoFeng.yml BoFeng_BowlGame_1 player.then 未知动作关键字: when -> when [ 7 8 9 10 ] -> {
+INFO: conv MEG/Level_1/Lefty.yml Lefty_chat player.if all/any 未包裹元素首词未知: ] check profile data BumperCarEnded != 1
+INFO: conv MEG/Level_1/qiangge.yml 节点 qiangge_main npc id 不在 NPC.md: qiangge
+INFO: conv MEG/Level_1/qiangge_2.yml 节点 qiangge2_main npc id 不在 NPC.md: qiangge2
+INFO: conv MEG/Level_3/maoda.yml 节点 maoda_main npc id 不在 NPC.md: maoda
+INFO: conv MEG/Level_3/xite.yml 节点 xite_main npc id 不在 NPC.md: xite
+INFO: conv MEG/Level_5/huxi.yml 节点 huxi_main npc id 不在 NPC.md: huxi
+INFO: conv MEG/Level_5/huxi.yml huxi_2_1 player.then 未知动作关键字: case -> case &rands [
+INFO: conv MEG/Level_5/huxi.yml huxi_2_1 player.then 未知动作关键字: when -> when 1 -> {
+INFO: conv MEG/Level_5/huxi.yml huxi_2_1 player.then 未知动作关键字: when -> when 2 -> {
+INFO: conv MEG/Level_5/huxi.yml huxi_2_1 player.then 未知动作关键字: when -> when 3 -> {
+INFO: conv NonAligned/Level_11/Fisherman.yml 节点 Fisherman_main npc id 不在 NPC.md: Fisherman
+INFO: conv NonAligned/Level_16/PenguinSong.yml 节点 PenguinSong_main npc id 不在 NPC.md: PenguinSong
+INFO: conv external/conversation.yml 节点 ResourceMaster_main npc id 不在 NPC.md: newmoon
+INFO: conv external/conversation.yml 节点 ShouLie_main npc id 不在 NPC.md: newmoon
+INFO: conv external/conversation.yml ResourceMaster_1 trigger 未在任务中找到对应 condition.value: ResourceMasterSubmit
+
+======================================================================
+objective 样本（人工复核 schema）
+======================================================================
+
+--- block interact ---
+  core/quest/AkaCandy/DontSurf.yml 任务DontSurf 条目3
+    condition: {'position': 'Area3 39912 43 21 ~ 2'}
+    goal: {'amount': 1}
+  core/quest/AmeRain/InternetTravel2.yml 任务InternetTravel2 条目1
+    condition: {'position': 'Area3 39885 44 91'}
+    goal: {'amount': 1}
+  core/quest/AmeRain/InternetTravel2.yml 任务InternetTravel2 条目2
+    condition: {'position': 'Area3 39896 45 2'}
+    goal: {'amount': 1}
+
+--- choten noclip enter ---
+  core/quest/MaoSe/ThresholdPath.yml 任务ThresholdPath 条目1
+    condition: {'level': 'level-1', 'name': '生锈铁门'}
+    goal: {'amount': 1}
+  core/quest/MaoSe/ThresholdPath.yml 任务ThresholdPath 条目2
+    condition: {'level': 'level-1', 'name': '管道走廊'}
+    goal: {'amount': 1}
+  core/quest/MaoSe/ThresholdPath.yml 任务ThresholdPath 条目3
+    condition: {'level': 'level-1', 'name': '警戒门'}
+    goal: {'amount': 1}
+
+--- choten reach level ---
+  core/quest/BoFeng/NianZhangShi.yml 任务NianZhangShi 条目1
+    condition: {'target': 'level-93'}
+    goal: {'amount': 1}
+  core/quest/DaoGe/RunningToTheNight.yml 任务RunningToTheNight 条目1
+    condition: {'target': 'level-11'}
+    goal: {'amount': 1}
+
+--- choten submit ---
+  core/quest/Adon/TaiKuLa.yml 任务TaiKuLa 条目1
+    condition: {'item': 'sertraline:capacitor', 'consume': True}
+    goal: {'amount': 2}
+  core/quest/Adon/TaiKuLa.yml 任务TaiKuLa 条目2
+    condition: {'item': 'sertraline:power_supply', 'consume': True, 'amount': 1}
+    goal: {'amount': 1}
+  core/quest/Adon/TaiKuLa.yml 任务TaiKuLa 条目3
+    condition: {'item': 'sertraline:cpu', 'consume': True, 'amount': 1}
+    goal: {'amount': 1}
+
+--- lithium item grant ---
+  core/quest/BoFeng/FoodSender.yml 任务FoodSender 条目3
+    condition: {'item': 'sertraline:bread'}
+    goal: {'amount': 10}
+  core/quest/ZhiChen/ScrapMetal.yml 任务ScrapMetal 条目1
+    condition: {'item': 'sertraline:copper_ingot'}
+    goal: {'amount': 2}
+  core/quest/ZhiChen/ScrapMetal.yml 任务ScrapMetal 条目2
+    condition: {'item': 'sertraline:iron_ingot'}
+    goal: {'amount': 2}
+
+--- lithium loot create ---
+  core/quest/baage/BetaGame.yml 任务BetaGame 条目1
+    condition: {'id': 'vending_machine'}
+    goal: {'amount': 1}
+
+--- mythicmobs kill ---
+  core/quest/BlackSmith/AlsoElectricity.yml 任务AlsoElectricity 条目3
+    condition: {'name': 'Smiler1;Smiler2;Smiler3;Smiler4;Smiler5'}
+    goal: {'amount': 10, '$': 'check papi "%worldguard_region_name%" == level-3'}
+  core/quest/BlackSmith/HarderSelf.yml 任务HarderSelf 条目1
+    condition: {'name': 'Dullers1;Dullers2;Dullers3;Dullers4;Dullers5'}
+    goal: {'amount': 2, '$': 'check papi "%worldguard_region_name%" == level-1'}
+  core/quest/Greybird/CleanUpAction.yml 任务CleanUpAction 条目1
+    condition: {'name': 'Dullers1;Dullers2;Dullers3;Dullers4;Dullers5'}
+    goal: {'amount': 5, '$': 'check papi "%worldguard_region_name%" == level-8'}
+
+--- placeholder api ---
+  core/quest/AkaCandy/AfterMidnight.yml 任务AfterMidnight 条目1
+    goal: {'value': '<1', 'key': '%chotentech_sanpercent%', 'amount': 1}
+  core/quest/AkaCandy/AfterMidnight.yml 任务AfterMidnight 条目2
+    goal: {'value': '>=99.5', 'key': '%chotentech_sanpercent%', 'amount': 1}
+  core/quest/AkaCandy/ToolboxTheory.yml 任务ToolboxTheory 条目1
+    goal: {'value': '>=30000', 'key': '%chotentech_balance_money%', 'amount': 1}
+
+--- player data ---
+  core/quest/AmeRain/InternetTravel2.yml 任务InternetTravel2 条目4
+    goal: {'key': 'InternetTravel2Talk', 'value': 1, 'amount': 1}
+  core/quest/BlackSmith/FunGesture.yml 任务FunGesture 条目1
+    goal: {'key': 'learn_scissor_hand', 'value': 1, 'amount': 1}
+  core/quest/BlackSmith/FunGesture.yml 任务FunGesture 条目2
+    goal: {'key': 'learn_floating_finger', 'value': 1, 'amount': 1}
+
+--- player inventory ---
+  core/quest/Tutorial.yml 任务Tutorial 条目8
+    condition: {'item': 'sertraline:tutorial_sound_card'}
+    goal: {'amount': 1}
+
+--- player kill ---
+  core/quest/XingChen/PvpBoss.yml 任务PvpBoss 条目1
+    condition: {'victim': 'PLAYER', 'amount': 3}
+    goal: {'amount': 1, '$': 'check papi "%worldguard_region_name%" == level-3'}
+
+--- player real move ---
+  core/quest/AkaCandy/CuttingRoomFloor.yml 任务CuttingRoomFloor 条目1
+    condition: {'position:to': 'Area3 39914 -9 81 > 39924 1 91'}
+    goal: {'amount': 1}
+  core/quest/AkaCandy/CuttingRoomFloor.yml 任务CuttingRoomFloor 条目2
+    condition: {'position:to': 'Area3 39971 -7 90 > 39981 3 100'}
+    goal: {'amount': 1}
+  core/quest/AkaCandy/OldRoomBlues.yml 任务OldRoomBlues 条目1
+    condition: {'position:to': 'Area3 39929 44 83 > 39903 39 104'}
+    goal: {'amount': 1}
+
+--- ranged mythicmobs kill ---
+  core/quest/Tutorial.yml 任务Test1 条目1
+    condition: {'name': 'Wretches1', 'distance': 5}
+    goal: {'amount': 10, '$': 'check papi "%worldguard_region_name%" == level-1'}
+
+--- take water ---
+  core/quest/AkaCandy/DontSurf.yml 任务DontSurf 条目1
+    goal: {'amount': 10}
+  core/quest/TheAchu/TrainTravel1.yml 任务TrainTravel1 条目1
+    goal: {'amount': 30}
+
+--- trigger ---
+  core/quest/AkaCandy/AfterMidnight.yml 任务AfterMidnight 条目3
+    condition: {'value': 'AkaCandy_AfterMidnight'}
+    goal: {'amount': 1}
+  core/quest/AkaCandy/CuttingRoomFloor.yml 任务CuttingRoomFloor 条目3
+    condition: {'value': 'AkaCandy_CuttingRoomFloor'}
+    goal: {'amount': 1}
+  core/quest/AkaCandy/DontSurf.yml 任务DontSurf 条目4
+    condition: {'value': 'AkaCandy_DontSurf'}
+    goal: {'amount': 1}
+
+统计: quest文件 174, 对话文件 64, 任务ID 174, triggerID 43, 对话节点 1334, 物品 630, NPC 45, 实体 27

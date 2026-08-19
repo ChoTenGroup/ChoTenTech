@@ -9,10 +9,10 @@ import io.github.zzzyyylllty.chotentech.quetiapine.function.javascript.PlayerUti
 import io.github.zzzyyylllty.chotentech.quetiapine.function.javascript.ThreadUtil
 import io.github.zzzyyylllty.chotentech.quetiapine.function.kether.evalKether
 //import io.github.zzzyyylllty.chotentech.quetiapine.util.jsonUtil
-import io.github.zzzyyylllty.chotentech.quetiapine.util.minimessage.mmJsonUtil
-import io.github.zzzyyylllty.chotentech.quetiapine.util.minimessage.mmLegacyAmpersandUtil
-import io.github.zzzyyylllty.chotentech.quetiapine.util.minimessage.mmLegacySectionUtil
-import io.github.zzzyyylllty.chotentech.quetiapine.util.minimessage.mmUtil
+import io.github.zzzyyylllty.chotentech.quetiapine.util.mmJsonUtil
+import io.github.zzzyyylllty.chotentech.quetiapine.util.mmLegacyAmpersandUtil
+import io.github.zzzyyylllty.chotentech.quetiapine.util.mmLegacySectionUtil
+import io.github.zzzyyylllty.chotentech.quetiapine.util.mmUtil
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import taboolib.common.LifeCycle

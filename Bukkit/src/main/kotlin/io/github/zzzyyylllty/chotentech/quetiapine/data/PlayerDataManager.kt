@@ -1,6 +1,7 @@
 package io.github.zzzyyylllty.chotentech.quetiapine.data
 
 import io.github.zzzyyylllty.chotentech.ChoTenTech.levels
+import io.github.zzzyyylllty.chotentech.function.BaseManager
 import io.github.zzzyyylllty.chotentech.quetiapine.event.QuetiapineAddExpEvent
 import io.github.zzzyyylllty.chotentech.quetiapine.event.QuetiapineAddLevelEvent
 import io.github.zzzyyylllty.chotentech.quetiapine.event.QuetiapineGetLevelEvent
@@ -110,6 +111,11 @@ class PlayerDataManager(val player: Player) {
             return
         }
         try {
+            // 必须在 try 内 return:否则 lockKey 残留导致后续升级检查永久跳过
+            if (BaseManager.isInLevelSafeZone(player)) {
+                devLog("checkUpdateLevel skipped for ${player.name}: in base or world")
+                return
+            }
             devLog("Checking update for $levelName")
             var required = getNextLevelExp(levelName) ?: return
             var current = getExp(levelName)
@@ -155,6 +161,11 @@ class PlayerDataManager(val player: Player) {
         return map["exp.$levelName"]?.toDouble() ?: 0.0
     }
     fun addExp(levelName: String, exp: Double): Double? {
+        // 基地/world 安全区内禁止加经验:防止泡岩浆等自伤源无限刷耐力/健康经验
+        if (exp > 0 && BaseManager.isInLevelSafeZone(player)) {
+            devLog("addExp skipped for ${player.name}: in base or world")
+            return null
+        }
         val event = QuetiapineAddExpEvent(levelName, exp, player)
         event.call()
         if (!event.isCancelled) {

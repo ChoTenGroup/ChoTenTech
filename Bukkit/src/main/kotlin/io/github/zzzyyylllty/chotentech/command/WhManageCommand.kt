@@ -118,7 +118,83 @@ object WhManageCommand {
         }
     }
 
+    @CommandBody
+    val reset = subCommand {
+        dynamic("player") {
+            execute<CommandSender> { sender, context, _ ->
+                val playerName = context["player"]
+                resetWarehouse(playerName, null, sender)
+            }
+            dynamic("base") {
+                execute<CommandSender> { sender, context, _ ->
+                    val playerName = context["player"]
+                    val baseIdef = context["base"].uppercase()
+                    resetWarehouse(playerName, baseIdef, sender)
+                }
+                suggestion<CommandSender> { _, _ ->
+                    BaseManager.baseMap.keys.toList()
+                }
+            }
+        }
+    }
+
     // ------- 工具方法 -------
+
+    private fun resetWarehouse(playerName: String, baseIdef: String?, sender: CommandSender) {
+        val online = Bukkit.getPlayerExact(playerName)
+        if (online != null) {
+            val data = online.getData()
+            if (data == null) {
+                sender.sendComponent("<red>玩家 $playerName 没有数据！")
+                return
+            }
+            if (baseIdef != null) {
+                if (BaseManager.resetBaseWarehouse(online, data, baseIdef)) {
+                    sender.sendComponent("<green>已重置 ${playerName} 的 $baseIdef 仓库(已重新发放初始物资)")
+                } else {
+                    sender.sendComponent("<red>基地 $baseIdef 不存在！")
+                }
+            } else {
+                BaseManager.resetAllWarehouses(online, data)
+                sender.sendComponent("<green>已重置 ${playerName} 的所有仓库(已重新发放初始物资)")
+            }
+            DataManager.saveData(online)
+            return
+        }
+
+        // 离线:读-改-写,无法立即发放,auto-grant 基地(ALP)下次进服自动补发
+        val raw = DataManager.getRawDataByName(playerName) ?: run {
+            sender.sendComponent("<red>玩家 $playerName 不存在或没有数据！")
+            return
+        }
+        val data = try {
+            jsonUtils.fromJson(raw, PlayerData::class.java)
+        } catch (_: Exception) {
+            sender.sendComponent("<red>玩家 $playerName 数据解析失败！")
+            return
+        } ?: run {
+            sender.sendComponent("<red>玩家 $playerName 数据为空！")
+            return
+        }
+        if (baseIdef != null) {
+            if (BaseManager.resetBaseWarehouse(null, data, baseIdef)) {
+                sender.sendComponent("<green>已重置 ${playerName} 的 $baseIdef 仓库(auto-grant 基地下次进服自动补发)")
+            } else {
+                sender.sendComponent("<red>基地 $baseIdef 不存在！")
+            }
+        } else {
+            BaseManager.resetAllWarehouses(null, data)
+            sender.sendComponent("<green>已重置 ${playerName} 的所有仓库(auto-grant 基地下次进服自动补发)")
+        }
+        val json = jsonUtils.toJson(data, PlayerData::class.java)
+        DataManager.saveUserDataRow(UserDataRow().also {
+            it.uuid = data.uuid
+            it.playerName = data.playerName
+            it.cid = data.cid.id.toString()
+            it.cidType = data.cid.type
+            it.data = json
+        })
+    }
 
     private fun loadPlayerData(playerName: String): PlayerData? {
         // 优先在线玩家

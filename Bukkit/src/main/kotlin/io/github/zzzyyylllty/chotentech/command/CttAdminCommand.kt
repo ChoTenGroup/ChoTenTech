@@ -7,6 +7,7 @@ import io.github.zzzyyylllty.chotentech.data.PlayerData
 import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager
 import io.github.zzzyyylllty.chotentech.function.BaseManager
 import io.github.zzzyyylllty.chotentech.function.RankManager
+import io.github.zzzyyylllty.chotentech.function.bleedout.BleedoutManager
 import io.github.zzzyyylllty.chotentech.function.savepoint.SaveIdMigrator
 import io.github.zzzyyylllty.chotentech.function.savepoint.SavePoint
 import io.github.zzzyyylllty.chotentech.function.savepoint.SavePointConfig
@@ -117,6 +118,25 @@ object CttAdminCommand {
                     return@execute
                 }
                 migrateAllSaveIds(player)
+            }
+        }
+        literal("revive") {
+            player("target") {
+                execute<CommandSender> { sender, context, _ ->
+                    val target = context.player("target").castSafely<Player>()
+                    if (target == null) {
+                        sender.sendComponent("<red>目标玩家不在线")
+                        return@execute
+                    }
+                    if (!BleedoutManager.reviveDowned(target.uniqueId)) {
+                        sender.sendComponent("<yellow>${target.name} <red>当前没有处于倒地状态")
+                        return@execute
+                    }
+                    sender.sendComponent("<green>已将 <yellow>${target.name} <green>拉起")
+                }
+                suggestion<CommandSender> { _, _ ->
+                    Bukkit.getOnlinePlayers().filter { BleedoutManager.isDowned(it.uniqueId) }.map { it.name }
+                }
             }
         }
         literal("rank") {
@@ -483,7 +503,7 @@ object CttAdminCommand {
         val worldName = loc.world.name
 
         // 新区域:玩家位置为最下层中心点,x/z 各 ±2,y 向上 +2(与 createspawn 布局一致)
-        val newPos = "$worldName ${bx - 2} $by ${bz - 2} ${bx + 2} ${by + 2} ${bz + 2}"
+        val newPos = "$worldName ${bx - 2} $by ${bz - 2} ${bx + 2} ${by + 4} ${bz + 2}"
 
         // 位移量:新区域中心 - 旧区域中心
         val oldCenterX = (sp.pos1.x + sp.pos2.x) / 2

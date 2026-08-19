@@ -2,6 +2,8 @@
 # faction: MEG / BNTG / UEC
 # spawn.location: 复活点世界坐标
 # region: WorldGuard 区域ID，玩家进入此区域时将自动解锁图鉴
+# title: 进入基地时标题的副标题行（留空则不显示）
+# auto-grant: true 时不加入该基地也自动发放初始物资（仅首次，搬空仓库不会重复发放）
 
 bases:
   ALP:
@@ -15,6 +17,8 @@ bases:
       - "它也是 M.E.G. 的重要基地之一。"
       - "无论是研究突破还是探险发现，它功不可没。"
     start: "5000积分，些许装备，食物和医疗物品。"
+    auto-grant: true
+    title: "M.E.G. 的重要基地之一。"
     region: "base-alp"
     spawn:
       world: world
@@ -37,6 +41,7 @@ bases:
       - "是 M.E.G. 内居民最多的基地。"
       - "安全保障团被分配到了这里，你或许可以和他们谈谈。"
     start: "10000积分，少量装备和食物。"
+    title: "M.E.G. 内居民最多的基地。"
     region: "base-bet"
     spawn:
       world: world
@@ -57,6 +62,7 @@ bases:
       - "这里的装备很齐全，但是食物和药品经常短缺。"
       - "许多特工和住宿者在这里寻求庇护。"
     start: "5000积分，大量相对较好的装备，代价是缺少食物和医疗物品。"
+    title: "由于危险的环境，这里是武装最齐全的基地。"
     region: "base-gam"
     spawn:
       world: world
@@ -76,6 +82,7 @@ bases:
       - "OMEGA基地坐落于前期最安全的 Level 4，废弃办公室。"
       - "是食物和杏仁水的主要产地和后勤保障。"
     start: "2000积分，大量且低价的食物供给，尚可的武器和装备。"
+    title: "食物和杏仁水的主要产地和后勤保障。"
     region: "base-ome"
     spawn:
       world: Area3
@@ -96,6 +103,7 @@ bases:
       - "在输掉战争后，Epsilon基地因各种原因半独立，"
       - "也许是时候召他们回家了。"
     start: "开发中..."
+    title: "冷战前线Level 283的重要基地。"
     region: "base-eps"
     spawn:
       world: world
@@ -116,6 +124,7 @@ bases:
       - "M.E.G.修复了这里老旧的基础设施，肃清了实体。"
       - "各大交易团体在那之后接连而至。"
     start: "开发中..."
+    title: "老旧的基础设施与繁多实体已经是过去。"
     region: "base-del"
     spawn:
       world: world
@@ -136,6 +145,7 @@ bases:
       - "为保护其他团体免受实体伤害而建立。"
       - "当然，更多是为了让M.E.G.更好的研究Level 5。"
     start: "开发中..."
+    title: "旅馆秩序的重要组成部分。"
     region: "base-hot"
     spawn:
       world: world
@@ -155,6 +165,7 @@ bases:
       - "第六层基地坐落于 Level 6.1，"
       - "用于适应 Level 6 黑暗而危险的环境。"
     start: "开发中..."
+    title: "踏入深暗..."
     region: "base-six"
     spawn:
       world: world
@@ -174,6 +185,7 @@ bases:
       - "极度危险的 Level 8 中的一抹火炬。"
       - "绵延两三千格的洞穴内的最后希望。"
     start: "10000积分，装备与矿镐，但食物和医疗物资稀缺。"
+    title: "洞穴世界的最后灯塔。"
     region: "base-ene"
     spawn:
       world: world
@@ -193,6 +205,7 @@ bases:
       - "Level 1 跃金段的商人之家是 B.N.T.G. 最著名的基地，"
       - "商人之家是B.N.T.G.物流、贸易的运作核心。"
     start: "500贸易点，充足的食物和医疗物资，尚可的武器和装备"
+    title: "金钱可以买到任何东西。"
     region: "base-tra"
     spawn:
       world: world
@@ -212,6 +225,7 @@ bases:
       - "EL3A办公区是 B.N.T.G. 的重要占领地，"
       - "它取代了 M.E.G. 的成果，在 Level 2内人尽皆知。"
     start: "开发中..."
+    title: "办公电脑会变得更值钱吗?"
     region: "base-ela"
     spawn:
       world: world
@@ -231,6 +245,7 @@ bases:
       - "这里是 B.N.T.G. 的主要物资存储的设施。"
       - "基地内物价高昂，也非常危险。"
     start: "开发中..."
+    title: "根据都市传说，这里存储了供大部分居民生活几年的一切物资。"
     region: "base-res"
     spawn:
       world: world
@@ -251,6 +266,7 @@ bases:
       - "用于 Level 283的资源提取。"
       - "但是，这个基地里面的人员正在遭受苦难与压榨。"
     start: "开发中..."
+    title: "三十年噩梦，醒时归一眠。"
     region: "base-twc"
     spawn:
       world: world
@@ -272,6 +288,7 @@ bases:
       - "不必担心野兽出现在澹涿浃中。"
       - "至于这些话有几成可信，就不知道了。"
     start: "开发中..."
+    title: "为了发展而发展，是癌细胞的意识形态。"
     region: "base-sew"
     spawn:
       world: world

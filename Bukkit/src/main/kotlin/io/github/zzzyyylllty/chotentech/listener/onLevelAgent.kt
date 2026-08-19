@@ -2,7 +2,7 @@ package io.github.zzzyyylllty.chotentech.listener
 
 import io.github.zzzyyylllty.chotentech.ChoTenTech.levels
 import io.github.zzzyyylllty.chotentech.quetiapine.event.QuetiapineLevelUpgradeEvent
-import io.github.zzzyyylllty.chotentech.quetiapine.util.minimessage.mmUtil
+import io.github.zzzyyylllty.chotentech.quetiapine.util.mmUtil
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.SubscribeEvent
 

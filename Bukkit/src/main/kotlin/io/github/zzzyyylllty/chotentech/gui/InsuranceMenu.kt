@@ -29,12 +29,12 @@ class InsuranceMenu {
             rows(6)
 
             map(
-                "CCC      ",
-                "         ",
-                " @@@@@@@ ",
-                " @@@@@@@ ",
-                " @@@@@@@ ",
-                " B  C  B "
+                "CCC------",
+                "---------",
+                "-@@@@@@@-",
+                "-@@@@@@@-",
+                "-@@@@@@@-",
+                "-B--C--B-"
             )
 
             set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>菜单", listOf("<!i> <yellow>点击 <green>打开菜单"), model = "kangelitem:void")) {
@@ -74,13 +74,16 @@ class InsuranceMenu {
             onClick(lock = false) { event ->
                 val slot = event.rawSlot
                 val topSize = event.view.topInventory.size
-                if (slot !in 0 until topSize) return@onClick
+                if (slot !in 0 until topSize) {
+                    event.isCancelled = true
+                    return@onClick
+                }
 
-                // Confirm button
+                // Confirm button：给中间物品打投保标记，不关闭 GUI，物品可继续拿出
                 if (slot == 49) {
                     event.isCancelled = true
                     player.playSound(player.location, Sound.BLOCK_ANVIL_USE, 1f, 1f)
-                    processInsuranceAndClose(player, event.view.topInventory)
+                    processInsurance(player, event.view.topInventory)
                     return@onClick
                 }
 
@@ -94,23 +97,25 @@ class InsuranceMenu {
 
             onClose { event ->
                 val p = event.player as? Player ?: return@onClose
-                val dropSlots = (19..25) + (28..34) + (37..43)
-                for (slot in dropSlots) {
-                    val item = event.inventory.getItem(slot)
+                val topInv = event.view.topInventory
+                for (slot in (19..25) + (28..34) + (37..43)) {
+                    val item = topInv.getItem(slot)
                     if (item != null && !item.type.isAir) {
                         p.inventory.addItem(item).values.forEach { leftover ->
                             p.world.dropItemNaturally(p.location, leftover)
                         }
+                        topInv.setItem(slot, ItemStack(Material.AIR))
                     }
                 }
             }
         }
     }
 
-    private fun processInsuranceAndClose(player: Player, inventory: org.bukkit.inventory.Inventory) {
+    /** 只给中间区域的可投保物品打上保险标记并扣费，不关闭 GUI，物品可随时取出 */
+    private fun processInsurance(player: Player, inventory: org.bukkit.inventory.Inventory) {
         val depositSlots = (19..25) + (28..34) + (37..43)
 
-        // 收集可投保物品
+        // 收集需要投保的物品
         val items = depositSlots.mapNotNull { slot ->
             val item = inventory.getItem(slot)
             if (item != null && !item.type.isAir && InsuranceManager.isInsurable(item) && !InsuranceManager.isAlreadyInsured(item)) item
@@ -122,7 +127,7 @@ class InsuranceMenu {
             return
         }
 
-        // 计算总费用
+        // 计算总费用并校验余额
         val totalCost = InsuranceManager.calculateTotalCost(items)
         if (totalCost > 0) {
             if (!EconomyUtil.has(player, totalCost)) {
@@ -135,7 +140,7 @@ class InsuranceMenu {
             }
         }
 
-        // 逐个投保
+        // 逐个投保，原位替换为带标记的物品
         var insured = 0
         var skipped = 0
         var totalPaid = 0.0
@@ -157,26 +162,15 @@ class InsuranceMenu {
             if (InsuranceManager.tryInsureItem(player, item.clone())) {
                 totalPaid += cost
                 insured++
-                // 投保成功：替换为已标记版本，后续返还逻辑会还回给玩家
+                // 原位替换为带标记版本，玩家可直接取出
                 inventory.setItem(slot, InsuranceManager.tagItem(item.clone(), player))
             } else {
                 skipped++
             }
         }
 
-        // 返还所有剩余物品（非投保物品）
-        for (slot in depositSlots) {
-            val item = inventory.getItem(slot)
-            if (item == null || item.type.isAir) continue
-            player.inventory.addItem(item).values.forEach { leftover ->
-                player.world.dropItemNaturally(player.location, leftover)
-            }
-            inventory.setItem(slot, ItemStack(Material.AIR))
-        }
-
         saveData(player)
 
-        // 发送消息
         if (insured > 0) {
             val msg = buildString {
                 append("<green>✔ 成功投保 <yellow>$insured</yellow> 个物品")
@@ -188,8 +182,5 @@ class InsuranceMenu {
         if (skipped > 0) {
             player.sendMessage(mmUtil.deserialize("<gray>⚠ $skipped 个物品无法投保（非工具/盔甲或已投保）"))
         }
-
-        // 立即关闭页面
-        player.closeInventory()
     }
 }

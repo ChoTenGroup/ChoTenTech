@@ -103,7 +103,7 @@ object NutritionManager {
             mods += AttributeModifier(
                 uuid = UUID_PROTEIN_ABOVE,
                 attributeId = "max_health",
-                value = floor(pts / 2),     // +0.5 per point, 取整避免频繁改最大血量 (ADD)
+                value = floor(pts * 0.1),     // +0.1 per point, 取整避免频繁改最大血量 (ADD)
                 type = ModifierType.ADD,
                 source = ModifierSource.OTHER
             )

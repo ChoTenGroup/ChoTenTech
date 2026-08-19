@@ -660,10 +660,12 @@ object ProjectileManager {
                     val shockDmg = effect.damage["shock"] ?: 0.0
                     val burnDmg = effect.damage["burn"] ?: 0.0
 
-                    // find potential targets
+                    // 落雷目标：排除投掷者，否则雷会全劈向投掷者，怪物完全接不到伤害
+                    // （投掷者仍会作为 victims 受到范围自伤）
                     val nearbyEntities = world.getNearbyEntities(location, searchRange, searchRange, searchRange)
                         .filterIsInstance<LivingEntity>()
-                        .filter { it != thrower && it.isValid }
+                        .filter { it.isValid }
+                        .filter { it != thrower }
                         .filter { !(it is Player && isPlayerInDmz(it)) }
 
                     val strikePositions = mutableListOf<Location>()
@@ -690,16 +692,18 @@ object ProjectileManager {
                         }
                     }
 
-                    // execute all strikes
-                    for (strikeLoc in strikePositions) {
+                    // 依次执行雷击,每次间隔 1 秒
+                    strikePositions.forEachIndexed { index, strikeLoc ->
+                        submit(delay = index * 20L) {
                         val groundLoc = strikeLoc.clone().apply {
                             y = world.getHighestBlockYAt(this).toDouble()
                         }
                         world.strikeLightningEffect(groundLoc)
 
+                        // includes thrower (self-damage)
                         val victims = world.getNearbyEntities(groundLoc, aoeRadius.toDouble(), aoeRadius.toDouble(), aoeRadius.toDouble())
                             .filterIsInstance<LivingEntity>()
-                            .filter { it != thrower && it.isValid }
+                            .filter { it.isValid }
                             .filter { !(it is Player && isPlayerInDmz(it)) }
 
                         for (victim in victims) {
@@ -717,7 +721,15 @@ object ProjectileManager {
                                     DamageManager.applyEffects(victim, DamageType.BURN, finalBurn, burnDmg)
                                 }
                             }
+                            // 电击眩晕效果
+                            if (victim is Player) {
+                                victim.addPotionEffect(PotionEffect(PotionEffectType.NAUSEA, 40, 0))
+                                victim.addPotionEffect(PotionEffect(PotionEffectType.SLOWNESS, 60, 0))
+                            }
                         }
+
+                        // 小范围爆炸效果（仅视觉，无伤害/方块破坏）
+                        world.createExplosion(groundLoc, 0f, false, false)
 
                         // electric spark burst at each strike point
                         resolveParticle("electric_spark")?.let { p ->
@@ -746,6 +758,7 @@ object ProjectileManager {
                                 }
                             }
                         }
+                    }
                     }
 
                     // central thunder sound
@@ -808,9 +821,12 @@ object ProjectileManager {
                         world.spawnParticle(p, location, 20, radius * 0.3, 0.1, radius * 0.3, 0.01)
                     }
 
-                    // persistent fire zone: 每秒检测半径内实体，持续 fireSeconds
+                    // persistent fire zone: 每秒检测半径内的实体，持续 fireSeconds
                     val center = location.clone()
                     var zoneTick = 0
+                    // 同一火区对每个玩家只触发一次整套灼烧DoT，
+                    // 避免每秒重复调用 applyEffects -> BurnHandler 互相 cancel 导致灼烧失效
+                    val burnedThisIncident = mutableSetOf<UUID>()
                     submit(period = 20L, delay = 0L) {
                         if (zoneTick >= fireSeconds) return@submit
                         zoneTick++
@@ -841,15 +857,16 @@ object ProjectileManager {
                                 if (!shouldAffectPlayer(entity, center)) continue
                             }
                             entity.fireTicks = maxOf(entity.fireTicks, 40)
-                            if (burnDmg > 0) {
-                                val dmgPerTick = burnDmg / fireSeconds
-                                if (entity is Player) {
-                                    val finalDmg = DamageManager.calculateDamage(dmgPerTick, DamageType.BURN, entity)
-                                    entity.damage(finalDmg, thrower)
-                                    DamageManager.applyEffects(entity, DamageType.BURN, finalDmg, dmgPerTick)
-                                } else {
-                                    entity.damage(dmgPerTick, thrower)
+                            if (burnDmg <= 0) continue
+                            if (entity is Player) {
+                                // 整场火灾只结算一次整套灼烧DoT，总伤害=burnDmg（BurnHandler 每秒 finalDamage/4、共4秒）
+                                // 避免把 burnDmg 平均到 amount 秒得到亚 1 的分数伤害（被护甲/防御取整后 ≈0，看不掉血）
+                                if (burnedThisIncident.add(entity.uniqueId)) {
+                                    DamageManager.applyEffects(entity, DamageType.BURN, burnDmg, burnDmg)
                                 }
+                            } else {
+                                // 非玩家实体：仍按持续时间分摊
+                                entity.damage(burnDmg / fireSeconds, thrower)
                             }
                         }
                     }

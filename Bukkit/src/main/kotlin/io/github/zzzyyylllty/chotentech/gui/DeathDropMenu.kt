@@ -21,7 +21,7 @@ class DeathDropMenu(private val dropData: DeathDropData) {
 
             onBuild { _, inv ->
                 dropData.items.forEach { (slot, serialized) ->
-                    val item = ItemSerializer.deserialize(serialized)
+                    val item = ItemSerializer.deserializeAny(serialized)
                     if (item != null) {
                         inv.addItem(item)
                     }
@@ -30,12 +30,15 @@ class DeathDropMenu(private val dropData: DeathDropData) {
 
             onClick(lock = false) { event ->
                 val slot = event.rawSlot
-                if (slot < 0 || slot >= event.view.topInventory.size) return@onClick
+                if (slot < 0 || slot >= event.view.topInventory.size) {
+                    event.isCancelled = true
+                    return@onClick
+                }
 
                 // 玩家取走物品时，从数据中移除
                 val item = event.view.topInventory.getItem(slot)
                 if (item != null && !item.type.isAir) {
-                    dropData.items.entries.removeAll { it.value == ItemSerializer.serialize(item) }
+                    dropData.items.entries.removeAll { it.value == ItemSerializer.serializeNbt(item) }
                 }
             }
 

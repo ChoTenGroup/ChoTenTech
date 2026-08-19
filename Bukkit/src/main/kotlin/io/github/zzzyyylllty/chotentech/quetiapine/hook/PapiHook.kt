@@ -1,22 +1,17 @@
 package io.github.zzzyyylllty.chotentech.quetiapine.hook
 import io.github.zzzyyylllty.chotentech.ChoTenTech.levels
-import io.github.zzzyyylllty.chotentech.quetiapine.data.QuetiapineDataBridge
 import io.github.zzzyyylllty.chotentech.quetiapine.data.PlayerDataManager
 import io.github.zzzyyylllty.chotentech.quetiapine.util.minimessage.legacyToMiniMessage
-import io.github.zzzyyylllty.chotentech.quetiapine.util.minimessage.mmLegacyAmpersandUtil
-import io.github.zzzyyylllty.chotentech.quetiapine.util.minimessage.mmLegacySectionUtil
+import io.github.zzzyyylllty.chotentech.quetiapine.util.mmLegacyAmpersandUtil
+import io.github.zzzyyylllty.chotentech.quetiapine.util.mmLegacySectionUtil
 import io.github.zzzyyylllty.chotentech.quetiapine.util.toComponent
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import taboolib.platform.compat.PlaceholderExpansion
-import kotlin.collections.random
 import kotlin.let
-import kotlin.math.round
-import kotlin.text.drop
 import kotlin.text.lowercase
 import kotlin.text.replace
 import kotlin.text.split
-import kotlin.text.take
 import kotlin.toString
 
 val vaildOptions = listOf("ampersand", "adventure", "section")

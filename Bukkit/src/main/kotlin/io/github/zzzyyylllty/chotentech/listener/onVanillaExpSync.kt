@@ -6,6 +6,7 @@ import io.github.zzzyyylllty.chotentech.quetiapine.event.*
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerChangedWorldEvent
 import org.bukkit.event.player.PlayerJoinEvent
+import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submit
 import java.util.UUID
@@ -74,11 +75,11 @@ object VanillaExpSync {
 
     // ========== 自定义等级事件 → 同步到原版经验条 ==========
 
-    @SubscribeEvent
+    /** 经验增加 → 同步到原版经验条(MONITOR:仅监听事件最终态,被取消则跳过) */
+    @SubscribeEvent(EventPriority.MONITOR, ignoreCancelled = true)
     fun onQuetiapineExpAdd(event: QuetiapineAddExpEvent) {
         if (!isVanillaOverrideEnabled()) return
         if (event.levelName != getOverrideLevelName()) return
-        if (event.isCancelled) return
         submit { syncCustomToVanilla(event.player, event.levelName) }
     }
 

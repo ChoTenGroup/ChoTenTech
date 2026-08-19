@@ -2,23 +2,38 @@ package io.github.zzzyyylllty.chotentech.kether.script
 
 import io.github.zzzyyylllty.chotentech.data.getData
 import org.bukkit.entity.Player
+import taboolib.library.kether.ArgTypes
 import taboolib.module.kether.KetherParser
-import taboolib.module.kether.combinationParser
+import taboolib.module.kether.actionTake
+import taboolib.module.kether.run
 import taboolib.module.kether.script
+import taboolib.module.kether.scriptParser
 
 @KetherParser(["balance", "bal"], shared = true)
-fun actionBalance() = combinationParser {
-    it.group(text(), text(), long().option()).apply(it) { type, option, value ->
-        now {
-            val player = script().sender?.castSafely<Player>() ?: error("Player required")
-            val data = player.getData() ?: error("Player data not found")
-            when (option) {
-                "set" -> setBalance(data, type, value ?: error("Value required for set"))
-                "add" -> addBalance(data, type, value ?: error("Value required for add"))
-                "remove" -> removeBalance(data, type, value ?: error("Value required for remove"))
-                "get" -> getBalance(data, type)
-                "reset" -> resetBalance(data, type)
-                else -> error("Unknown balance action: $option")
+fun actionBalance() = scriptParser {
+    val type = it.nextParsedAction()
+    val option = it.nextParsedAction()
+    val value = try {
+        it.mark()
+        it.next(ArgTypes.LONG)
+    } catch (ex: Throwable) {
+        it.reset()
+        null
+    }
+    actionTake {
+        val sender = script().sender
+        run(type).thenCompose { type ->
+            run(option).thenApply { option ->
+                val player = sender?.castSafely<Player>() ?: error("Player required")
+                val data = player.getData() ?: error("Player data not found")
+                when (option.toString()) {
+                    "set" -> setBalance(data, type.toString(), value ?: error("Value required for set"))
+                    "add" -> addBalance(data, type.toString(), value ?: error("Value required for add"))
+                    "remove" -> removeBalance(data, type.toString(), value ?: error("Value required for remove"))
+                    "get" -> getBalance(data, type.toString())
+                    "reset" -> resetBalance(data, type.toString())
+                    else -> error("Unknown balance action: $option")
+                }
             }
         }
     }

@@ -32,6 +32,14 @@ object AttributeListener {
 
     @SubscribeEvent
     fun onRespawn(e: PlayerRespawnEvent) {
+        // 重生会重建玩家实体,属性 baseValue 被 Minecraft 重置为默认值(如攻击速度 4.0),
+        // 延迟到重生流程结束后按当前装备重新计算并同步,否则会出现缓存值与实际值不一致
+        val player = e.player
+        submit(delay = 2) {
+            if (player.isOnline) {
+                AttributeManager.updatePlayer(player, async = true)
+            }
+        }
     }
 
     /** isdenymove >= 1.0 时仅拦截 XZ 平面移动(无法行走/转向),y 轴(跳跃/下落)与纯转头放行 */
@@ -70,7 +78,8 @@ object AttributeListener {
 
     @SubscribeEvent
     fun onItemHeld(e: PlayerItemHeldEvent) {
-        AttributeManager.updatePlayer(e.player, async = true)
+        // 立即从新槽位提取物品 NBT 并异步重算属性(事件内 selected 槽可能尚未提交,不能读 equipment)
+        AttributeManager.updatePlayerHeldItem(e.player, e.newSlot)
     }
 
     @SubscribeEvent

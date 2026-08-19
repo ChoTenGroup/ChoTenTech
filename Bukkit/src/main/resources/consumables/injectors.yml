@@ -11,13 +11,13 @@ adrenaline_injector:
       level: 1
       duration: 60
     - effect: modifier
-      modifier: health_regen_multiplier
+      modifier: health_regen
       amount: 1
       uuid: adrenaline_injector
       expire: 20s
       death_mark: true
     - effect: modifier
-      modifier: stamina_regen_multiplier
+      modifier: stamina_regen
       amount: 1
       uuid: adrenaline_injector
       expire: 60s
@@ -29,7 +29,7 @@ adrenaline_injector:
       expire: 60s
       death_mark: true
     - effect: modifier
-      modifier: weight_limit_multiplier
+      modifier: weight_limit
       amount: 0.1
       uuid: adrenaline_injector
       expire: 120s
@@ -57,13 +57,13 @@ etg_injector:
       volume: 0.4
       pitch: 1.5
     - effect: modifier
-      modifier: health_regen_multiplier
+      modifier: health_regen
       amount: 2
       uuid: etg_injector
       expire: 60s
       death_mark: true
     - effect: modifier
-      modifier: stamina_regen_multiplier
+      modifier: stamina_regen
       amount: 0.5
       uuid: etg_injector
       expire: 60s
@@ -86,7 +86,7 @@ fast_stamina_injector:
       volume: 0.4
       pitch: 1.6
     - effect: modifier
-      modifier: stamina_regen_multiplier
+      modifier: stamina_regen
       amount: 2
       uuid: fast_stamina_injector
       expire: 60s
@@ -110,7 +110,7 @@ fast_stamina_injector:
       expire: 60s
       death_mark: true
     - effect: modifier
-      modifier: weight_limit_multiplier
+      modifier: weight_limit
       amount: 0.2
       uuid: fast_stamina_injector
       expire: 60s
@@ -133,7 +133,7 @@ fast_strength_injector:
       volume: 0.5
       pitch: 0.8
     - effect: modifier
-      modifier: stamina_regen_multiplier
+      modifier: stamina_regen
       amount: 1
       uuid: fast_strength_injector
       expire: 60s
@@ -145,7 +145,7 @@ fast_strength_injector:
       expire: 60s
       death_mark: true
     - effect: modifier
-      modifier: weight_limit_multiplier
+      modifier: weight_limit
       amount: 0.2
       uuid: fast_strength_injector
       expire: 120s
@@ -201,7 +201,7 @@ golden_apple_injector:
       duration: 6000
       amplifier: 9
     - effect: modifier
-      modifier: health_regen_multiplier
+      modifier: health_regen
       amount: 1
       uuid: golden_apple_injector
       expire: 300s
@@ -227,7 +227,7 @@ inocentia_injector:
       value: 50
       amplifier: 50
     - effect: modifier
-      modifier: health_regen_multiplier
+      modifier: health_regen
       amount: 1
       uuid: inocentia_injector
       expire: 60s
@@ -276,21 +276,21 @@ rainbow_injector:
       death_mark: true
       chance: 25
     - effect: modifier
-      modifier: health_regen_multiplier
+      modifier: health_regen
       amount: 1
       uuid: rainbow_injector
       expire: 600s
       death_mark: true
       chance: 25
     - effect: modifier
-      modifier: stamina_regen_multiplier
+      modifier: stamina_regen
       amount: 1
       uuid: rainbow_injector
       expire: 600s
       death_mark: true
       chance: 25
     - effect: modifier
-      modifier: weight_limit_multiplier
+      modifier: weight_limit
       amount: 0.2
       uuid: rainbow_injector
       expire: 600s
@@ -325,7 +325,7 @@ transfer_stamina_injector:
       volume: 0.4
       pitch: 0.7
     - effect: modifier
-      modifier: stamina_regen_multiplier
+      modifier: stamina_regen
       amount: 1
       uuid: transfer_stamina_injector
       expire: 200s
@@ -337,7 +337,7 @@ transfer_stamina_injector:
       expire: 300s
       death_mark: true
     - effect: modifier
-      modifier: weight_limit_multiplier
+      modifier: weight_limit
       amount: 0.2
       uuid: transfer_stamina_injector
       expire: 60s
@@ -399,19 +399,19 @@ mule_injector:
       volume: 0.4
       pitch: 0.6
     - effect: modifier
-      modifier: stamina_regen_multiplier
+      modifier: stamina_regen
       amount: 0.5
       uuid: mule_injector
       expire: 600s
       death_mark: true
     - effect: modifier
-      modifier: weight_limit_multiplier
+      modifier: weight_limit
       amount: 0.5
       uuid: mule_injector
       expire: 600s
       death_mark: true
     - effect: modifier
-      modifier: health_regen_multiplier
+      modifier: health_regen
       amount: -0.1
       uuid: mule_injector
       expire: 600s

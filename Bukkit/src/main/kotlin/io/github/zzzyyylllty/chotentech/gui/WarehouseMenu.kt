@@ -6,13 +6,13 @@ import io.github.zzzyyylllty.chotentech.data.WarehouseConfig
 import io.github.zzzyyylllty.chotentech.data.getData
 import io.github.zzzyyylllty.chotentech.util.ItemSerializer
 import org.bukkit.Bukkit
-import org.bukkit.NamespacedKey
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import taboolib.library.xseries.XMaterial
 import io.github.zzzyyylllty.chotentech.util.minimessage.mmJsonUtil
 import io.github.zzzyyylllty.chotentech.util.toComponent
+import taboolib.module.ui.ClickType
 import taboolib.module.ui.openMenu
 import taboolib.module.ui.type.Chest
 import io.github.zzzyyylllty.chotentech.util.guiItem
@@ -54,12 +54,26 @@ class WarehouseMenu {
         val title = WarehouseConfig.getTitle(baseIdef)
         val contents = data.warehouseContents.getOrPut(baseIdef) { linkedMapOf() }
         var currentPage = 0
+        // 容量外的格子:屏障标记,不可使用
+        val lockedItem = guiItem(XMaterial.LIGHT_GRAY_STAINED_GLASS_PANE, "<red>未解锁格", listOf("<!i><gray>该格暂不可用"))
 
         fun totalPages(): Int = totalPagesByCapacity(maxItems)
 
+        /** 该 raw slot 是否为容量外的屏障格 */
+        fun isUnavailableSlot(rawSlot: Int): Boolean {
+            val slotIndex = CONTENT_SLOTS.indexOf(rawSlot)
+            return slotIndex != -1 && fixedKey(currentPage, slotIndex) > maxItems
+        }
+
         fun loadPage(inv: Inventory) {
             CONTENT_SLOTS.forEachIndexed { i, slot ->
-                val item = contents[fixedKey(currentPage, i)]?.let { ItemSerializer.deserialize(it) }
+                val key = fixedKey(currentPage, i)
+                if (key > maxItems) {
+                    inv.setItem(slot, lockedItem)
+                    return@forEachIndexed
+                }
+                // 先按 NBT 反序列化(1.21.4 组件系统),失败回退旧 Gson 格式(存量数据)
+                val item = contents[key]?.let { ItemSerializer.deserializeNbt(it) ?: ItemSerializer.deserialize(it) }
                 inv.setItem(slot, item)
             }
         }
@@ -67,6 +81,7 @@ class WarehouseMenu {
         fun savePage(inv: Inventory) {
             CONTENT_SLOTS.forEachIndexed { i, slot ->
                 val key = fixedKey(currentPage, i)
+                if (key > maxItems) return@forEachIndexed
                 val item = inv.getItem(slot)
 
                 if (item == null || item.type.isAir) {
@@ -76,10 +91,10 @@ class WarehouseMenu {
                     if (contents.size >= maxItems) {
                         inv.setItem(slot, null)
                     } else {
-                        ItemSerializer.serialize(item)?.let { contents[key] = it }
+                        ItemSerializer.serializeNbt(item)?.let { contents[key] = it }
                     }
                 } else {
-                    ItemSerializer.serialize(item)?.let { contents[key] = it }
+                    ItemSerializer.serializeNbt(item)?.let { contents[key] = it }
                 }
             }
         }
@@ -93,7 +108,10 @@ class WarehouseMenu {
             ))
             inv.setItem(49, guiItem(XMaterial.CHEST, "<yellow>仓库信息", listOf(
                 loreInfo("物品", "<yellow>${contents.size} <gray>/ <yellow>$maxItems"),
-                loreInfo("页数", "<yellow>${currentPage + 1} <gray>/ <yellow>$pages")
+                loreInfo("页数", "<yellow>${currentPage + 1} <gray>/ <yellow>$pages"),
+                loreInfo("额外说明", " "),
+                loreInfo("存储", "<red>不同基地之间的仓库独立"),
+                loreInfo("拓展", "<aqua>可通过完成特殊任务、取得特殊权限拓展仓库")
             )))
             inv.setItem(8, guiItem(
                 if (currentPage < pages - 1) XMaterial.ARROW else XMaterial.GRAY_STAINED_GLASS_PANE,
@@ -107,15 +125,17 @@ class WarehouseMenu {
             handLocked(false)
 
             map(
-                "CCC   D<>",
-                "         ",
-                " ....... ",
-                " ....... ",
-                " ....... ",
-                "         "
+                "CCC---D<>",
+                "---------",
+                "-.......-",
+                "-.......-",
+                "-.......-",
+                "---------",
             )
 
             set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>菜单", listOf("<!i> <yellow>点击 <green>打开菜单"), model = "kangelitem:void"))
+            set('-', guiItem(XMaterial.COMPASS, "<aqua><bold> ", listOf("<!i> <dark_gray>这里什么都没有"), model = "kangelitem:void"))
+            set('D', guiItem(XMaterial.COMPASS, "<aqua><bold> ", listOf("<!i> <dark_gray>这里什么都没有"), model = "kangelitem:void"))
 
             onBuild { _, inv ->
                 loadPage(inv)
@@ -123,8 +143,26 @@ class WarehouseMenu {
             }
 
             onClick(lock = false) { event ->
+                // 拖拽:一次拖拽可能跨多个格子(多格时 rawSlot = -1),只要涉及屏障格就整体取消
+                if (event.clickType == ClickType.DRAG) {
+                    val drag = event.dragEventOrNull()
+                    if (drag != null && drag.rawSlots.any { isUnavailableSlot(it) }) {
+                        event.isCancelled = true
+                        event.clicker.playSound(event.clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
+                        return@onClick
+                    }
+                }
+
                 val rawSlot = event.rawSlot
+                // 负数(-1/-2/-999 等)不是容器内的格子,不涉及屏障
                 if (rawSlot < 0 || rawSlot >= event.view.topInventory.size) return@onClick
+
+                // 容量外的屏障格:禁止放入/取走
+                if (isUnavailableSlot(rawSlot)) {
+                    event.isCancelled = true
+                    event.clicker.playSound(event.clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
+                    return@onClick
+                }
 
                 when (getSlot(rawSlot)) {
                     'C' -> {
@@ -156,13 +194,17 @@ class WarehouseMenu {
                         event.isCancelled = true
                         event.clicker.playSound(event.clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
                     }
+                    '-' -> {
+                        // 填充格：禁止交互
+                        event.isCancelled = true
+                    }
                 }
             }
 
             onClose { event ->
                 val p = event.player as? Player ?: return@onClose
                 val pd = p.getData() ?: return@onClose
-                savePage(event.inventory)
+                savePage(event.view.topInventory)
                 pd.warehouseContents[baseIdef] = contents
                 saveData(p)
             }

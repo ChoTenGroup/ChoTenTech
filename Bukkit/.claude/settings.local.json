@@ -28,7 +28,6 @@
       "Bash(JAVA_HOME=\"C:/Program Files/Eclipse Adoptium/jdk-21.0.11+10\" ./gradlew build)",
       "Bash(JAVA_HOME=\"C:/Program Files/Eclipse Adoptium/jdk-21.0.11+10\" ./gradlew compileKotlin)",
       "Bash(JAVA_HOME=\"C:/Program Files/Eclipse Adoptium/jdk-21.0.11+10\" jar tf build/libs/*.jar)",
-      "*",
       "Bash(chmod +x gradlew)",
       "Bash(./gradlew *)",
       "Bash(export JAVA_HOME=\"C:\\\\Program Files\\\\Eclipse Adoptium\\\\jdk-21.0.11+10\")",

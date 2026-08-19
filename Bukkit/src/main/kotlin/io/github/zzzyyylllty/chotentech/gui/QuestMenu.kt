@@ -6,6 +6,7 @@ import ink.ptms.chemdah.core.quest.Quest
 import ink.ptms.chemdah.core.quest.Task
 import ink.ptms.chemdah.core.quest.meta.Meta
 import io.github.zzzyyylllty.chotentech.chemdah.GuiItem
+import io.github.zzzyyylllty.chotentech.chemdah.addon.ChoTenUI
 import io.github.zzzyyylllty.chotentech.chemdah.addon.ChoTenUI.Companion.chotenui
 import io.github.zzzyyylllty.chotentech.chemdah.build
 import io.github.zzzyyylllty.chotentech.player.sendComponent
@@ -86,7 +87,7 @@ class QuestMenu {
                     return@onGenerate ItemStack(Material.GRAY_STAINED_GLASS_PANE)
                 } else {
                     val cui = quest.template.chotenui()
-                    val item = cui?.icon?.let { XMaterial.valueOf(it) }?.parseItem() ?: ItemStack(Material.PAPER)
+                    val item = ChoTenUI.resolveIcon(cui?.icon, "任务 ${quest.template.id}")
                     val element = quest.getTask(element.id) ?: return@onGenerate ItemStack(Material.BARRIER)
                     val progress = element.objective.getProgress(profile, element)
                     val value = progress.value.toString().toDouble().roundTo(1).toString().removeSuffix(".0")

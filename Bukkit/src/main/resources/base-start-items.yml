@@ -1,0 +1,50 @@
+# 基地仓库初始物资:玩家加入基地时,若该基地的仓库为空,自动放入以下物资(仅首次发放)
+# 未配置的基地不发初始物资。
+#
+# 物品格式(两种写法):
+#   1. 字符串简写:数量为 1
+#      - "BREAD"
+#   2. 对象写法:指定数量
+#      - item: "COOKED_BEEF"
+#        amount: 8
+#
+# 物品 ID 支持:
+#   - 插件物品: "sertraline:xxx" (如 sertraline:bandage)
+#   - 原版物品: "DIAMOND" / "BREAD"
+#   - XSeries 兼容名
+base-start-items:
+  ALP:
+    # —— L1 新手物资（全部为 sertraline 插件物品）——
+    - item: "sertraline:iron_helmet"
+    - item: "sertraline:iron_chestplate"
+    - item: "sertraline:iron_leggings"
+    - item: "sertraline:iron_boots"
+    - item: "sertraline:steel_helmet"
+    - item: "sertraline:steel_chestplate"
+    - item: "sertraline:steel_leggings"
+    - item: "sertraline:steel_boots"
+    - item: "sertraline:iron_sword"
+    - item: "sertraline:steel_sword"
+    - item: "sertraline:bread"
+      amount: 32
+    - item: "sertraline:tianlong_medkit"
+      amount: 8
+    - item: "sertraline:6ch_vaseline"
+      amount: 4
+    - item: "sertraline:bandage"
+      amount: 4
+    - item: "sertraline:antibiotic"
+      amount: 4
+    - item: "sertraline:sanity_salt"
+      amount: 8
+    - item: "sertraline:almond_water_gray"
+      amount: 4
+    - item: "sertraline:almond_water_green"
+      amount: 4
+    - item: "sertraline:boiled_almond_water"
+      amount: 4
+    - item: "sertraline:chocolate"
+      amount: 8
+  BET: []
+  GAM: []
+  OMG: []

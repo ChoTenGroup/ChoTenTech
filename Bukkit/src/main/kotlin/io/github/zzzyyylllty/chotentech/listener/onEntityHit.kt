@@ -33,14 +33,35 @@ fun entityDeathEvent(event: EntityDeathEvent) {
     }
 }
 
+//public void onPlayerDamageWithDisabledEntities(EntityDamageByEntityEvent event) {
+//    if (!(event.getDamager() instanceof Player)) {
+//        return;
+//    }
+//    Player player = (Player) event.getDamager();
+//
+//    if (player.isInvulnerable()) {
+//        return;
+//    }
+//
+//    String entityName = event.getEntity().getName();
+//    if (entityName == null) {
+//        return;
+//    }
+//    String upperName = entityName.toUpperCase();
+//
+//    if (upperName.contains("PAINT") || upperName.contains("FRAME") || upperName.contains("TEXT")) {
+//        event.setCancelled(true);
+//    }
+//}
+
 @SubscribeEvent
 fun onPlayerDamageWithDisabledEntities(event: EntityDamageByEntityEvent) {
     val player: Player = event.damager as? Player ?: return
     val entityName = event.entity.name.uppercase() ?: return
 
-    if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) return
+    if (player.gameMode.isInvulnerable) return
 
-    if (entityName.contains("PAINT") || entityName.contains("TEXT")) {
+    if (entityName.contains("PAINT") || entityName.contains("FRAME") || entityName.contains("TEXT")) {
         event.isCancelled = true
     }
 }

@@ -34,6 +34,7 @@ import taboolib.module.database.ColumnTypeSQL
 import taboolib.module.database.ColumnTypeSQLite
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.Executors
 import kotlin.math.abs
 
 
@@ -87,8 +88,6 @@ object AttributeManager {
 
     // 缓存最终计算结果。UUID -> (AttributeID -> Value)
     private val attributeCache = ConcurrentHashMap<UUID, Map<String, Double>>()
-    // 缓存每个玩家上次同步的值，用于增量更新。UUID -> (AttributeID -> Value)
-    private val lastSyncedValues = ConcurrentHashMap<UUID, Map<String, Double>>()
     // 实体属性缓存（非玩家生物，装备 NBT 计算）
     private val entityCache = ConcurrentHashMap<UUID, Map<String, Double>>()
     // 实体缓存刷新时间戳
@@ -99,6 +98,9 @@ object AttributeManager {
     private const val ENTITY_CACHE_MAX_SIZE = 2000
     // 缓存 vanillaName 到 Bukkit Attribute 实例的映射（可能为 null 表示找不到）
     private val vanillaAttributeCache = ConcurrentHashMap<String, org.bukkit.attribute.Attribute?>()
+
+    /** 快捷栏切换的解析+计算线程池:单线程保证快速连续切换时结果按提交顺序落定,立即执行不等 tick 调度 */
+    private val heldItemPool = Executors.newSingleThreadExecutor { r -> Thread(r, "ChoTenTech-HeldItem") }
 
     // 周期性任务引用
     private var regenTask: PlatformExecutor.PlatformTask? = null
@@ -226,6 +228,7 @@ object AttributeManager {
             // 营养相关属性
             AttributeType("stamina_regen_multiplier", "体力回复倍率", null, 1.0, minValue = 0.0),
             AttributeType("health_regen_multiplier", "生命回复倍率", null, 1.0, minValue = 0.0),
+            AttributeType("health_regen", "生命恢复", null, 0.2, minValue = 0.0),
             // 防御韧性：高伤害时防御效果打折，韧性减少折扣
             AttributeType("defense_toughness", "防御韧性", null, 0.0, minValue = 0.0),
             // 负重限制倍率：负重系统阈值乘以此值，默认1.0
@@ -632,6 +635,7 @@ object AttributeManager {
         regenTask = null
         entityCacheTask = null
         expiryTask = null
+        heldItemPool.shutdown()
     }
 
     /**
@@ -694,6 +698,42 @@ object AttributeManager {
         }
     }
 
+    /**
+     * 切换快捷栏专用更新:主线程立即从新槽位快照物品(事件时序中 inventory.selected 可能尚未提交,
+     * 直接读 equipment 会拿到上一格的旧物品),NBT 解析与计算在专用线程池立即执行
+     * (submitAsync 延迟 0 也要等下一个 tick 才启动),计算完成即回主线程同步原生属性。
+     * 单线程池保证连续快速切换时任务按提交顺序执行,最终同步的总是最新槽位。
+     */
+    fun updatePlayerHeldItem(player: Player, newSlot: Int) {
+        if (!player.isOnline) return
+        if (!Bukkit.isPrimaryThread()) {
+            submit(async = false) { updatePlayerHeldItem(player, newSlot) }
+            return
+        }
+        val uuid = player.uniqueId
+        // 新槽位可能为空(切到空手):照常重算以移除旧物品属性
+        val newItem = player.inventory.getItem(newSlot)?.takeIf { !it.type.isAir }
+        val snapshot = equipmentSnapshot(player, newItem)
+        heldItemPool.execute {
+            try {
+                if (!player.isOnline) return@execute
+                val data = getPlayerPersistentData(uuid)
+                val allModifiers = mutableListOf<AttributeModifier>()
+                allModifiers.addAll(data.modifiers)
+                allModifiers.addAll(getEquipmentModifiers(snapshot))
+                val finalValues = calculateFinalValues(allModifiers)
+                submit {
+                    if (!player.isOnline) return@submit
+                    attributeCache[uuid] = finalValues
+                    syncToVanillaInternal(player, finalValues)
+                }
+            } catch (e: Exception) {
+                devLog("AttributeManager: 切快捷栏异步更新失败 ${player.name}: ${e.message}")
+                submit { if (player.isOnline) doUpdate(player) }
+            }
+        }
+    }
+
     private fun doUpdate(player: Player) {
         val uuid = player.uniqueId
         val data = getPlayerPersistentData(uuid)
@@ -718,6 +758,19 @@ object AttributeManager {
         allModifiers.addAll(getEquipmentModifiers(player))
 
         // 3. 计算最终值
+        val finalValues = calculateFinalValues(allModifiers)
+
+        // 4. 更新内存缓存
+        attributeCache[uuid] = finalValues
+
+        taboolib.common.platform.function.debug("AttributeManager: calculated final values for ${player.name}: ${finalValues.entries.joinToString { "${it.key}=${it.value}" }}")
+
+        // 5. 同步到 Minecraft 原生属性系统（直接调用，调用方已保证在主线程）
+        syncToVanillaInternal(player, finalValues)
+    }
+
+    /** 按注册的属性类型汇总修饰符并计算最终值(纯计算,可异步线程调用) */
+    private fun calculateFinalValues(allModifiers: List<AttributeModifier>): Map<String, Double> {
         val finalValues = mutableMapOf<String, Double>()
         attributeRegistry.values.forEach { type ->
             val modsForAttr = allModifiers.filter { it.attributeId == type.id }
@@ -733,14 +786,7 @@ object AttributeManager {
                 }
             }
         }
-
-        // 4. 更新内存缓存
-        attributeCache[uuid] = finalValues
-
-        taboolib.common.platform.function.debug("AttributeManager: calculated final values for ${player.name}: ${finalValues.entries.joinToString { "${it.key}=${it.value}" }}")
-
-        // 5. 同步到 Minecraft 原生属性系统（直接调用，调用方已保证在主线程）
-        syncToVanillaInternal(player, finalValues)
+        return finalValues
     }
 
     private fun calculateFinal(base: Double, modifiers: List<AttributeModifier>): Double {
@@ -759,15 +805,6 @@ object AttributeManager {
         return (base + add) * (1.0 + percent) * multiply
     }
 
-    /**
-     * 将缓存中的最终属性值同步到 Minecraft 原生属性系统
-     * 用于玩家加入/重生后延迟同步，避免被 Minecraft 自身重置覆盖
-     */
-    fun syncToVanilla(player: Player) {
-        val values = attributeCache[player.uniqueId] ?: return
-        syncToVanillaInternal(player, values)
-    }
-
     private fun syncToVanillaInternal(player: Player, values: Map<String, Double>) {
         if (!player.isOnline) return
 
@@ -779,13 +816,7 @@ object AttributeManager {
             return
         }
 
-        val uuid = player.uniqueId
-
         taboolib.common.platform.function.debug("AttributeManager: syncing vanilla attributes for ${player.name} (${values.size} calculated values)")
-
-        // 获取上次同步的值
-        val lastValues = lastSyncedValues.getOrDefault(uuid, emptyMap())
-        val newValues = mutableMapOf<String, Double>()
 
         // 遍历所有有 vanillaName 的已注册属性
         for (type in attributeRegistry.values) {
@@ -804,7 +835,6 @@ object AttributeManager {
             val bukkitAttribute = getVanillaAttribute(vanillaName)
             if (bukkitAttribute == null) {
                 taboolib.common.platform.function.debug("AttributeManager: cannot sync $attributeId ($vanillaName) - bukkit attribute not found")
-                // 不记录到 lastSyncedValues，下次重试
                 continue
             }
 
@@ -812,38 +842,15 @@ object AttributeManager {
             val instance = player.getAttribute(bukkitAttribute)
             if (instance == null) {
                 taboolib.common.platform.function.debug("AttributeManager: cannot sync $attributeId ($vanillaName) - player attribute instance not found")
-                // 不记录到 lastSyncedValues，下次重试
                 continue
             }
 
-            // 获取上次同步的值（如果有）
-            val lastValue = lastValues[attributeId]
-
-            // 如果值没有变化，跳过（增量更新）
-            if (lastValue != null && lastValue == targetValue) {
-                newValues[attributeId] = targetValue
-                continue
-            }
-
-            // 设置基础值（直接覆盖）
+            // 无条件覆盖基础值:重生/加入时 Minecraft 会重建实体并把 baseValue 重置为默认值,
+            // 若依赖"值未变化则跳过"的增量判断,会导致 vanilla 实际值与缓存永久不一致(如攻击速度残留)
             val oldBaseValue = instance.baseValue
             instance.baseValue = targetValue
-            val newBaseValue = instance.baseValue
-
-            // 记录新值
-            newValues[attributeId] = targetValue
-
-            // 调试日志
-            if (lastValue != null) {
-                taboolib.common.platform.function.debug("AttributeManager: updated $attributeId ($vanillaName) from $lastValue to $targetValue (base: $oldBaseValue -> $newBaseValue) for ${player.name}")
-            } else {
-                taboolib.common.platform.function.debug("AttributeManager: set $attributeId ($vanillaName) to $targetValue (base: $oldBaseValue -> $newBaseValue) for ${player.name}")
-            }
+            taboolib.common.platform.function.debug("AttributeManager: set $attributeId ($vanillaName) to $targetValue (base: $oldBaseValue -> ${instance.baseValue}) for ${player.name}")
         }
-
-        // 更新上次同步的值缓存：仅记录实际成功同步的属性
-        // 失败的属性（bukkitAttribute null 或 instance null）不会被记录，下次会重试
-        lastSyncedValues[uuid] = newValues.toMap()
     }
 
     /**
@@ -938,22 +945,26 @@ object AttributeManager {
         }
     }
 
-    @Suppress("UNUSED_PARAMETER")
-    private fun getEquipmentModifiers(player: Player): List<AttributeModifier> {
-        val modifiers = mutableListOf<AttributeModifier>()
-        val equipment = player.equipment ?: return modifiers
+    private fun getEquipmentModifiers(player: Player): List<AttributeModifier> =
+        getEquipmentModifiers(equipmentSnapshot(player, null))
 
-        val slotItems = listOfNotNull(
+    /** 主线程调用的装备快照(物品均已克隆,可安全交给异步线程解析 NBT) */
+    private fun equipmentSnapshot(player: Player, mainHandOverride: ItemStack?): List<Pair<String, ItemStack>> {
+        val equipment = player.equipment ?: return emptyList()
+        return listOfNotNull(
             "HEAD" to equipment.helmet,
             "CHEST" to equipment.chestplate,
             "LEGS" to equipment.leggings,
             "FEET" to equipment.boots,
-            "MAIN_HAND" to equipment.itemInMainHand.takeIf { !it.type.isAir },
-            "OFF_HAND" to equipment.itemInOffHand.takeIf { !it.type.isAir }
+            "MAIN_HAND" to (mainHandOverride ?: equipment.itemInMainHand),
+            "OFF_HAND" to equipment.itemInOffHand,
         ).mapNotNull { (slot, item) ->
-            val actual = item?.takeIf { !it.type.isAir } ?: return@mapNotNull null
-            slot to actual
+            item?.takeIf { !it.type.isAir }?.let { slot to it.clone() }
         }
+    }
+
+    private fun getEquipmentModifiers(snapshot: List<Pair<String, ItemStack>>): List<AttributeModifier> {
+        val modifiers = mutableListOf<AttributeModifier>()
 
         val sourceBySlot = mapOf(
             "HEAD" to ModifierSource.ARMOR,
@@ -964,7 +975,7 @@ object AttributeManager {
             "OFF_HAND" to ModifierSource.OFFHAND
         )
 
-        for ((actualSlot, item) in slotItems) {
+        for ((actualSlot, item) in snapshot) {
             val chotenatb = readChotenatbTag(item) ?: continue
             val source = sourceBySlot[actualSlot] ?: ModifierSource.OTHER
             for (entry in chotenatb) {
@@ -1208,7 +1219,6 @@ object AttributeManager {
     fun clearCache(uuid: UUID) {
         persistentDataCache.remove(uuid.toString())
         attributeCache.remove(uuid)
-        lastSyncedValues.remove(uuid)
         entityCache.remove(uuid)
         entityCacheTimestamps.remove(uuid)
     }

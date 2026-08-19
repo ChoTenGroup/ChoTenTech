@@ -43,6 +43,7 @@ default:
   external-injury-regen: 0
   internal-injury-regen: 0
   sanity-regen: 0.0
+  health-regen: 0.2
   nutrition-grain: 50.0
   nutrition-vitamin: 50.0
   nutrition-protein: 50.0
@@ -72,7 +73,8 @@ warehouse:
   # 基地独立仓库配置（覆盖全局设置）
   base:
     ALP:
-      default-slots: 36
+      # 63 格容纳 L1 新手物资全套（装备 10 + 食物/医疗 49 组按堆叠上限 1 估算）
+      default-slots: 63
       title: "Alpha基地仓库"
       max-total-slots: 63
 
