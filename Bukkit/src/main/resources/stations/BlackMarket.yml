@@ -1,0 +1,88 @@
+BlackMarket:
+  name: "<black>黑市"
+  queue: 8
+  recipes:
+    thermite:
+      id: sertraline:thermite
+      buy:
+        - sertraline:iron_ingot:1
+        - sertraline:coal:1
+        - point:3
+      time: 40
+    atomic_gunpowder:
+      id: sertraline:atomic_gunpowder
+      buy:
+        - sertraline:coal:1
+        - sertraline:carbon:1
+        - point:6
+      time: 50
+    gunpowder_kangel:
+      id: sertraline:gunpowder_kangel
+      buy:
+        - sertraline:coal:1
+        - sertraline:carbon:1
+        - point:15
+      time: 90
+    gunpowder_rain:
+      id: sertraline:gunpowder_rain
+      buy:
+        - sertraline:coal:1
+        - sertraline:carbon:1
+        - point:15
+      time: 90
+    6ch_grenade:
+      id: sertraline:6ch_grenade
+      buy:
+        - sertraline:iron_ingot:1
+        - sertraline:coal:1
+        - point:3
+      time: 60
+    shakalaka_grenade:
+      id: sertraline:shakalaka_grenade
+      buy:
+        - sertraline:iron_ingot:1
+        - sertraline:coal:2
+        - point:5
+      time: 80
+    hqlm_petrol:
+      id: sertraline:hqlm_petrol
+      buy:
+        - sertraline:coal:1
+        - sertraline:carbon:1
+        - point:2
+      time: 45
+    firesalt_petrol:
+      id: sertraline:firesalt_petrol
+      buy:
+        - sertraline:coal:2
+        - sertraline:carbon:1
+        - point:2
+      time: 60
+    nizxc_flash:
+      id: sertraline:nizxc_flash
+      buy:
+        - sertraline:paper:1
+        - sertraline:coal:1
+        - point:1
+      time: 40
+    zx_stun:
+      id: sertraline:zx_stun
+      buy:
+        - sertraline:paper:1
+        - sertraline:coal:1
+        - point:1
+      time: 40
+    ice_stun:
+      id: sertraline:ice_stun
+      buy:
+        - sertraline:paper:1
+        - sertraline:coal:1
+        - point:1
+      time: 40
+    shengguang_grenade:
+      id: sertraline:shengguang_grenade
+      buy:
+        - sertraline:paper:1
+        - sertraline:coal:1
+        - point:1
+      time: 40

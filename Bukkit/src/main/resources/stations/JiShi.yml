@@ -1,0 +1,57 @@
+JiShi:
+  name: "<gold>技师"
+  queue: 8
+  recipes:
+    bandage:
+      id: sertraline:bandage
+      buy:
+        - sertraline:fabric_skin:1
+        - sertraline:rag:1
+        - money:40
+      time: 40
+    sterile_bandage:
+      id: sertraline:sterile_bandage
+      buy:
+        - sertraline:fabric_skin:1
+        - sertraline:rag:1
+        - money:60
+      time: 50
+    painkiller_pills:
+      id: sertraline:painkiller_pills
+      buy:
+        - sertraline:rag:1
+        - sertraline:paper:1
+        - money:50
+      time: 45
+    charcoal:
+      id: sertraline:charcoal
+      buy:
+        - sertraline:wood:2
+        - money:30
+      time: 40
+    iron_sword:
+      id: sertraline:iron_sword
+      buy:
+        - sertraline:iron_ingot:2
+        - sertraline:wood:1
+        - money:700
+      time: 100
+    iron_chestplate:
+      id: sertraline:iron_chestplate
+      buy:
+        - sertraline:iron_ingot:4
+        - money:1200
+      time: 120
+    steel_sword:
+      id: sertraline:steel_sword
+      buy:
+        - sertraline:steel_ingot:3
+        - money:1600
+      time: 160
+    onefirst_medkit:
+      id: sertraline:onefirst_medkit
+      buy:
+        - sertraline:fabric_skin:2
+        - sertraline:rag:2
+        - money:460
+      time: 130

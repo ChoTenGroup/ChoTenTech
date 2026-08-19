@@ -1,0 +1,73 @@
+TheAchu:
+  name: "<gold>阿初"
+  queue: 8
+  recipes:
+    almond_water_blue:
+      id: sertraline:almond_water_blue
+      buy:
+        - sertraline:glass_bottle:1
+        - sertraline:rag:1
+        - money:90
+      time: 50
+    almond_water_red:
+      id: sertraline:almond_water_red
+      buy:
+        - sertraline:glass_bottle:1
+        - sertraline:rag:1
+        - money:90
+      time: 50
+    almond_water_green:
+      id: sertraline:almond_water_green
+      buy:
+        - sertraline:glass_bottle:1
+        - sertraline:rag:1
+        - money:90
+      time: 50
+    bandage:
+      id: sertraline:bandage
+      buy:
+        - sertraline:fabric_skin:1
+        - sertraline:rag:1
+        - money:40
+      time: 40
+    sterile_bandage:
+      id: sertraline:sterile_bandage
+      buy:
+        - sertraline:fabric_skin:1
+        - sertraline:rag:1
+        - money:60
+      time: 50
+    painkiller_pills:
+      id: sertraline:painkiller_pills
+      buy:
+        - sertraline:rag:1
+        - sertraline:paper:1
+        - money:50
+      time: 45
+    bread:
+      id: sertraline:bread
+      buy:
+        - sertraline:wheat:1
+        - money:10
+      time: 25
+    apple_can:
+      id: sertraline:apple_can
+      buy:
+        - sertraline:apple:1
+        - sertraline:sugar_cane:1
+        - money:30
+      time: 60
+    mre:
+      id: sertraline:mre
+      buy:
+        - sertraline:wheat:1
+        - sertraline:beef:1
+        - money:60
+      time: 90
+    boiled_almond_water:
+      id: sertraline:boiled_almond_water
+      buy:
+        - sertraline:almond_water_blue:1
+        - sertraline:coal:1
+        - money:100
+      time: 120

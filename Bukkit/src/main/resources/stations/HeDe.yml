@@ -1,0 +1,66 @@
+HeDe:
+  name: "<gold>赫德"
+  queue: 8
+  recipes:
+    bandage:
+      id: sertraline:bandage
+      buy:
+        - sertraline:fabric_skin:1
+        - sertraline:rag:1
+        - point:5
+      time: 40
+    sterile_bandage:
+      id: sertraline:sterile_bandage
+      buy:
+        - sertraline:fabric_skin:1
+        - sertraline:rag:1
+        - point:4
+      time: 50
+    painkiller_pills:
+      id: sertraline:painkiller_pills
+      buy:
+        - sertraline:rag:1
+        - sertraline:paper:1
+        - point:4
+      time: 45
+    antibiotic:
+      id: sertraline:antibiotic
+      buy:
+        - sertraline:fabric_skin:1
+        - sertraline:glass_bottle:1
+        - sertraline:paper:1
+        - point:4
+      time: 70
+    bread:
+      id: sertraline:bread
+      buy:
+        - sertraline:wheat:1
+        - point:2
+      time: 25
+    book:
+      id: sertraline:book
+      buy:
+        - sertraline:paper:3
+        - point:20
+      time: 80
+    mre:
+      id: sertraline:mre
+      buy:
+        - sertraline:wheat:1
+        - sertraline:beef:1
+        - point:5
+      time: 90
+    iron_sword:
+      id: sertraline:iron_sword
+      buy:
+        - sertraline:iron_ingot:2
+        - sertraline:wood:1
+        - point:70
+      time: 100
+    onefirst_medkit:
+      id: sertraline:onefirst_medkit
+      buy:
+        - sertraline:fabric_skin:2
+        - sertraline:rag:2
+        - point:45
+      time: 130

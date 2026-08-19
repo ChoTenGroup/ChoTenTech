@@ -1,0 +1,65 @@
+MiZhen:
+  name: "<gold>米真"
+  queue: 8
+  recipes:
+    matches:
+      id: sertraline:matches
+      buy:
+        - sertraline:wood:2
+        - point:2
+      time: 15
+    tape:
+      id: sertraline:tape
+      buy:
+        - sertraline:plastic:1
+        - point:2
+      time: 15
+    charcoal:
+      id: sertraline:charcoal
+      buy:
+        - sertraline:wood:2
+        - point:3
+      time: 40
+    flint_sharp:
+      id: sertraline:flint_sharp
+      buy:
+        - sertraline:flint:2
+        - sertraline:stone:1
+        - point:4
+      time: 25
+    copper_ingot:
+      id: sertraline:copper_ingot
+      buy:
+        - sertraline:raw_copper:1
+        - sertraline:coal:1
+        - point:2
+      time: 60
+    iron_ingot:
+      id: sertraline:iron_ingot
+      buy:
+        - sertraline:raw_iron:1
+        - sertraline:coal:1
+        - point:2
+      time: 70
+    bronze_ingot:
+      id: sertraline:bronze_ingot
+      buy:
+        - sertraline:raw_copper:1
+        - sertraline:raw_iron:1
+        - sertraline:coal:1
+        - point:2
+      time: 75
+    basic_alloy_ingot:
+      id: sertraline:basic_alloy_ingot
+      buy:
+        - sertraline:raw_iron:1
+        - sertraline:coal:1
+        - point:2
+      time: 85
+    steel_ingot:
+      id: sertraline:steel_ingot
+      buy:
+        - sertraline:iron_ingot:2
+        - sertraline:coal:2
+        - point:6
+      time: 110

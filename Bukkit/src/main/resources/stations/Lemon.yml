@@ -1,0 +1,69 @@
+Lemon:
+  name: "<gold>柠檬"
+  queue: 8
+  recipes:
+    leather_helmet:
+      id: sertraline:leather_helmet
+      buy:
+        - sertraline:leather_unprocessed:2
+        - point:1
+      time: 30
+    leather_chestplate:
+      id: sertraline:leather_chestplate
+      buy:
+        - sertraline:leather_unprocessed:3
+      time: 40
+    leather_leggings:
+      id: sertraline:leather_leggings
+      buy:
+        - sertraline:leather_unprocessed:2
+        - point:1
+      time: 35
+    leather_boots:
+      id: sertraline:leather_boots
+      buy:
+        - sertraline:leather_unprocessed:2
+      time: 30
+    gold_sword:
+      id: sertraline:gold_sword
+      buy:
+        - sertraline:gold_ingot_medium:2
+        - point:30
+      time: 95
+    bronze_chestplate:
+      id: sertraline:bronze_chestplate
+      buy:
+        - sertraline:bronze_ingot:4
+        - point:70
+      time: 100
+    iron_sword:
+      id: sertraline:iron_sword
+      buy:
+        - sertraline:iron_ingot:2
+        - sertraline:wood:1
+        - point:70
+      time: 100
+    iron_chestplate:
+      id: sertraline:iron_chestplate
+      buy:
+        - sertraline:iron_ingot:4
+        - point:120
+      time: 120
+    basic_alloy_sword:
+      id: sertraline:basic_alloy_sword
+      buy:
+        - sertraline:basic_alloy_ingot:3
+        - point:120
+      time: 130
+    steel_sword:
+      id: sertraline:steel_sword
+      buy:
+        - sertraline:steel_ingot:3
+        - point:150
+      time: 160
+    steel_chestplate:
+      id: sertraline:steel_chestplate
+      buy:
+        - sertraline:steel_ingot:4
+        - point:180
+      time: 180

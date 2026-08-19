@@ -1,5 +1,43 @@
 MinZe:
   name: "<gold>悯泽"
+
+  level:
+    1:
+      - type: level
+        level: main
+        value: 5
+      - type: quota
+        balance: money
+        value: 500
+    2:
+      - type: level
+        level: main
+        value: 8
+      - type: quota
+        balance: money
+        value: 3000
+    3:
+      - type: level
+        level: main
+        value: 12
+      - type: quota
+        balance: money
+        value: 10000
+    4:
+      - type: level
+        level: main
+        value: 16
+      - type: quota
+        balance: money
+        value: 30000
+    5:
+      - type: level
+        level: main
+        value: 20
+      - type: quota
+        balance: money
+        value: 80000
+
   items:
     # Lv.1 - 基础矿物
     silver_ingot:

@@ -1,0 +1,62 @@
+HuGe:
+  name: "<gold>胡哥"
+  queue: 8
+  recipes:
+    bread:
+      id: sertraline:bread
+      buy:
+        - sertraline:wheat:1
+        - point:2
+      time: 25
+    apple_can:
+      id: sertraline:apple_can
+      buy:
+        - sertraline:apple:1
+        - sertraline:sugar_cane:1
+        - point:2
+      time: 60
+    beef_can:
+      id: sertraline:beef_can
+      buy:
+        - sertraline:beef:1
+        - sertraline:potato:1
+        - point:2
+      time: 65
+    cooked_porkchop:
+      id: sertraline:cooked_porkchop
+      buy:
+        - sertraline:porkchop:1
+        - point:2
+      time: 20
+    cooked_beef:
+      id: sertraline:cooked_beef
+      buy:
+        - sertraline:beef:1
+        - point:2
+      time: 22
+    cooked_chicken:
+      id: sertraline:cooked_chicken
+      buy:
+        - sertraline:chicken:1
+        - point:2
+      time: 20
+    cooked_mutton:
+      id: sertraline:cooked_mutton
+      buy:
+        - sertraline:mutton:1
+        - point:2
+      time: 22
+    iron_ingot:
+      id: sertraline:iron_ingot
+      buy:
+        - sertraline:raw_iron:1
+        - sertraline:coal:1
+        - point:2
+      time: 70
+    gold_ingot_medium:
+      id: sertraline:gold_ingot_medium
+      buy:
+        - sertraline:raw_gold:1
+        - sertraline:coal:1
+        - point:5
+      time: 80

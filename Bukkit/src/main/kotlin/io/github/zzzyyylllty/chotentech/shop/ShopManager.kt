@@ -1,5 +1,6 @@
 package io.github.zzzyyylllty.chotentech.shop
 
+import io.github.zzzyyylllty.chotentech.data.DataManager
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.configuration.file.YamlConfiguration
 import taboolib.common.platform.function.getDataFolder
@@ -13,7 +14,6 @@ object ShopManager {
     private val playerPurchaseCount = mutableMapOf<String, MutableMap<String, Long>>()
     private val globalResetTimers = mutableMapOf<String, Long>()
     private val playerResetTimers = mutableMapOf<String, MutableMap<String, Long>>()
-    private val playerSalesByShop = mutableMapOf<String, MutableMap<String, Long>>()  // shopId -> playerId -> totalSales
 
     private var defaultsConfig: YamlConfiguration? = null
 
@@ -377,9 +377,9 @@ object ShopManager {
                     reqs.add(Requirement(
                         mode = m["mode"] as? String ?: "",
                         papi = m["papi"] as? String ?: "",
-                        value = m["value"] as? String ?: "",
+                        value = m["value"]?.toString() ?: "",
                         display = m["display"] as? String ?: "",
-                        level = m["level"] as? String ?: "",
+                        level = m["level"]?.toString() ?: "",
                         affection = m["affection"] as? String ?: "",
                         affectionValue = (m["affection-value"] as? Number)?.toInt() ?: 0
                     ))
@@ -449,13 +449,20 @@ object ShopManager {
             .compute(playerId) { _, v -> (v ?: 0L) + amount }
     }
 
-    fun recordSale(shopId: String, playerId: String, amount: Long) {
-        playerSalesByShop.computeIfAbsent(shopId) { mutableMapOf() }
-            .merge(playerId, amount, Long::plus)
+    /**
+     * 记录玩家出售给该商店的累计额（商人等级 quota），按货币分开累计。
+     * 持久化在 PlayerData.shopSales（shopId -> 货币 -> 累计额），重启保留。
+     */
+    fun recordSale(shopId: String, playerId: String, currency: String, amount: Long) {
+        val data = DataManager.getData(playerId) ?: return
+        val byCurrency = data.shopSales.getOrPut(shopId) { mutableMapOf() }
+        byCurrency[currency] = (byCurrency[currency] ?: 0L) + amount
     }
 
-    fun getPlayerSales(shopId: String, playerId: String): Long {
-        return playerSalesByShop[shopId]?.get(playerId) ?: 0L
+    /** 指定货币的出售累计额; currency 为空时返回该商店所有货币之和（兼容旧配置） */
+    fun getPlayerSales(shopId: String, playerId: String, currency: String): Long {
+        val byCurrency = DataManager.getData(playerId)?.shopSales?.get(shopId) ?: return 0L
+        return if (currency.isBlank()) byCurrency.values.sum() else byCurrency[currency] ?: 0L
     }
 
     fun parseDuration(duration: String): Long {

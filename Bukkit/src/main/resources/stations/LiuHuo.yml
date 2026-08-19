@@ -1,0 +1,78 @@
+LiuHuo:
+  name: "<gold>刘火"
+  queue: 8
+  recipes:
+    copper_wire:
+      id: sertraline:copper_wire
+      buy:
+        - sertraline:raw_copper:1
+        - sertraline:coal:1
+        - point:2
+      time: 30
+    silver_wire:
+      id: sertraline:silver_wire
+      buy:
+        - sertraline:silver_ingot:1
+        - sertraline:coal:1
+        - point:2
+      time: 35
+    battery:
+      id: sertraline:battery
+      buy:
+        - sertraline:copper_wire:1
+        - sertraline:plastic:1
+        - point:2
+      time: 50
+    motor:
+      id: sertraline:motor
+      buy:
+        - sertraline:copper_wire:1
+        - sertraline:screw:2
+        - point:2
+      time: 55
+    drill:
+      id: sertraline:drill
+      buy:
+        - sertraline:copper_wire:1
+        - sertraline:iron_ingot:1
+        - point:2
+      time: 60
+    wrench:
+      id: sertraline:wrench
+      buy:
+        - sertraline:copper_wire:1
+        - sertraline:iron_ingot:1
+        - point:2
+      time: 55
+    precision_parts:
+      id: sertraline:precision_parts
+      buy:
+        - sertraline:copper_wire:2
+        - sertraline:gear:2
+        - point:4
+      time: 90
+    battery_set:
+      id: sertraline:battery_set
+      buy:
+        - sertraline:battery:1
+        - sertraline:copper_wire:1
+        - point:4
+      time: 80
+    gold_ingot_medium:
+      id: sertraline:gold_ingot_medium
+      buy:
+        - sertraline:raw_gold:1
+        - sertraline:coal:1
+        - point:5
+      time: 80
+    advanced_ai_core:
+      id: sertraline:advanced_ai_core
+      buy:
+        - sertraline:cpu:1
+        - sertraline:ram_stick:1
+        - point:100
+      time: 300
+      condition:
+        kether: "quest select PursuingPerformance quest completed"
+        display: |-
+          完成 追求绩效 任务

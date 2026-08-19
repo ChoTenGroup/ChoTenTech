@@ -1,0 +1,49 @@
+Zero:
+  name: "<gold>零"
+  queue: 8
+  recipes:
+    vodka:
+      id: sertraline:vodka
+      buy:
+        - sertraline:potato:2
+        - money:120
+      time: 120
+    moonshine:
+      id: sertraline:moonshine
+      buy:
+        - sertraline:wheat:2
+        - sertraline:sugar_cane:1
+        - money:150
+      time: 130
+    beer:
+      id: sertraline:beer
+      buy:
+        - sertraline:wheat:2
+        - money:100
+      time: 110
+    rio:
+      id: sertraline:rio
+      buy:
+        - sertraline:berry:3
+        - sertraline:sugar_cane:1
+        - money:80
+      time: 90
+    suntory_whisky:
+      id: sertraline:suntory_whisky
+      buy:
+        - sertraline:wheat:2
+        - money:200
+      time: 180
+    welcome_wine:
+      id: sertraline:welcome_wine
+      buy:
+        - sertraline:berry:2
+        - money:100
+      time: 100
+    tno_noodles:
+      id: sertraline:tno_noodles
+      buy:
+        - sertraline:wheat:2
+        - sertraline:potato:1
+        - money:120
+      time: 110

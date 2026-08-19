@@ -461,8 +461,14 @@ object ExamplePapiHook : PlaceholderExpansion {
             }
             "affection" -> {
                 val data = player?.getData() ?: return "0"
-                val npcId = list.getOrNull(1)?.lowercase() ?: return "0"
-                return data.affection[npcId]?.toString() ?: "0"
+                // NPC ID is case-sensitive in PlayerData; preserve the placeholder argument
+                // and fall back to a case-insensitive match for compatibility with old data.
+                val npcId = list.getOrNull(1) ?: return "0"
+                return data.affection[npcId]?.toString()
+                    ?: data.affection.entries
+                        .firstOrNull { it.key.equals(npcId, ignoreCase = true) }
+                        ?.value?.toString()
+                    ?: "0"
             }
             "meta" -> {
                 if (player == null) return ""

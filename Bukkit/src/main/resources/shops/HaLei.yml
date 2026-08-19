@@ -1,5 +1,43 @@
 HaLei:
   name: "<gold>哈雷"
+
+  level:
+    1:
+      - type: level
+        level: main
+        value: 7
+      - type: quota
+        balance: money
+        value: 1000
+    2:
+      - type: level
+        level: main
+        value: 11
+      - type: quota
+        balance: money
+        value: 8000
+    3:
+      - type: level
+        level: main
+        value: 15
+      - type: quota
+        balance: money
+        value: 30000
+    4:
+      - type: level
+        level: main
+        value: 19
+      - type: quota
+        balance: money
+        value: 80000
+    5:
+      - type: level
+        level: main
+        value: 24
+      - type: quota
+        balance: money
+        value: 200000
+
   items:
     # Lv.1 - 武器
     bronze_sword:

@@ -1,0 +1,81 @@
+MinZe:
+  name: "<gold>悯泽"
+  queue: 8
+  recipes:
+    examination_paper:
+      id: sertraline:examination_paper
+      buy:
+        - sertraline:paper:3
+        - money:20
+      time: 40
+    disk:
+      id: sertraline:disk
+      buy:
+        - sertraline:copper_wire:1
+        - sertraline:plastic:1
+        - sertraline:iron_ingot:1
+        - money:40
+      time: 80
+    u_disk:
+      id: sertraline:u_disk
+      buy:
+        - sertraline:copper_wire:1
+        - sertraline:plastic:1
+        - money:30
+      time: 55
+    basic_ai_core:
+      id: sertraline:basic_ai_core
+      buy:
+        - sertraline:copper_wire:2
+        - sertraline:plastic:1
+        - money:20
+      time: 90
+    ultraviolet_lamp:
+      id: sertraline:ultraviolet_lamp
+      buy:
+        - sertraline:pcb:1
+        - sertraline:light_bulb:1
+        - sertraline:copper_wire:1
+        - money:100
+      time: 100
+    soundproof_panel:
+      id: sertraline:soundproof_panel
+      buy:
+        - sertraline:pcb:1
+        - sertraline:plastic:2
+        - money:100
+      time: 100
+    hearing_aid:
+      id: sertraline:hearing_aid
+      buy:
+        - sertraline:pcb:1
+        - sertraline:copper_wire:2
+        - money:300
+      time: 120
+    record_player:
+      id: sertraline:record_player
+      buy:
+        - sertraline:pcb:1
+        - sertraline:motor:1
+        - sertraline:copper_wire:1
+        - money:350
+      time: 150
+    3d_vision_glasses:
+      id: sertraline:3d_vision_glasses
+      buy:
+        - sertraline:pcb:1
+        - sertraline:copper_wire:2
+        - money:400
+      time: 160
+    pro_ai_core:
+      id: sertraline:pro_ai_core
+      buy:
+        - sertraline:basic_ai_core:1
+        - sertraline:cpu:1
+        - sertraline:ram_stick:1
+        - money:1500
+      time: 360
+      condition:
+        kether: "quest select TakeOffPlane quest completed"
+        display: |-
+          完成 人在后室刚下飞机 任务

@@ -1,0 +1,94 @@
+HaLei:
+  name: "<gold>哈雷"
+  queue: 8
+  recipes:
+    raw_coal:
+      id: sertraline:raw_coal
+      buy:
+        - sertraline:wood:1
+        - money:30
+      time: 15
+    coal:
+      id: sertraline:coal
+      buy:
+        - sertraline:raw_coal:1
+        - money:30
+      time: 25
+    iron_ingot:
+      id: sertraline:iron_ingot
+      buy:
+        - sertraline:raw_iron:1
+        - sertraline:coal:1
+        - money:20
+      time: 50
+    bronze_ingot:
+      id: sertraline:bronze_ingot
+      buy:
+        - sertraline:copper_ingot:1
+        - sertraline:iron_ingot:1
+        - money:40
+      time: 65
+    gold_ingot_low:
+      id: sertraline:gold_ingot_low
+      buy:
+        - sertraline:raw_gold:1
+        - sertraline:coal:1
+        - money:30
+      time: 60
+    basic_alloy_ingot:
+      id: sertraline:basic_alloy_ingot
+      buy:
+        - sertraline:iron_ingot:1
+        - sertraline:bronze_ingot:1
+        - money:50
+      time: 80
+    steel_ingot:
+      id: sertraline:steel_ingot
+      buy:
+        - sertraline:iron_ingot:2
+        - sertraline:carbon:1
+        - money:80
+      time: 100
+    bronze_sword:
+      id: sertraline:bronze_sword
+      buy:
+        - sertraline:bronze_ingot:3
+        - money:600
+      time: 90
+    bronze_boots:
+      id: sertraline:bronze_boots
+      buy:
+        - sertraline:bronze_ingot:2
+        - money:500
+      time: 75
+    gold_sword:
+      id: sertraline:gold_sword
+      buy:
+        - sertraline:gold_ingot_medium:2
+        - money:400
+      time: 95
+    iron_sword:
+      id: sertraline:iron_sword
+      buy:
+        - sertraline:iron_ingot:2
+        - sertraline:wood:1
+        - money:700
+      time: 100
+    iron_chestplate:
+      id: sertraline:iron_chestplate
+      buy:
+        - sertraline:iron_ingot:4
+        - money:1200
+      time: 120
+    steel_sword:
+      id: sertraline:steel_sword
+      buy:
+        - sertraline:steel_ingot:3
+        - money:1600
+      time: 160
+    steel_chestplate:
+      id: sertraline:steel_chestplate
+      buy:
+        - sertraline:steel_ingot:4
+        - money:2000
+      time: 180

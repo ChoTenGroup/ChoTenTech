@@ -1,0 +1,70 @@
+xite:
+  name: "<gold>西特"
+  queue: 8
+  recipes:
+    bandage:
+      id: sertraline:bandage
+      buy:
+        - sertraline:fabric_skin:1
+        - sertraline:rag:1
+        - money:40
+      time: 40
+    sterile_bandage:
+      id: sertraline:sterile_bandage
+      buy:
+        - sertraline:fabric_skin:1
+        - sertraline:rag:1
+        - money:60
+      time: 50
+    painkiller_pills:
+      id: sertraline:painkiller_pills
+      buy:
+        - sertraline:rag:1
+        - sertraline:paper:1
+        - money:50
+      time: 45
+    bread:
+      id: sertraline:bread
+      buy:
+        - sertraline:wheat:1
+        - money:10
+      time: 25
+    cracker:
+      id: sertraline:cracker
+      buy:
+        - sertraline:wheat:1
+        - money:10
+      time: 20
+    tape:
+      id: sertraline:tape
+      buy:
+        - sertraline:plastic:1
+        - money:10
+      time: 15
+    almond_water_gray:
+      id: sertraline:almond_water_gray
+      buy:
+        - sertraline:glass_bottle:1
+        - sertraline:rag:1
+        - money:90
+      time: 50
+    mre:
+      id: sertraline:mre
+      buy:
+        - sertraline:wheat:1
+        - sertraline:beef:1
+        - money:60
+      time: 90
+    iron_sword:
+      id: sertraline:iron_sword
+      buy:
+        - sertraline:iron_ingot:2
+        - sertraline:wood:1
+        - money:700
+      time: 100
+    steel_sword:
+      id: sertraline:steel_sword
+      buy:
+        - sertraline:steel_ingot:3
+        - money:1600
+      time: 160

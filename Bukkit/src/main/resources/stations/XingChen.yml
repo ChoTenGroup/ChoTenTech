@@ -1,0 +1,42 @@
+XingChen:
+  name: "<gold>星辰"
+  queue: 8
+  recipes:
+    copper_wire:
+      id: sertraline:copper_wire
+      buy:
+        - sertraline:raw_copper:1
+        - sertraline:coal:1
+        - point:2
+      time: 30
+    silver_wire:
+      id: sertraline:silver_wire
+      buy:
+        - sertraline:silver_ingot:1
+        - sertraline:coal:1
+        - point:2
+      time: 35
+    gold_ingot_low:
+      id: sertraline:gold_ingot_low
+      buy:
+        - sertraline:raw_gold:1
+        - sertraline:coal:1
+        - point:3
+      time: 70
+    gold_ingot_medium:
+      id: sertraline:gold_ingot_medium
+      buy:
+        - sertraline:raw_gold:1
+        - sertraline:coal:1
+        - point:5
+      time: 80
+    golden_necklace:
+      id: sertraline:golden_necklace
+      buy:
+        - sertraline:gold_ingot_medium:3
+        - point:120
+      time: 240
+      condition:
+        kether: "quest select FlashGoldCharge quest completed"
+        display: |-
+          完成 闪金冲锋 任务

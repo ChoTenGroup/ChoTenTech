@@ -1,5 +1,43 @@
 LiuWei:
   name: "<gold>刘威"
+
+  level:
+    1:
+      - type: level
+        level: main
+        value: 5
+      - type: quota
+        balance: money
+        value: 60
+    2:
+      - type: level
+        level: main
+        value: 8
+      - type: quota
+        balance: money
+        value: 400
+    3:
+      - type: level
+        level: main
+        value: 12
+      - type: quota
+        balance: money
+        value: 1000
+    4:
+      - type: level
+        level: main
+        value: 16
+      - type: quota
+        balance: money
+        value: 4000
+    5:
+      - type: level
+        level: main
+        value: 20
+      - type: quota
+        balance: money
+        value: 10000
+
   items:
     # Lv.1 - 电站材料
     wood:

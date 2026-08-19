@@ -1,0 +1,65 @@
+QianXia:
+  name: "<gold>千夏"
+  queue: 8
+  recipes:
+    soda:
+      id: sertraline:soda
+      buy:
+        - sertraline:sugar_cane:1
+        - money:10
+      time: 25
+    sprite:
+      id: sertraline:sprite
+      buy:
+        - sertraline:sugar_cane:1
+        - money:20
+      time: 35
+    kola:
+      id: sertraline:kola
+      buy:
+        - sertraline:sugar_cane:1
+        - sertraline:cocoa_beans:1
+        - money:30
+      time: 45
+    ice_tea:
+      id: sertraline:ice_tea
+      buy:
+        - sertraline:sugar_cane:1
+        - sertraline:berry:1
+        - money:30
+      time: 40
+    twofacesoda:
+      id: sertraline:twofacesoda
+      buy:
+        - sertraline:sugar_cane:1
+        - sertraline:cocoa_beans:1
+        - money:30
+      time: 45
+    rose:
+      id: sertraline:rose
+      buy:
+        - sertraline:berry:2
+        - sertraline:sugar_cane:1
+        - money:50
+      time: 50
+    iron_ingot:
+      id: sertraline:iron_ingot
+      buy:
+        - sertraline:raw_iron:1
+        - sertraline:coal:1
+        - money:20
+      time: 70
+    mre:
+      id: sertraline:mre
+      buy:
+        - sertraline:wheat:1
+        - sertraline:beef:1
+        - money:60
+      time: 90
+    onefirst_medkit:
+      id: sertraline:onefirst_medkit
+      buy:
+        - sertraline:fabric_skin:2
+        - sertraline:rag:2
+        - money:460
+      time: 130

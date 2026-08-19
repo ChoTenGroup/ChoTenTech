@@ -1,0 +1,50 @@
+AkaRain:
+  name: "<gold>阿卡雨"
+  queue: 8
+  recipes:
+    bread:
+      id: sertraline:bread
+      buy:
+        - sertraline:wheat:1
+        - point:2
+      time: 25
+    cracker:
+      id: sertraline:cracker
+      buy:
+        - sertraline:wheat:1
+        - point:2
+      time: 20
+    chocolate:
+      id: sertraline:chocolate
+      buy:
+        - sertraline:cocoa_beans:1
+        - point:3
+      time: 35
+    muffin:
+      id: sertraline:muffin
+      buy:
+        - sertraline:wheat:1
+        - sertraline:berry:1
+        - point:3
+      time: 35
+    cola:
+      id: sertraline:cola
+      buy:
+        - sertraline:sugar_cane:1
+        - sertraline:cocoa_beans:1
+        - point:10
+      time: 50
+    apple_can:
+      id: sertraline:apple_can
+      buy:
+        - sertraline:apple:1
+        - sertraline:sugar_cane:1
+        - point:4
+      time: 60
+    almond_water_blue:
+      id: sertraline:almond_water_blue
+      buy:
+        - sertraline:glass_bottle:1
+        - sertraline:rag:1
+        - point:9
+      time: 50

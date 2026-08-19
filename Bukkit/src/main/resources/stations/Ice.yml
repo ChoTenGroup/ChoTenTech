@@ -1,0 +1,59 @@
+Ice:
+  name: "<gold>冰块"
+  queue: 8
+  recipes:
+    barbecue:
+      id: sertraline:barbecue
+      buy:
+        - sertraline:porkchop:1
+        - sertraline:beef:1
+        - money:40
+      time: 60
+    cooked_porkchop:
+      id: sertraline:cooked_porkchop
+      buy:
+        - sertraline:porkchop:1
+        - money:30
+      time: 20
+    cooked_beef:
+      id: sertraline:cooked_beef
+      buy:
+        - sertraline:beef:1
+        - money:30
+      time: 22
+    cooked_chicken:
+      id: sertraline:cooked_chicken
+      buy:
+        - sertraline:chicken:1
+        - money:30
+      time: 20
+    cooked_mutton:
+      id: sertraline:cooked_mutton
+      buy:
+        - sertraline:mutton:1
+        - money:30
+      time: 22
+    taco:
+      id: sertraline:taco
+      buy:
+        - sertraline:porkchop:1
+        - sertraline:wheat:1
+        - money:60
+      time: 50
+    medium_rare_steak:
+      id: sertraline:medium_rare_steak
+      buy:
+        - sertraline:beef:2
+        - money:150
+      time: 80
+    brazilian_barbecue:
+      id: sertraline:brazilian_barbecue
+      buy:
+        - sertraline:barbecue:1
+        - sertraline:beef:1
+        - money:200
+      time: 130
+      condition:
+        kether: "quest select OldIceBBQ quest completed"
+        display: |-
+          完成 老冰烧烤 任务

@@ -1,5 +1,43 @@
 Lefty:
   name: "<gold>小左"
+
+  level:
+    1:
+      - type: level
+        level: main
+        value: 7
+      - type: quota
+        balance: money
+        value: 300
+    2:
+      - type: level
+        level: main
+        value: 11
+      - type: quota
+        balance: money
+        value: 2000
+    3:
+      - type: level
+        level: main
+        value: 15
+      - type: quota
+        balance: money
+        value: 5000
+    4:
+      - type: level
+        level: main
+        value: 19
+      - type: quota
+        balance: money
+        value: 20000
+    5:
+      - type: level
+        level: main
+        value: 24
+      - type: quota
+        balance: money
+        value: 40000
+
   items:
     # Lv.1 - 零件回收
     screw:

@@ -1,0 +1,75 @@
+Luka:
+  name: "<gold>卢卡"
+  queue: 8
+  recipes:
+    cracker:
+      id: sertraline:cracker
+      buy:
+        - sertraline:wheat:1
+        - money:10
+      time: 20
+    chocolate:
+      id: sertraline:chocolate
+      buy:
+        - sertraline:cocoa_beans:1
+        - sertraline:milk:1
+        - money:20
+      time: 35
+    muffin:
+      id: sertraline:muffin
+      buy:
+        - sertraline:wheat:1
+        - sertraline:berry:1
+        - money:20
+      time: 35
+    oreo:
+      id: sertraline:oreo
+      buy:
+        - sertraline:cocoa_beans:1
+        - sertraline:wheat:1
+        - money:20
+      time: 40
+    popcorn:
+      id: sertraline:popcorn
+      buy:
+        - sertraline:wheat:1
+        - money:20
+      time: 30
+    potato_chips:
+      id: sertraline:potato_chips
+      buy:
+        - sertraline:potato:1
+        - money:20
+      time: 30
+    pie:
+      id: sertraline:pie
+      buy:
+        - sertraline:wheat:1
+        - sertraline:berry:1
+        - money:20
+      time: 40
+    max_noodles:
+      id: sertraline:max_noodles
+      buy:
+        - sertraline:wheat:2
+        - sertraline:beef:1
+        - money:120
+      time: 120
+    candy_can:
+      id: sertraline:candy_can
+      buy:
+        - sertraline:sugar_cane:2
+        - sertraline:cocoa_beans:2
+        - money:900
+      time: 150
+    candy_stanleys:
+      id: sertraline:candy_stanleys
+      buy:
+        - sertraline:sugar_cane:2
+        - sertraline:cocoa_beans:2
+        - money:1200
+      time: 180
+      condition:
+        kether: "quest select ClawMachinePower quest completed"
+        display: |-
+          完成 192号娃娃机 任务

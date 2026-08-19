@@ -14,6 +14,7 @@ data class StationConfig(
 /** 额外队列解锁条件:满足则额外增加 slots 个队列槽 */
 data class StationExtraQueue(
     val key: String,
+    val display: String? = null,   // 展示文案(如 "好感达到 30 点"), 为空时回退到原始条件
     val affection: StationAffection? = null,
     val permission: String? = null,
     val slots: Int = 0,
@@ -31,6 +32,13 @@ data class StationRecipe(
     val output: String,          // e.g. "sertraline:iron_sword"
     val buy: List<StationCost> = emptyList(),
     val time: Int = 0,
+    val condition: StationCondition? = null,   // 制作条件(kether), 满足才可制作
+)
+
+/** 制作条件:kether 返回 true 表示满足; display 用于展示文案(可为多行) */
+data class StationCondition(
+    val kether: String? = null,
+    val display: String? = null,
 )
 
 /** 单个消耗项:货币 或 物品 */

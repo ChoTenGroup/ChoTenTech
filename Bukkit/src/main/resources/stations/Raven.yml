@@ -1,0 +1,72 @@
+Raven:
+  name: "<gold>渡鸦"
+  queue: 8
+  recipes:
+    bandage:
+      id: sertraline:bandage
+      buy:
+        - sertraline:fabric_skin:1
+        - sertraline:rag:1
+        - point:4
+      time: 40
+    sterile_bandage:
+      id: sertraline:sterile_bandage
+      buy:
+        - sertraline:fabric_skin:1
+        - sertraline:rag:1
+        - point:4
+      time: 50
+    painkiller_pills:
+      id: sertraline:painkiller_pills
+      buy:
+        - sertraline:rag:1
+        - sertraline:paper:1
+        - point:4
+      time: 45
+    bread:
+      id: sertraline:bread
+      buy:
+        - sertraline:wheat:1
+        - point:2
+      time: 25
+    almond_water_gray:
+      id: sertraline:almond_water_gray
+      buy:
+        - sertraline:glass_bottle:1
+        - sertraline:rag:1
+        - point:9
+      time: 50
+    almond_water_red:
+      id: sertraline:almond_water_red
+      buy:
+        - sertraline:glass_bottle:1
+        - sertraline:rag:1
+        - point:9
+      time: 50
+    almond_water_green:
+      id: sertraline:almond_water_green
+      buy:
+        - sertraline:glass_bottle:1
+        - sertraline:rag:1
+        - point:9
+      time: 50
+    mre:
+      id: sertraline:mre
+      buy:
+        - sertraline:wheat:1
+        - sertraline:beef:1
+        - point:5
+      time: 90
+    royal_rations:
+      id: sertraline:royal_rations
+      buy:
+        - sertraline:herring_can:1
+        - sertraline:honey:1
+        - sertraline:jerky:1
+        - sertraline:mre:1
+        - point:50
+      time: 240
+      condition:
+        kether: "quest select SecretGoods quest completed"
+        display: |-
+          完成 秘密货物 任务

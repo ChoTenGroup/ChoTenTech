@@ -71,33 +71,41 @@ gui-item:
       name: "<gray><b>确认出售"
       lore: "您还没有选定任何物品。"
 
-# 默认商人等级配置
-# {id} 会被替换为商店的实际ID
+# 默认商人等级配置（1-5 级，仅玩家等级 + 出售额，不含好感度）
+# 各商店在自身文件内定义专属等级以覆盖此默认值
 level:
   1:
     - type: level
       level: main
       value: 5
-    - type: affection
-      affection: "{id}"
-      value: 5
+    - type: quota
+      balance: money
+      value: 200
   2:
     - type: level
       level: main
-      value: 15
-    - type: affection
-      affection: "{id}"
-      value: 10
+      value: 8
     - type: quota
       balance: money
-      value: 5000
+      value: 1000
   3:
     - type: level
       level: main
-      value: 25
-    - type: affection
-      affection: "{id}"
-      value: 15
+      value: 12
     - type: quota
       balance: money
-      value: 20000
+      value: 5000
+  4:
+    - type: level
+      level: main
+      value: 16
+    - type: quota
+      balance: money
+      value: 10000
+  5:
+    - type: level
+      level: main
+      value: 20
+    - type: quota
+      balance: money
+      value: 40000

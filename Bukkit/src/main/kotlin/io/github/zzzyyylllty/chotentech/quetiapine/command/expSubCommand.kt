@@ -507,7 +507,7 @@ object LevelCommand {
                             sender.severeS(sender.asLangText("Level_Not_Exist"), false)
                             return@submitAsync
                         }
-                        val final = PlayerDataManager(player).addExp(key, value.toDouble())
+                        val final = PlayerDataManager(player).addExp(key, value.toDouble(), ignoreSafeZone = true)
                         if (final == null) {
                             if (!isConsoleSilent) sender.infoS(sender.asLangText("Operation_Cancelled"), false)
                         } else {
@@ -546,7 +546,7 @@ object LevelCommand {
                                 sender.severeS(sender.asLangText("Level_Not_Exist"), false)
                                 return@submitAsync
                             }
-                            val final = PlayerDataManager(player).addExp(key, value.toDouble())
+                            val final = PlayerDataManager(player).addExp(key, value.toDouble(), ignoreSafeZone = true)
                             if (final == null) {
                                 if (!isConsoleSilent) sender.infoS(sender.asLangText("Operation_Cancelled"), false)
                             } else {

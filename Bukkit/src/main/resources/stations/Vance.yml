@@ -1,0 +1,68 @@
+Vance:
+  name: "<gold>万斯"
+  queue: 8
+  recipes:
+    jerky:
+      id: sertraline:jerky
+      buy:
+        - sertraline:porkchop:1
+        - money:30
+      time: 35
+    emergency_water_pack:
+      id: sertraline:emergency_water_pack
+      buy:
+        - sertraline:glass_bottle:1
+        - sertraline:rag:1
+        - money:50
+      time: 40
+    oatmeal:
+      id: sertraline:oatmeal
+      buy:
+        - sertraline:wheat:1
+        - money:10
+      time: 25
+    bread_cubes:
+      id: sertraline:bread_cubes
+      buy:
+        - sertraline:wheat:1
+        - money:10
+      time: 25
+    scits:
+      id: sertraline:scits
+      buy:
+        - sertraline:wheat:1
+        - money:20
+      time: 30
+    konjac:
+      id: sertraline:konjac
+      buy:
+        - sertraline:brown_mushroom:1
+        - money:10
+      time: 30
+    herring_can:
+      id: sertraline:herring_can
+      buy:
+        - sertraline:berry:3
+        - sertraline:wheat:1
+        - money:150
+      time: 80
+    honey:
+      id: sertraline:honey
+      buy:
+        - sertraline:berry:4
+        - sertraline:sugar_cane:1
+        - money:140
+      time: 120
+    royal_rations:
+      id: sertraline:royal_rations
+      buy:
+        - sertraline:herring_can:1
+        - sertraline:honey:1
+        - sertraline:jerky:1
+        - sertraline:mre:1
+        - money:600
+      time: 240
+      condition:
+        kether: "quest select AdultChoice quest completed"
+        display: |-
+          完成 大人的选择 任务

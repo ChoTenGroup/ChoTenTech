@@ -1,5 +1,43 @@
 Lemon:
   name: "<gold>柠檬"
+
+  level:
+    1:
+      - type: level
+        level: main
+        value: 5
+      - type: quota
+        balance: point
+        value: 20
+    2:
+      - type: level
+        level: main
+        value: 8
+      - type: quota
+        balance: point
+        value: 100
+    3:
+      - type: level
+        level: main
+        value: 12
+      - type: quota
+        balance: point
+        value: 400
+    4:
+      - type: level
+        level: main
+        value: 16
+      - type: quota
+        balance: point
+        value: 1000
+    5:
+      - type: level
+        level: main
+        value: 20
+      - type: quota
+        balance: point
+        value: 3000
+
   items:
     # Lv.1 - 皮革装备
     leather_helmet:
