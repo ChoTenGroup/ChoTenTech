@@ -160,9 +160,10 @@ class PlayerDataManager(val player: Player) {
     fun getExp(levelName: String): Double {
         return map["exp.$levelName"]?.toDouble() ?: 0.0
     }
-    fun addExp(levelName: String, exp: Double): Double? {
+    fun addExp(levelName: String, exp: Double, ignoreSafeZone: Boolean = false): Double? {
         // 基地/world 安全区内禁止加经验:防止泡岩浆等自伤源无限刷耐力/健康经验
-        if (exp > 0 && BaseManager.isInLevelSafeZone(player)) {
+        // 管理员命令等显式操作可传 ignoreSafeZone=true 绕过该拦截
+        if (exp > 0 && !ignoreSafeZone && BaseManager.isInLevelSafeZone(player)) {
             devLog("addExp skipped for ${player.name}: in base or world")
             return null
         }

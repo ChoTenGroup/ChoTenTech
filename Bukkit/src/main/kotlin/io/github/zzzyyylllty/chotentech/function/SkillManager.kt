@@ -52,25 +52,25 @@ object SkillManager {
     internal val miningXp = ConcurrentHashMap<String, DoubleArray>()
 
     // 简单数值配置（配置文件加载）
-    internal var strengthDamageMultiplier = 0.2
-    internal var strengthMaxPerHit = 10.0
-    internal var enduranceDamageMultiplier = 1.0
-    internal var enduranceMaxPerEvent = 50.0
-    private var enduranceSprintExp = 0.2
-    private var enduranceSwimExp = 0.3
-    internal var healthHealMultiplier = 2.0
-    internal var healthMaxPerEvent = 10.0
-    internal var agilityMoveExp = 0.04
-    internal var agilityJumpExp = 0.4
-    internal var agilityFallExp = 0.8
-    private var lockpickingSuccessMin = 15.0
-    private var lockpickingSuccessMax = 30.0
-    private var lockpickingFailMin = 2.0
-    private var lockpickingFailMax = 5.0
+    internal var strengthDamageMultiplier = 1.0
+    internal var strengthMaxPerHit = 50.0
+    internal var enduranceDamageMultiplier = 4.0
+    internal var enduranceMaxPerEvent = 200.0
+    private var enduranceSprintExp = 0.8
+    private var enduranceSwimExp = 1.2
+    internal var healthHealMultiplier = 8.0
+    internal var healthMaxPerEvent = 40.0
+    internal var agilityMoveExp = 0.16
+    internal var agilityJumpExp = 1.6
+    internal var agilityFallExp = 3.2
+    private var lockpickingSuccessMin = 60.0
+    private var lockpickingSuccessMax = 120.0
+    private var lockpickingFailMin = 8.0
+    private var lockpickingFailMax = 20.0
 
     // 钓鱼战利品回退经验（无loot表匹配时使用）
-    internal var fishingFallbackXpMin = 3.0
-    internal var fishingFallbackXpMax = 8.0
+    internal var fishingFallbackXpMin = 12.0
+    internal var fishingFallbackXpMax = 32.0
 
     // 智力配置
     internal val intelligenceXp = ConcurrentHashMap<String, DoubleArray>()

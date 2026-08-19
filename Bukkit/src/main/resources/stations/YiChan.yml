@@ -1,0 +1,58 @@
+YiChan:
+  name: "<gold>一蝉"
+  queue: 8
+  recipes:
+    copper_wire:
+      id: sertraline:copper_wire
+      buy:
+        - sertraline:raw_copper:1
+        - sertraline:coal:1
+        - point:2
+      time: 30
+    capacitor:
+      id: sertraline:capacitor
+      buy:
+        - sertraline:copper_wire:1
+        - sertraline:plastic:1
+        - point:2
+      time: 35
+    battery:
+      id: sertraline:battery
+      buy:
+        - sertraline:copper_wire:1
+        - sertraline:plastic:1
+        - point:2
+      time: 50
+    u_disk:
+      id: sertraline:u_disk
+      buy:
+        - sertraline:copper_wire:1
+        - sertraline:plastic:1
+        - point:2
+      time: 55
+    cpu:
+      id: sertraline:cpu
+      buy:
+        - sertraline:copper_wire:2
+        - sertraline:plastic:1
+        - sertraline:iron_ingot:1
+        - point:3
+      time: 90
+    power_supply:
+      id: sertraline:power_supply
+      buy:
+        - sertraline:copper_wire:2
+        - sertraline:iron_ingot:1
+        - point:3
+      time: 100
+    pro_ai_core:
+      id: sertraline:pro_ai_core
+      buy:
+        - sertraline:basic_ai_core:1
+        - sertraline:cpu:1
+        - point:250
+      time: 360
+      condition:
+        kether: "quest select DutyLeave quest completed"
+        display: |-
+          完成 擅离职守 任务

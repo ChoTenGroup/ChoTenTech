@@ -1,5 +1,6 @@
 package io.github.zzzyyylllty.chotentech.command
 
+import io.github.zzzyyylllty.chotentech.ChoTenTech.levels
 import io.github.zzzyyylllty.chotentech.ChoTenTech.levelsList
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerRegions
@@ -14,6 +15,7 @@ import io.github.zzzyyylllty.chotentech.function.savepoint.SavePointConfig
 import io.github.zzzyyylllty.chotentech.function.savepoint.SavePointManager
 import io.github.zzzyyylllty.chotentech.function.savepoint.SavePointType
 import io.github.zzzyyylllty.chotentech.player.sendComponent
+import io.github.zzzyyylllty.chotentech.quetiapine.data.PlayerDataManager
 import io.github.zzzyyylllty.chotentech.util.devLog
 import io.github.zzzyyylllty.chotentech.util.jsonUtils
 import io.github.zzzyyylllty.chotentech.util.toComponent
@@ -34,6 +36,7 @@ import taboolib.common.platform.function.submit
 import taboolib.common.platform.function.submitAsync
 import taboolib.module.configuration.Configuration
 import java.io.File
+import java.util.UUID
 
 @CommandHeader(
     name = "chotentech-admin",
@@ -212,6 +215,18 @@ object CttAdminCommand {
                     suggestion<CommandSender> { _, _ ->
                         SavePointConfig.getAll().map { it.id }.toList()
                     }
+                }
+            }
+        }
+    }
+
+    @CommandBody
+    val migrate = subCommand {
+        literal("exprefill") {
+            execute<CommandSender> { sender, _, _ ->
+                // 全库补偿为异步任务:遍历所有档案 + 更新 DB,避免阻塞主线程
+                submitAsync {
+                    expRefill(sender)
                 }
             }
         }
@@ -585,6 +600,82 @@ object CttAdminCommand {
                 }
                 player.sendComponent(lines.joinToString("\n"))
             }
+        }
+    }
+
+    /**
+     * /cttadmin migrate exprefill — 依据 Chemdah 已完成任务数给所有档案补偿 main 经验(每个任务 1000)。
+     * 遍历数据库全部未归档档案,读取 chemdahProfileData JSON 中以 "quest.complete." 开头的键数量
+     * (每个代表完成一个任务),直接写入 quetiapineData["exp.main"]。
+     * 在线玩家直接改内存数据(引用共享,自动保存时持久化)并立即检查升级;
+     * 离线玩家改 DB 档案行,登录后由周期 checkUpdateLevel 任务自动追上等级。
+     */
+    private fun expRefill(sender: CommandSender) {
+        if (levels["main"] == null) {
+            sender.sendComponent("<red>未找到 main 等级配置,无法补偿")
+            return
+        }
+        val rows = runCatching { ProfileManager.profileMapper.findAll { "archived" eq 0 } }.getOrNull()
+        if (rows == null) {
+            sender.sendComponent("<red>读取档案数据失败")
+            return
+        }
+
+        var compensated = 0
+        var totalQuests = 0L
+        var totalExp = 0L
+        val details = mutableListOf<String>()
+        for (row in rows) {
+            val data = runCatching { jsonUtils.fromJson(row.data, PlayerData::class.java)?.normalize() }.getOrNull() ?: continue
+            val questCount = countCompletedQuests(data.chemdahProfileData)
+            if (questCount <= 0) continue
+            val bonus = questCount * 1000L
+
+            val onlineData = playerDataMap[row.uuid]
+            if (onlineData != null) {
+                // 在线:直接改内存数据,由自动保存持久化;立即检查升级让等级追上
+                val expMap = onlineData.quetiapineData
+                expMap["exp.main"] = ((expMap["exp.main"]?.toDoubleOrNull() ?: 0.0) + bonus).toString()
+                runCatching { UUID.fromString(row.uuid) }.getOrNull()?.let { uid ->
+                    Bukkit.getPlayer(uid)?.let { p -> submit { PlayerDataManager(p).checkUpdateLevel("main") } }
+                }
+            } else {
+                // 离线:改 DB 档案行
+                val expMap = data.quetiapineData
+                expMap["exp.main"] = ((expMap["exp.main"]?.toDoubleOrNull() ?: 0.0) + bonus).toString()
+                row.data = jsonUtils.toJson(data, PlayerData::class.java)
+                runCatching { ProfileManager.profileMapper.update(row) }.onFailure {
+                    devLog("[CttAdmin] exprefill 更新失败 ${row.uuid}/${row.profileId}: ${it.message}")
+                }
+            }
+            compensated++
+            totalQuests += questCount
+            totalExp += bonus
+            details += "<gray>- <yellow>${row.uuid} <gray>/ <yellow>${row.profileName}<gray>: <yellow>$questCount <gray>个任务 → +<green>$bonus <gray>main经验"
+        }
+
+        val summary = mutableListOf("<gold>■ <yellow>任务经验补偿报告: <green>$compensated <gray>个档案, <yellow>$totalQuests <gray>个任务, 共补偿 <green>$totalExp <gray>main经验")
+        if (details.isEmpty()) {
+            summary += "<gray>没有档案包含已完成任务(quest.complete.*)"
+        } else {
+            summary += details.take(30)
+            if (details.size > 30) summary += "<gray>... 其余 ${details.size - 30} 个省略"
+        }
+        submit {
+            if (sender is Player && !sender.isOnline) return@submit
+            sender.sendComponent(summary.joinToString("\n"))
+        }
+    }
+
+    /** 统计 chemdahProfileData JSON 中以 "quest.complete." 开头的键数量(每个代表完成一个任务) */
+    private fun countCompletedQuests(chemdahJson: String?): Int {
+        if (chemdahJson.isNullOrBlank()) return 0
+        return try {
+            @Suppress("UNCHECKED_CAST")
+            val map = jsonUtils.fromJson(chemdahJson, Map::class.java) as? Map<String, Any> ?: return 0
+            map.keys.count { it.startsWith("quest.complete.") }
+        } catch (_: Exception) {
+            0
         }
     }
 }

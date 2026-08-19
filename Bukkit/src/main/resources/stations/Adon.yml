@@ -1,0 +1,107 @@
+Adon:
+  name: "<gold>亚当"
+  queue: 8
+  recipes:
+    battery:
+      id: sertraline:battery
+      buy:
+        - sertraline:copper_wire:1
+        - sertraline:carbon:1
+        - money:20
+      time: 50
+    motor:
+      id: sertraline:motor
+      buy:
+        - sertraline:copper_wire:1
+        - sertraline:screw:2
+        - money:30
+      time: 55
+    pcb:
+      id: sertraline:pcb
+      buy:
+        - sertraline:copper_wire:2
+        - sertraline:plastic:1
+        - sertraline:screw:1
+        - money:40
+      time: 70
+    disk:
+      id: sertraline:disk
+      buy:
+        - sertraline:copper_wire:1
+        - sertraline:plastic:2
+        - sertraline:iron_ingot:1
+        - money:40
+      time: 80
+    u_disk:
+      id: sertraline:u_disk
+      buy:
+        - sertraline:copper_wire:1
+        - sertraline:plastic:1
+        - money:30
+      time: 55
+    power_bank:
+      id: sertraline:power_bank
+      buy:
+        - sertraline:battery:1
+        - sertraline:copper_wire:1
+        - money:20
+      time: 60
+    cpu:
+      id: sertraline:cpu
+      buy:
+        - sertraline:copper_wire:2
+        - sertraline:plastic:1
+        - sertraline:iron_ingot:1
+        - money:30
+      time: 90
+    simple_watch:
+      id: sertraline:simple_watch
+      buy:
+        - sertraline:pcb:1
+        - sertraline:copper_wire:1
+        - sertraline:iron_ingot:1
+        - money:30
+      time: 85
+    phone:
+      id: sertraline:phone
+      buy:
+        - sertraline:pcb:1
+        - sertraline:battery:1
+        - money:40
+      time: 95
+    ram_stick:
+      id: sertraline:ram_stick
+      buy:
+        - sertraline:pcb:1
+        - sertraline:copper_wire:2
+        - sertraline:plastic:1
+        - money:120
+      time: 110
+    radio:
+      id: sertraline:radio
+      buy:
+        - sertraline:pcb:2
+        - sertraline:copper_wire:2
+        - money:80
+      time: 140
+    graphics_card:
+      id: sertraline:graphics_card
+      buy:
+        - sertraline:pcb:3
+        - sertraline:copper_wire:3
+        - sertraline:ram_stick:1
+        - money:300
+      time: 200
+    pro_ai_core:
+      id: sertraline:pro_ai_core
+      buy:
+        - sertraline:cpu:1
+        - sertraline:graphics_card:1
+        - sertraline:ram_stick:1
+        - sertraline:advanced_ai_core:1
+        - money:500
+      time: 360
+      condition:
+        kether: "quest select TakeOffPlane quest completed"
+        display: |-
+          完成 人在后室刚下飞机 任务

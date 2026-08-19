@@ -132,7 +132,8 @@ fun noclipTime() {
                         } else {
                             consecutiveFailures.remove(k)
                             var exp = 10.0
-                            if (isNewNoclip) exp += 10.0
+                            // 首次切出该切出点时经验 ×3
+                            if (isNewNoclip) exp *= 3.0
 
                             val lastTime = lastNoclipSuccessTime[k]
                             val fiveMinAgo = System.currentTimeMillis() - 300_000

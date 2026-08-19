@@ -4,9 +4,12 @@ import io.github.zzzyyylllty.chotentech.function.CurrencyManager
 import io.github.zzzyyylllty.chotentech.function.ReputationManager
 import io.github.zzzyyylllty.chotentech.player.sendComponent
 import io.github.zzzyyylllty.chotentech.shop.CostType
+import io.github.zzzyyylllty.chotentech.util.loreDash
+import io.github.zzzyyylllty.chotentech.util.loreInfo
+import io.github.zzzyyylllty.chotentech.util.loreSection
+import io.github.zzzyyylllty.chotentech.util.loreSpace
 import io.github.zzzyyylllty.chotentech.util.minimessage.mmJsonUtil
 import io.github.zzzyyylllty.chotentech.util.toComponent
-import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.Sound
@@ -35,7 +38,7 @@ object StationMenu : Listener {
     }
 
     private val layout = listOf(
-        "CCC   <> ",
+        "CCC    <>",
         "IIIIIIIII",
         "IIIIIIIII",
         "IIIIIIIII",
@@ -53,8 +56,11 @@ object StationMenu : Listener {
         return slots
     }
 
-    private fun title(station: StationConfig): String =
-        "<white><shift:-16><image:kangelicon:station/station_queuq><shift:-176><aqua><font:minecraft:fusionpixel10>${station.name}"
+    private fun title(station: StationConfig, session: StationSession): String {
+        // 队列视图显示队列图标, 其余显示合成站图标
+        val icon = if (session.view == StationView.QUEUE) "kangelicon:station_queue" else "kangelicon:station"
+        return "<white><shift:-16><image:$icon><shift:-176><aqua><font:minecraft:fusionpixel10>${station.name}"
+    }
 
     fun open(player: Player, stationId: String) {
         val station = StationManager.getStation(stationId) ?: run {
@@ -70,7 +76,7 @@ object StationMenu : Listener {
 
     private fun openView(player: Player, station: StationConfig, session: StationSession) {
         StationSession.put(player, session) // 确保会话已注册(模式切换重开时会话被 onClose 移除过)
-        player.openMenu<PageableChest<Any>>(mmJsonUtil.serialize(title(station).toComponent())) {
+        player.openMenu<PageableChest<Any>>(mmJsonUtil.serialize(title(station, session).toComponent())) {
             rows(6)
             page(session.currentPage)
             onPageChange { p ->
@@ -166,8 +172,7 @@ object StationMenu : Listener {
             run {
                 val current = session.view == StationView.RECIPES
                 val stack = buildToggleItem(current, "制作列表", "查看并选择可制作的配方")
-                for (slot in 50..51) {
-                    set(slot, stack) {
+                    set('R', stack) {
                         clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
                         if (current) return@set
                         session.view = StationView.RECIPES
@@ -175,7 +180,6 @@ object StationMenu : Listener {
                         clicker.closeInventory()
                         submit(delay = 1) { openView(clicker, station, session) }
                     }
-                }
             }
 
             // 队列切换(52,53)
@@ -184,15 +188,13 @@ object StationMenu : Listener {
                 val queue = StationManager.getQueue(player, station.id)
                 val maxSlots = StationManager.getMaxQueueSlots(player, station)
                 val stack = buildToggleItem(current, "队列", "查看制作队列并领取完成的物品", "${queue.size}/$maxSlots")
-                for (slot in 52..53) {
-                    set(slot, stack) {
+                    set('Q', stack) {
                         clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
                         if (current) return@set
                         session.view = StationView.QUEUE
                         session.currentPage = 0
                         clicker.closeInventory()
                         submit(delay = 1) { openView(clicker, station, session) }
-                    }
                 }
             }
 
@@ -298,13 +300,24 @@ object StationMenu : Listener {
             val queue = StationManager.getQueue(player, station.id)
             val maxSlots = StationManager.getMaxQueueSlots(player, station)
             val craftable = StationManager.canAfford(player, recipe)
+            val condMet = StationManager.conditionMet(player, recipe)
 
-            val lore = mutableListOf<Component>()
-            lore += "<!i><dark_gray><st>${" ".repeat(60)}</st>".toComponent()
-            lore += "<!i><gray>制作时间: <yellow>${recipe.time} 秒".toComponent()
+            val lore = mutableListOf<String>()
+            lore += loreInfo("制作时间", "<yellow>${recipe.time} 秒")
+            // 制作条件展示(满足/未满足)
+            if (recipe.condition != null) {
+                lore += loreSpace()
+                lore += loreSection("制作条件")
+                val mark = if (condMet) "<green>✓" else "<red>✗"
+                val condText = recipe.condition.display ?: recipe.condition.kether ?: "未知条件"
+                condText.split("\n").forEach { line ->
+                    if (line.isBlank()) return@forEach
+                    lore += loreDash("$mark $line")
+                }
+            }
             if (recipe.buy.isNotEmpty()) {
-                lore += "<!i> ".toComponent()
-                lore += "<!i><gray>材料:".toComponent()
+                lore += loreSpace()
+                lore += loreSection("材料")
                 for (cost in recipe.buy) {
                     when (cost.type) {
                         CostType.CURRENCY -> {
@@ -312,27 +325,28 @@ object StationMenu : Listener {
                             val have = CurrencyManager.getBalance(player, cur)
                             val ok = have >= cost.amount
                             val color = if (ok) "<green>" else "<red>"
-                            lore += "<!i> ${color}● ${CurrencyManager.displayName(cur)}: <white>$have/$cost.amount".toComponent()
+                            lore += loreDash("${color}${CurrencyManager.displayName(cur)}: <white>$have<gray>/${cost.amount}")
                         }
                         CostType.ITEM -> {
                             val id = cost.item ?: continue
                             val have = StationManager.countItem(player, id)
                             val ok = have >= cost.amount
                             val color = if (ok) "<green>" else "<red>"
-                            lore += "<!i> ${color}● ${StationManager.displayName(id)} <white>x$have/$cost.amount".toComponent()
+                            lore += loreDash("${color}${StationManager.displayName(id)} <white>x$have<gray>/${cost.amount}")
                         }
                     }
                 }
             }
-            lore += "<!i><dark_gray><st>${" ".repeat(60)}</st>".toComponent()
-            lore += "<!i><gray>队列: <white>${queue.size}/$maxSlots".toComponent()
-            lore += "<!i> ".toComponent()
+            lore += loreSpace()
+            lore += loreInfo("队列", "<white>${queue.size}<gray>/<white>$maxSlots")
+            lore += loreSpace()
             when {
-                queue.size >= maxSlots -> lore += "<!i><red>✗ 队列已满, 无法添加".toComponent()
-                !craftable -> lore += "<!i><red>✗ 材料不足".toComponent()
-                else -> lore += "<!i><green>点击开始制作".toComponent()
+                queue.size >= maxSlots -> lore += loreInfo("状态", "<red>✗ 队列已满, 无法添加")
+                !condMet -> lore += loreInfo("状态", "<red>✗ 条件未满足")
+                !craftable -> lore += loreInfo("状态", "<red>✗ 材料不足")
+                else -> lore += "<!i><yellow>点击 <green>开始制作"
             }
-            m.lore(lore)
+            m.lore(lore.toComponent())
         }
         return item
     }
@@ -345,18 +359,17 @@ object StationMenu : Listener {
             if (entry.isComplete) {
                 m.displayName("<green><b>✓ $outputName".toComponent())
                 m.setEnchantmentGlintOverride(true)
-                val lore = mutableListOf<Component>()
-                lore += "<!i><dark_gray><st>${" ".repeat(60)}</st>".toComponent()
-                lore += "<!i><green>已完成制作".toComponent()
-                lore += "<!i><green>点击领取到背包".toComponent()
-                m.lore(lore)
+                val lore = mutableListOf<String>()
+                lore += loreInfo("状态", "<green>已完成制作")
+                lore += loreSpace()
+                lore += "<!i><yellow>点击 <green>领取到背包"
+                m.lore(lore.toComponent())
             } else {
                 m.displayName("<white>$outputName".toComponent())
-                val lore = mutableListOf<Component>()
-                lore += "<!i><dark_gray><st>${" ".repeat(60)}</st>".toComponent()
-                lore += "<!i><gray>制作中...".toComponent()
-                lore += "<!i><yellow>剩余 <white>${entry.remainingTime} <yellow>秒".toComponent()
-                m.lore(lore)
+                val lore = mutableListOf<String>()
+                lore += loreInfo("状态", "<gray>制作中...")
+                lore += loreInfo("剩余", "<yellow>${entry.remainingTime} 秒")
+                m.lore(lore.toComponent())
             }
         }
         return item
@@ -374,30 +387,34 @@ object StationMenu : Listener {
         val done = queue.size - crafting
 
         val lore = mutableListOf<String>()
-        lore += "<!i><gold>合成站: <white>${station.name}"
-        lore += "<!i><gold>队列容量: <white>${queue.size}/$maxSlots"
-        lore += "<!i> <gray>制作中 $crafting · 待领取 $done"
+        lore += loreInfo("合成站", "<white>${station.name}")
+        lore += loreInfo("队列容量", "<white>${queue.size}<gray>/<white>$maxSlots")
+        lore += loreInfo("状态", "<gray>制作中 <white>$crafting <dark_gray>· <gray>待领取 <white>$done")
         if (station.extraQueues.isNotEmpty()) {
-            lore += "<!i> "
-            lore += "<!i><gray>额外队列条件:"
+            lore += loreSpace()
+            lore += loreSection("额外队列条件")
             for (eq in station.extraQueues) {
-                val desc = StringBuilder()
-                if (eq.affection != null) desc.append("好感 ${eq.affection.id} ≥ ${eq.affection.required}")
-                if (eq.permission != null) {
-                    if (desc.isNotEmpty()) desc.append(" 且 ")
-                    desc.append("权限 ${eq.permission}")
+                // 优先使用配置的 display 文案, 未配置时回退到原始条件描述
+                val desc = eq.display ?: run {
+                    val sb = StringBuilder()
+                    if (eq.affection != null) sb.append("好感 ${eq.affection.id} ≥ ${eq.affection.required}")
+                    if (eq.permission != null) {
+                        if (sb.isNotEmpty()) sb.append(" 且 ")
+                        sb.append("权限 ${eq.permission}")
+                    }
+                    sb.toString()
                 }
                 val met = conditionMet(player, eq)
                 val color = if (met) "<green>" else "<red>"
-                lore += "<!i> ${color}${if (met) "✓" else "✗"} $desc <gray>(+${eq.slots} 槽)"
+                lore += loreDash("${color}${if (met) "✓" else "✗"} $desc <gray>(+${eq.slots} 槽)")
             }
         }
-        lore += "<!i> "
-        lore += "<!i><gold>你的货币:"
-        lore += "<!i> <aqua>${CurrencyManager.displayName("money")}: <white>${CurrencyManager.getBalance(player, "money")}"
-        lore += "<!i> <aqua>${CurrencyManager.displayName("point")}: <white>${CurrencyManager.getBalance(player, "point")}"
-        lore += "<!i> <aqua>${CurrencyManager.displayName("tape")}: <white>${CurrencyManager.getBalance(player, "tape")}"
-        lore += "<!i> <aqua>${CurrencyManager.displayName("goldentape")}: <white>${CurrencyManager.getBalance(player, "goldentape")}"
+        lore += loreSpace()
+        lore += loreSection("你的货币")
+        lore += loreDash("<aqua>${CurrencyManager.displayName("money")}: <white>${CurrencyManager.getBalance(player, "money")}")
+        lore += loreDash("<aqua>${CurrencyManager.displayName("point")}: <white>${CurrencyManager.getBalance(player, "point")}")
+        lore += loreDash("<aqua>${CurrencyManager.displayName("tape")}: <white>${CurrencyManager.getBalance(player, "tape")}")
+        lore += loreDash("<aqua>${CurrencyManager.displayName("goldentape")}: <white>${CurrencyManager.getBalance(player, "goldentape")}")
 
         meta.lore(lore.map { it.replacePlaceholder(player).toComponent() })
         result.setItemMeta(meta)
@@ -413,13 +430,17 @@ object StationMenu : Listener {
         val recipes = StationManager.getRecipes(station)
         val craftable = recipes.count { StationManager.canAfford(player, it) }
         val lore = mutableListOf<String>()
+        lore += loreSection("选项")
         StationFilterReq.entries.forEach { f ->
-            if (f == current) lore += "<!i><green>▶ <white>${f.displayName}"
-            else lore += "<!i><gray>${f.displayName}"
+            val option = if (f == current) "<green>▶ <white>${f.displayName}" else "<gray>${f.displayName}"
+            lore += loreDash(option)
         }
-        lore += "<!i> "
-        lore += if (craftable > 0) "<!i><green>✓ 有 $craftable 个配方可制作"
-        else "<!i><red>✗ 没有配方可制作"
+        lore += loreSpace()
+        lore += loreInfo(
+            "状态",
+            if (craftable > 0) "<green>✓ 有 $craftable 个配方可制作"
+            else "<red>✗ 没有配方可制作"
+        )
 
         meta.lore(lore.map { it.replacePlaceholder(player).toComponent() })
         NamespacedKey.fromString(filterReqModel(current))?.let { meta.itemModel = it }
@@ -436,13 +457,17 @@ object StationMenu : Listener {
         val recipes = StationManager.getRecipes(station)
         val withMaterials = recipes.count { StationManager.hasMaterials(player, it) }
         val lore = mutableListOf<String>()
+        lore += loreSection("选项")
         StationFilterItem.entries.forEach { f ->
-            if (f == current) lore += "<!i><green>▶ <white>${f.displayName}"
-            else lore += "<!i><gray>${f.displayName}"
+            val option = if (f == current) "<green>▶ <white>${f.displayName}" else "<gray>${f.displayName}"
+            lore += loreDash(option)
         }
-        lore += "<!i> "
-        lore += if (withMaterials > 0) "<!i><green>✓ 有 $withMaterials 个配方材料充足"
-        else "<!i><red>✗ 没有配方材料充足"
+        lore += loreSpace()
+        lore += loreInfo(
+            "状态",
+            if (withMaterials > 0) "<green>✓ 有 $withMaterials 个配方材料充足"
+            else "<red>✗ 没有配方材料充足"
+        )
 
         meta.lore(lore.map { it.replacePlaceholder(player).toComponent() })
         NamespacedKey.fromString(filterItemModel(current))?.let { meta.itemModel = it }
@@ -451,15 +476,16 @@ object StationMenu : Listener {
     }
 
     private fun buildToggleItem(current: Boolean, name: String, desc: String, extra: String? = null): ItemStack {
-        val result = ItemStack(if (current) Material.BOOK else Material.PAPER)
+        val result = ItemStack(Material.STRUCTURE_VOID)
         result.editMeta { m ->
             m.displayName("<white><b>$name".toComponent())
             val lore = mutableListOf<String>()
-            lore += "<!i><gray>$desc"
-            extra?.let { lore += "<!i><gray>$it" }
-            lore += "<!i> "
-            lore += if (current) "<!i><green>▶ 当前视图" else "<!i><gray>点击切换"
-            m.lore(lore.map { it.toComponent() })
+            m.itemModel = NamespacedKey.fromString("kangelitem:void")
+            lore += loreInfo("说明", "<gray>$desc")
+            extra?.let { lore += loreInfo("队列", "<white>$it") }
+            lore += loreSpace()
+            lore += if (current) "<!i><green>▶ 当前视图" else "<!i><yellow>点击 <green>切换"
+            m.lore(lore.toComponent())
         }
         return result
     }

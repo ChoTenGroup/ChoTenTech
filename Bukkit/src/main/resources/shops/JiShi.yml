@@ -1,5 +1,43 @@
 JiShi:
   name: "<gold>技师"
+
+  level:
+    1:
+      - type: level
+        level: main
+        value: 5
+      - type: quota
+        balance: money
+        value: 200
+    2:
+      - type: level
+        level: main
+        value: 8
+      - type: quota
+        balance: money
+        value: 1000
+    3:
+      - type: level
+        level: main
+        value: 12
+      - type: quota
+        balance: money
+        value: 4000
+    4:
+      - type: level
+        level: main
+        value: 16
+      - type: quota
+        balance: money
+        value: 10000
+    5:
+      - type: level
+        level: main
+        value: 20
+      - type: quota
+        balance: money
+        value: 40000
+
   items:
     # Lv.1 - 后勤物资
     iron_ingot:

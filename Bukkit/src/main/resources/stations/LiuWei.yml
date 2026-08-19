@@ -1,0 +1,67 @@
+LiuWei:
+  name: "<gold>刘威"
+  queue: 8
+  recipes:
+    copper_wire:
+      id: sertraline:copper_wire
+      buy:
+        - sertraline:raw_copper:1
+        - sertraline:coal:1
+        - money:10
+      time: 30
+    battery:
+      id: sertraline:battery
+      buy:
+        - sertraline:copper_wire:1
+        - sertraline:carbon:1
+        - money:20
+      time: 50
+    motor:
+      id: sertraline:motor
+      buy:
+        - sertraline:copper_wire:1
+        - sertraline:screw:2
+        - money:30
+      time: 55
+    iron_ingot:
+      id: sertraline:iron_ingot
+      buy:
+        - sertraline:raw_iron:1
+        - sertraline:coal:1
+        - money:20
+      time: 70
+    steel_ingot:
+      id: sertraline:steel_ingot
+      buy:
+        - sertraline:iron_ingot:1
+        - sertraline:carbon:1
+        - sertraline:coal:1
+        - money:80
+      time: 110
+    cpu:
+      id: sertraline:cpu
+      buy:
+        - sertraline:copper_wire:2
+        - sertraline:plastic:1
+        - sertraline:iron_ingot:1
+        - money:30
+      time: 90
+    power_supply:
+      id: sertraline:power_supply
+      buy:
+        - sertraline:copper_wire:2
+        - sertraline:iron_ingot:1
+        - money:60
+      time: 100
+    graphics_card:
+      id: sertraline:graphics_card
+      buy:
+        - sertraline:pcb:3
+        - sertraline:copper_wire:3
+        - sertraline:ram_stick:1
+        - money:300
+      time: 200
+      condition:
+        kether: "quest select Panopticoal4 quest completed"
+        display: |-
+          完成 煤炭监狱 - IV 任务

@@ -1,0 +1,51 @@
+Qisi:
+  name: "<gold>七四"
+  queue: 8
+  recipes:
+    sterile_bandage:
+      id: sertraline:sterile_bandage
+      buy:
+        - sertraline:fabric_skin:1
+        - sertraline:rag:1
+        - point:4
+      time: 50
+    almond_bandage:
+      id: sertraline:almond_bandage
+      buy:
+        - sertraline:fabric_skin:1
+        - sertraline:rag:1
+        - point:2
+      time: 45
+    antibiotic:
+      id: sertraline:antibiotic
+      buy:
+        - sertraline:fabric_skin:1
+        - sertraline:glass_bottle:1
+        - sertraline:paper:1
+        - point:4
+      time: 70
+    almond_water_blue:
+      id: sertraline:almond_water_blue
+      buy:
+        - sertraline:glass_bottle:1
+        - sertraline:rag:1
+        - point:9
+      time: 50
+    onefirst_medkit:
+      id: sertraline:onefirst_medkit
+      buy:
+        - sertraline:fabric_skin:2
+        - sertraline:rag:2
+        - point:45
+      time: 130
+    akacandy_medkit:
+      id: sertraline:akacandy_medkit
+      buy:
+        - sertraline:onefirst_medkit:1
+        - sertraline:antibiotic:1
+        - point:50
+      time: 300
+      condition:
+        kether: "quest select WorkForFuture4 quest completed"
+        display: |-
+          完成 为了今后的工作 - IV 任务

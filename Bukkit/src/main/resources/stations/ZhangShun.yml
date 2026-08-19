@@ -1,0 +1,60 @@
+ZhangShun:
+  name: "<gold>张顺"
+  queue: 8
+  recipes:
+    tape:
+      id: sertraline:tape
+      buy:
+        - sertraline:plastic:1
+        - point:2
+      time: 15
+    battery:
+      id: sertraline:battery
+      buy:
+        - sertraline:copper_wire:1
+        - sertraline:plastic:1
+        - point:2
+      time: 50
+    cpu:
+      id: sertraline:cpu
+      buy:
+        - sertraline:copper_wire:2
+        - sertraline:plastic:1
+        - sertraline:iron_ingot:1
+        - point:3
+      time: 90
+    radio:
+      id: sertraline:radio
+      buy:
+        - sertraline:pcb:2
+        - sertraline:copper_wire:2
+        - point:5
+      time: 140
+    wifi:
+      id: sertraline:wifi
+      buy:
+        - sertraline:radio:1
+        - sertraline:copper_wire:2
+        - point:60
+      time: 200
+    golden_necklace:
+      id: sertraline:golden_necklace
+      buy:
+        - sertraline:gold_ingot_medium:3
+        - point:120
+      time: 240
+      condition:
+        kether: "quest select FlashGoldCharge quest completed"
+        display: |-
+          完成 闪金冲锋 任务
+    advanced_ai_core:
+      id: sertraline:advanced_ai_core
+      buy:
+        - sertraline:cpu:1
+        - sertraline:ram_stick:1
+        - point:100
+      time: 300
+      condition:
+        kether: "quest select Rocket quest completed"
+        display: |-
+          完成 这都有火箭收哦 任务

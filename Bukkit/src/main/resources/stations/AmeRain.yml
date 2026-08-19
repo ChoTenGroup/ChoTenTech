@@ -1,0 +1,82 @@
+AmeRain:
+  name: "<gold>阿梅雨"
+  queue: 8
+  recipes:
+    copper_wire:
+      id: sertraline:copper_wire
+      buy:
+        - sertraline:raw_copper:1
+        - sertraline:coal:1
+        - money:10
+      time: 30
+    battery:
+      id: sertraline:battery
+      buy:
+        - sertraline:copper_wire:1
+        - sertraline:carbon:1
+        - money:20
+      time: 50
+    pcb:
+      id: sertraline:pcb
+      buy:
+        - sertraline:copper_wire:2
+        - sertraline:plastic:1
+        - sertraline:screw:1
+        - money:40
+      time: 70
+    cpu:
+      id: sertraline:cpu
+      buy:
+        - sertraline:copper_wire:2
+        - sertraline:plastic:1
+        - sertraline:iron_ingot:1
+        - money:30
+      time: 90
+    phone:
+      id: sertraline:phone
+      buy:
+        - sertraline:pcb:1
+        - sertraline:battery:1
+        - money:40
+      time: 95
+    advanced_wifi_sender:
+      id: sertraline:advanced_wifi_sender
+      buy:
+        - sertraline:pcb:1
+        - sertraline:copper_wire:2
+        - money:80
+      time: 120
+    3d_vision_glasses:
+      id: sertraline:3d_vision_glasses
+      buy:
+        - sertraline:pcb:1
+        - sertraline:copper_wire:2
+        - money:400
+      time: 160
+    graphics_card:
+      id: sertraline:graphics_card
+      buy:
+        - sertraline:pcb:3
+        - sertraline:copper_wire:3
+        - sertraline:ram_stick:1
+        - money:300
+      time: 200
+    advanced_ai_core:
+      id: sertraline:advanced_ai_core
+      buy:
+        - sertraline:cpu:1
+        - sertraline:ram_stick:1
+        - sertraline:pcb:2
+        - money:400
+      time: 300
+      condition:
+        kether: "quest select InternetTravel2 quest completed"
+        display: |-
+          完成 因特耐游记 - II 任务
+    pro_ai_core:
+      id: sertraline:pro_ai_core
+      buy:
+        - sertraline:advanced_ai_core:1
+        - sertraline:graphics_card:1
+        - money:500
+      time: 360

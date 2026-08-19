@@ -8,165 +8,165 @@
 mining:
   # 经验值 = 基础值 * (1 + 工具等级 * 0.1)
   break:
-    STONE: 1-3
-    COBBLESTONE: 1-2
-    GRANITE: 1-3
-    DIORITE: 1-3
-    ANDESITE: 1-3
-    TUFF: 1-3
-    DEEPSLATE: 1-3
-    GRAVEL: 1-2
-    SAND: 1-2
-    CLAY: 2-4
-    COAL_ORE: 5-10
-    DEEPSLATE_COAL_ORE: 6-12
-    RAW_IRON: 5-8
-    RAW_COPPER: 4-7
-    COPPER_ORE: 5-8
-    DEEPSLATE_COPPER_ORE: 5-9
-    IRON_ORE: 8-15
-    DEEPSLATE_IRON_ORE: 10-18
-    LAPIS_ORE: 12-20
-    DEEPSLATE_LAPIS_ORE: 15-25
-    REDSTONE_ORE: 8-15
-    DEEPSLATE_REDSTONE_ORE: 10-18
-    GOLD_ORE: 10-20
-    DEEPSLATE_GOLD_ORE: 12-22
-    NETHER_GOLD_ORE: 8-15
-    NETHER_QUARTZ_ORE: 5-10
-    DIAMOND_ORE: 25-50
-    DEEPSLATE_DIAMOND_ORE: 30-55
-    EMERALD_ORE: 30-60
-    DEEPSLATE_EMERALD_ORE: 35-65
-    ANCIENT_DEBRIS: 50-100
-    NETHERRACK: 1-2
-    END_STONE: 1-2
-    OBSIDIAN: 10-20
-    CRYING_OBSIDIAN: 15-25
-    GLOWSTONE: 3-6
+    STONE: 4-12
+    COBBLESTONE: 4-8
+    GRANITE: 4-12
+    DIORITE: 4-12
+    ANDESITE: 4-12
+    TUFF: 4-12
+    DEEPSLATE: 4-12
+    GRAVEL: 4-8
+    SAND: 4-8
+    CLAY: 8-16
+    COAL_ORE: 20-40
+    DEEPSLATE_COAL_ORE: 24-48
+    RAW_IRON: 20-32
+    RAW_COPPER: 16-28
+    COPPER_ORE: 20-32
+    DEEPSLATE_COPPER_ORE: 20-36
+    IRON_ORE: 32-60
+    DEEPSLATE_IRON_ORE: 40-72
+    LAPIS_ORE: 48-80
+    DEEPSLATE_LAPIS_ORE: 60-100
+    REDSTONE_ORE: 32-60
+    DEEPSLATE_REDSTONE_ORE: 40-72
+    GOLD_ORE: 40-80
+    DEEPSLATE_GOLD_ORE: 48-88
+    NETHER_GOLD_ORE: 32-60
+    NETHER_QUARTZ_ORE: 20-40
+    DIAMOND_ORE: 100-200
+    DEEPSLATE_DIAMOND_ORE: 120-220
+    EMERALD_ORE: 120-240
+    DEEPSLATE_EMERALD_ORE: 140-260
+    ANCIENT_DEBRIS: 200-400
+    NETHERRACK: 4-8
+    END_STONE: 4-8
+    OBSIDIAN: 40-80
+    CRYING_OBSIDIAN: 60-100
+    GLOWSTONE: 12-24
 
 # === 战斗 (Combat) — 击杀生物 ===
 combat:
   kill:
-    ZOMBIE: 3-8
-    HUSK: 4-9
-    DROWNED: 4-9
-    SKELETON: 3-8
-    WITHER_SKELETON: 8-15
-    STRAY: 5-10
-    CREEPER: 5-12
-    SPIDER: 4-10
-    CAVE_SPIDER: 5-12
-    ENDERMAN: 10-20
-    BLAZE: 8-15
-    WITHER: 100-200
-    ENDER_DRAGON: 200-300
-    WITCH: 8-15
-    PHANTOM: 6-12
-    SLIME: 2-6
-    MAGMA_CUBE: 3-8
-    PIGLIN: 5-12
-    PIGLIN_BRUTE: 10-18
-    HOGLIN: 8-15
-    ZOGLIN: 10-18
-    PILLAGER: 5-10
-    VINDICATOR: 8-14
-    EVOKER: 12-20
-    RAVAGER: 20-35
-    WARDEN: 150-250
-    ZOMBIFIED_PIGLIN: 4-8
-    MAGMA_CUBE: 3-8
-    GUARDIAN: 6-12
-    ELDER_GUARDIAN: 30-60
-    SHULKER: 8-15
-    VEX: 3-6
-    PLAYER: 20-50
+    ZOMBIE: 12-32
+    HUSK: 16-36
+    DROWNED: 16-36
+    SKELETON: 12-32
+    WITHER_SKELETON: 32-60
+    STRAY: 20-40
+    CREEPER: 20-48
+    SPIDER: 16-40
+    CAVE_SPIDER: 20-48
+    ENDERMAN: 40-80
+    BLAZE: 32-60
+    WITHER: 400-800
+    ENDER_DRAGON: 800-1200
+    WITCH: 32-60
+    PHANTOM: 24-48
+    SLIME: 8-24
+    MAGMA_CUBE: 12-32
+    PIGLIN: 20-48
+    PIGLIN_BRUTE: 40-72
+    HOGLIN: 32-60
+    ZOGLIN: 40-72
+    PILLAGER: 20-40
+    VINDICATOR: 32-56
+    EVOKER: 48-80
+    RAVAGER: 80-140
+    WARDEN: 600-1000
+    ZOMBIFIED_PIGLIN: 16-32
+    MAGMA_CUBE: 12-32
+    GUARDIAN: 24-48
+    ELDER_GUARDIAN: 120-240
+    SHULKER: 32-60
+    VEX: 12-24
+    PLAYER: 80-200
     # 可在此添加其他生物类型
 
 # === 力量 (Strength) — 近战伤害 ===
 strength:
   # 每造成 1 点伤害（半颗心）获得的经验
-  damage_multiplier: 0.2
+  damage_multiplier: 1.0
   # 单次攻击最大经验
-  max_per_hit: 10.0
+  max_per_hit: 50.0
 
 # === 耐力 (Endurance) — 承受伤害 + 奔跑 ===
 endurance:
   # 每承受 1 点伤害获得的经验
-  damage_taken_multiplier: 1.0
+  damage_taken_multiplier: 4.0
   # 单次承受伤害最大经验
-  max_per_event: 50.0
+  max_per_event: 200.0
   # 每 tick 奔跑获得的经验（约 20 tick/秒）
-  sprint_exp_per_tick: 0.2
+  sprint_exp_per_tick: 0.8
   # 每 tick 游泳获得的经验
-  swim_exp_per_tick: 0.3
+  swim_exp_per_tick: 1.2
 
 # === 健康 (Health) — 治疗 ===
 health:
   # 每恢复 1 点生命值获得的经验
-  heal_multiplier: 2.0
+  heal_multiplier: 8.0
   # 单次治疗事件最大经验
-  max_per_event: 10.0
+  max_per_event: 40.0
 
 # === 智力 (Intelligence) — 附魔/酿造/合成 ===
 intelligence:
-  enchant: 10-30
-  craft: 5-15
-  smelt: 2-5
-  brew: 8-20
-  anvil: 5-15
-  grindstone: 3-8
+  enchant: 40-120
+  craft: 20-60
+  smelt: 8-20
+  brew: 32-80
+  anvil: 20-60
+  grindstone: 12-32
 
 # === 敏捷 (Agility) — 跳跃/移动 ===
 agility:
   # 每 tick 潜行/行走获得的经验
-  move_exp_per_tick: 0.04
+  move_exp_per_tick: 0.16
   # 跳跃经验
-  jump_exp: 0.4
+  jump_exp: 1.6
   # 每格坠落距离获得的经验（安全落地）
-  safe_fall_exp_per_block: 0.8
+  safe_fall_exp_per_block: 3.2
 
 # === 投掷 (Throwing) — 投掷物命中 ===
 throwing:
-  trident_hit: 5-15
-  snowball_hit: 1-3
-  egg_hit: 1-3
-  splash_potion_hit: 3-8
-  lingering_potion_hit: 5-10
-  experience_bottle: 2-5
-  firework: 2-6
-  fishing_rod: 1-4
+  trident_hit: 20-60
+  snowball_hit: 4-12
+  egg_hit: 4-12
+  splash_potion_hit: 12-32
+  lingering_potion_hit: 20-40
+  experience_bottle: 8-20
+  firework: 8-24
+  fishing_rod: 4-16
 
 # === 理疗 (Physiotherapy) — 使用医疗物品 ===
 physiotherapy:
-  bandage_use: 5-10
-  sterile_bandage_use: 8-12
-  medkit_use: 10-25
-  splint_use: 8-15
-  pill_use: 3-8
-  surgical_use: 15-30
+  bandage_use: 20-40
+  sterile_bandage_use: 32-48
+  medkit_use: 40-100
+  splint_use: 32-60
+  pill_use: 12-32
+  surgical_use: 60-120
   heal_other_multiplier: 1.5
 
 # === 开锁 (Lockpicking) — 成功开锁 ===
 lockpicking:
-  unlock_success: 15-30
-  unlock_fail: 2-5
+  unlock_success: 60-120
+  unlock_fail: 8-20
 
 # === 耕种 (Farming) — 占位，暂无效果 ===
 farming:
-  harvest: 2-5
+  harvest: 8-20
 
 # === 钓鱼 (Fishing) — 钓鱼获得经验 ===
 fishing:
   # 钓到鱼
-  caught_fish: 5-15
+  caught_fish: 20-60
   # 钓到实体（如物品展示框、其他玩家等）
-  caught_entity: 3-10
+  caught_entity: 12-40
 
 # === 烹饪 (Cooking) — 占位，暂无效果 ===
 cooking:
-  cook: 3-8
+  cook: 12-32
 
 # === 伐木 (Woodcutting) — 占位，暂无效果 ===
 woodcutting:
-  chop: 2-6
+  chop: 8-24

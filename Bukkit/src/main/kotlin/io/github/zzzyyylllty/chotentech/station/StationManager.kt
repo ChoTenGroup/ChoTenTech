@@ -3,6 +3,7 @@ package io.github.zzzyyylllty.chotentech.station
 import io.github.zzzyyylllty.chotentech.data.getData
 import io.github.zzzyyylllty.chotentech.function.CurrencyManager
 import io.github.zzzyyylllty.chotentech.function.ReputationManager
+import io.github.zzzyyylllty.chotentech.kether.evalKetherBoolean
 import io.github.zzzyyylllty.chotentech.player.sendComponent
 import io.github.zzzyyylllty.chotentech.shop.CostType
 import io.github.zzzyyylllty.chotentech.shop.ShopMenu
@@ -52,6 +53,7 @@ object StationManager {
             }
             extraQueues += StationExtraQueue(
                 key = key,
+                display = eqSec.getString("display"),
                 affection = affection,
                 permission = eqSec.getString("permission"),
                 slots = eqSec.getInt("slots", 0),
@@ -61,11 +63,19 @@ object StationManager {
         val recipes = linkedMapOf<String, StationRecipe>()
         sec.getConfigurationSection("recipes")?.getKeys(false)?.forEach { rKey ->
             val rSec = sec.getConfigurationSection("recipes.$rKey") ?: return@forEach
+            // 制作条件: condition.kether 满足才可制作, display 用于展示文案
+            val condition = rSec.getConfigurationSection("condition")?.let { cSec ->
+                StationCondition(
+                    kether = cSec.getString("kether"),
+                    display = cSec.getString("display"),
+                )
+            }
             recipes[rKey] = StationRecipe(
                 key = rKey,
                 output = rSec.getString("id") ?: rKey,
                 buy = rSec.getStringList("buy").map { parseBuyCost(it) },
                 time = rSec.getInt("time", 0),
+                condition = condition,
             )
         }
 
@@ -153,6 +163,11 @@ object StationManager {
         return true
     }
 
+    /** 配方制作条件是否满足(无 kether 条件时视为满足) */
+    fun conditionMet(player: Player, recipe: StationRecipe): Boolean {
+        return recipe.condition?.kether.evalKetherBoolean(player, linkedMapOf("@Player" to player))
+    }
+
     // ── 制作 / 领取 ──────────────────────────────────────────────
 
     fun startCrafting(player: Player, station: StationConfig, recipe: StationRecipe): Boolean {
@@ -160,6 +175,14 @@ object StationManager {
         val maxSlots = getMaxQueueSlots(player, station)
         if (queue.size >= maxSlots) {
             player.sendComponent("<red>合成站队列已满! 领取完成的物品后可继续制作")
+            return false
+        }
+
+        // 校验制作条件(kether)
+        val cond = recipe.condition
+        if (cond != null && !conditionMet(player, recipe)) {
+            val desc = cond.display?.replace('\n', ' ') ?: "该配方的制作条件"
+            player.sendComponent("<red>制作条件未满足: <yellow>$desc")
             return false
         }
 

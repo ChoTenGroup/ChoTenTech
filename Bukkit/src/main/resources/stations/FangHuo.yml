@@ -1,0 +1,85 @@
+FangHuo:
+  name: "<gold>房火"
+  queue: 8
+  recipes:
+    tape:
+      id: sertraline:tape
+      buy:
+        - sertraline:plastic:1
+        - money:10
+      time: 15
+    red_tape:
+      id: sertraline:red_tape
+      buy:
+        - sertraline:tape:1
+        - sertraline:fabric_skin:1
+        - money:300
+      time: 120
+    blue_tape:
+      id: sertraline:blue_tape
+      buy:
+        - sertraline:tape:1
+        - sertraline:fabric_skin:1
+        - money:300
+      time: 120
+    rainbow_board:
+      id: sertraline:rainbow_board
+      buy:
+        - sertraline:wood:1
+        - sertraline:tape:1
+        - money:400
+      time: 150
+    green_board:
+      id: sertraline:green_board
+      buy:
+        - sertraline:wood:1
+        - sertraline:tape:1
+        - money:400
+      time: 150
+    disk:
+      id: sertraline:disk
+      buy:
+        - sertraline:copper_wire:1
+        - sertraline:plastic:1
+        - sertraline:iron_ingot:1
+        - money:40
+      time: 80
+    bread:
+      id: sertraline:bread
+      buy:
+        - sertraline:wheat:1
+        - money:10
+      time: 25
+    bandage:
+      id: sertraline:bandage
+      buy:
+        - sertraline:fabric_skin:1
+        - sertraline:rag:1
+        - money:40
+      time: 40
+    mre:
+      id: sertraline:mre
+      buy:
+        - sertraline:wheat:1
+        - sertraline:beef:1
+        - money:60
+      time: 90
+    iron_sword:
+      id: sertraline:iron_sword
+      buy:
+        - sertraline:iron_ingot:2
+        - sertraline:wood:1
+        - money:700
+      time: 100
+    advanced_ai_core:
+      id: sertraline:advanced_ai_core
+      buy:
+        - sertraline:cpu:1
+        - sertraline:ram_stick:1
+        - sertraline:pcb:2
+        - money:400
+      time: 300
+      condition:
+        kether: "quest select QingQingShi quest completed"
+        display: |-
+          完成 青青石 任务

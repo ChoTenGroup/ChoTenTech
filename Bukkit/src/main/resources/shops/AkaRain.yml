@@ -1,5 +1,43 @@
 AkaRain:
   name: "<gold>阿卡雨"
+
+  level:
+    1:
+      - type: level
+        level: main
+        value: 3
+      - type: quota
+        balance: point
+        value: 10
+    2:
+      - type: level
+        level: main
+        value: 5
+      - type: quota
+        balance: point
+        value: 60
+    3:
+      - type: level
+        level: main
+        value: 8
+      - type: quota
+        balance: point
+        value: 200
+    4:
+      - type: level
+        level: main
+        value: 11
+      - type: quota
+        balance: point
+        value: 600
+    5:
+      - type: level
+        level: main
+        value: 14
+      - type: quota
+        balance: point
+        value: 2000
+
   items:
     # Lv.1 - 基础食品
     bread:

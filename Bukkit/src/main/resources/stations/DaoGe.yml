@@ -1,0 +1,71 @@
+DaoGe:
+  name: "<gold>刀哥"
+  queue: 8
+  recipes:
+    cooked_porkchop:
+      id: sertraline:cooked_porkchop
+      buy:
+        - sertraline:porkchop:1
+        - point:2
+      time: 20
+    cooked_beef:
+      id: sertraline:cooked_beef
+      buy:
+        - sertraline:beef:1
+        - point:2
+      time: 22
+    cooked_chicken:
+      id: sertraline:cooked_chicken
+      buy:
+        - sertraline:chicken:1
+        - point:2
+      time: 20
+    cooked_mutton:
+      id: sertraline:cooked_mutton
+      buy:
+        - sertraline:mutton:1
+        - point:2
+      time: 22
+    barbecue:
+      id: sertraline:barbecue
+      buy:
+        - sertraline:porkchop:1
+        - sertraline:beef:1
+        - point:3
+      time: 60
+    bronze_sword:
+      id: sertraline:bronze_sword
+      buy:
+        - sertraline:bronze_ingot:3
+        - point:60
+      time: 90
+    iron_sword:
+      id: sertraline:iron_sword
+      buy:
+        - sertraline:iron_ingot:2
+        - sertraline:wood:1
+        - point:70
+      time: 100
+    iron_chestplate:
+      id: sertraline:iron_chestplate
+      buy:
+        - sertraline:iron_ingot:4
+        - point:120
+      time: 120
+    steel_sword:
+      id: sertraline:steel_sword
+      buy:
+        - sertraline:steel_ingot:3
+        - point:150
+      time: 160
+    katana:
+      id: sertraline:katana
+      buy:
+        - sertraline:iron_ingot:2
+        - sertraline:wood:1
+        - point:150
+      time: 300
+      condition:
+        kether: "quest select RunningToTheNight quest completed"
+        display: |-
+          完成 向夜晚奔去 任务

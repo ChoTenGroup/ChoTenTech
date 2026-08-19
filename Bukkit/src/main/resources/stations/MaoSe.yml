@@ -1,0 +1,59 @@
+MaoSe:
+  name: "<gold>毛瑟"
+  queue: 8
+  recipes:
+    flint_sword:
+      id: sertraline:flint_sword
+      buy:
+        - sertraline:flint:2
+      time: 30
+    flint_pickaxe:
+      id: sertraline:flint_pickaxe
+      buy:
+        - sertraline:flint:2
+      time: 30
+    flint_axe:
+      id: sertraline:flint_axe
+      buy:
+        - sertraline:flint:2
+      time: 30
+    leather_helmet:
+      id: sertraline:leather_helmet
+      buy:
+        - sertraline:leather_unprocessed:2
+      time: 30
+    leather_chestplate:
+      id: sertraline:leather_chestplate
+      buy:
+        - sertraline:leather_unprocessed:3
+      time: 40
+    leather_boots:
+      id: sertraline:leather_boots
+      buy:
+        - sertraline:leather_unprocessed:2
+      time: 30
+    gold_sword:
+      id: sertraline:gold_sword
+      buy:
+        - sertraline:gold_ingot_medium:2
+        - money:300
+      time: 90
+    iron_sword:
+      id: sertraline:iron_sword
+      buy:
+        - sertraline:iron_ingot:2
+        - sertraline:wood:1
+        - money:700
+      time: 100
+    iron_chestplate:
+      id: sertraline:iron_chestplate
+      buy:
+        - sertraline:iron_ingot:4
+        - money:1200
+      time: 120
+    steel_sword:
+      id: sertraline:steel_sword
+      buy:
+        - sertraline:steel_ingot:3
+        - money:1600
+      time: 160

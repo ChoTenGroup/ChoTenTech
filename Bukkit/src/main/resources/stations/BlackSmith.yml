@@ -1,20 +1,190 @@
 BlackSmith:
   name: "<gold>铁匠"
-  queue: 9
+  queue: 8
   extra-queue:
-    affection2:
+    affection_1:
+      display: "信任达到 30 点"
       affection:
         id: "BlackSmith"
-        required: 100
-      slots: 9
-    perm:
-      permission: "chotentech.aaa"
-      slots: 9
+        required: 30
+      slots: 4
   recipes:
+    raw_coal:
+      id: sertraline:raw_coal
+      buy:
+        - sertraline:wood:1
+        - money:35
+      time: 15
+    coal:
+      id: sertraline:coal
+      buy:
+        - sertraline:raw_coal:1
+        - money:20
+      time: 25
     iron_ingot:
+      id: sertraline:iron_ingot
+      buy:
+        - sertraline:raw_iron:1
+        - sertraline:coal:1
+        - money:15
+      time: 50
+    copper_ingot:
+      id: sertraline:copper_ingot
+      buy:
+        - sertraline:raw_copper:1
+        - sertraline:coal:1
+        - money:15
+      time: 45
+    gold_ingot_low:
+      id: sertraline:gold_ingot_low
+      buy:
+        - sertraline:raw_gold:1
+        - sertraline:coal:1
+        - money:25
+      time: 60
+    bronze_ingot:
+      id: sertraline:bronze_ingot
+      buy:
+        - sertraline:copper_ingot:1
+        - sertraline:raw_iron:1
+        - sertraline:coal:1
+        - money:30
+      time: 65
+    brass_ingot:
+      id: sertraline:brass_ingot
+      buy:
+        - sertraline:copper_ingot:1
+        - sertraline:raw_copper:1
+        - sertraline:coal:1
+        - money:30
+      time: 65
+    billon_ingot:
+      id: sertraline:billon_ingot
+      buy:
+        - sertraline:copper_ingot:1
+        - sertraline:silver_ingot:1
+        - money:40
+      time: 70
+    basic_alloy_ingot:
+      id: sertraline:basic_alloy_ingot
+      buy:
+        - sertraline:iron_ingot:1
+        - sertraline:carbon:1
+        - money:40
+      time: 80
+    steel_ingot:
+      id: sertraline:steel_ingot
+      buy:
+        - sertraline:iron_ingot:1
+        - sertraline:carbon:1
+        - sertraline:coal:1
+        - money:60
+      time: 100
+    iron_sword:
       id: sertraline:iron_sword
       buy:
         - sertraline:iron_ingot:2
         - sertraline:wood:1
-        - money:100
+        - money:1000
       time: 100
+      condition:
+        kether: "quest select HarderSelf quest completed"
+        display: |-
+          完成 打铁还需自身硬 任务
+    bronze_sword:
+      id: sertraline:bronze_sword
+      buy:
+        - sertraline:bronze_ingot:3
+        - money:550
+      time: 80
+    bronze_helmet:
+      id: sertraline:bronze_helmet
+      buy:
+        - sertraline:bronze_ingot:2
+        - money:300
+      time: 70
+    bronze_chestplate:
+      id: sertraline:bronze_chestplate
+      buy:
+        - sertraline:bronze_ingot:4
+        - money:600
+      time: 95
+    bronze_leggings:
+      id: sertraline:bronze_leggings
+      buy:
+        - sertraline:bronze_ingot:3
+        - money:450
+      time: 85
+    bronze_boots:
+      id: sertraline:bronze_boots
+      buy:
+        - sertraline:bronze_ingot:2
+        - money:470
+      time: 65
+    iron_pickaxe:
+      id: sertraline:iron_pickaxe
+      buy:
+        - sertraline:iron_ingot:2
+        - sertraline:wood:1
+        - money:600
+      time: 80
+    iron_helmet:
+      id: sertraline:iron_helmet
+      buy:
+        - sertraline:iron_ingot:2
+        - money:500
+      time: 75
+    iron_chestplate:
+      id: sertraline:iron_chestplate
+      buy:
+        - sertraline:iron_ingot:4
+        - money:900
+      time: 105
+    iron_leggings:
+      id: sertraline:iron_leggings
+      buy:
+        - sertraline:iron_ingot:3
+        - money:700
+      time: 95
+    iron_boots:
+      id: sertraline:iron_boots
+      buy:
+        - sertraline:iron_ingot:2
+        - money:400
+      time: 75
+    basic_alloy_sword:
+      id: sertraline:basic_alloy_sword
+      buy:
+        - sertraline:basic_alloy_ingot:3
+        - money:1200
+      time: 130
+    basic_alloy_chestplate:
+      id: sertraline:basic_alloy_chestplate
+      buy:
+        - sertraline:basic_alloy_ingot:4
+        - money:1500
+      time: 150
+    steel_sword:
+      id: sertraline:steel_sword
+      buy:
+        - sertraline:steel_ingot:3
+        - money:1800
+      time: 160
+    steel_chestplate:
+      id: sertraline:steel_chestplate
+      buy:
+        - sertraline:steel_ingot:4
+        - money:2200
+      time: 180
+    leather_chestplate:
+      id: sertraline:leather_chestplate
+      buy:
+        - sertraline:leather_unprocessed:3
+        - money:80
+      time: 40
+    flint_sword:
+      id: sertraline:flint_sword
+      buy:
+        - sertraline:flint:2
+        - money:40
+      time: 30

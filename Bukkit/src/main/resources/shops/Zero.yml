@@ -1,5 +1,43 @@
 Zero:
   name: "<gold>零"
+
+  level:
+    1:
+      - type: level
+        level: main
+        value: 5
+      - type: quota
+        balance: money
+        value: 80
+    2:
+      - type: level
+        level: main
+        value: 8
+      - type: quota
+        balance: money
+        value: 500
+    3:
+      - type: level
+        level: main
+        value: 12
+      - type: quota
+        balance: money
+        value: 2000
+    4:
+      - type: level
+        level: main
+        value: 16
+      - type: quota
+        balance: money
+        value: 5000
+    5:
+      - type: level
+        level: main
+        value: 20
+      - type: quota
+        balance: money
+        value: 10000
+
   items:
     # Lv.1 - 收藏品
     examination_paper:

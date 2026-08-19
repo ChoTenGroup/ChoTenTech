@@ -623,7 +623,7 @@ object ShopMenu : Listener {
         val current = when (req.type) {
             "level" -> getPlayerLevel(player).toLong()
             "affection" -> ReputationManager.getAffection(player, req.affection)
-            "quota" -> ShopManager.getPlayerSales(shop.idef, player.uniqueId.toString())
+            "quota" -> ShopManager.getPlayerSales(shop.idef, player.uniqueId.toString(), req.balance)
             else -> 0L
         }
         return current >= req.value
@@ -641,7 +641,7 @@ object ShopMenu : Listener {
                     if (current < req.value) return false
                 }
                 "quota" -> {
-                    val current = ShopManager.getPlayerSales(shop.idef, player.uniqueId.toString())
+                    val current = ShopManager.getPlayerSales(shop.idef, player.uniqueId.toString(), req.balance)
                     if (current < req.value) return false
                 }
             }
@@ -734,7 +734,7 @@ object ShopMenu : Listener {
                                 loreLines.add("<!i> ${style}信任度 $current / ${req.value}")
                             }
                             "quota" -> {
-                                val current = ShopManager.getPlayerSales(shop.idef, player.uniqueId.toString())
+                                val current = ShopManager.getPlayerSales(shop.idef, player.uniqueId.toString(), req.balance)
                                 loreLines.add("<!i> ${style}有效出售 ${formatChineseNumber(current)} / ${formatChineseNumber(req.value.toLong())}")
                             }
                         }
@@ -1071,7 +1071,7 @@ object ShopMenu : Listener {
             for (reward in entry.sell) {
                 val amount = reward.amount * qty
                 if (reward.type == CostType.CURRENCY) {
-                    ShopManager.recordSale(shop.idef, player.uniqueId.toString(), amount)
+                    ShopManager.recordSale(shop.idef, player.uniqueId.toString(), reward.currency ?: "money", amount)
                 }
             }
         }
@@ -1230,7 +1230,7 @@ object ShopMenu : Listener {
                             CurrencyManager.addBalance(player, reward.currency ?: "money", amount)
                             val name = CurrencyManager.displayName(reward.currency ?: "money")
                             rewardSummary.add("<yellow>$name <green>x$amount")
-                            ShopManager.recordSale(shop.idef, player.uniqueId.toString(), amount)
+                            ShopManager.recordSale(shop.idef, player.uniqueId.toString(), reward.currency ?: "money", amount)
                         }
                         CostType.ITEM -> {
                             giveItem(player, reward.item ?: "?", amount.toInt())

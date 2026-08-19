@@ -138,6 +138,8 @@ data class PlayerData (
 
     var unlockedNoclips: MutableSet<String> = mutableSetOf(),
     var unlockedShopItems: MutableSet<String> = mutableSetOf(),
+    // 商店出售额累计（商人等级 quota，随 PlayerData 持久化）: shopId -> 货币 -> 累计额
+    var shopSales: MutableMap<String, MutableMap<String, Long>> = mutableMapOf(),
 
     var savedBases: MutableList<String> = mutableListOf(),
 
@@ -204,6 +206,7 @@ data class PlayerData (
         if (cosmetics == null) cosmetics = mutableMapOf()
         if (unlockedNoclips == null) unlockedNoclips = mutableSetOf()
         if (unlockedShopItems == null) unlockedShopItems = mutableSetOf()
+        if (shopSales == null) shopSales = mutableMapOf()
         if (savedBases == null) savedBases = mutableListOf()
         if (quetiapineData == null) quetiapineData = mutableMapOf()
         if (meta == null) meta = mutableMapOf()

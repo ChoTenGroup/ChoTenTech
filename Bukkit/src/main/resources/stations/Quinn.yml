@@ -1,0 +1,69 @@
+Quinn:
+  name: "<gold>奎因"
+  queue: 8
+  recipes:
+    bread:
+      id: sertraline:bread
+      buy:
+        - sertraline:wheat:1
+        - point:2
+      time: 25
+    cracker:
+      id: sertraline:cracker
+      buy:
+        - sertraline:wheat:1
+        - point:2
+      time: 20
+    potato_chips:
+      id: sertraline:potato_chips
+      buy:
+        - sertraline:potato:1
+        - point:2
+      time: 30
+    chocolate:
+      id: sertraline:chocolate
+      buy:
+        - sertraline:cocoa_beans:1
+        - point:3
+      time: 35
+    muffin:
+      id: sertraline:muffin
+      buy:
+        - sertraline:wheat:1
+        - sertraline:berry:1
+        - point:3
+      time: 35
+    pie:
+      id: sertraline:pie
+      buy:
+        - sertraline:wheat:1
+        - sertraline:berry:1
+        - point:3
+      time: 40
+    apple_can:
+      id: sertraline:apple_can
+      buy:
+        - sertraline:apple:1
+        - sertraline:sugar_cane:1
+        - point:2
+      time: 60
+    mre:
+      id: sertraline:mre
+      buy:
+        - sertraline:wheat:1
+        - sertraline:beef:1
+        - point:5
+      time: 90
+    royal_rations:
+      id: sertraline:royal_rations
+      buy:
+        - sertraline:herring_can:1
+        - sertraline:honey:1
+        - sertraline:jerky:1
+        - sertraline:mre:1
+        - point:50
+      time: 240
+      condition:
+        kether: "quest select CherryBlossom quest completed"
+        display: |-
+          完成 樱花树下 任务
