@@ -1,43 +1,5 @@
 XingChen:
   name: "<gold>星辰"
-
-  level:
-    1:
-      - type: level
-        level: main
-        value: 3
-      - type: quota
-        balance: point
-        value: 20
-    2:
-      - type: level
-        level: main
-        value: 5
-      - type: quota
-        balance: point
-        value: 100
-    3:
-      - type: level
-        level: main
-        value: 8
-      - type: quota
-        balance: point
-        value: 500
-    4:
-      - type: level
-        level: main
-        value: 11
-      - type: quota
-        balance: point
-        value: 1000
-    5:
-      - type: level
-        level: main
-        value: 14
-      - type: quota
-        balance: point
-        value: 4000
-
   items:
     # Lv.1 - 贸易品
     gold_ingot_medium:
@@ -46,12 +8,12 @@ XingChen:
       sell: point:14
     copper_wire:
       id: sertraline:copper_wire
-      buy: point:13
-      sell: point:5
+      buy: point:48
+      sell: point:19
     silver_wire:
       id: sertraline:silver_wire
-      buy: point:15
-      sell: point:6
+      buy: point:48
+      sell: point:19
     # Lv.1 - 矿石收购
     raw_iron:
       id: sertraline:raw_iron

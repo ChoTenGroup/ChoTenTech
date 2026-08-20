@@ -1,43 +1,5 @@
 LiuWei:
   name: "<gold>刘威"
-
-  level:
-    1:
-      - type: level
-        level: main
-        value: 5
-      - type: quota
-        balance: money
-        value: 60
-    2:
-      - type: level
-        level: main
-        value: 8
-      - type: quota
-        balance: money
-        value: 400
-    3:
-      - type: level
-        level: main
-        value: 12
-      - type: quota
-        balance: money
-        value: 1000
-    4:
-      - type: level
-        level: main
-        value: 16
-      - type: quota
-        balance: money
-        value: 4000
-    5:
-      - type: level
-        level: main
-        value: 20
-      - type: quota
-        balance: money
-        value: 10000
-
   items:
     # Lv.1 - 电站材料
     wood:
@@ -74,28 +36,28 @@ LiuWei:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: money:150
+      buy: money:480
     cpu:
       id: sertraline:cpu
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: money:280
+      buy: money:900
     battery:
       id: sertraline:battery
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: money:140
+      buy: money:480
     copper_wire:
       id: sertraline:copper_wire
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: money:130
+      buy: money:480
     # Lv.3 - 解锁商品
     graphics_card:
       id: sertraline:graphics_card
@@ -106,4 +68,4 @@ LiuWei:
       limit:
         player: 1
         player-reset: 24h
-      buy: money:1100
+      buy: money:3200

@@ -22,8 +22,10 @@ TIER_FILE = r"C:\Users\Administrator\Desktop\3\f\itemoutputtiers.yml"
 NAMES_FILE = r"C:\Users\Administrator\Desktop\3\f\itemoutputnames.yml"
 P2M = 10  # 1 point = 10 money
 
-BANDS = {"E": (10, 50), "D": (20, 90), "C": (100, 240), "B": (220, 480),
-         "A": (500, 1800), "S": (1200, 4500), "P": (6000, 18000)}
+BANDS = {"E": (10, 50), "D": (20, 480), "C": (100, 480), "B": (220, 900),
+         "A": (500, 3500), "S": (1200, 8000), "P": (6000, 18000)}
+# 因主动大幅上调（收购价 10000）而豁免档位检查的电子件：零售 25000 远超 S 档
+BAND_EXEMPT = {"vpx"}
 EQUIP_BANDS = {"leather": (80, 150), "flint": (80, 150), "bronze": (1600, 2400),
                "gold": (2000, 2800), "iron": (6400, 9600),
                "basic_alloy": (8500, 13500), "steel": (12000, 18000)}
@@ -290,7 +292,9 @@ def main():
                 elif not rec["barter"]:
                     violations.append(f"[{shop_id}] {item} 未知装备材质 {mat}")
             elif tier:
-                if tier not in BANDS:
+                if item in BAND_EXEMPT:
+                    infos.append(f"[{shop_id}] {item} 主动豁免档位检查")
+                elif tier not in BANDS:
                     violations.append(f"[{shop_id}] {item} 未知 tier: {tier}")
                 else:
                     lo, hi = BANDS[tier]

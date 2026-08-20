@@ -6,7 +6,7 @@ Sylvia:
       id: sertraline:examination_paper
       buy:
         - sertraline:paper:3
-        - money:20
+        - money:140
       time: 40
     simple_watch:
       id: sertraline:simple_watch
@@ -21,7 +21,7 @@ Sylvia:
       buy:
         - sertraline:pcb:2
         - sertraline:copper_wire:2
-        - money:60
+        - money:130
       time: 140
     advanced_wifi_sender:
       id: sertraline:advanced_wifi_sender
@@ -35,7 +35,7 @@ Sylvia:
       buy:
         - sertraline:pcb:1
         - sertraline:copper_wire:2
-        - money:350
+        - money:560
       time: 130
     record_player:
       id: sertraline:record_player
@@ -43,14 +43,14 @@ Sylvia:
         - sertraline:pcb:1
         - sertraline:motor:1
         - sertraline:copper_wire:1
-        - money:350
+        - money:600
       time: 150
     3d_vision_glasses:
       id: sertraline:3d_vision_glasses
       buy:
         - sertraline:pcb:1
         - sertraline:copper_wire:2
-        - money:400
+        - money:460
       time: 160
     wifi:
       id: sertraline:wifi
@@ -58,5 +58,5 @@ Sylvia:
         - sertraline:advanced_wifi_sender:1
         - sertraline:pcb:1
         - sertraline:copper_wire:2
-        - money:600
+        - money:1600
       time: 200

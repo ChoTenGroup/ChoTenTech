@@ -122,6 +122,8 @@ object ShopMenu : Listener {
             map(*layout.toTypedArray())
 
             slotsBy('I')
+            set('-', guiItem(XMaterial.COMPASS, "<aqua><bold> ", listOf("<!i> <dark_gray>这里什么都没有"), model = "kangelitem:void"))
+
 
             elements { getFilteredItems(player, shop, session) }
 
@@ -1090,6 +1092,8 @@ object ShopMenu : Listener {
             rows(6)
             map(*layout.toTypedArray())
             handLocked(false)
+            set('-', guiItem(XMaterial.COMPASS, "<aqua><bold> ", listOf("<!i> <dark_gray>这里什么都没有"), model = "kangelitem:void"))
+
 
             // O = back to main shop
             val backStack = buildDisplayItem(player, DisplayItem("<white><b>返回商店", "点击返回商店"), "BARRIER")

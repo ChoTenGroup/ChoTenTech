@@ -1,43 +1,5 @@
 ZhongHai:
   name: "<gold>钟海"
-
-  level:
-    1:
-      - type: level
-        level: main
-        value: 5
-      - type: quota
-        balance: money
-        value: 100
-    2:
-      - type: level
-        level: main
-        value: 8
-      - type: quota
-        balance: money
-        value: 800
-    3:
-      - type: level
-        level: main
-        value: 12
-      - type: quota
-        balance: money
-        value: 2000
-    4:
-      - type: level
-        level: main
-        value: 16
-      - type: quota
-        balance: money
-        value: 8000
-    5:
-      - type: level
-        level: main
-        value: 20
-      - type: quota
-        balance: money
-        value: 20000
-
   items:
     # Lv.1 - 基础物资
     bandage:

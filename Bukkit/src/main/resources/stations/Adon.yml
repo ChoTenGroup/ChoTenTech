@@ -30,7 +30,7 @@ Adon:
         - sertraline:copper_wire:1
         - sertraline:plastic:2
         - sertraline:iron_ingot:1
-        - money:40
+        - money:110
       time: 80
     u_disk:
       id: sertraline:u_disk
@@ -75,14 +75,14 @@ Adon:
         - sertraline:pcb:1
         - sertraline:copper_wire:2
         - sertraline:plastic:1
-        - money:120
+        - money:450
       time: 110
     radio:
       id: sertraline:radio
       buy:
         - sertraline:pcb:2
         - sertraline:copper_wire:2
-        - money:80
+        - money:120
       time: 140
     graphics_card:
       id: sertraline:graphics_card

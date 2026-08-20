@@ -1,43 +1,5 @@
 Lefty:
   name: "<gold>小左"
-
-  level:
-    1:
-      - type: level
-        level: main
-        value: 7
-      - type: quota
-        balance: money
-        value: 300
-    2:
-      - type: level
-        level: main
-        value: 11
-      - type: quota
-        balance: money
-        value: 2000
-    3:
-      - type: level
-        level: main
-        value: 15
-      - type: quota
-        balance: money
-        value: 5000
-    4:
-      - type: level
-        level: main
-        value: 19
-      - type: quota
-        balance: money
-        value: 20000
-    5:
-      - type: level
-        level: main
-        value: 24
-      - type: quota
-        balance: money
-        value: 40000
-
   items:
     # Lv.1 - 零件回收
     screw:
@@ -51,13 +13,13 @@ Lefty:
       sell: money:18
     motor:
       id: sertraline:motor
-      sell: money:60
+      sell: money:192
     copper_wire:
       id: sertraline:copper_wire
-      sell: money:52
+      sell: money:192
     battery:
       id: sertraline:battery
-      sell: money:56
+      sell: money:192
     # Lv.2 - 武器
     iron_sword:
       id: sertraline:iron_sword
@@ -76,7 +38,7 @@ Lefty:
       limit:
         player: 2
         player-reset: 24h
-      buy: money:1100
+      buy: money:3200
     advanced_ai_core:
       id: sertraline:advanced_ai_core
       requirements:
@@ -86,4 +48,4 @@ Lefty:
       limit:
         player: 1
         player-reset: 24h
-      buy: money:1200
+      buy: money:3400

@@ -5,38 +5,20 @@ BlackMarket:
     1:
       - type: level
         level: main
-        value: 3
-      - type: quota
-        balance: point
-        value: 60
+        value: 5
+      - type: affection
+        affection: BlackMarket
+        value: 5
     2:
       - type: level
         level: main
-        value: 5
+        value: 15
+      - type: affection
+        affection: BlackMarket
+        value: 10
       - type: quota
         balance: point
-        value: 400
-    3:
-      - type: level
-        level: main
-        value: 8
-      - type: quota
-        balance: point
-        value: 1000
-    4:
-      - type: level
-        level: main
-        value: 11
-      - type: quota
-        balance: point
-        value: 4000
-    5:
-      - type: level
-        level: main
-        value: 14
-      - type: quota
-        balance: point
-        value: 10000
+        value: 5000
 
   items:
     # ════════════════════════════════════════

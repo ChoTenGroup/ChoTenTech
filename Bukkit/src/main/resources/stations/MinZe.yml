@@ -6,7 +6,7 @@ MinZe:
       id: sertraline:examination_paper
       buy:
         - sertraline:paper:3
-        - money:20
+        - money:140
       time: 40
     disk:
       id: sertraline:disk
@@ -14,7 +14,7 @@ MinZe:
         - sertraline:copper_wire:1
         - sertraline:plastic:1
         - sertraline:iron_ingot:1
-        - money:40
+        - money:140
       time: 80
     u_disk:
       id: sertraline:u_disk
@@ -50,7 +50,7 @@ MinZe:
       buy:
         - sertraline:pcb:1
         - sertraline:copper_wire:2
-        - money:300
+        - money:560
       time: 120
     record_player:
       id: sertraline:record_player
@@ -58,14 +58,14 @@ MinZe:
         - sertraline:pcb:1
         - sertraline:motor:1
         - sertraline:copper_wire:1
-        - money:350
+        - money:600
       time: 150
     3d_vision_glasses:
       id: sertraline:3d_vision_glasses
       buy:
         - sertraline:pcb:1
         - sertraline:copper_wire:2
-        - money:400
+        - money:460
       time: 160
     pro_ai_core:
       id: sertraline:pro_ai_core
@@ -79,3 +79,55 @@ MinZe:
         kether: "quest select TakeOffPlane quest completed"
         display: |-
           完成 人在后室刚下飞机 任务
+    capacitor:
+      id: sertraline:capacitor
+      buy:
+        - sertraline:copper_wire:1
+        - sertraline:plastic:1
+        - money:30
+      time: 35
+    battery:
+      id: sertraline:battery
+      buy:
+        - sertraline:copper_wire:1
+        - sertraline:plastic:1
+        - money:50
+      time: 50
+    cpufan:
+      id: sertraline:cpufan
+      buy:
+        - sertraline:copper_wire:1
+        - sertraline:plastic:1
+        - money:60
+      time: 55
+    motor:
+      id: sertraline:motor
+      buy:
+        - sertraline:copper_wire:1
+        - sertraline:screw:2
+        - money:60
+      time: 60
+    cpu:
+      id: sertraline:cpu
+      buy:
+        - sertraline:copper_wire:2
+        - sertraline:plastic:1
+        - sertraline:iron_ingot:1
+        - money:60
+      time: 90
+    ram_stick:
+      id: sertraline:ram_stick
+      buy:
+        - sertraline:pcb:1
+        - sertraline:copper_wire:2
+        - sertraline:plastic:1
+        - money:470
+      time: 120
+    vpx:
+      id: sertraline:vpx
+      buy:
+        - sertraline:cpu:1
+        - sertraline:ram_stick:1
+        - sertraline:pcb:1
+        - money:8100
+      time: 300

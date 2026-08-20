@@ -32,6 +32,8 @@ private val DEFAULT_SPAWN by lazy {
     Bukkit.getWorld("Area0")?.let { Location(it, -6.0, 14.0, 9.0) }
 }
 
+private val REGEX = Regex.fromLiteral("<insert.+?>")
+
 @SubscribeEvent
 fun onPlayerDeath(event: PlayerDeathEvent) {
     val player = event.player
@@ -43,8 +45,10 @@ fun onPlayerDeath(event: PlayerDeathEvent) {
         event.deathMessage("<red>$displayName 被窗户吞噬了".toComponent())
     } else {
         val message = event.deathMessage()
-        if (message != null)
-            event.deathMessage(mmUtil.deserialize("<red>" + mmUtil.serialize(message).replace(player.name, displayName + "<red>")))
+        val orgMessage = message?.let { mmUtil.serialize(it) }?.replace(REGEX, "")
+        if (orgMessage != null)
+                event.deathMessage(mmUtil.deserialize("<red>" + orgMessage.replace(player.name, displayName + "<red>")))
+
     }
 
     // 取消 consumable 延时任务
