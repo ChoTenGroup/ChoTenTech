@@ -7,14 +7,14 @@ XingChen:
       buy:
         - sertraline:raw_copper:1
         - sertraline:coal:1
-        - point:2
+        - point:12
       time: 30
     silver_wire:
       id: sertraline:silver_wire
       buy:
         - sertraline:silver_ingot:1
         - sertraline:coal:1
-        - point:2
+        - point:9
       time: 35
     gold_ingot_low:
       id: sertraline:gold_ingot_low

@@ -1,61 +1,23 @@
 YiChan:
   name: "<gold>一蝉"
-
-  level:
-    1:
-      - type: level
-        level: main
-        value: 3
-      - type: quota
-        balance: point
-        value: 10
-    2:
-      - type: level
-        level: main
-        value: 5
-      - type: quota
-        balance: point
-        value: 60
-    3:
-      - type: level
-        level: main
-        value: 8
-      - type: quota
-        balance: point
-        value: 200
-    4:
-      - type: level
-        level: main
-        value: 11
-      - type: quota
-        balance: point
-        value: 600
-    5:
-      - type: level
-        level: main
-        value: 14
-      - type: quota
-        balance: point
-        value: 2000
-
   items:
     # Lv.1 - 电子元件
     copper_wire:
       id: sertraline:copper_wire
-      buy: point:13
-      sell: point:5
+      buy: point:48
+      sell: point:19
     capacitor:
       id: sertraline:capacitor
-      buy: point:6
-      sell: point:2
+      buy: point:48
+      sell: point:19
     battery:
       id: sertraline:battery
-      buy: point:14
-      sell: point:6
+      buy: point:48
+      sell: point:19
     u_disk:
       id: sertraline:u_disk
-      buy: point:16
-      sell: point:6
+      buy: point:48
+      sell: point:19
     # Lv.1 - 旧件收购
     broken_disk:
       id: sertraline:broken_disk
@@ -79,14 +41,14 @@ YiChan:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: point:28
+      buy: point:90
     power_supply:
       id: sertraline:power_supply
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: point:16
+      buy: point:48
     # Lv.3 - 解锁商品
     pro_ai_core:
       id: sertraline:pro_ai_core
@@ -97,4 +59,4 @@ YiChan:
       limit:
         player: 1
         player-reset: 24h
-      buy: point:300
+      buy: point:700

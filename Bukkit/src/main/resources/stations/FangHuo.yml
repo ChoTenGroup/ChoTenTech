@@ -42,7 +42,7 @@ FangHuo:
         - sertraline:copper_wire:1
         - sertraline:plastic:1
         - sertraline:iron_ingot:1
-        - money:40
+        - money:130
       time: 80
     bread:
       id: sertraline:bread

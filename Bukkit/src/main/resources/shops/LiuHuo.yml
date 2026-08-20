@@ -1,53 +1,15 @@
 LiuHuo:
   name: "<gold>刘火"
-
-  level:
-    1:
-      - type: level
-        level: main
-        value: 3
-      - type: quota
-        balance: point
-        value: 10
-    2:
-      - type: level
-        level: main
-        value: 5
-      - type: quota
-        balance: point
-        value: 60
-    3:
-      - type: level
-        level: main
-        value: 8
-      - type: quota
-        balance: point
-        value: 200
-    4:
-      - type: level
-        level: main
-        value: 11
-      - type: quota
-        balance: point
-        value: 600
-    5:
-      - type: level
-        level: main
-        value: 14
-      - type: quota
-        balance: point
-        value: 2000
-
   items:
     # Lv.1 - 零件
     copper_wire:
       id: sertraline:copper_wire
-      buy: point:13
-      sell: point:5
+      buy: point:48
+      sell: point:19
     silver_wire:
       id: sertraline:silver_wire
-      buy: point:15
-      sell: point:6
+      buy: point:48
+      sell: point:19
     iron_pickaxe:
       id: sertraline:iron_pickaxe
       buy: point:680
@@ -75,21 +37,21 @@ LiuHuo:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: point:32
+      buy: point:90
     motor:
       id: sertraline:motor
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: point:15
+      buy: point:48
     drill:
       id: sertraline:drill
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: point:16
+      buy: point:48
     wrench:
       id: sertraline:wrench
       buy-requirements:
@@ -117,14 +79,14 @@ LiuHuo:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: point:14
+      buy: point:48
     battery_set:
       id: sertraline:battery_set
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: point:15
+      buy: point:48
     gold_ingot_low:
       id: sertraline:gold_ingot_low
       buy-requirements:
@@ -149,4 +111,4 @@ LiuHuo:
       limit:
         player: 1
         player-reset: 24h
-      buy: point:120
+      buy: point:340

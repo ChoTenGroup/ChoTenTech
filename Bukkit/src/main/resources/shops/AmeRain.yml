@@ -1,57 +1,19 @@
 AmeRain:
   name: "<gold>阿梅雨"
-
-  level:
-    1:
-      - type: level
-        level: main
-        value: 5
-      - type: quota
-        balance: money
-        value: 200
-    2:
-      - type: level
-        level: main
-        value: 8
-      - type: quota
-        balance: money
-        value: 1000
-    3:
-      - type: level
-        level: main
-        value: 12
-      - type: quota
-        balance: money
-        value: 5000
-    4:
-      - type: level
-        level: main
-        value: 16
-      - type: quota
-        balance: money
-        value: 10000
-    5:
-      - type: level
-        level: main
-        value: 20
-      - type: quota
-        balance: money
-        value: 40000
-
   items:
     # Lv.1 - 网络设备
     battery:
       id: sertraline:battery
-      buy: money:140
-      sell: money:56
+      buy: money:480
+      sell: money:192
     copper_wire:
       id: sertraline:copper_wire
-      buy: money:130
-      sell: money:52
+      buy: money:480
+      sell: money:192
     cpu:
       id: sertraline:cpu
-      buy: money:280
-      sell: money:112
+      buy: money:900
+      sell: money:360
     # Lv.1 - 旧件收购
     plastic:
       id: sertraline:plastic
@@ -87,7 +49,7 @@ AmeRain:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: money:360
+      buy: money:480
     radio:
       id: sertraline:radio
       buy-requirements:
@@ -97,14 +59,14 @@ AmeRain:
       limit:
         player: 3
         player-reset: 24h
-      buy: money:900
+      buy: money:3000
     phone:
       id: sertraline:phone
       buy-requirements:
         - mode: level
           level: 2
           display: 需要商人等级 Lv.2
-      buy: money:300
+      buy: money:900
     # Lv.2 - 电子元件
     graphics_card:
       id: sertraline:graphics_card
@@ -115,7 +77,7 @@ AmeRain:
       limit:
         player: 2
         player-reset: 24h
-      buy: money:1100
+      buy: money:3200
     3d_vision_glasses:
       id: sertraline:3d_vision_glasses
       buy-requirements:
@@ -125,7 +87,7 @@ AmeRain:
       limit:
         player: 2
         player-reset: 24h
-      buy: money:1000
+      buy: money:3000
     # Lv.3 - 高级设备
     pro_ai_core:
       id: sertraline:pro_ai_core
@@ -136,7 +98,7 @@ AmeRain:
       limit:
         player: 1
         player-reset: 24h
-      buy: money:3000
+      buy: money:7000
     # Lv.3 - 解锁商品
     advanced_ai_core:
       id: sertraline:advanced_ai_core
@@ -147,4 +109,4 @@ AmeRain:
       limit:
         player: 1
         player-reset: 24h
-      buy: money:1200
+      buy: money:3400

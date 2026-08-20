@@ -28,14 +28,14 @@ ZhangShun:
       buy:
         - sertraline:pcb:2
         - sertraline:copper_wire:2
-        - point:5
+        - point:10
       time: 140
     wifi:
       id: sertraline:wifi
       buy:
         - sertraline:radio:1
         - sertraline:copper_wire:2
-        - point:60
+        - point:82
       time: 200
     golden_necklace:
       id: sertraline:golden_necklace

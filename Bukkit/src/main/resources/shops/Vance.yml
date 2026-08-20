@@ -1,43 +1,5 @@
 Vance:
   name: "<gold>万斯"
-
-  level:
-    1:
-      - type: level
-        level: main
-        value: 5
-      - type: quota
-        balance: money
-        value: 200
-    2:
-      - type: level
-        level: main
-        value: 8
-      - type: quota
-        balance: money
-        value: 1000
-    3:
-      - type: level
-        level: main
-        value: 12
-      - type: quota
-        balance: money
-        value: 5000
-    4:
-      - type: level
-        level: main
-        value: 16
-      - type: quota
-        balance: money
-        value: 10000
-    5:
-      - type: level
-        level: main
-        value: 20
-      - type: quota
-        balance: money
-        value: 40000
-
   items:
     # Lv.1 - 补给品
     jerky:
@@ -67,8 +29,8 @@ Vance:
     # Lv.1 - 日用品
     light_bulb:
       id: sertraline:light_bulb
-      buy: money:50
-      sell: money:20
+      buy: money:480
+      sell: money:192
     matches:
       id: sertraline:matches
       buy: money:40

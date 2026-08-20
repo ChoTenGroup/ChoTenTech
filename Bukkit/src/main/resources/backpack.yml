@@ -1,0 +1,29 @@
+# ==================== 背包系统（ChoTenBackpack 合并） ====================
+backpack:
+  # ItemTag 键名：手持物品的 NBT 中包含此标签即为背包物品
+  tag: "cho-backpack"
+
+  # 物品被拒绝放入时的提示消息 (MiniMessage 格式)
+  deny-slot-message: "<red>该物品不能放入此背包！"
+
+  # 背包类型定义
+  types:
+    default:
+      display: "&6杂物背包"
+      slots: 27
+      # 从上到下匹配条件。只有符合条件的物品才可以放入。
+      condition:
+        # 不能放入 sertraline_id 为 diamond的物品
+        - if:
+            tag:
+              sertraline:id: "diamond"
+          action: deny
+        # 只能放入材料和药品
+        - if:
+            tag:
+              sertraline_type: |-
+                material
+                medicinal
+          action: allow
+
+        - action: deny

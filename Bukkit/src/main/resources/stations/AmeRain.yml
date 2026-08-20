@@ -7,7 +7,7 @@ AmeRain:
       buy:
         - sertraline:raw_copper:1
         - sertraline:coal:1
-        - money:10
+        - money:120
       time: 30
     battery:
       id: sertraline:battery
@@ -51,7 +51,7 @@ AmeRain:
       buy:
         - sertraline:pcb:1
         - sertraline:copper_wire:2
-        - money:400
+        - money:460
       time: 160
     graphics_card:
       id: sertraline:graphics_card

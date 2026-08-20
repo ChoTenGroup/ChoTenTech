@@ -7,7 +7,7 @@ YiChan:
       buy:
         - sertraline:raw_copper:1
         - sertraline:coal:1
-        - point:2
+        - point:12
       time: 30
     capacitor:
       id: sertraline:capacitor

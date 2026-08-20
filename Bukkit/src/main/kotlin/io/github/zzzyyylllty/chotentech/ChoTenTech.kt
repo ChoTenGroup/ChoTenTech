@@ -126,6 +126,9 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
     @Config("chat-settings.yml")
     lateinit var chatSettings: Configuration
 
+    @Config("backpack.yml")
+    lateinit var backpackConfig: Configuration
+
     val console by lazy { console() }
     val consoleSender by lazy { console.castSafely<CommandSender>()!! }
     val sdClassList: LinkedHashMap<String, SurvivalDifficulty> = linkedMapOf()
@@ -322,6 +325,7 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
             currencyConfig.reload()
             filterConfig.reload()
             chatSettings.reload()
+            backpackConfig.reload()
             onReload()
             io.github.zzzyyylllty.chotentech.chat.TabooFilter.reload(filterConfig)
             io.github.zzzyyylllty.chotentech.chat.ChannelManager.reload()

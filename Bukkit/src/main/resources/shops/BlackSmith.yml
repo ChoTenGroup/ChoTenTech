@@ -1,43 +1,5 @@
 BlackSmith:
   name: "<gold>铁匠"
-
-  level:
-    1:
-      - type: level
-        level: main
-        value: 7
-      - type: quota
-        balance: money
-        value: 200
-    2:
-      - type: level
-        level: main
-        value: 11
-      - type: quota
-        balance: money
-        value: 1000
-    3:
-      - type: level
-        level: main
-        value: 15
-      - type: quota
-        balance: money
-        value: 5000
-    4:
-      - type: level
-        level: main
-        value: 19
-      - type: quota
-        balance: money
-        value: 10000
-    5:
-      - type: level
-        level: main
-        value: 24
-      - type: quota
-        balance: money
-        value: 40000
-
   items:
     # Lv.1 - 基础材料
     coal:

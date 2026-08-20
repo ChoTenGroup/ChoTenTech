@@ -7,14 +7,14 @@ LiuHuo:
       buy:
         - sertraline:raw_copper:1
         - sertraline:coal:1
-        - point:2
+        - point:12
       time: 30
     silver_wire:
       id: sertraline:silver_wire
       buy:
         - sertraline:silver_ingot:1
         - sertraline:coal:1
-        - point:2
+        - point:10
       time: 35
     battery:
       id: sertraline:battery

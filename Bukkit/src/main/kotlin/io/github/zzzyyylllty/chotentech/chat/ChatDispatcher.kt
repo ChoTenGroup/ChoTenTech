@@ -60,8 +60,11 @@ object ChatDispatcher {
         val filtered = TabooFilter.filter(player, text)
         if (filtered.isBlank()) return null
 
+        // 占位符替换（如 [item] → 主手物品名），结果为 MiniMessage 字符串随消息渲染
+        val resolved = ChatPlaceholder.resolve(player, filtered)
+
         val teamName = team?.let { Bukkit.getOfflinePlayer(it.leader).name ?: "未知" }
-        val (component, consoleLine) = ChatFormatter.build(player, channel, filtered, teamName)
+        val (component, consoleLine) = ChatFormatter.build(player, channel, resolved, teamName)
 
         val recipients = Bukkit.getOnlinePlayers().filter { canReceive(it, player, channel, team) }
 
