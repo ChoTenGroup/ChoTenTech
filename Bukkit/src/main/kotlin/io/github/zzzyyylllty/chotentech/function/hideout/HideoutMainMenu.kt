@@ -24,13 +24,13 @@ class HideoutMainMenu(private val baseKey: String) {
         val data = player.getData() ?: return
         val hideout = data.hideoutData.getOrPut(baseKey) { HideoutPlayerData() }
         if (!hideout.unlocked) {
-            player.sendComponent("<red>该基地的个人基地尚未解锁！")
+            player.sendComponent("<#E08A98>该基地的个人基地尚未解锁！")
             return
         }
         val modules = HideoutConfig.modules.values.toList()
 
         player.openMenu<PageableChest<HideoutModule>>(
-            mmJsonUtil.serialize("<white><shift:-16><image:kangelicon:list><shift:-176><aqua><font:minecraft:fusionpixel10>个人基地 - ${baseKey.uppercase()}".toComponent())
+            mmJsonUtil.serialize("<#F2F5FA><shift:-16><image:kangelicon:list><shift:-176><#84D1CB><font:minecraft:fusionpixel10>个人基地 - ${baseKey.uppercase()}".toComponent())
         ) {
             rows(6)
             map(
@@ -57,8 +57,8 @@ class HideoutMainMenu(private val baseKey: String) {
 
             set('C', ItemStack(Material.COMPASS).apply {
                 editMeta { m ->
-                    m.displayName("<b><aqua>菜单".toComponent())
-                    m.lore(listOf("<gray>点击打开菜单".toComponent()))
+                    m.displayName("<b><#84D1CB>菜单".toComponent())
+                    m.lore(listOf("<#A9B4C3>点击打开菜单".toComponent()))
                     m.itemModel = NamespacedKey.fromString("kangelitem:void")
                 }
             }) {
@@ -69,7 +69,7 @@ class HideoutMainMenu(private val baseKey: String) {
             setPreviousPage(7) { _, page ->
                 ItemStack(Material.ARROW).apply {
                     editMeta { m ->
-                        m.displayName("<aqua><b>上一页".toComponent())
+                        m.displayName("<#84D1CB><b>上一页".toComponent())
                         m.itemModel = NamespacedKey.fromString(if (page) "kangelitem:previous" else "kangelitem:previous_no")
                     }
                 }
@@ -78,7 +78,7 @@ class HideoutMainMenu(private val baseKey: String) {
             setNextPage(8) { _, page ->
                 ItemStack(Material.ARROW).apply {
                     editMeta { m ->
-                        m.displayName("<aqua><b>下一页".toComponent())
+                        m.displayName("<#84D1CB><b>下一页".toComponent())
                         m.itemModel = NamespacedKey.fromString(if (page) "kangelitem:next" else "kangelitem:next_no")
                     }
                 }
@@ -104,26 +104,26 @@ class HideoutMainMenu(private val baseKey: String) {
             editMeta { meta ->
                 if (upgrading) {
                     val pending = hideout.pendingUpgrades.first { it.moduleId == mod.id }
-                    meta.displayName("<gold>${mod.name} <yellow>⬆ Lv.${pending.targetLevel}".toComponent())
+                    meta.displayName("<#DFBD7C>${mod.name} <#EFDF8F>⬆ Lv.${pending.targetLevel}".toComponent())
                     meta.lore(listOf(
-                        "<!i><yellow>升级中...".toComponent(),
-                        "<!i><gray>剩余时间: <yellow>${pending.remainingTime} <gray>秒".toComponent()
+                        "<!i><#EFDF8F>升级中...".toComponent(),
+                        "<!i><#A9B4C3>剩余时间: <#EFDF8F>${pending.remainingTime} <#A9B4C3>秒".toComponent()
                     ))
                 } else if (!built) {
-                    meta.displayName("<dark_gray><b>???</b>".toComponent())
+                    meta.displayName("<#6E7A8C><b>???</b>".toComponent())
                     meta.lore(listOf(
-                        "<!i><gray>尚未建造".toComponent(),
-                        "<!i><gray>点击查看条件".toComponent()
+                        "<!i><#A9B4C3>尚未建造".toComponent(),
+                        "<!i><#A9B4C3>点击查看条件".toComponent()
                     ))
                 } else {
                     val lore = mutableListOf<Component>()
-                    lore += "<!i><#cccccc>${mod.description}".toComponent()
+                    lore += "<!i><#d9d9d9>${mod.description}".toComponent()
                     val lvCfg = mod.getLevelConfig(level)
                     if (lvCfg != null) appendModuleStats(lvCfg, hideout, lore)
                     lore += Component.empty()
-                    if (mod.usage > 0) lore += "<!i><gray>电力消耗: <yellow>${mod.usage}/s".toComponent()
-                    lore += "<!i><gray>点击管理".toComponent()
-                    meta.displayName("<gold>${mod.name} <gray>Lv.$level".toComponent())
+                    if (mod.usage > 0) lore += "<!i><#A9B4C3>电力消耗: <#EFDF8F>${mod.usage}/s".toComponent()
+                    lore += "<!i><#A9B4C3>点击管理".toComponent()
+                    meta.displayName("<#DFBD7C>${mod.name} <#A9B4C3>Lv.$level".toComponent())
                     meta.lore(lore)
                 }
                 mod.itemModel?.let { meta.itemModel = NamespacedKey.fromString(it) }
@@ -133,34 +133,34 @@ class HideoutMainMenu(private val baseKey: String) {
 
     private fun appendModuleStats(lvCfg: HideoutModuleLevel, hideout: HideoutPlayerData, lore: MutableList<Component>) {
         if (lvCfg.fuelCapacity > 0) {
-            lore += "<!i><gray>燃料容量: <yellow>${"%.0f".format(lvCfg.fuelCapacity)}".toComponent()
-            lore += "<!i><gray>燃料效率: <yellow>x${lvCfg.fuelEfficiency}".toComponent()
-            lore += "<!i><gray>当前燃料: <yellow>${"%.1f".format(hideout.fuelAmount)}<gray>/<yellow>${"%.0f".format(HideoutManager.getFuelCapacity(hideout))}".toComponent()
+            lore += "<!i><#A9B4C3>燃料容量: <#EFDF8F>${"%.0f".format(lvCfg.fuelCapacity)}".toComponent()
+            lore += "<!i><#A9B4C3>燃料效率: <#EFDF8F>x${lvCfg.fuelEfficiency}".toComponent()
+            lore += "<!i><#A9B4C3>当前燃料: <#EFDF8F>${"%.1f".format(hideout.fuelAmount)}<#A9B4C3>/<#EFDF8F>${"%.0f".format(HideoutManager.getFuelCapacity(hideout))}".toComponent()
         }
         if (lvCfg.craftSpeed > 0) {
-            lore += "<!i><gray>合成速度: <yellow>x${lvCfg.craftSpeed}".toComponent()
-            lore += "<!i><gray>队列: <yellow>${hideout.craftingQueues.size}".toComponent()
+            lore += "<!i><#A9B4C3>合成速度: <#EFDF8F>x${lvCfg.craftSpeed}".toComponent()
+            lore += "<!i><#A9B4C3>队列: <#EFDF8F>${hideout.craftingQueues.size}".toComponent()
         }
         if (lvCfg.productionRate > 0 && lvCfg.productionItem != null) {
             val acc = hideout.productionAccumulators[lvCfg.productionItem] ?: 0.0
-            lore += "<!i><gray>产出率: <yellow>${"%.2f".format(lvCfg.productionRate)}/s".toComponent()
-            lore += "<!i><gray>累计: <yellow>${"%.1f".format(acc)}".toComponent()
+            lore += "<!i><#A9B4C3>产出率: <#EFDF8F>${"%.2f".format(lvCfg.productionRate)}/s".toComponent()
+            lore += "<!i><#A9B4C3>累计: <#EFDF8F>${"%.1f".format(acc)}".toComponent()
         }
         if (lvCfg.productionRate > 0 && lvCfg.productionItem == null) {
             val acc = hideout.productionAccumulators["medical_station"] ?: 0.0
-            lore += "<!i><gray>产出率: <yellow>${"%.2f".format(lvCfg.productionRate)}/s".toComponent()
-            lore += "<!i><gray>累计点: <yellow>${"%.1f".format(acc)}".toComponent()
+            lore += "<!i><#A9B4C3>产出率: <#EFDF8F>${"%.2f".format(lvCfg.productionRate)}/s".toComponent()
+            lore += "<!i><#A9B4C3>累计点: <#EFDF8F>${"%.1f".format(acc)}".toComponent()
         }
         if (lvCfg.fuelSavePercent > 0) {
-            lore += "<!i><gray>燃料节省: <green>${lvCfg.fuelSavePercent}%".toComponent()
+            lore += "<!i><#A9B4C3>燃料节省: <#8FD4A6>${lvCfg.fuelSavePercent}%".toComponent()
         }
         if (lvCfg.gpuSlots > 0) {
-            lore += "<!i><gray>显卡槽: <yellow>${hideout.minerGpuItems.size}<gray>/<yellow>${lvCfg.gpuSlots}".toComponent()
+            lore += "<!i><#A9B4C3>显卡槽: <#EFDF8F>${hideout.minerGpuItems.size}<#A9B4C3>/<#EFDF8F>${lvCfg.gpuSlots}".toComponent()
             val acc = hideout.productionAccumulators["mine"] ?: 0.0
-            lore += "<!i><gray>累计CitCoin: <yellow>${"%.1f".format(acc)}".toComponent()
+            lore += "<!i><#A9B4C3>累计CitCoin: <#EFDF8F>${"%.1f".format(acc)}".toComponent()
         }
         if (lvCfg.buffDuration > 0) {
-            lore += "<!i><gray>休息增益: <yellow>${lvCfg.buffDuration / 60} 分 (等级 ${lvCfg.buffAmplifier + 1})".toComponent()
+            lore += "<!i><#A9B4C3>休息增益: <#EFDF8F>${lvCfg.buffDuration / 60} 分 (等级 ${lvCfg.buffAmplifier + 1})".toComponent()
         }
     }
 
@@ -172,7 +172,7 @@ class HideoutMainMenu(private val baseKey: String) {
         val pendingUpgrade = hideout.pendingUpgrades.firstOrNull { it.moduleId == mod.id }
 
         player.openMenu<Chest>(mmJsonUtil.serialize(
-            "<white><shift:-16><image:kangelicon:list><shift:-176><aqua><font:minecraft:fusionpixel10>${mod.name}".toComponent()
+            "<#F2F5FA><shift:-16><image:kangelicon:list><shift:-176><#84D1CB><font:minecraft:fusionpixel10>${mod.name}".toComponent()
         )) {
             rows(6)
             handLocked(false)
@@ -188,8 +188,8 @@ class HideoutMainMenu(private val baseKey: String) {
 
             set('C', ItemStack(Material.COMPASS).apply {
                 editMeta { m ->
-                    m.displayName("<b><aqua>返回".toComponent())
-                    m.lore(listOf("<gray>返回基地总览".toComponent()))
+                    m.displayName("<b><#84D1CB>返回".toComponent())
+                    m.lore(listOf("<#A9B4C3>返回基地总览".toComponent()))
                     m.itemModel = NamespacedKey.fromString("kangelitem:void")
                 }
             }) {
@@ -205,11 +205,11 @@ class HideoutMainMenu(private val baseKey: String) {
                 if (upgrading && pendingUpgrade != null) {
                     val upgItem = ItemStack(Material.FURNACE).apply {
                         editMeta { m ->
-                            m.displayName("<gold>${mod.name} <yellow>⬆ 升级中".toComponent())
+                            m.displayName("<#DFBD7C>${mod.name} <#EFDF8F>⬆ 升级中".toComponent())
                             m.lore(listOf(
-                                "<!i><yellow>升级到 Lv.${pendingUpgrade.targetLevel}".toComponent(),
-                                "<!i><gray>剩余时间: <yellow>${pendingUpgrade.remainingTime} <gray>秒".toComponent(),
-                                "<!i><gray>升级完成后会自动生效".toComponent()
+                                "<!i><#EFDF8F>升级到 Lv.${pendingUpgrade.targetLevel}".toComponent(),
+                                "<!i><#A9B4C3>剩余时间: <#EFDF8F>${pendingUpgrade.remainingTime} <#A9B4C3>秒".toComponent(),
+                                "<!i><#A9B4C3>升级完成后会自动生效".toComponent()
                             ))
                         }
                     }
@@ -229,8 +229,8 @@ class HideoutMainMenu(private val baseKey: String) {
                         val has = countItem(player, sertId)
                         item.editMeta { m ->
                             m.lore(listOf(
-                                "<!i><gray>需要: <white>${cost.amount}".toComponent(),
-                                "<!i><gray>拥有: ${if (has >= cost.amount) "<green>" else "<red>"}$has".toComponent()
+                                "<!i><#A9B4C3>需要: <#F2F5FA>${cost.amount}".toComponent(),
+                                "<!i><#A9B4C3>拥有: ${if (has >= cost.amount) "<#8FD4A6>" else "<#E08A98>"}$has".toComponent()
                             ))
                         }
                         inv.setItem(costSlots[slotIdx], item)
@@ -249,16 +249,16 @@ class HideoutMainMenu(private val baseKey: String) {
                     // 升级按钮
                     val upgItem = ItemStack(Material.ANVIL).apply {
                         editMeta { m ->
-                            m.displayName("<gold>⬆ 升级到 Lv.$nextLv".toComponent())
+                            m.displayName("<#DFBD7C>⬆ 升级到 Lv.$nextLv".toComponent())
                             val uLore = mutableListOf<Component>()
                             buildUpgradeStats(nextCfg, uLore)
                             if (nextCfg.currencyCost.isNotEmpty()) {
                                 uLore += Component.empty()
-                                uLore += "<!i><gray>所需货币:".toComponent()
+                                uLore += "<!i><#A9B4C3>所需货币:".toComponent()
                                 for (cc in nextCfg.currencyCost) {
                                     val bal = CurrencyUtil.getBalance(player, cc.currency)
                                     val curName = CurrencyUtil.getCurrency(cc.currency)?.displayName ?: cc.currency
-                                    uLore += "<!i> <gray>- <yellow>$curName <gray>x${"%.0f".format(cc.amount)} ${if (bal >= cc.amount) "<green>✓" else "<red>✗"}".toComponent()
+                                    uLore += "<!i> <#A9B4C3>- <#EFDF8F>$curName <#A9B4C3>x${"%.0f".format(cc.amount)} ${if (bal >= cc.amount) "<#8FD4A6>✓" else "<#E08A98>✗"}".toComponent()
                                 }
                             }
                             m.lore(uLore)
@@ -276,8 +276,8 @@ class HideoutMainMenu(private val baseKey: String) {
                 if (built && !upgrading && HideoutConfig.getRecipesForModule(mod.id).isNotEmpty()) {
                     inv.setItem(33, ItemStack(Material.CRAFTING_TABLE).apply {
                         editMeta { m ->
-                            m.displayName("<gold>合成".toComponent())
-                            m.lore(listOf("<gray>打开合成界面".toComponent()))
+                            m.displayName("<#DFBD7C>合成".toComponent())
+                            m.lore(listOf("<#A9B4C3>打开合成界面".toComponent()))
                         }
                     })
                 }
@@ -309,26 +309,26 @@ class HideoutMainMenu(private val baseKey: String) {
     private fun buildInfoBook(mod: HideoutModule, hideout: HideoutPlayerData, level: Int, built: Boolean, lvCfg: HideoutModuleLevel?): ItemStack {
         return ItemStack(Material.BOOK).apply {
             editMeta { m ->
-                m.displayName("<gold>${mod.name} <gray>Lv.$level".toComponent())
+                m.displayName("<#DFBD7C>${mod.name} <#A9B4C3>Lv.$level".toComponent())
                 val lore = mutableListOf<Component>()
-                lore += "<!i><#cccccc>${mod.description}".toComponent()
+                lore += "<!i><#d9d9d9>${mod.description}".toComponent()
                 if (built && lvCfg != null) {
                     appendModuleStats(lvCfg, hideout, lore)
                 } else {
-                    lore += "<!i><red>未建造".toComponent()
+                    lore += "<!i><#E08A98>未建造".toComponent()
                 }
                 if (!built) {
                     val lv1 = mod.getLevelConfig(1)
                     if (lv1 != null) {
                         lore += Component.empty()
-                        lore += "<!i><gold>建造所需:".toComponent()
+                        lore += "<!i><#DFBD7C>建造所需:".toComponent()
                         for (cost in lv1.upgradeCost) {
                             val itemName = cost.sertralineId?.let { ItemNameHelper.getDisplayName(it) } ?: cost.material
-                            lore += "<!i> <gray>- <white>$itemName <gray>x${cost.amount}".toComponent()
+                            lore += "<!i> <#A9B4C3>- <#F2F5FA>$itemName <#A9B4C3>x${cost.amount}".toComponent()
                         }
                         for (cc in lv1.currencyCost) {
                             val curName = CurrencyUtil.getCurrency(cc.currency)?.displayName ?: cc.currency
-                            lore += "<!i> <gray>- <yellow>$curName <gray>x${"%.0f".format(cc.amount)}".toComponent()
+                            lore += "<!i> <#A9B4C3>- <#EFDF8F>$curName <#A9B4C3>x${"%.0f".format(cc.amount)}".toComponent()
                         }
                     }
                 }
@@ -338,14 +338,14 @@ class HideoutMainMenu(private val baseKey: String) {
     }
 
     private fun buildUpgradeStats(nextCfg: HideoutModuleLevel, lore: MutableList<Component>) {
-        if (nextCfg.upgradeTime > 0) lore += "<!i><gray>升级耗时: <yellow>${nextCfg.upgradeTime} 秒</yellow> (可离线)".toComponent()
-        if (nextCfg.fuelCapacity > 0) lore += "<!i><gray>燃料容量: <green>${"%.0f".format(nextCfg.fuelCapacity)}".toComponent()
-        if (nextCfg.fuelEfficiency > 1) lore += "<!i><gray>燃料效率: <green>x${nextCfg.fuelEfficiency}".toComponent()
-        if (nextCfg.craftSpeed > 0) lore += "<!i><gray>合成速度: <green>x${nextCfg.craftSpeed}".toComponent()
-        if (nextCfg.productionRate > 0) lore += "<!i><gray>产出率: <green>${"%.2f".format(nextCfg.productionRate)}/s".toComponent()
-        if (nextCfg.fuelSavePercent > 0) lore += "<!i><gray>燃料节省: <green>${nextCfg.fuelSavePercent}%".toComponent()
-        if (nextCfg.gpuSlots > 0) lore += "<!i><gray>显卡槽: <green>${nextCfg.gpuSlots}".toComponent()
-        if (nextCfg.buffDuration > 0) lore += "<!i><gray>休息增益: <green>${nextCfg.buffDuration / 60} 分".toComponent()
+        if (nextCfg.upgradeTime > 0) lore += "<!i><#A9B4C3>升级耗时: <#EFDF8F>${nextCfg.upgradeTime} 秒</#EFDF8F> (可离线)".toComponent()
+        if (nextCfg.fuelCapacity > 0) lore += "<!i><#A9B4C3>燃料容量: <#8FD4A6>${"%.0f".format(nextCfg.fuelCapacity)}".toComponent()
+        if (nextCfg.fuelEfficiency > 1) lore += "<!i><#A9B4C3>燃料效率: <#8FD4A6>x${nextCfg.fuelEfficiency}".toComponent()
+        if (nextCfg.craftSpeed > 0) lore += "<!i><#A9B4C3>合成速度: <#8FD4A6>x${nextCfg.craftSpeed}".toComponent()
+        if (nextCfg.productionRate > 0) lore += "<!i><#A9B4C3>产出率: <#8FD4A6>${"%.2f".format(nextCfg.productionRate)}/s".toComponent()
+        if (nextCfg.fuelSavePercent > 0) lore += "<!i><#A9B4C3>燃料节省: <#8FD4A6>${nextCfg.fuelSavePercent}%".toComponent()
+        if (nextCfg.gpuSlots > 0) lore += "<!i><#A9B4C3>显卡槽: <#8FD4A6>${nextCfg.gpuSlots}".toComponent()
+        if (nextCfg.buffDuration > 0) lore += "<!i><#A9B4C3>休息增益: <#8FD4A6>${nextCfg.buffDuration / 60} 分".toComponent()
     }
 
     private fun buildActionItems(inv: org.bukkit.inventory.Inventory, player: Player, hideout: HideoutPlayerData, mod: HideoutModule, level: Int, lvCfg: HideoutModuleLevel?) {
@@ -354,10 +354,10 @@ class HideoutMainMenu(private val baseKey: String) {
             lvCfg != null && lvCfg.fuelCapacity > 0 -> {
                 inv.setItem(actionSlot, ItemStack(Material.FURNACE).apply {
                     editMeta { m ->
-                        m.displayName("<gold>燃料管理".toComponent())
+                        m.displayName("<#DFBD7C>燃料管理".toComponent())
                         m.lore(listOf(
-                            "<gray>点击管理发电机燃料".toComponent(),
-                            "<gray>当前燃料: <yellow>${"%.1f".format(hideout.fuelAmount)}".toComponent()
+                            "<#A9B4C3>点击管理发电机燃料".toComponent(),
+                            "<#A9B4C3>当前燃料: <#EFDF8F>${"%.1f".format(hideout.fuelAmount)}".toComponent()
                         ))
                     }
                 })
@@ -368,16 +368,16 @@ class HideoutMainMenu(private val baseKey: String) {
                 val ready = elapsed >= cd
                 inv.setItem(actionSlot, ItemStack(if (ready) Material.GREEN_BED else Material.RED_BED).apply {
                     editMeta { m ->
-                        m.displayName("<gold>休息".toComponent())
+                        m.displayName("<#DFBD7C>休息".toComponent())
                         val lore = mutableListOf(
-                            "<gray>每8小时可休息一次".toComponent(),
-                            "<gray>获得生命恢复 ${if (lvCfg.buffAmplifier > 0) "Lv.${lvCfg.buffAmplifier + 1}" else ""} (${lvCfg.buffDuration / 60}分)".toComponent(),
+                            "<#A9B4C3>每8小时可休息一次".toComponent(),
+                            "<#A9B4C3>获得生命恢复 ${if (lvCfg.buffAmplifier > 0) "Lv.${lvCfg.buffAmplifier + 1}" else ""} (${lvCfg.buffDuration / 60}分)".toComponent(),
                         )
                         if (!ready) {
                             val remaining = (cd - elapsed) / 1000
-                            lore += "<red>冷却中: ${remaining / 60}分${remaining % 60}秒".toComponent()
+                            lore += "<#E08A98>冷却中: ${remaining / 60}分${remaining % 60}秒".toComponent()
                         } else {
-                            lore += "<green>✓ 可以休息".toComponent()
+                            lore += "<#8FD4A6>✓ 可以休息".toComponent()
                         }
                         m.lore(lore)
                     }
@@ -387,10 +387,10 @@ class HideoutMainMenu(private val baseKey: String) {
                 val points = hideout.productionAccumulators["medical_station"] ?: 0.0
                 inv.setItem(actionSlot, ItemStack(Material.POTION).apply {
                     editMeta { m ->
-                        m.displayName("<gold>治疗".toComponent())
+                        m.displayName("<#DFBD7C>治疗".toComponent())
                         m.lore(listOf(
-                            "<gray>消耗1医疗点数恢复1生命值".toComponent(),
-                            "<gray>累计点数: <yellow>${"%.1f".format(points)}".toComponent()
+                            "<#A9B4C3>消耗1医疗点数恢复1生命值".toComponent(),
+                            "<#A9B4C3>累计点数: <#EFDF8F>${"%.1f".format(points)}".toComponent()
                         ))
                     }
                 })
@@ -399,11 +399,11 @@ class HideoutMainMenu(private val baseKey: String) {
                 val acc = hideout.productionAccumulators["mine"] ?: 0.0
                 inv.setItem(actionSlot, ItemStack(Material.GOLD_NUGGET).apply {
                     editMeta { m ->
-                        m.displayName("<gold>提取CitCoin".toComponent())
+                        m.displayName("<#DFBD7C>提取CitCoin".toComponent())
                         m.lore(listOf(
-                            "<gray>累计: <yellow>${"%.1f".format(acc)}".toComponent(),
-                            "<gray>可提取: <yellow>${acc.toInt()}".toComponent(),
-                            "<gray>点击提取".toComponent()
+                            "<#A9B4C3>累计: <#EFDF8F>${"%.1f".format(acc)}".toComponent(),
+                            "<#A9B4C3>可提取: <#EFDF8F>${acc.toInt()}".toComponent(),
+                            "<#A9B4C3>点击提取".toComponent()
                         ))
                     }
                 })
@@ -412,10 +412,10 @@ class HideoutMainMenu(private val baseKey: String) {
                 val acc = hideout.productionAccumulators[mod.id] ?: 0.0
                 inv.setItem(actionSlot, ItemStack(Material.DISPENSER).apply {
                     editMeta { m ->
-                        m.displayName("<gold>提取产出".toComponent())
+                        m.displayName("<#DFBD7C>提取产出".toComponent())
                         m.lore(listOf(
-                            "<gray>累计: <yellow>${"%.1f".format(acc)}".toComponent(),
-                            "<gray>点击提取".toComponent()
+                            "<#A9B4C3>累计: <#EFDF8F>${"%.1f".format(acc)}".toComponent(),
+                            "<#A9B4C3>点击提取".toComponent()
                         ))
                     }
                 })

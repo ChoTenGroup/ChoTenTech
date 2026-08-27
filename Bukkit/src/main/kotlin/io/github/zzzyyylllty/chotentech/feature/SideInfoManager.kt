@@ -72,13 +72,13 @@ object SideInfoManager {
                 val progress = ((now - state.animStartTime) / 1000.0 / 2.0).coerceIn(0.0, 1.0)
                 val revealCount = (fullText.length * progress).toInt().coerceIn(0, fullText.length)
                 val revealed = revealedWithGarbledTags(fullText, revealCount)
-                if (revealCount < fullText.length) revealed + "<dark_gray>" + garbled(4) else revealed
+                if (revealCount < fullText.length) revealed + "<#6E7A8C>" + garbled(4) else revealed
             }
             "fadeout" -> {
                 val progress = ((now - state.animStartTime) / 1000.0 / 2.0).coerceIn(0.0, 1.0)
                 val remaining = (fullText.length * (1.0 - progress)).toInt().coerceIn(0, fullText.length)
                 val kept = revealedWithGarbledTags(fullText, remaining)
-                if (remaining in 1 until fullText.length) kept + "<dark_gray>" + garbled(4) else kept
+                if (remaining in 1 until fullText.length) kept + "<#6E7A8C>" + garbled(4) else kept
             }
             else -> fullText
         }
@@ -137,7 +137,7 @@ object SideInfoManager {
 
         val lines = mutableListOf<String>()
         val header = if (level.number != null) "Level ${level.number} ${level.name}" else level.name
-        lines.add("<aqua>$header")
+        lines.add("<#84D1CB>$header")
         lines.add("")
 
         for ((index, np) in noclips.withIndex()) {
@@ -153,29 +153,29 @@ object SideInfoManager {
             val elePowerOn = !hasEleCond || PowerManager.hasElevatorPowerActiveFor(np)
 
             val (idColor, nameColor) = when {
-                isInRange && hasEleCond && !elePowerOn -> Pair("<#e02e22>", "<red>")
-                isInRange -> Pair("<#e0fe22>", "<yellow>")
-                hasCoop || hasOtherConditions || (hasEleCond && !elePowerOn) -> Pair("<#e02e22>", "<gray>")
-                else -> Pair("<#99ce92>", "<white>")
+                isInRange && hasEleCond && !elePowerOn -> Pair("<#d4605c>", "<#E08A98>")
+                isInRange -> Pair("<#d8dc60>", "<#EFDF8F>")
+                hasCoop || hasOtherConditions || (hasEleCond && !elePowerOn) -> Pair("<#d4605c>", "<#A9B4C3>")
+                else -> Pair("<#b0dca8>", "<#F2F5FA>")
             }
 
             lines.add("${idColor}切出#${index + 1} $nameColor$pointName")
 
             if (includeHints) {
                 if (isInRange && data.noclipping) {
-                    lines.add(" <gray>-> <aqua>停留在切出点内...")
+                    lines.add(" <#A9B4C3>-> <#84D1CB>停留在切出点内...")
                 } else if (hasEleCond && !elePowerOn) {
-                    lines.add(" <gray>-> <gray>需要激活电源")
+                    lines.add(" <#A9B4C3>-> <#A9B4C3>需要激活电源")
                 } else if (hasEleCond && elePowerOn) {
-                    lines.add(" <gray>-> <yellow>按下上升按钮")
+                    lines.add(" <#A9B4C3>-> <#EFDF8F>按下上升按钮")
                 } else if (hasCoop) {
-                    lines.add(" <gray>-> <gray>需要与其他人合作切出...")
+                    lines.add(" <#A9B4C3>-> <#A9B4C3>需要与其他人合作切出...")
                 } else if (hasOtherConditions) {
                     val hint = NoclipConditionChecker.getConditionHint(player, np)
                     if (hint != null) {
-                        lines.add(" <gray>-> <gray>$hint")
+                        lines.add(" <#A9B4C3>-> <#A9B4C3>$hint")
                     } else {
-                        lines.add(" <gray>-> <green>已满足条件")
+                        lines.add(" <#A9B4C3>-> <#8FD4A6>已满足条件")
                     }
                 }
             }

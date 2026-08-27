@@ -1,5 +1,5 @@
 Ice:
-  name: "<gold>冰块"
+  name: "<#DFBD7C>冰块"
   items:
     # Lv.1 - 基础食材收购
     porkchop:

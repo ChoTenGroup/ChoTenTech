@@ -1,7 +1,7 @@
 default:
   display:
-    current: "<white>"
-    short: "<white>"
+    current: "<#F2F5FA>"
+    short: "<#F2F5FA>"
   name: "白色"
   desc: "默认名字颜色。"
   get: "自动获得"
@@ -10,8 +10,8 @@ default:
 
 gold:
   display:
-    current: "<gradient:#ffaa00:#ffff55>"
-    short: "<gold>"
+    current: "<gradient:#cfae6e:#e4e4ad>"
+    short: "<#DFBD7C>"
   name: "金色"
   desc: "金色名字颜色。"
   get: "VIP 玩家自动获得。"
@@ -20,8 +20,8 @@ gold:
 
 aqua:
   display:
-    current: "<gradient:#55ffff:#aaffff>"
-    short: "<aqua>"
+    current: "<gradient:#ade4e4:#bfeaea>"
+    short: "<#84D1CB>"
   name: "天蓝色"
   desc: "天蓝色名字颜色。"
   get: "通过特定成就解锁。"

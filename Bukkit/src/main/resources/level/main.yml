@@ -2,7 +2,7 @@
 main:
   display:
     raw: "Main" # for command outputs
-    default: "<yellow>Main</yellow>" # %quetiapine_levelname%
+    default: "<#EFDF8F>Main</#EFDF8F>" # %quetiapine_levelname%
     legacy: "&aMain" # %quetiapine_levelname_legacy%
     # ...
   level:
@@ -16,11 +16,11 @@ main:
     # max: '{{ if perm "group.svip" then 1000 else if perm "group.vip" then 500 else 100 }}'
     display:
       0:
-        default: "<white>Level <yellow>%level%"
+        default: "<#F2F5FA>Level <#EFDF8F>%level%"
       20:
-        default: "<yellow>Level <yellow>%level%"
+        default: "<#EFDF8F>Level <#EFDF8F>%level%"
       40:
-        default: "<red>Level <yellow>%level%"
+        default: "<#E08A98>Level <#EFDF8F>%level%"
     exp:
       0:
         type: calculator
@@ -31,4 +31,4 @@ main:
     onUpgrade:
       js: |
         player.addPotionEffect(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.SLOWNESS, 300, 1))
-        PlayerUtil.showTitle(player, mmUtil.deserialize("<gradient:yellow:gold>[ LEVEL UP ]"), mmUtil.deserialize("<gray>" + event.sourceLevel + " -> " + event.targetLevel), 20, 100, 20);
+        PlayerUtil.showTitle(player, mmUtil.deserialize("<gradient:#EFDF8F:#DFBD7C>[ LEVEL UP ]"), mmUtil.deserialize("<#A9B4C3>" + event.sourceLevel + " -> " + event.targetLevel), 20, 100, 20);

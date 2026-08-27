@@ -40,11 +40,11 @@ object GlobalMarketCommand {
     val reload = subCommand {
         execute<org.bukkit.command.CommandSender> { sender, _, _ ->
             if (!sender.hasPermission("chotentech.admin")) {
-                sender.sendMessage("<red>你没有权限执行此命令".toComponent())
+                sender.sendMessage("<#E08A98>你没有权限执行此命令".toComponent())
                 return@execute
             }
             GlobalMarketManager.saveToDisk()
-            sender.sendMessage("<green>[全球市场] 数据已保存!".toComponent())
+            sender.sendMessage("<#8FD4A6>[全球市场] 数据已保存!".toComponent())
         }
     }
 
@@ -54,10 +54,10 @@ object GlobalMarketCommand {
             val total = GlobalMarketManager.getActiveListings().size
             val allListings = GlobalMarketManager.getActiveListings()
             val totalValue = allListings.sumOf { it.price.toLong() }
-            sender.sendMessage("<gold>=== 全球市场信息 ===".toComponent())
-            sender.sendMessage("<gray>活跃商品: <white>$total".toComponent())
-            sender.sendMessage("<gray>总价值: <white>$totalValue".toComponent())
-            sender.sendMessage("<gray>待领取收益玩家: <white>${GlobalMarketManager.getPendingBalancesCount()}".toComponent())
+            sender.sendMessage("<#DFBD7C>=== 全球市场信息 ===".toComponent())
+            sender.sendMessage("<#A9B4C3>活跃商品: <#F2F5FA>$total".toComponent())
+            sender.sendMessage("<#A9B4C3>总价值: <#F2F5FA>$totalValue".toComponent())
+            sender.sendMessage("<#A9B4C3>待领取收益玩家: <#F2F5FA>${GlobalMarketManager.getPendingBalancesCount()}".toComponent())
         }
     }
 }

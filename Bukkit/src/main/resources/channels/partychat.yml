@@ -1,8 +1,8 @@
 # 组队聊天频道
 key: partychat
-display-name: "<gray>[<light_purple>队伍</light_purple>]</gray>"
+display-name: "<#A9B4C3>[<#CDAEEF>队伍</#CDAEEF>]</#A9B4C3>"
 formats:
-  default: "<gray>[<light_purple>队伍<gray>-<white><team_name></white>]</gray> <username><gray>: </gray><message>"
+  default: "<#A9B4C3>[<#CDAEEF>队伍<#A9B4C3>-<#F2F5FA><team_name></#F2F5FA>]</#A9B4C3> <username><#A9B4C3>: </#A9B4C3><message>"
   console: "[队伍] <username>: <message>"
 quick-prefix: ".pc"
 radius: -1

@@ -8,38 +8,38 @@ two_one_one:
 
   categories:
     armor:
-      display_name: "<aqua>钻石护甲"
+      display_name: "<#84D1CB>钻石护甲"
       max_select: 2
       items:
         helmet:
           id: sertraline:diamond_helmet
-          display_name: "<white>钻石头盔"
+          display_name: "<#F2F5FA>钻石头盔"
         chestplate:
           id: sertraline:diamond_chestplate
-          display_name: "<white>钻石护甲"
+          display_name: "<#F2F5FA>钻石护甲"
         leggings:
           id: sertraline:diamond_leggings
-          display_name: "<white>钻石护腿"
+          display_name: "<#F2F5FA>钻石护腿"
         boots:
           id: sertraline:diamond_boots
-          display_name: "<white>钻石靴子"
+          display_name: "<#F2F5FA>钻石靴子"
     weapon:
-      display_name: "<gold>钻石战斧/战锤"
+      display_name: "<#DFBD7C>钻石战斧/战锤"
       max_select: 1
       items:
         combataxe:
           id: sertraline:diamond_combataxe
-          display_name: "<white>钻石战斧"
+          display_name: "<#F2F5FA>钻石战斧"
         hammer:
           id: sertraline:diamond_hammer
-          display_name: "<white>钻石战锤"
+          display_name: "<#F2F5FA>钻石战锤"
     medical:
-      display_name: "<green>医疗包"
+      display_name: "<#8FD4A6>医疗包"
       max_select: 1
       items:
         medkit:
           id: sertraline:mosoon_medkit
-          display_name: "<green>Mosoon特别医疗箱"
+          display_name: "<#8FD4A6>Mosoon特别医疗箱"
 
   # 价格调整: 选择特定物品时加价
   price_modifiers:

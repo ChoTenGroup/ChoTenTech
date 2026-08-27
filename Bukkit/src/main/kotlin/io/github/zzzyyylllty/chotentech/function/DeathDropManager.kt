@@ -81,7 +81,7 @@ object DeathDropManager {
             data.returnedInsuranceItems.addAll(returns)
             player.sendMessage(
                 mmUtil.deserialize(
-                    "<gold>📦 <white>你的 <yellow>${returns.size}</yellow> 个投保物品已安全返还，使用 <yellow>/cttdrop cover</yellow> 取回。"
+                    "<#DFBD7C>📦 <#F2F5FA>你的 <#EFDF8F>${returns.size}</#EFDF8F> 个投保物品已安全返还，使用 <#EFDF8F>/cttdrop cover</#EFDF8F> 取回。"
                 )
             )
         }
@@ -140,7 +140,7 @@ object DeathDropManager {
             stand.setGravity(false)
             stand.setCanPickupItems(false)
             stand.setCustomNameVisible(true)
-            stand.customName(mmUtil.deserialize("<red>☠ <white>${player.name} <gray>的遗物"))
+            stand.customName(mmUtil.deserialize("<#E08A98>☠ <#F2F5FA>${player.name} <#A9B4C3>的遗物"))
             stand.isInvulnerable = true
 
             val head = ItemStack(Material.PLAYER_HEAD).apply {

@@ -55,7 +55,7 @@ class WarehouseMenu {
         val contents = data.warehouseContents.getOrPut(baseIdef) { linkedMapOf() }
         var currentPage = 0
         // 容量外的格子:屏障标记,不可使用
-        val lockedItem = guiItem(XMaterial.LIGHT_GRAY_STAINED_GLASS_PANE, "<red>未解锁格", listOf("<!i><gray>该格暂不可用"))
+        val lockedItem = guiItem(XMaterial.LIGHT_GRAY_STAINED_GLASS_PANE, "<#E08A98>未解锁格", listOf("<!i><#A9B4C3>该格暂不可用"))
 
         fun totalPages(): Int = totalPagesByCapacity(maxItems)
 
@@ -103,24 +103,24 @@ class WarehouseMenu {
             val pages = totalPages()
             inv.setItem(7, guiItem(
                 if (currentPage > 0) XMaterial.ARROW else XMaterial.GRAY_STAINED_GLASS_PANE,
-                if (currentPage > 0) "<green>上一页" else "<gray>已是第一页",
+                if (currentPage > 0) "<#8FD4A6>上一页" else "<#A9B4C3>已是第一页",
                 model = if (currentPage > 0) "kangelitem:previous" else "kangelitem:previous_no"
             ))
-            inv.setItem(49, guiItem(XMaterial.CHEST, "<yellow>仓库信息", listOf(
-                loreInfo("物品", "<yellow>${contents.size} <gray>/ <yellow>$maxItems"),
-                loreInfo("页数", "<yellow>${currentPage + 1} <gray>/ <yellow>$pages"),
+            inv.setItem(49, guiItem(XMaterial.CHEST, "<#EFDF8F>仓库信息", listOf(
+                loreInfo("物品", "<#EFDF8F>${contents.size} <#A9B4C3>/ <#EFDF8F>$maxItems"),
+                loreInfo("页数", "<#EFDF8F>${currentPage + 1} <#A9B4C3>/ <#EFDF8F>$pages"),
                 loreInfo("额外说明", " "),
-                loreInfo("存储", "<red>不同基地之间的仓库独立"),
-                loreInfo("拓展", "<aqua>可通过完成特殊任务、取得特殊权限拓展仓库")
+                loreInfo("存储", "<#E08A98>不同基地之间的仓库独立"),
+                loreInfo("拓展", "<#84D1CB>可通过完成特殊任务、取得特殊权限拓展仓库")
             )))
             inv.setItem(8, guiItem(
                 if (currentPage < pages - 1) XMaterial.ARROW else XMaterial.GRAY_STAINED_GLASS_PANE,
-                if (currentPage < pages - 1) "<green>下一页" else "<gray>已是最后一页",
+                if (currentPage < pages - 1) "<#8FD4A6>下一页" else "<#A9B4C3>已是最后一页",
                 model = if (currentPage < pages - 1) "kangelitem:next" else "kangelitem:next_no"
             ))
         }
 
-        player.openMenu<Chest>(mmJsonUtil.serialize("<white><shift:-16><image:kangelicon:list><shift:-176><aqua><font:minecraft:fusionpixel10>${title}".toComponent())) {
+        player.openMenu<Chest>(mmJsonUtil.serialize("<#F2F5FA><shift:-16><image:kangelicon:list><shift:-176><#84D1CB><font:minecraft:fusionpixel10>${title}".toComponent())) {
             rows(6)
             handLocked(false)
 
@@ -133,9 +133,9 @@ class WarehouseMenu {
                 "---------",
             )
 
-            set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>菜单", listOf("<!i> <yellow>点击 <green>打开菜单"), model = "kangelitem:void"))
-            set('-', guiItem(XMaterial.COMPASS, "<aqua><bold> ", listOf("<!i> <dark_gray>这里什么都没有"), model = "kangelitem:void"))
-            set('D', guiItem(XMaterial.COMPASS, "<aqua><bold> ", listOf("<!i> <dark_gray>这里什么都没有"), model = "kangelitem:void"))
+            set('C', guiItem(XMaterial.COMPASS, "<#84D1CB><bold>菜单", listOf("<!i> <#EFDF8F>点击 <#8FD4A6>打开菜单"), model = "kangelitem:void"))
+            set('-', guiItem(XMaterial.COMPASS, "<#84D1CB><bold> ", listOf("<!i> <#6E7A8C>这里什么都没有"), model = "kangelitem:void"))
+            set('D', guiItem(XMaterial.COMPASS, "<#84D1CB><bold> ", listOf("<!i> <#6E7A8C>这里什么都没有"), model = "kangelitem:void"))
 
             onBuild { _, inv ->
                 loadPage(inv)

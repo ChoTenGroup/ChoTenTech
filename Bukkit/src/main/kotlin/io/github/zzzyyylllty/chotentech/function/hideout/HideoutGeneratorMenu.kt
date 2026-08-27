@@ -22,7 +22,7 @@ class HideoutGeneratorMenu(private val baseKey: String) {
         val hideout = data.hideoutData[baseKey] ?: return
 
         player.openMenu<Chest>(mmJsonUtil.serialize(
-            "<white><shift:-16><image:kangelicon:list><shift:-176><aqua><font:minecraft:fusionpixel10>发电机 - 燃料管理".toComponent()
+            "<#F2F5FA><shift:-16><image:kangelicon:list><shift:-176><#84D1CB><font:minecraft:fusionpixel10>发电机 - 燃料管理".toComponent()
         )) {
             rows(6)
             handLocked(false)
@@ -38,8 +38,8 @@ class HideoutGeneratorMenu(private val baseKey: String) {
 
             set('C', ItemStack(Material.COMPASS).apply {
                 editMeta { m ->
-                    m.displayName("<b><aqua>返回".toComponent())
-                    m.lore(listOf("<gray>返回基地总览".toComponent()))
+                    m.displayName("<b><#84D1CB>返回".toComponent())
+                    m.lore(listOf("<#A9B4C3>返回基地总览".toComponent()))
                     m.itemModel = NamespacedKey.fromString("kangelitem:void")
                 }
             }) {
@@ -89,9 +89,9 @@ class HideoutGeneratorMenu(private val baseKey: String) {
                             held.amount--
                             if (held.amount <= 0) event.clicker.inventory.setItem(heldSlot, null)
                             event.clicker.playSound(event.clicker.location, Sound.ITEM_ARMOR_EQUIP_CHAIN, 1f, 1f)
-                            event.clicker.sendComponent("<green>已放入燃料: ${fuel.sertralineId?.let { ItemNameHelper.getDisplayName(it) } ?: fuel.id}")
+                            event.clicker.sendComponent("<#8FD4A6>已放入燃料: ${fuel.sertralineId?.let { ItemNameHelper.getDisplayName(it) } ?: fuel.id}")
                         } else {
-                            event.clicker.sendComponent("<red>该物品不能作为燃料！")
+                            event.clicker.sendComponent("<#E08A98>该物品不能作为燃料！")
                         }
                     }
                 }
@@ -101,8 +101,8 @@ class HideoutGeneratorMenu(private val baseKey: String) {
 
     private fun buildPlaceholder(slot: Int): ItemStack = ItemStack(Material.GRAY_STAINED_GLASS_PANE).apply {
         editMeta { m ->
-            m.displayName("<gray>燃料槽 ${slot + 1}".toComponent())
-            m.lore(listOf("<gray>放入可燃烧的物品".toComponent()))
+            m.displayName("<#A9B4C3>燃料槽 ${slot + 1}".toComponent())
+            m.lore(listOf("<#A9B4C3>放入可燃烧的物品".toComponent()))
         }
     }
 
@@ -111,22 +111,22 @@ class HideoutGeneratorMenu(private val baseKey: String) {
             val capacity = HideoutManager.getFuelCapacity(hideout)
             val usage = HideoutManager.getEffectiveUsage(hideout)
             val running = hideout.fuelAmount > 0
-            m.displayName("<gold>发电机状态".toComponent())
+            m.displayName("<#DFBD7C>发电机状态".toComponent())
             val lore = mutableListOf(
-                "<!i><gray>燃料: <yellow>${"%.1f".format(hideout.fuelAmount)} <gray>/ <yellow>${"%.0f".format(capacity)}",
-                "<!i><gray>状态: ${if (running) "<green>运行中" else "<red>已停机"}",
+                "<!i><#A9B4C3>燃料: <#EFDF8F>${"%.1f".format(hideout.fuelAmount)} <#A9B4C3>/ <#EFDF8F>${"%.0f".format(capacity)}",
+                "<!i><#A9B4C3>状态: ${if (running) "<#8FD4A6>运行中" else "<#E08A98>已停机"}",
                 "<!i>",
-                "<!i><gray>总消耗: <yellow>${"%.1f".format(usage)} <gray>/秒",
+                "<!i><#A9B4C3>总消耗: <#EFDF8F>${"%.1f".format(usage)} <#A9B4C3>/秒",
             ).map { it.toComponent() }.toMutableList()
             if (usage > 0) {
-                lore += "<!i><gray>预计剩余: <yellow>${"%.0f".format(hideout.fuelAmount / usage)} <gray>秒".toComponent()
+                lore += "<!i><#A9B4C3>预计剩余: <#EFDF8F>${"%.0f".format(hideout.fuelAmount / usage)} <#A9B4C3>秒".toComponent()
             }
             val save = HideoutManager.getFuelSavePercent(hideout)
             if (save > 0) {
-                lore += "<!i><gray>燃料节省: <green>$save%".toComponent()
+                lore += "<!i><#A9B4C3>燃料节省: <#8FD4A6>$save%".toComponent()
             }
             lore += "<!i>".toComponent()
-            lore += "<!i><gray>提示: 手持燃料点击槽位放入".toComponent()
+            lore += "<!i><#A9B4C3>提示: 手持燃料点击槽位放入".toComponent()
             m.lore(lore)
         }
     }

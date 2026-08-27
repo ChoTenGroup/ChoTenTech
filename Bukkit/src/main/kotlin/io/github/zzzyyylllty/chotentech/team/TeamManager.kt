@@ -146,7 +146,7 @@ object TeamManager {
         for (uuid in previousMembers) {
             val p = Bukkit.getPlayer(uuid) ?: continue
             if (p.isOnline) {
-                p.sendMessage("<red>队长已离开服务器，队伍已自动解散".toComponent())
+                p.sendMessage("<#E08A98>队长已离开服务器，队伍已自动解散".toComponent())
             }
         }
     }

@@ -12,9 +12,9 @@ import io.github.zzzyyylllty.chotentech.data.NoclipPoint
 import io.github.zzzyyylllty.chotentech.function.noclip.RandomNoclipSelector
 import io.github.zzzyyylllty.chotentech.listener.checkPlayerIsInNoclipPoint
 import io.github.zzzyyylllty.chotentech.player.sendComponent
-import io.github.zzzyyylllty.chotentech.quetiapine.data.PlayerDataManager
+import io.github.zzzyyylllty.chotentech.data.PlayerDataManager
 import io.github.zzzyyylllty.chotentech.util.toComponent
-import io.github.zzzyyylllty.chotentech.kether.evalKetherValue
+import io.github.zzzyyylllty.chotentech.function.kether.evalKetherValue
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Sound
@@ -90,7 +90,7 @@ fun noclipTime() {
                         ChoTenDataHelper(player).exitNoclip()
                         PowerManager.unmarkElevatorNoclip(k)
                     }
-                    player.sendActionBar("<#FF6666>切出取消".toComponent())
+                    player.sendActionBar("<#e8baba>切出取消".toComponent())
                     continue
                 }
 
@@ -152,7 +152,7 @@ fun noclipTime() {
                             PlayerDataManager(player).addExp("noclipping", exp)
                             PlayerDataManager(player).checkUpdateLevel("noclipping")
                         }
-                        player.sendActionBar("<gradient:green:yellow>切出成功".toComponent())
+                        player.sendActionBar("<gradient:#8FD4A6:#EFDF8F>切出成功".toComponent())
                         player.playSound(player, Sound.BLOCK_AMETHYST_BLOCK_BREAK, 1F, 0.5F)
                     } else {
                         // 切出失败
@@ -168,7 +168,7 @@ fun noclipTime() {
                             PlayerDataManager(player).addExp("noclipping", 3.0)
                             PlayerDataManager(player).checkUpdateLevel("noclipping")
                         }
-                        player.sendActionBar("<gradient:gold:red>切出失败".toComponent())
+                        player.sendActionBar("<gradient:#DFBD7C:#E08A98>切出失败".toComponent())
                         ChoTenDataHelper(player).exitNoclip()
                         PowerManager.unmarkElevatorNoclip(k)
                     }
@@ -202,13 +202,13 @@ fun noclipTime() {
                     if (condResult is ConditionResult.Allowed) {
                         if (firstEnter) {
                             player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1F, 1.7F)
-                            player.sendComponent("<#66CCFF>已找到切出点<white>$noclipName</white>，低头下蹲确认。")
+                            player.sendComponent("<#bad9e8>已找到切出点<white>$noclipName</white>，低头下蹲确认。")
                             val target = ChoTenTech.levelsList[foundNoclip.targetLevel]
                             target?.let {
-                                player.sendComponent("<#66CCFF>本切出点预计通往：${target.prefix}${target.name}")
+                                player.sendComponent("<#bad9e8>本切出点预计通往：${target.prefix}<white>${target.name}")
                             } ?: {
 
-                                player.sendComponent("<#66CCFF>无法找到本切出点的目标。")
+                                player.sendComponent("<#bad9e8>无法找到本切出点的目标。")
                             }
                         }
                     } else {
@@ -277,7 +277,7 @@ fun autoNoclipTimer() {
                 data.noclipping = true
                 NoclipEnterEvent(player, level.id, noclipPoint.name).call()
                 player.playSound(player, Sound.ENTITY_ENDER_EYE_LAUNCH, 1F, 0.5F)
-                player.sendActionBar("<green>保持在切出点内".toComponent())
+                player.sendActionBar("<#8FD4A6>保持在切出点内".toComponent())
                 break
             }
             if (!inAutoPoint) autoNoclipGuideSent.remove(player.uniqueId.toString())

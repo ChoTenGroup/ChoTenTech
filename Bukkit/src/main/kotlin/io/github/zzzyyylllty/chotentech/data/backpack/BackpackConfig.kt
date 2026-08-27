@@ -2,9 +2,9 @@ package io.github.zzzyyylllty.chotentech.data.backpack
 
 import io.github.zzzyyylllty.chotentech.ChoTenTech
 import io.github.zzzyyylllty.chotentech.util.ItemTagUtil.parseNBT
-import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.inventory.ItemStack
 import taboolib.common.platform.function.info
+import taboolib.library.configuration.ConfigurationSection
 import taboolib.module.nms.getItemTag
 
 /**
@@ -114,7 +114,7 @@ object BackpackConfig {
         private set
 
     /** 拒绝放入时的提示消息 (MiniMessage 格式) */
-    var denySlotMessage: String = "<red>该物品不能放入此背包！"
+    var denySlotMessage: String = "<#E08A98>该物品不能放入此背包！"
         private set
 
     /** 所有已注册的背包类型 */
@@ -125,7 +125,7 @@ object BackpackConfig {
         val section = ChoTenTech.backpackConfig.getConfigurationSection("backpack") ?: return
 
         tag = section.getString("tag", "cho-backpack") ?: "cho-backpack"
-        denySlotMessage = section.getString("deny-slot-message", "<red>该物品不能放入此背包！") ?: "<red>该物品不能放入此背包！"
+        denySlotMessage = section.getString("deny-slot-message", "<#E08A98>该物品不能放入此背包！") ?: "<#E08A98>该物品不能放入此背包！"
         rows = section.getInt("rows", 6).coerceIn(1, 6)
 
         types.clear()

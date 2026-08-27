@@ -2,7 +2,7 @@ package io.github.zzzyyylllty.chotentech.function
 
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
 import io.github.zzzyyylllty.chotentech.function.BaseManager
-import io.github.zzzyyylllty.chotentech.quetiapine.data.PlayerDataManager
+import io.github.zzzyyylllty.chotentech.data.PlayerDataManager
 import io.github.zzzyyylllty.chotentech.util.devLog
 import io.github.zzzyyylllty.sertraline.Sertraline
 import org.bukkit.Bukkit

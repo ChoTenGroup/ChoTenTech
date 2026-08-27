@@ -4,7 +4,7 @@
 # GUI 部分由 shop-defaults.yml 统一提供，商店文件无需重复编写
 # ============================================================================
 ExampleShop:
-  name: "<gold>示例商店"
+  name: "<#DFBD7C>示例商店"
 
   # ─────────────────────────────────────────────
   # 商品列表
@@ -176,7 +176,7 @@ ExampleShop:
     # =============================================
     gift_pack:
       id: sertraline:diamond            # 展示用的物品ID
-      name: "<gold>超值礼包"
+      name: "<#DFBD7C>超值礼包"
       type: giftpack
       gift-pack: example_gift           # 对应 gift-packs.yml 中的礼包ID
       buy:

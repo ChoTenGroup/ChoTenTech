@@ -33,7 +33,7 @@ object ChatFormatter {
     /**
      * 递归剥离组件树上的 click/hover/insertion 事件。
      * MiniMessage 的 postProcessor 只作用于根组件，嵌套子节点上的交互事件
-     * （如 `<red><click:run_command:say hi>x</click></red>`）会绕过剥离，
+     * （如 `<#E08A98><click:run_command:say hi>x</click></#E08A98>`）会绕过剥离，
      * 必须逐层清理，否则玩家可构造钓鱼消息（点击即以受害者身份执行命令/打开网址）。
      */
     private fun stripInteractions(component: Component): Component {

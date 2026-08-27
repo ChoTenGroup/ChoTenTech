@@ -33,11 +33,11 @@ object TapeCommand {
                     val player = context.player("user").castSafely<Player>()!!
                     val amount = context["amount"].toLongOrNull()
                     if (amount == null || amount < 1) {
-                        sender.sendComponent("<red>数量必须为正整数")
+                        sender.sendComponent("<#E08A98>数量必须为正整数")
                         return@execute
                     }
                     CurrencyManager.addBalance(player, "tape", amount)
-                    sender.sendComponent("<green>已给予 ${player.name} $amount ${CurrencyManager.displayName("tape")}")
+                    sender.sendComponent("<#8FD4A6>已给予 ${player.name} $amount ${CurrencyManager.displayName("tape")}")
                 }
                 suggestion<CommandSender>(uncheck = true) { _, _ -> listOf("1", "5", "10") }
             }
@@ -52,11 +52,11 @@ object TapeCommand {
                     val player = context.player("user").castSafely<Player>()!!
                     val amount = context["amount"].toLongOrNull()
                     if (amount == null || amount < 1) {
-                        sender.sendComponent("<red>数量必须为正整数")
+                        sender.sendComponent("<#E08A98>数量必须为正整数")
                         return@execute
                     }
                     CurrencyManager.addBalance(player, "tape", amount)
-                    sender.sendComponent("<green>已给予 ${player.name} $amount ${CurrencyManager.displayName("tape")}")
+                    sender.sendComponent("<#8FD4A6>已给予 ${player.name} $amount ${CurrencyManager.displayName("tape")}")
                 }
                 suggestion<CommandSender>(uncheck = true) { _, _ -> listOf("1", "5", "10") }
             }
@@ -71,13 +71,13 @@ object TapeCommand {
                     val player = context.player("user").castSafely<Player>()!!
                     val amount = context["amount"].toLongOrNull()
                     if (amount == null || amount < 1) {
-                        sender.sendComponent("<red>数量必须为正整数")
+                        sender.sendComponent("<#E08A98>数量必须为正整数")
                         return@execute
                     }
                     if (CurrencyManager.removeBalance(player, "tape", amount)) {
-                        sender.sendComponent("<green>已从 ${player.name} 扣除 $amount ${CurrencyManager.displayName("tape")}")
+                        sender.sendComponent("<#8FD4A6>已从 ${player.name} 扣除 $amount ${CurrencyManager.displayName("tape")}")
                     } else {
-                        sender.sendComponent("<red>${player.name} 的${CurrencyManager.displayName("tape")}不足")
+                        sender.sendComponent("<#E08A98>${player.name} 的${CurrencyManager.displayName("tape")}不足")
                     }
                 }
                 suggestion<CommandSender>(uncheck = true) { _, _ -> listOf("1", "5", "10") }
@@ -93,13 +93,13 @@ object TapeCommand {
                     val player = context.player("user").castSafely<Player>()!!
                     val amount = context["amount"].toLongOrNull()
                     if (amount == null || amount < 1) {
-                        sender.sendComponent("<red>数量必须为正整数")
+                        sender.sendComponent("<#E08A98>数量必须为正整数")
                         return@execute
                     }
                     if (CurrencyManager.removeBalance(player, "tape", amount)) {
-                        sender.sendComponent("<green>已从 ${player.name} 扣除 $amount ${CurrencyManager.displayName("tape")}")
+                        sender.sendComponent("<#8FD4A6>已从 ${player.name} 扣除 $amount ${CurrencyManager.displayName("tape")}")
                     } else {
-                        sender.sendComponent("<red>${player.name} 的${CurrencyManager.displayName("tape")}不足")
+                        sender.sendComponent("<#E08A98>${player.name} 的${CurrencyManager.displayName("tape")}不足")
                     }
                 }
                 suggestion<CommandSender>(uncheck = true) { _, _ -> listOf("1", "5", "10") }
@@ -115,11 +115,11 @@ object TapeCommand {
                     val player = context.player("user").castSafely<Player>()!!
                     val amount = context["amount"].toLongOrNull()
                     if (amount == null || amount < 0) {
-                        sender.sendComponent("<red>数量必须为非负整数")
+                        sender.sendComponent("<#E08A98>数量必须为非负整数")
                         return@execute
                     }
                     CurrencyManager.setBalance(player, "tape", amount)
-                    sender.sendComponent("<green>已将 ${player.name} 的${CurrencyManager.displayName("tape")}设为 $amount")
+                    sender.sendComponent("<#8FD4A6>已将 ${player.name} 的${CurrencyManager.displayName("tape")}设为 $amount")
                 }
                 suggestion<CommandSender>(uncheck = true) { _, _ -> listOf("0", "1", "5") }
             }

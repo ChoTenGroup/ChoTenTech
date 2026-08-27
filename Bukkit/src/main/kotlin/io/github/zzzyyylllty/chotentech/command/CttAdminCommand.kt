@@ -15,7 +15,7 @@ import io.github.zzzyyylllty.chotentech.function.savepoint.SavePointConfig
 import io.github.zzzyyylllty.chotentech.function.savepoint.SavePointManager
 import io.github.zzzyyylllty.chotentech.function.savepoint.SavePointType
 import io.github.zzzyyylllty.chotentech.player.sendComponent
-import io.github.zzzyyylllty.chotentech.quetiapine.data.PlayerDataManager
+import io.github.zzzyyylllty.chotentech.data.PlayerDataManager
 import io.github.zzzyyylllty.chotentech.util.devLog
 import io.github.zzzyyylllty.chotentech.util.jsonUtils
 import io.github.zzzyyylllty.chotentech.util.toComponent
@@ -62,7 +62,7 @@ object CttAdminCommand {
                     execute<CommandSender> { sender, context, _ ->
                         val player = sender as? Player
                         if (player == null) {
-                            sender.sendComponent("<red>该指令只能由玩家执行")
+                            sender.sendComponent("<#E08A98>该指令只能由玩家执行")
                             return@execute
                         }
                         createSpawn(player, context["name"], context["type"])
@@ -77,7 +77,7 @@ object CttAdminCommand {
             execute<CommandSender> { sender, _, _ ->
                 val player = sender as? Player
                 if (player == null) {
-                    sender.sendComponent("<red>该指令只能由玩家执行")
+                    sender.sendComponent("<#E08A98>该指令只能由玩家执行")
                     return@execute
                 }
                 fixSaveLocations(player)
@@ -88,7 +88,7 @@ object CttAdminCommand {
                 execute<CommandSender> { sender, context, _ ->
                     val player = sender as? Player
                     if (player == null) {
-                        sender.sendComponent("<red>该指令只能由玩家执行")
+                        sender.sendComponent("<#E08A98>该指令只能由玩家执行")
                         return@execute
                     }
                     teleportToSave(player, context["saveId"])
@@ -103,7 +103,7 @@ object CttAdminCommand {
                 execute<CommandSender> { sender, context, _ ->
                     val player = sender as? Player
                     if (player == null) {
-                        sender.sendComponent("<red>该指令只能由玩家执行")
+                        sender.sendComponent("<#E08A98>该指令只能由玩家执行")
                         return@execute
                     }
                     moveSaveHere(player, context["saveId"])
@@ -117,7 +117,7 @@ object CttAdminCommand {
             execute<CommandSender> { sender, _, _ ->
                 val player = sender as? Player
                 if (player == null) {
-                    sender.sendComponent("<red>该指令只能由玩家执行")
+                    sender.sendComponent("<#E08A98>该指令只能由玩家执行")
                     return@execute
                 }
                 migrateAllSaveIds(player)
@@ -128,14 +128,14 @@ object CttAdminCommand {
                 execute<CommandSender> { sender, context, _ ->
                     val target = context.player("target").castSafely<Player>()
                     if (target == null) {
-                        sender.sendComponent("<red>目标玩家不在线")
+                        sender.sendComponent("<#E08A98>目标玩家不在线")
                         return@execute
                     }
                     if (!BleedoutManager.reviveDowned(target.uniqueId)) {
-                        sender.sendComponent("<yellow>${target.name} <red>当前没有处于倒地状态")
+                        sender.sendComponent("<#EFDF8F>${target.name} <#E08A98>当前没有处于倒地状态")
                         return@execute
                     }
-                    sender.sendComponent("<green>已将 <yellow>${target.name} <green>拉起")
+                    sender.sendComponent("<#8FD4A6>已将 <#EFDF8F>${target.name} <#8FD4A6>拉起")
                 }
                 suggestion<CommandSender> { _, _ ->
                     Bukkit.getOnlinePlayers().filter { BleedoutManager.isDowned(it.uniqueId) }.map { it.name }
@@ -150,7 +150,7 @@ object CttAdminCommand {
                             execute<CommandSender> { sender, context, _ ->
                                 val target = context.player("player").castSafely<Player>()
                                 if (target == null) {
-                                    sender.sendComponent("<red>目标玩家不在线")
+                                    sender.sendComponent("<#E08A98>目标玩家不在线")
                                     return@execute
                                 }
                                 setRank(sender, context["type"], target, context["rankId"])
@@ -166,7 +166,7 @@ object CttAdminCommand {
                         execute<CommandSender> { sender, context, _ ->
                             val target = context.player("player").castSafely<Player>()
                             if (target == null) {
-                                sender.sendComponent("<red>目标玩家不在线")
+                                sender.sendComponent("<#E08A98>目标玩家不在线")
                                 return@execute
                             }
                             clearRank(sender, context["type"], target)
@@ -188,18 +188,18 @@ object CttAdminCommand {
                     execute<CommandSender> { sender, context, _ ->
                         val target = context.player("target").castSafely<Player>()
                         if (target == null) {
-                            sender.sendComponent("<red>目标玩家不在线")
+                            sender.sendComponent("<#E08A98>目标玩家不在线")
                             return@execute
                         }
                         val saveId = context["saveId"]
                         val sp = SavePointConfig.get(saveId)
                         if (sp == null) {
-                            sender.sendComponent("<red>存档点 <yellow>$saveId <red>不存在")
+                            sender.sendComponent("<#E08A98>存档点 <#EFDF8F>$saveId <#E08A98>不存在")
                             return@execute
                         }
                         val data = playerDataMap[target.uniqueId.toString()]
                         if (data == null) {
-                            sender.sendComponent("<red>目标玩家数据未加载")
+                            sender.sendComponent("<#E08A98>目标玩家数据未加载")
                             return@execute
                         }
                         // 按存档点类型自动绑定:基地存档点 -> baseSave,普通存档点 -> normalSave
@@ -209,8 +209,8 @@ object CttAdminCommand {
                             data.normalSave = saveId
                         }
                         val typeName = if (sp.isBase) "基地" else "普通"
-                        sender.sendComponent("<green>已将 <yellow>${target.name} <green>的${typeName}存档点设为 <yellow>${sp.name} <gray>($saveId)")
-                        target.sendComponent("<green>管理员已将你的${typeName}存档点设为 <yellow>${sp.name}")
+                        sender.sendComponent("<#8FD4A6>已将 <#EFDF8F>${target.name} <#8FD4A6>的${typeName}存档点设为 <#EFDF8F>${sp.name} <#A9B4C3>($saveId)")
+                        target.sendComponent("<#8FD4A6>管理员已将你的${typeName}存档点设为 <#EFDF8F>${sp.name}")
                     }
                     suggestion<CommandSender> { _, _ ->
                         SavePointConfig.getAll().map { it.id }.toList()
@@ -246,47 +246,47 @@ object CttAdminCommand {
     private fun setRank(sender: CommandSender, type: String, target: Player, rankId: String) {
         val typeRanks = RankManager.ranks[type]
         if (typeRanks == null) {
-            sender.sendComponent("<red>未知称号类型 <yellow>$type <red>(可用: ${RankManager.getTypes().joinToString(", ")})")
+            sender.sendComponent("<#E08A98>未知称号类型 <#EFDF8F>$type <#E08A98>(可用: ${RankManager.getTypes().joinToString(", ")})")
             return
         }
         if (!typeRanks.containsKey(rankId)) {
-            sender.sendComponent("<red>称号 <yellow>$rankId <red>不存在于 <yellow>$type")
+            sender.sendComponent("<#E08A98>称号 <#EFDF8F>$rankId <#E08A98>不存在于 <#EFDF8F>$type")
             return
         }
         val shared = ProfileManager.getSharedData(target.uniqueId.toString())
         shared.activeRanks[type] = rankId
         ProfileManager.saveSharedData(target.uniqueId.toString())
         target.playerListName(RankManager.buildPlayerListName(target).toComponent())
-        sender.sendComponent("<green>已设置 <yellow>${target.name} <green>的${rankTypeNameMap[type] ?: type}称号为 <yellow>$rankId")
+        sender.sendComponent("<#8FD4A6>已设置 <#EFDF8F>${target.name} <#8FD4A6>的${rankTypeNameMap[type] ?: type}称号为 <#EFDF8F>$rankId")
     }
 
     /** /cttadmin feature rank <type> clear <player> — 清除指定类型的称号 */
     private fun clearRank(sender: CommandSender, type: String, target: Player) {
         if (!RankManager.ranks.containsKey(type)) {
-            sender.sendComponent("<red>未知称号类型 <yellow>$type")
+            sender.sendComponent("<#E08A98>未知称号类型 <#EFDF8F>$type")
             return
         }
         val shared = ProfileManager.getSharedData(target.uniqueId.toString())
         shared.activeRanks.remove(type)
         ProfileManager.saveSharedData(target.uniqueId.toString())
         target.playerListName(RankManager.buildPlayerListName(target).toComponent())
-        sender.sendComponent("<green>已清除 <yellow>${target.name} <green>的${rankTypeNameMap[type] ?: type}称号")
+        sender.sendComponent("<#8FD4A6>已清除 <#EFDF8F>${target.name} <#8FD4A6>的${rankTypeNameMap[type] ?: type}称号")
     }
 
     /** /cttadmin feature createspawn <名称> NORMAL/BASE — 以玩家当前位置直接写入 saves.yml */
     private fun createSpawn(player: Player, name: String, typeStr: String) {
         val type = runCatching { SavePointType.valueOf(typeStr.uppercase()) }.getOrNull()
         if (type == null) {
-            player.sendComponent("<red>存档点类型必须是 NORMAL 或 BASE")
+            player.sendComponent("<#E08A98>存档点类型必须是 NORMAL 或 BASE")
             return
         }
         val key = name.trim()
         if (key.isEmpty()) {
-            player.sendComponent("<red>存档点名称不能为空")
+            player.sendComponent("<#E08A98>存档点名称不能为空")
             return
         }
         if (SavePointConfig.get(key) != null) {
-            player.sendComponent("<red>存档点 <yellow>$key <red>已存在")
+            player.sendComponent("<#E08A98>存档点 <#EFDF8F>$key <#E08A98>已存在")
             return
         }
 
@@ -297,7 +297,7 @@ object CttAdminCommand {
                 ?: levelsList.values.firstOrNull { it.region?.id == region }?.id
         } ?: playerDataMap[player.uniqueId.toString()]?.activeLevelStr
         if (levelId == null) {
-            player.sendComponent("<red>无法自动探测当前层级(不在任何层级区域内且无激活层级)")
+            player.sendComponent("<#E08A98>无法自动探测当前层级(不在任何层级区域内且无激活层级)")
             return
         }
 
@@ -332,16 +332,16 @@ object CttAdminCommand {
             baseId?.let { config.set("$key.base", it) }
             config.saveToFile(file)
         } catch (e: Exception) {
-            player.sendComponent("<red>写入 saves.yml 失败: ${e.message}")
+            player.sendComponent("<#E08A98>写入 saves.yml 失败: ${e.message}")
             return
         }
 
         SavePointConfig.load()
         SavePointManager.createHolograms()
 
-        val typeName = if (type == SavePointType.BASE) "<aqua>基地存档点" else "<green>普通存档点"
-        val baseText = baseId?.let { " <gray>(基地 <yellow>$it<gray>)" } ?: ""
-        player.sendComponent("$typeName <yellow>$name <green>创建成功: 层级 <yellow>$levelId <gray>@ $world $bx,$by,$bz$baseText")
+        val typeName = if (type == SavePointType.BASE) "<#84D1CB>基地存档点" else "<#8FD4A6>普通存档点"
+        val baseText = baseId?.let { " <#A9B4C3>(基地 <#EFDF8F>$it<#A9B4C3>)" } ?: ""
+        player.sendComponent("$typeName <#EFDF8F>$name <#8FD4A6>创建成功: 层级 <#EFDF8F>$levelId <#A9B4C3>@ $world $bx,$by,$bz$baseText")
     }
 
     /** 最下层允许的方块:空气 + 光源方块(可站立/房间照明场景不误判为被掩埋) */
@@ -364,11 +364,11 @@ object CttAdminCommand {
         submitAsync {
             val saves = SavePointConfig.getAll().toList()
             if (saves.isEmpty()) {
-                submit { player.sendComponent("<red>没有存档点可修复") }
+                submit { player.sendComponent("<#E08A98>没有存档点可修复") }
                 return@submitAsync
             }
 
-            val lines = mutableListOf("<gold>■ <yellow>存档点位置修复报告:")
+            val lines = mutableListOf("<#DFBD7C>■ <#EFDF8F>存档点位置修复报告:")
             val fixes = mutableListOf<Pair<SavePoint, Int>>()
             var ok = 0
             var failed = 0
@@ -377,7 +377,7 @@ object CttAdminCommand {
                 val world = Bukkit.getWorld(sp.world)
                 if (world == null) {
                     failed++
-                    lines += "<gray>- <yellow>${sp.id} <gray>(${sp.name}) <red>世界 ${sp.world} 不存在,跳过"
+                    lines += "<#A9B4C3>- <#EFDF8F>${sp.id} <#A9B4C3>(${sp.name}) <#E08A98>世界 ${sp.world} 不存在,跳过"
                     continue
                 }
 
@@ -407,20 +407,20 @@ object CttAdminCommand {
                 when {
                     !found -> {
                         failed++
-                        lines += "<gray>- <yellow>${sp.id} <gray>(${sp.name}) <red>修复失败:抬升 ${raised} 格后仍未找到可用空间(达到世界高度上限或迭代上限)"
+                        lines += "<#A9B4C3>- <#EFDF8F>${sp.id} <#A9B4C3>(${sp.name}) <#E08A98>修复失败:抬升 ${raised} 格后仍未找到可用空间(达到世界高度上限或迭代上限)"
                     }
                     raised == 0 -> {
                         ok++
-                        lines += "<gray>- <yellow>${sp.id} <gray>(${sp.name}) <green>无需修复(最下层已有空气/光源方块)"
+                        lines += "<#A9B4C3>- <#EFDF8F>${sp.id} <#A9B4C3>(${sp.name}) <#8FD4A6>无需修复(最下层已有空气/光源方块)"
                     }
                     else -> {
                         fixes += sp to raised
-                        lines += "<gray>- <yellow>${sp.id} <gray>(${sp.name}) <green>已修复:最低点 <yellow>$oldMinY→$minY<green>,最高点 <yellow>$oldMaxY→$maxY<green>,抬升 <yellow>$raised<green> 格"
+                        lines += "<#A9B4C3>- <#EFDF8F>${sp.id} <#A9B4C3>(${sp.name}) <#8FD4A6>已修复:最低点 <#EFDF8F>$oldMinY→$minY<#8FD4A6>,最高点 <#EFDF8F>$oldMaxY→$maxY<#8FD4A6>,抬升 <#EFDF8F>$raised<#8FD4A6> 格"
                     }
                 }
             }
 
-            lines += "<gold>共 <yellow>${fixes.size}<gold> 个修复,<green>$ok<green> 个无需修复,<red>$failed<red> 个失败"
+            lines += "<#DFBD7C>共 <#EFDF8F>${fixes.size}<#DFBD7C> 个修复,<#8FD4A6>$ok<#8FD4A6> 个无需修复,<#E08A98>$failed<#E08A98> 个失败"
 
             // 写回/重载/全息图必须回主线程:SavePointConfig 是普通 Map(主线程每秒在迭代),
             // 与 createSpawn 的 saves.yml 写入也要串行,否则并发写文件会互相覆盖丢键
@@ -429,7 +429,7 @@ object CttAdminCommand {
                     for ((sp, deltaY) in fixes) writeBackSavePos(sp, deltaY)
                     SavePointConfig.load()
                     SavePointManager.createHolograms()
-                    lines += "<gray>(已重载存档点配置并刷新全息图)"
+                    lines += "<#A9B4C3>(已重载存档点配置并刷新全息图)"
                 }
                 player.sendComponent(lines.joinToString("\n"))
             }
@@ -486,18 +486,18 @@ object CttAdminCommand {
     private fun teleportToSave(player: Player, saveId: String) {
         val sp = SavePointConfig.get(saveId)
         if (sp == null) {
-            player.sendComponent("<red>存档点 <yellow>$saveId <red>不存在")
+            player.sendComponent("<#E08A98>存档点 <#EFDF8F>$saveId <#E08A98>不存在")
             return
         }
         if (Bukkit.getWorld(sp.world) == null) {
-            player.sendComponent("<red>存档点 <yellow>${sp.name} <red>的世界 <yellow>${sp.world} <red>不存在")
+            player.sendComponent("<#E08A98>存档点 <#EFDF8F>${sp.name} <#E08A98>的世界 <#EFDF8F>${sp.world} <#E08A98>不存在")
             return
         }
         val loc = sp.respawnPos?.toLocation() ?: sp.effectiveHoloPos
         player.teleportAsync(loc).whenComplete { _, err ->
-            if (err != null) player.sendComponent("<red>传送失败: ${err.message}")
+            if (err != null) player.sendComponent("<#E08A98>传送失败: ${err.message}")
         }
-        player.sendComponent("<green>已传送到存档点 <yellow>${sp.name} <gray>($saveId)")
+        player.sendComponent("<#8FD4A6>已传送到存档点 <#EFDF8F>${sp.name} <#A9B4C3>($saveId)")
     }
 
     /**
@@ -507,7 +507,7 @@ object CttAdminCommand {
     private fun moveSaveHere(player: Player, saveId: String) {
         val sp = SavePointConfig.get(saveId)
         if (sp == null) {
-            player.sendComponent("<red>存档点 <yellow>$saveId <red>不存在")
+            player.sendComponent("<#E08A98>存档点 <#EFDF8F>$saveId <#E08A98>不存在")
             return
         }
 
@@ -545,15 +545,15 @@ object CttAdminCommand {
             if (levelId != null) config.set("$saveId.level", levelId)
             config.saveToFile(file)
         } catch (e: Exception) {
-            player.sendComponent("<red>写入 saves.yml 失败: ${e.message}")
+            player.sendComponent("<#E08A98>写入 saves.yml 失败: ${e.message}")
             return
         }
 
         SavePointConfig.load()
         SavePointManager.createHolograms()
 
-        player.sendComponent("<green>存档点 <yellow>${sp.name} <green>已移动: 区域 <yellow>$worldName (${bx - 2}..${bx + 2}, $by..${by + 2}, ${bz - 2}..${bz + 2})")
-        player.sendComponent("<gray>位移: x <yellow>$dx<gray>, y <yellow>$dy<gray>, z <yellow>$dz<gray>;层级 ${if (levelId != null) "<yellow>$levelId" else "<red>保留原值(未探测到层级区域)"}")
+        player.sendComponent("<#8FD4A6>存档点 <#EFDF8F>${sp.name} <#8FD4A6>已移动: 区域 <#EFDF8F>$worldName (${bx - 2}..${bx + 2}, $by..${by + 2}, ${bz - 2}..${bz + 2})")
+        player.sendComponent("<#A9B4C3>位移: x <#EFDF8F>$dx<#A9B4C3>, y <#EFDF8F>$dy<#A9B4C3>, z <#EFDF8F>$dz<#A9B4C3>;层级 ${if (levelId != null) "<#EFDF8F>$levelId" else "<#E08A98>保留原值(未探测到层级区域)"}")
     }
 
     /** 平移 "world x y z ..." 坐标字符串的前四个坐标(用于 holoPos/respawn 随区域移动,前缀世界名同步替换) */
@@ -571,7 +571,7 @@ object CttAdminCommand {
         submitAsync {
             val rows = runCatching { ProfileManager.profileMapper.findAll { } }.getOrNull()
             if (rows == null) {
-                submit { player.sendComponent("<red>读取档案数据失败") }
+                submit { player.sendComponent("<#E08A98>读取档案数据失败") }
                 return@submitAsync
             }
             var migrated = 0
@@ -586,17 +586,17 @@ object CttAdminCommand {
                         devLog("[CttAdmin] migrateids 更新失败 ${row.uuid}/${row.profileName}: ${it.message}")
                     }
                     migrated++
-                    details += "<gray>- <yellow>${row.uuid} <gray>/ <yellow>${row.profileName}<gray>: 基地 <yellow>${oldBase ?: "无"} → ${data.baseSave ?: "无"}<gray>, 普通 <yellow>${oldNormal ?: "无"} → ${data.normalSave ?: "无"}"
+                    details += "<#A9B4C3>- <#EFDF8F>${row.uuid} <#A9B4C3>/ <#EFDF8F>${row.profileName}<#A9B4C3>: 基地 <#EFDF8F>${oldBase ?: "无"} → ${data.baseSave ?: "无"}<#A9B4C3>, 普通 <#EFDF8F>${oldNormal ?: "无"} → ${data.normalSave ?: "无"}"
                 }
             }
             submit {
-                val lines = mutableListOf("<gold>■ <yellow>存档点 ID 迁移报告:")
+                val lines = mutableListOf("<#DFBD7C>■ <#EFDF8F>存档点 ID 迁移报告:")
                 if (migrated == 0) {
-                    lines += "<gray>没有需要迁移的档案(所有存档点 ID 均已有效)"
+                    lines += "<#A9B4C3>没有需要迁移的档案(所有存档点 ID 均已有效)"
                 } else {
-                    lines += "<green>共迁移 <yellow>$migrated<green> 个档案:"
+                    lines += "<#8FD4A6>共迁移 <#EFDF8F>$migrated<#8FD4A6> 个档案:"
                     lines += details.take(30)
-                    if (details.size > 30) lines += "<gray>... 其余 ${details.size - 30} 个省略"
+                    if (details.size > 30) lines += "<#A9B4C3>... 其余 ${details.size - 30} 个省略"
                 }
                 player.sendComponent(lines.joinToString("\n"))
             }
@@ -612,12 +612,12 @@ object CttAdminCommand {
      */
     private fun expRefill(sender: CommandSender) {
         if (levels["main"] == null) {
-            sender.sendComponent("<red>未找到 main 等级配置,无法补偿")
+            sender.sendComponent("<#E08A98>未找到 main 等级配置,无法补偿")
             return
         }
         val rows = runCatching { ProfileManager.profileMapper.findAll { "archived" eq 0 } }.getOrNull()
         if (rows == null) {
-            sender.sendComponent("<red>读取档案数据失败")
+            sender.sendComponent("<#E08A98>读取档案数据失败")
             return
         }
 
@@ -651,15 +651,15 @@ object CttAdminCommand {
             compensated++
             totalQuests += questCount
             totalExp += bonus
-            details += "<gray>- <yellow>${row.uuid} <gray>/ <yellow>${row.profileName}<gray>: <yellow>$questCount <gray>个任务 → +<green>$bonus <gray>main经验"
+            details += "<#A9B4C3>- <#EFDF8F>${row.uuid} <#A9B4C3>/ <#EFDF8F>${row.profileName}<#A9B4C3>: <#EFDF8F>$questCount <#A9B4C3>个任务 → +<#8FD4A6>$bonus <#A9B4C3>main经验"
         }
 
-        val summary = mutableListOf("<gold>■ <yellow>任务经验补偿报告: <green>$compensated <gray>个档案, <yellow>$totalQuests <gray>个任务, 共补偿 <green>$totalExp <gray>main经验")
+        val summary = mutableListOf("<#DFBD7C>■ <#EFDF8F>任务经验补偿报告: <#8FD4A6>$compensated <#A9B4C3>个档案, <#EFDF8F>$totalQuests <#A9B4C3>个任务, 共补偿 <#8FD4A6>$totalExp <#A9B4C3>main经验")
         if (details.isEmpty()) {
-            summary += "<gray>没有档案包含已完成任务(quest.complete.*)"
+            summary += "<#A9B4C3>没有档案包含已完成任务(quest.complete.*)"
         } else {
             summary += details.take(30)
-            if (details.size > 30) summary += "<gray>... 其余 ${details.size - 30} 个省略"
+            if (details.size > 30) summary += "<#A9B4C3>... 其余 ${details.size - 30} 个省略"
         }
         submit {
             if (sender is Player && !sender.isOnline) return@submit

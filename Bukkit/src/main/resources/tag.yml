@@ -1,5 +1,5 @@
 WAN:
-  major: "<gray>流浪者"
+  major: "<#A9B4C3>流浪者"
   name: "流浪者"
   faction: WANDERER
   enable: true
@@ -15,7 +15,7 @@ WAN:
 
 
 MEG:
-  major: "<gold>探险者总署"
+  major: "<#DFBD7C>探险者总署"
   name: "探险者总署"
   faction: WANDERER
   enable: true
@@ -43,8 +43,8 @@ MEG:
 
 BNTG:
   bind: 2
-  major: "<gradient:#33FF99:#22AA66>不结盟贸易集团"
-  name: "<#9999BB>职员"
+  major: "<gradient:#94dbb8:#5cad85>不结盟贸易集团"
+  name: "<#c3c3ce>职员"
   model: "kangelitem:itm/bookmark/bntg"
   faction: BNTG
   enable: true
@@ -62,8 +62,8 @@ BNTG:
   spawnpoint: Chapter1 0 100 0
 UEC:
   bind: 3
-  major: "<gradient:#FF3300:#CC0000>无羁探险者联盟"
-  name: "<#9999BB>职员"
+  major: "<gradient:#cf816e:#c24747>无羁探险者联盟"
+  name: "<#c3c3ce>职员"
   model: "kangelitem:itm/bookmark/uec"
   faction: UEC
   enable: false
@@ -79,13 +79,13 @@ UEC:
     解锁部分专属任务。但在某些任务完成之前，您在后续探索时可能受到阻碍。
   indev:
     info1: "开发中!"
-    info2: "将在 <#ff6600>团结公会</#ff6600> 版本更新后可用..."
+    info2: "将在 <#cf946e>团结公会</#cf946e> 版本更新后可用..."
   agent: {}
   spawnpoint: Chapter1 0 100 0
 UEC_SEWERS:
   bind: P
-  major: "<gradient:#FF3300:#CC0000>无羁探险者联盟"
-  name: "<#9999BB>水道维护者"
+  major: "<gradient:#cf816e:#c24747>无羁探险者联盟"
+  name: "<#c3c3ce>水道维护者"
   model: "kangelitem:itm/bookmark/uec_sewers"
   faction: UEC_SEWERS
   enable: false
@@ -102,6 +102,6 @@ UEC_SEWERS:
     解锁部分专属任务。但在某些任务完成之前，您在后续探索时可能受到阻碍。
   indev:
     info1: "开发中!"
-    info2: "将在 <#ff6600>团结公会</#ff6600> 版本更新后可用..."
+    info2: "将在 <#cf946e>团结公会</#cf946e> 版本更新后可用..."
   agent: {}
   spawnpoint: Chapter1 0 100 0

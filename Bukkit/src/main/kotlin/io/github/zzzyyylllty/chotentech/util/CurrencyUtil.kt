@@ -1,7 +1,7 @@
 package io.github.zzzyyylllty.chotentech.util
 
 import io.github.zzzyyylllty.chotentech.function.CurrencyManager
-import io.github.zzzyyylllty.chotentech.kether.evalKether
+import io.github.zzzyyylllty.chotentech.function.kether.evalKether
 import me.clip.placeholderapi.PlaceholderAPI
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player

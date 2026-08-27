@@ -117,7 +117,7 @@ object SteamPipeManager {
                 )
             } catch (_: Exception) { /* skip */ }
         }
-        devLog("<gray>[SteamPipe] 加载了 ${levelConfigs.size} 个管道等级配置: ${levelConfigs.keys}</gray>")
+        devLog("<#A9B4C3>[SteamPipe] 加载了 ${levelConfigs.size} 个管道等级配置: ${levelConfigs.keys}</#A9B4C3>")
     }
 
     private fun parseRange(str: String?): IntRange {
@@ -136,7 +136,7 @@ object SteamPipeManager {
     fun startTask() {
         if (taskRunning || !pluginEnabled) return
         taskRunning = true
-        devLog("<gray>[SteamPipe] 启动 tick 任务</gray>")
+        devLog("<#A9B4C3>[SteamPipe] 启动 tick 任务</#A9B4C3>")
         tickTask = submit(period = TICK_INTERVAL.toLong(), delay = 40L) {
             tick()
         }
@@ -149,14 +149,14 @@ object SteamPipeManager {
         val unitCount = activeUnits.size
         activeUnits.clear()
         playerHits.clear()
-        devLog("<gray>[SteamPipe] 停止任务，清理 $unitCount 个活跃管道</gray>")
+        devLog("<#A9B4C3>[SteamPipe] 停止任务，清理 $unitCount 个活跃管道</#A9B4C3>")
     }
 
     fun cleanup() {
         pluginEnabled = false
         stopTask()
         levelConfigs.clear()
-        devLog("<gray>[SteamPipe] 完全清理</gray>")
+        devLog("<#A9B4C3>[SteamPipe] 完全清理</#A9B4C3>")
     }
 
     // ==================== Tick (Main Thread) ====================
@@ -178,7 +178,7 @@ object SteamPipeManager {
         for ((levelKey, config) in levelConfigs) {
             val players = Bukkit.getOnlinePlayers().filter { isPlayerInLevel(it, levelKey) }
             if (players.isEmpty()) {
-                devLog("<gray>[SteamPipe] 扫描 $levelKey: 没有玩家在该区域</gray>")
+                devLog("<#A9B4C3>[SteamPipe] 扫描 $levelKey: 没有玩家在该区域</#A9B4C3>")
                 continue
             }
 
@@ -187,7 +187,7 @@ object SteamPipeManager {
 
                 val natives = findNativeUnits(player, config)
                 if (natives.isEmpty()) {
-                    devLog("<gray>[SteamPipe] 扫描 $levelKey: ${player.name} 附近未找到管道方块</gray>")
+                    devLog("<#A9B4C3>[SteamPipe] 扫描 $levelKey: ${player.name} 附近未找到管道方块</#A9B4C3>")
                 }
                 for (native in natives) {
                     if (activeUnits.containsKey(native.pos)) continue
@@ -245,7 +245,7 @@ object SteamPipeManager {
                     isNative = true,
                     levelConfig = config
                 ).apply { activatedFaces.addAll(detectExposedFaces(world, foundPos)) })
-                devLog("<gray>[SteamPipe] 发现原生管道 </gray><white>${world.name} ${foundPos}</white>")
+                devLog("<#A9B4C3>[SteamPipe] 发现原生管道 </#A9B4C3><#F2F5FA>${world.name} ${foundPos}</#F2F5FA>")
             }
         }
         return results
@@ -287,7 +287,7 @@ object SteamPipeManager {
                 stage = SteamPipeStage.WARNING
             }
             activeUnits[epos] = unit
-            devLog("<gray>[SteamPipe] 扩展管道 </gray><white>${world.name} ${epos}</white>")
+            devLog("<#A9B4C3>[SteamPipe] 扩展管道 </#A9B4C3><#F2F5FA>${world.name} ${epos}</#F2F5FA>")
         }
     }
 
@@ -332,21 +332,21 @@ object SteamPipeManager {
             when (unit.stage) {
                 SteamPipeStage.WARNING -> {
                     if (unit.stageTicks >= unit.warningTotalTicks) {
-                        devLog("<gold>[SteamPipe] ${unit.world.name} ${unit.pos} ⚡ WARNING → ERUPTION</gold>")
+                        devLog("<#DFBD7C>[SteamPipe] ${unit.world.name} ${unit.pos} ⚡ WARNING → ERUPTION</#DFBD7C>")
                         unit.stage = SteamPipeStage.ERUPTION
                         unit.stageTicks = 0
                     }
                 }
                 SteamPipeStage.ERUPTION -> {
                     if (unit.stageTicks >= unit.eruptionTotalTicks) {
-                        devLog("<yellow>[SteamPipe] ${unit.world.name} ${unit.pos} ⚡ ERUPTION → END</yellow>")
+                        devLog("<#EFDF8F>[SteamPipe] ${unit.world.name} ${unit.pos} ⚡ ERUPTION → END</#EFDF8F>")
                         unit.stage = SteamPipeStage.END
                         unit.stageTicks = 0
                     }
                 }
                 SteamPipeStage.END -> {
                     if (unit.stageTicks >= unit.endTotalTicks) {
-                        devLog("<gray>[SteamPipe] ${unit.world.name} ${unit.pos} 管道消散</gray>")
+                        devLog("<#A9B4C3>[SteamPipe] ${unit.world.name} ${unit.pos} 管道消散</#A9B4C3>")
                         iter.remove()
                     }
                 }
@@ -470,24 +470,24 @@ object SteamPipeManager {
             if (currentHp < minHp) return
             if (currentHp - damage < minHp) {
                 player.health = minHp
-                devLog("<red>[SteamPipe] ${player.name} 首次命中(保底) ${currentHp}→$minHp HP</red>")
+                devLog("<#E08A98>[SteamPipe] ${player.name} 首次命中(保底) ${currentHp}→$minHp HP</#E08A98>")
             } else {
                 player.damage(damage)
-                devLog("<red>[SteamPipe] ${player.name} 首次命中 </red><white>${damage}伤害 </white><gray>(${currentHp}→${player.health} HP)</gray>")
+                devLog("<#E08A98>[SteamPipe] ${player.name} 首次命中 </#E08A98><#F2F5FA>${damage}伤害 </#F2F5FA><#A9B4C3>(${currentHp}→${player.health} HP)</#A9B4C3>")
             }
             playerHits[player.uniqueId] = 1
         } else {
             // Second+ hit — can be lethal
             val damage = if (unit.isNative) config.secondHitDamageNative else config.secondHitDamage
             player.damage(damage)
-            devLog("<red>[SteamPipe] ${player.name} 第${hits+1}次命中 </red><white>${damage}伤害 </white><gray>(${player.health} HP 剩余)</gray>")
+            devLog("<#E08A98>[SteamPipe] ${player.name} 第${hits+1}次命中 </#E08A98><#F2F5FA>${damage}伤害 </#F2F5FA><#A9B4C3>(${player.health} HP 剩余)</#A9B4C3>")
         }
     }
 
     private fun applyEntityDamage(entity: LivingEntity, config: SteamPipeLevelConfig) {
         val damage = config.secondHitDamage * ENTITY_DAMAGE_RATIO
         entity.damage(damage)
-        devLog("<red>[SteamPipe] 实体 ${entity.name} 受到 $damage 伤害</red>")
+        devLog("<#E08A98>[SteamPipe] 实体 ${entity.name} 受到 $damage 伤害</#E08A98>")
     }
 
     // ==================== Hit Reset (on death/respawn) ====================

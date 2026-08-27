@@ -1,5 +1,5 @@
 BlackSmith:
-  name: "<gold>铁匠"
+  name: "<#DFBD7C>铁匠"
   queue: 8
   extra-queue:
     affection_1:

@@ -135,17 +135,17 @@ object ShopManager {
 
     private fun parseGuiItems(sec: ConfigurationSection): GuiItemsConfig {
         return GuiItemsConfig(
-            modeBuy = parseDisplayItem(sec.getConfigurationSection("mode-buy"), "<white><b>购买模式"),
-            modeSell = parseDisplayItem(sec.getConfigurationSection("mode-sell"), "<white><b>出售模式"),
+            modeBuy = parseDisplayItem(sec.getConfigurationSection("mode-buy"), "<#F2F5FA><b>购买模式"),
+            modeSell = parseDisplayItem(sec.getConfigurationSection("mode-sell"), "<#F2F5FA><b>出售模式"),
             previous = PageButton(
-                have = parseDisplayItem(sec.getConfigurationSection("previous.have"), "<white><b>上一页"),
-                not = parseDisplayItem(sec.getConfigurationSection("previous.not"), "<white><b>已是第一页")
+                have = parseDisplayItem(sec.getConfigurationSection("previous.have"), "<#F2F5FA><b>上一页"),
+                not = parseDisplayItem(sec.getConfigurationSection("previous.not"), "<#F2F5FA><b>已是第一页")
             ),
             next = PageButton(
-                have = parseDisplayItem(sec.getConfigurationSection("next.have"), "<white><b>下一页"),
-                not = parseDisplayItem(sec.getConfigurationSection("next.not"), "<white><b>已是最后一页")
+                have = parseDisplayItem(sec.getConfigurationSection("next.have"), "<#F2F5FA><b>下一页"),
+                not = parseDisplayItem(sec.getConfigurationSection("next.not"), "<#F2F5FA><b>已是最后一页")
             ),
-            knowledge = parseDisplayItem(sec.getConfigurationSection("knowledge"), "<white><b>信息"),
+            knowledge = parseDisplayItem(sec.getConfigurationSection("knowledge"), "<#F2F5FA><b>信息"),
             confirmBuy = parseConfirmConfig(sec.getConfigurationSection("confirm-buy"), "购买"),
             confirmSell = parseConfirmConfig(sec.getConfigurationSection("confirm-sell"), "出售")
         )
@@ -163,13 +163,13 @@ object ShopManager {
 
     private fun parseConfirmConfig(sec: ConfigurationSection?, action: String): ConfirmConfig {
         if (sec == null) return ConfirmConfig(
-            have = DisplayItem("<white><b>确认$action"),
-            not = DisplayItem("<white><b>确认$action", "您还没有选定任何物品。")
+            have = DisplayItem("<#F2F5FA><b>确认$action"),
+            not = DisplayItem("<#F2F5FA><b>确认$action", "您还没有选定任何物品。")
         )
         return ConfirmConfig(
-            have = parseDisplayItem(sec.getConfigurationSection("have"), "<white><b>确认$action"),
-            notEnough = sec.getConfigurationSection("not-enough")?.let { parseDisplayItem(it, "<white><b>确认$action") },
-            not = parseDisplayItem(sec.getConfigurationSection("not"), "<white><b>确认$action", "您还没有选定任何物品。")
+            have = parseDisplayItem(sec.getConfigurationSection("have"), "<#F2F5FA><b>确认$action"),
+            notEnough = sec.getConfigurationSection("not-enough")?.let { parseDisplayItem(it, "<#F2F5FA><b>确认$action") },
+            not = parseDisplayItem(sec.getConfigurationSection("not"), "<#F2F5FA><b>确认$action", "您还没有选定任何物品。")
         )
     }
 

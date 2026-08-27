@@ -924,7 +924,7 @@ object ProfileManager {
         // 教学传送后立即按新位置检测层级(与 switchProfile 内部逻辑一致)
         io.github.zzzyyylllty.chotentech.data.ChoTenDataHelper(player).updateLevel()
         if (getSharedData(player.uniqueId.toString()).isCompletedTutorial) {
-            player.sendComponent("<yellow>你已完成教学,接取教程任务后可使用 <aqua>/skiptutorial <yellow>跳过教学直接开始游戏")
+            player.sendComponent("<#EFDF8F>你已完成教学,接取教程任务后可使用 <#84D1CB>/skiptutorial <#EFDF8F>跳过教学直接开始游戏")
         }
     }
 

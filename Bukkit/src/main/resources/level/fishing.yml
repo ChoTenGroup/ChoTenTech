@@ -1,7 +1,7 @@
 fishing:
   display:
     raw: "Fishing"
-    default: "<aqua>钓鱼</aqua>"
+    default: "<#84D1CB>钓鱼</#84D1CB>"
     legacy: "&b钓鱼"
   level:
     min: 0
@@ -9,7 +9,7 @@ fishing:
     max: 100
     display:
       0:
-        default: "<gray>Lv.%level%</gray>"
+        default: "<#A9B4C3>Lv.%level%</#A9B4C3>"
     exp:
       0:
         type: calculator

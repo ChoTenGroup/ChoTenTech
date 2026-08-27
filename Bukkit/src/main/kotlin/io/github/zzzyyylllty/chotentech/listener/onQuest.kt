@@ -48,7 +48,7 @@ fun onQuestAcceptPre(e: QuestEvents.Accept.Pre) {
             quest.meta<Meta<String>>("name")?.source?.equals("Tutorial", ignoreCase = true) == true
         if (isTutorial) {
             e.isCancelled = true
-            e.reason = "<red>档案未载入,暂时无法接受任务"
+            e.reason = "<#E08A98>档案未载入,暂时无法接受任务"
         }
     }
 }
@@ -61,7 +61,7 @@ fun onQuestAccept(e: QuestEvents.Accept.Post) {
     val quest = e.quest
     player.playSound(player, Sound.BLOCK_NOTE_BLOCK_BANJO, SoundCategory.MASTER, 1f, 0.5f)
     val name = quest.template.meta<MetaName>("name")?.displayName?.legacyToMiniMessage() ?: "未知"
-    sendQuestNotification(player, "<gradient:#ffaa66:#cc8844>任务已接受", "<white>$name")
+    sendQuestNotification(player, "<gradient:#e8cfba:#c0a78d>任务已接受", "<#F2F5FA>$name")
     if (ProfileManager.getSharedData(player.uniqueId.toString()).settings.getBoolean("autoTrackQuest")) {
         profile.trackQuest = quest.template
     }
@@ -76,7 +76,7 @@ fun onQuestComplete(e: QuestEvents.Complete.Post) {
     if (!isProfilePending(player)) {
         player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.MASTER, 1f, 0.8f)
         val name = quest.template.meta<MetaName>("name")?.displayName?.legacyToMiniMessage() ?: "未知"
-        sendQuestNotification(player, "<gradient:#99ffff:#66ccff>任务已完成", "<white>$name")
+        sendQuestNotification(player, "<gradient:#c6ecec:#bad9e8>任务已完成", "<#F2F5FA>$name")
     }
 
     // 完成教学任务后标记共享数据(任一 profile 完成即全局生效)
@@ -97,7 +97,7 @@ fun onQuestFail(e: QuestEvents.Fail.Post) {
     val quest = e.quest
     player.playSound(player, Sound.BLOCK_LAVA_EXTINGUISH, SoundCategory.MASTER, 1f, 0.5f)
     val name = quest.template.meta<MetaName>("name")?.displayName?.legacyToMiniMessage() ?: "未知"
-    sendQuestNotification(player, "<gradient:#ff6600:#cc2200>任务已失败", "<white>$name")
+    sendQuestNotification(player, "<gradient:#cf946e:#c25c47>任务已失败", "<#F2F5FA>$name")
 }
 
 
@@ -110,7 +110,7 @@ fun onTaskComplete(e: ObjectiveEvents.Complete.Post) {
     player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, SoundCategory.MASTER, 1f, 1.2f)
     val questName = quest.template.meta<MetaName>("name")?.displayName?.legacyToMiniMessage() ?: "Unknown"
     val taskName = task.meta<MetaName>("name")?.displayName?.legacyToMiniMessage() ?: "Unknown"
-    val msg = "<gray>任务 <white>$questName<reset> <gray>的 <white>$taskName<reset><gray> 目标已完成。"
+    val msg = "<#A9B4C3>任务 <#F2F5FA>$questName<reset> <#A9B4C3>的 <#F2F5FA>$taskName<reset><#A9B4C3> 目标已完成。"
     when (questStatusMode(player)) {
         "hide" -> {}
         "sidebar", "show" -> NotificationQueue.enqueue(player.uniqueId, msg)

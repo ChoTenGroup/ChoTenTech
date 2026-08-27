@@ -4,7 +4,6 @@ import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
 import io.github.zzzyyylllty.chotentech.function.player.getPlayerLevel
 import io.github.zzzyyylllty.chotentech.player.sendComponent
 import io.github.zzzyyylllty.chotentech.util.minimessage.mmUtil
-import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.GameMode
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
@@ -28,9 +27,9 @@ fun onPlayerAttack(event: EntityDamageByEntityEvent) {
             if (!attackerPvp || !victimPvp) {
                 event.isCancelled = true
                 if (!attackerPvp) {
-                    player.sendComponent("<red>你处于非军事区，需要开启PVP模式才能攻击玩家。使用 <yellow>/pvp <red>开启")
+                    player.sendComponent("<#E08A98>你处于非军事区，需要开启PVP模式才能攻击玩家。使用 <#EFDF8F>/pvp <#E08A98>开启")
                 } else {
-                    player.sendComponent("<red>对方未开启PVP模式，无法攻击。")
+                    player.sendComponent("<#E08A98>对方未开启PVP模式，无法攻击。")
                 }
                 return
             }
@@ -55,8 +54,8 @@ fun onPlayerAttack(event: EntityDamageByEntityEvent) {
     val color = healthColor(ratio)
 
     player.sendActionBar(
-        MiniMessage.miniMessage().deserialize(
-            "<white>$targetName <reset><$color>${currentHealth.toInt()}<dark_gray>/${maxHealth.toInt()} <gray>(<yellow>-${"%.1f".format(damage)}</yellow>)</gray>"
+        mmUtil.deserialize(
+            "<#F2F5FA>$targetName <reset><$color>${currentHealth.toInt()}<#6E7A8C>/${maxHealth.toInt()} <#A9B4C3>(<#EFDF8F>-${"%.1f".format(damage)}</#EFDF8F>)</#A9B4C3>"
         )
     )
 }

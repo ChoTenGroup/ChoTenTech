@@ -4,7 +4,7 @@ import ink.ptms.chemdah.core.PlayerProfile
 import ink.ptms.chemdah.core.quest.QuestLoader.register
 import ink.ptms.chemdah.core.quest.Task
 import ink.ptms.chemdah.core.quest.objective.ObjectiveCountableI
-import io.github.zzzyyylllty.chotentech.quetiapine.event.QuetiapineSetLevelEvent
+import io.github.zzzyyylllty.chotentech.event.QuetiapineSetLevelEvent
 import io.github.zzzyyylllty.sertraline.Sertraline
 import io.github.zzzyyylllty.sertraline.api.SertralineAPIImpl
 import taboolib.common.LifeCycle

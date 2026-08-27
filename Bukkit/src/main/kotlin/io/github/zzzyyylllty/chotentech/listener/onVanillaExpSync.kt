@@ -1,8 +1,8 @@
 package io.github.zzzyyylllty.chotentech.listener
 
 import io.github.zzzyyylllty.chotentech.ChoTenTech.overrideVanilla
-import io.github.zzzyyylllty.chotentech.quetiapine.data.PlayerDataManager
-import io.github.zzzyyylllty.chotentech.quetiapine.event.*
+import io.github.zzzyyylllty.chotentech.data.PlayerDataManager
+import io.github.zzzyyylllty.chotentech.event.*
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerChangedWorldEvent
 import org.bukkit.event.player.PlayerJoinEvent

@@ -9,7 +9,7 @@ import ink.ptms.chemdah.core.quest.selector.InferItem.Companion.toInferItem
 import io.github.zzzyyylllty.chotentech.event.SubmitItemEvent
 import io.github.zzzyyylllty.chotentech.player.sendComponent
 import io.github.zzzyyylllty.chotentech.util.devLog
-import io.github.zzzyyylllty.chotentech.kether.evalKetherBoolean
+import io.github.zzzyyylllty.chotentech.function.kether.evalKetherBoolean
 import org.bukkit.inventory.ItemStack
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake

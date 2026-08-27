@@ -4,14 +4,14 @@ import io.github.zzzyyylllty.chotentech.ChoTenTech.blockRegenMap
 import io.github.zzzyyylllty.chotentech.ChoTenTech.regenTemplates
 import io.github.zzzyyylllty.chotentech.ChoTenTech.regenTemplatesByBlock
 import io.github.zzzyyylllty.chotentech.manager.AttributeManager
-import io.github.zzzyyylllty.chotentech.quetiapine.data.MiningPowerManager
-import io.github.zzzyyylllty.chotentech.quetiapine.data.Regen
-import io.github.zzzyyylllty.chotentech.quetiapine.data.RegenBlock
-import io.github.zzzyyylllty.chotentech.quetiapine.data.RegenTemplate
-import io.github.zzzyyylllty.chotentech.quetiapine.data.load.PickaxeLevelManager
-import io.github.zzzyyylllty.chotentech.quetiapine.util.DependencyHelper
-import io.github.zzzyyylllty.chotentech.quetiapine.util.devLog
-import io.github.zzzyyylllty.chotentech.quetiapine.util.toComponent
+import io.github.zzzyyylllty.chotentech.data.MiningPowerManager
+import io.github.zzzyyylllty.chotentech.data.Regen
+import io.github.zzzyyylllty.chotentech.data.RegenBlock
+import io.github.zzzyyylllty.chotentech.data.RegenTemplate
+import io.github.zzzyyylllty.chotentech.data.load.PickaxeLevelManager
+import io.github.zzzyyylllty.chotentech.util.DependencyHelper
+import io.github.zzzyyylllty.chotentech.util.devLog
+import io.github.zzzyyylllty.chotentech.util.toComponent
 import net.momirealms.craftengine.bukkit.api.CraftEngineBlocks
 import net.momirealms.craftengine.core.util.Key
 import org.bukkit.GameMode
@@ -91,7 +91,7 @@ fun onRegenBlockBreak(e: BlockBreakEvent) {
         val heldLevel = PickaxeLevelManager.getHeldItemLevel(player)
         if (heldLevel < template.minLevel) {
             template.agents?.runAgent("onMineDeny", mapOf("event" to e, "block" to e.block), player)
-            player.sendMessage("<red>需要 ${PickaxeLevelManager.getLevelDisplay(template.minLevel)}<red> 及以上的镐来挖掘这个方块<white>".toComponent())
+            player.sendMessage("<#E08A98>需要 ${PickaxeLevelManager.getLevelDisplay(template.minLevel)}<#E08A98> 及以上的镐来挖掘这个方块<#F2F5FA>".toComponent())
             devLog("Pickaxe level too low: $heldLevel < ${template.minLevel}")
             e.isCancelled = true
             return
@@ -128,7 +128,7 @@ fun onRegenBlockBreak(e: BlockBreakEvent) {
         val pct = (progress * 100).toInt().coerceIn(0, 100)
         val bar = buildProgressBar(progress)
         player.sendActionBar(
-            "<gold>挖掘进度: $bar <white>$pct% <gray>(<white>${"%.1f".format(total)}<gray>/<white>$strength<gray>)".toComponent()
+            "<#DFBD7C>挖掘进度: $bar <#F2F5FA>$pct% <#A9B4C3>(<#F2F5FA>${"%.1f".format(total)}<#A9B4C3>/<#F2F5FA>$strength<#A9B4C3>)".toComponent()
         )
 
         // 伤害足够 → 手动破坏方块
@@ -178,7 +178,7 @@ private fun buildProgressBar(progress: Double): String {
     val totalBars = 20
     val filled = (progress * totalBars).toInt().coerceIn(0, totalBars)
     val empty = totalBars - filled
-    return "<green>${"▌".repeat(filled)}<gray>${"▌".repeat(empty)}"
+    return "<#8FD4A6>${"▌".repeat(filled)}<#A9B4C3>${"▌".repeat(empty)}"
 }
 
 fun getBlockID(block: Block): RegenBlock {

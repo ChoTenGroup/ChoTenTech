@@ -1,7 +1,7 @@
 package io.github.zzzyyylllty.chotentech.util
 
+import io.github.zzzyyylllty.chotentech.util.minimessage.mmUtil
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 import taboolib.common.platform.function.submitAsync
 import java.util.UUID
@@ -12,7 +12,7 @@ object NotificationQueue {
 
     private val messageQueues = ConcurrentHashMap<UUID, ConcurrentLinkedQueue<Component>>()
     private val processingPlayers = ConcurrentHashMap<UUID, Boolean>()
-    private val mm = MiniMessage.miniMessage()
+    private val mm = mmUtil
 
     /** 入队一条 MiniMessage 格式的消息 */
     fun enqueue(uuid: UUID, message: String) {

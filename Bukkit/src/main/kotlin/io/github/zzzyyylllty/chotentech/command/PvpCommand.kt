@@ -29,9 +29,9 @@ object PvpCommand {
             shared.settings.values["pvpEnabled"] = (!shared.settings.getBoolean("pvpEnabled")).toString()
             sender.getData()?.pvpEnabled = shared.settings.getBoolean("pvpEnabled")
             if (shared.settings.getBoolean("pvpEnabled")) {
-                sender.sendComponent("<red>⚔ PVP模式已<dark_red>开启</dark_red>，你现在可以与其他开启PVP的玩家战斗")
+                sender.sendComponent("<#E08A98>⚔ PVP模式已<#B46572>开启</#B46572>，你现在可以与其他开启PVP的玩家战斗")
             } else {
-                sender.sendComponent("<green>☮ PVP模式已<dark_green>关闭</dark_green>，你将无法攻击其他玩家")
+                sender.sendComponent("<#8FD4A6>☮ PVP模式已<#6EA982>关闭</#6EA982>，你将无法攻击其他玩家")
             }
             ProfileManager.saveSharedData(uuid)
         }
@@ -44,7 +44,7 @@ object PvpCommand {
             val shared = ProfileManager.getSharedData(uuid)
             shared.settings.values["pvpEnabled"] = "true"
             sender.getData()?.pvpEnabled = true
-            sender.sendComponent("<red>⚔ PVP模式已<dark_red>开启")
+            sender.sendComponent("<#E08A98>⚔ PVP模式已<#B46572>开启")
             ProfileManager.saveSharedData(uuid)
         }
     }
@@ -56,7 +56,7 @@ object PvpCommand {
             val shared = ProfileManager.getSharedData(uuid)
             shared.settings.values["pvpEnabled"] = "false"
             sender.getData()?.pvpEnabled = false
-            sender.sendComponent("<green>☮ PVP模式已<dark_green>关闭")
+            sender.sendComponent("<#8FD4A6>☮ PVP模式已<#6EA982>关闭")
             ProfileManager.saveSharedData(uuid)
         }
     }

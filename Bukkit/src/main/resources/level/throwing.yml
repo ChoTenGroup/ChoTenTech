@@ -1,7 +1,7 @@
 throwing:
   display:
     raw: "Throwing"
-    default: "<light_purple>投掷</light_purple>"
+    default: "<#CDAEEF>投掷</#CDAEEF>"
     legacy: "&d投掷"
   level:
     min: 0
@@ -9,7 +9,7 @@ throwing:
     max: 100
     display:
       0:
-        default: "<gray>Lv.%level%</gray>"
+        default: "<#A9B4C3>Lv.%level%</#A9B4C3>"
     exp:
       0:
         type: calculator

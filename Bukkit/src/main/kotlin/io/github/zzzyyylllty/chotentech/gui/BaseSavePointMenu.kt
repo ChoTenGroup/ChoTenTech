@@ -22,37 +22,37 @@ class BaseSavePointMenu(private val base: Base) {
     fun open(player: Player) {
         val data = player.getData() ?: return
 
-        player.openMenu<Chest>(mmJsonUtil.serialize("<gray>⚐ ${base.name} 存档点".toComponent())) {
+        player.openMenu<Chest>(mmJsonUtil.serialize("<#A9B4C3>⚐ ${base.name} 存档点".toComponent())) {
             rows(1)
 
             map("ABCDE")
 
             // 存档基地
-            set('A', guiItem(XMaterial.WRITABLE_BOOK, "<green><b>📂 存档基地", listOf(
+            set('A', guiItem(XMaterial.WRITABLE_BOOK, "<#8FD4A6><b>📂 存档基地", listOf(
                 loreSection("说明"),
-                "<!i><gray>将当前基地添加到你的已存档列表",
-                "<!i><gray>已存档的基地将保存在你的档案中",
+                "<!i><#A9B4C3>将当前基地添加到你的已存档列表",
+                "<!i><#A9B4C3>已存档的基地将保存在你的档案中",
                 loreSpace(),
-                if (data.savedBases.contains(base.idef)) loreInfo("状态", "<green>✓ 已存档") else "<!i> <yellow>点击 <green>存档"
+                if (data.savedBases.contains(base.idef)) loreInfo("状态", "<#8FD4A6>✓ 已存档") else "<!i> <#EFDF8F>点击 <#8FD4A6>存档"
             ))) {
                 if (data.savedBases.contains(base.idef)) {
-                    player.sendActionBar("<yellow>该基地已存档".toComponent())
+                    player.sendActionBar("<#EFDF8F>该基地已存档".toComponent())
                     player.playSound(player.location, Sound.ENTITY_VILLAGER_NO, 1f, 1f)
                     return@set
                 }
                 data.savedBases.add(base.idef)
-                player.sendMessage("<green>✅ 已存档基地: <yellow>${base.name}")
+                player.sendMessage("<#8FD4A6>✅ 已存档基地: <#EFDF8F>${base.name}")
                 player.playSound(player.location, Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 1.7f)
                 player.closeInventory()
             }
 
             // 保存出生点
-            set('C', guiItem(XMaterial.COMPASS, "<aqua><b>📍 保存出生点", listOf(
+            set('C', guiItem(XMaterial.COMPASS, "<#84D1CB><b>📍 保存出生点", listOf(
                 loreSection("说明"),
-                "<!i><gray>将基地的出生点设为你的重生点",
-                "<!i><gray>死亡后将在此处复活",
+                "<!i><#A9B4C3>将基地的出生点设为你的重生点",
+                "<!i><#A9B4C3>死亡后将在此处复活",
                 loreSpace(),
-                "<!i> <yellow>点击 <green>保存"
+                "<!i> <#EFDF8F>点击 <#8FD4A6>保存"
             ))) {
                 data.baseSave = null // clear base save, let player set it via save point system
                 data.respawnPoint = RespawnPoint(
@@ -63,31 +63,31 @@ class BaseSavePointMenu(private val base: Base) {
                     yaw = base.spawn.yaw,
                     pitch = base.spawn.pitch
                 )
-                player.sendMessage("<green>✅ 重生点已设置为 <yellow>${base.name}")
+                player.sendMessage("<#8FD4A6>✅ 重生点已设置为 <#EFDF8F>${base.name}")
                 player.playSound(player.location, Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 1.7f)
                 player.closeInventory()
             }
 
             // 设为主基地
-            set('E', guiItem(XMaterial.NETHER_STAR, "<gold><b>⭐ 设为主基地", listOf(
+            set('E', guiItem(XMaterial.NETHER_STAR, "<#DFBD7C><b>⭐ 设为主基地", listOf(
                 loreSection("说明"),
-                "<!i><gray>将当前基地设为主基地",
-                "<!i><gray>显示在称号和相关信息中",
+                "<!i><#A9B4C3>将当前基地设为主基地",
+                "<!i><#A9B4C3>显示在称号和相关信息中",
                 loreSpace(),
-                if (data.subTag == base.idef) loreInfo("状态", "<green>✓ 当前主基地") else "<!i> <yellow>点击 <green>设置"
+                if (data.subTag == base.idef) loreInfo("状态", "<#8FD4A6>✓ 当前主基地") else "<!i> <#EFDF8F>点击 <#8FD4A6>设置"
             ))) {
                 if (data.subTag == base.idef) {
-                    player.sendActionBar("<yellow>这已经是你的主基地".toComponent())
+                    player.sendActionBar("<#EFDF8F>这已经是你的主基地".toComponent())
                     player.playSound(player.location, Sound.ENTITY_VILLAGER_NO, 1f, 1f)
                     return@set
                 }
                 data.mainTag = base.faction
                 data.subTag = base.idef
-                player.sendMessage("<green>✅ 已将 <yellow>${base.name} <green>设为主基地")
+                player.sendMessage("<#8FD4A6>✅ 已将 <#EFDF8F>${base.name} <#8FD4A6>设为主基地")
                 player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1f, 1.2f)
                 player.showTitle(Title.title(
-                    "<gold>⭐ ${base.name}".toComponent(),
-                    "<gray>已设为主基地".toComponent(),
+                    "<#DFBD7C>⭐ ${base.name}".toComponent(),
+                    "<#A9B4C3>已设为主基地".toComponent(),
                     Title.Times.times(Duration.ofMillis(0), Duration.ofMillis(2000), Duration.ofMillis(500))
                 ))
                 player.closeInventory()

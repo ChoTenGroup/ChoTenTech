@@ -54,7 +54,7 @@ fun onPlayerSneak(event: PlayerToggleSneakEvent) {
     // 判断冷却
     if ((data.getCooldownLeftLong() ?: 0) > 0L) {
         player.playSound(player, Sound.ENTITY_VILLAGER_NO, 1F, 0.5F)
-        player.sendComponent("<gradient:red:#666600>请等待 ${round((data.getCooldownLeftLong() ?: 0)/100.0)/10} 秒冷却...")
+        player.sendComponent("<gradient:#E08A98:#7a7a29>请等待 ${round((data.getCooldownLeftLong() ?: 0)/100.0)/10} 秒冷却...")
         return
     }
     data = playerDataMap[uuid] ?: return
@@ -66,14 +66,14 @@ fun onPlayerSneak(event: PlayerToggleSneakEvent) {
             playerDataMap[uuid] = check
             data = playerDataMap[uuid] ?: return
             player.playSound(player, Sound.ENTITY_ENDER_EYE_LAUNCH, 1F, 0.5F)
-            player.sendActionBar("<green>保持在切出点内".toComponent())
+            player.sendActionBar("<#8FD4A6>保持在切出点内".toComponent())
         }
     }
 
     if (playerDataMap[uuid]?.noclipPoint == null && !foundAnyNoclipPoint) {
         data.setCooldownSec(10.0)
-        player.sendComponent("<#FF6666>此处不是切出点。")
-        player.sendActionBar("<red>此处不是切出点".toComponent())
+        player.sendComponent("<#e8baba>此处不是切出点。")
+        player.sendActionBar("<#E08A98>此处不是切出点".toComponent())
     }
 }
 

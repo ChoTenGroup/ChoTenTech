@@ -51,7 +51,7 @@ object ChoTenUICommand {
 //                val viewer = if (sender is Player) sender else target
 //                ProfileInfoGUI(target).open(viewer)
 //                if (sender != viewer) {
-//                    sender.sendComponent("<green>已为 ${target.name} 打开玩家菜单")
+//                    sender.sendComponent("<#8FD4A6>已为 ${target.name} 打开玩家菜单")
 //                }
 //            }
 //        }
@@ -112,7 +112,7 @@ object ChoTenUICommand {
                 val target = context.player("target").castSafely<Player>() ?: return@execute
                 open(target)
                 if (sender != target) {
-                    sender.sendComponent("<green>已为 <yellow>${target.name} <green>打开${title}界面")
+                    sender.sendComponent("<#8FD4A6>已为 <#EFDF8F>${target.name} <#8FD4A6>打开${title}界面")
                 }
             }
         }

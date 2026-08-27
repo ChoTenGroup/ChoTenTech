@@ -15,9 +15,9 @@ fun onChatMuteCheck(event: AsyncChatEvent) {
         if (!muteEntry.isExpired) {
             event.isCancelled = true
             val remainingStr = if (muteEntry.isPermanent) "永久" else formatRemainingMs(muteEntry.remainingMs)
-            player.sendComponent("<red>你已被禁言！剩余时间: <yellow>$remainingStr")
+            player.sendComponent("<#E08A98>你已被禁言！剩余时间: <#EFDF8F>$remainingStr")
             if (muteEntry.reason.isNotBlank()) {
-                player.sendComponent("<gray>理由: ${muteEntry.reason}")
+                player.sendComponent("<#A9B4C3>理由: ${muteEntry.reason}")
             }
         } else {
             PunishManager.deactivatePunishment(muteEntry.id)
@@ -63,7 +63,7 @@ fun onJoinExecuteOfflineWipe(event: PlayerJoinEvent) {
         val scope = entry.meta["scope"] ?: "all"
         PunishManager.clearWipedData(player, scope)
         PunishManager.deactivatePunishment(entry.id)
-        player.sendComponent("<red>你的数据已被管理员清除！范围: $scope，理由: ${entry.reason}")
+        player.sendComponent("<#E08A98>你的数据已被管理员清除！范围: $scope，理由: ${entry.reason}")
     }
 }
 
@@ -75,15 +75,15 @@ fun onJoinPunishNotify(event: PlayerJoinEvent) {
     val muteEntry = PunishManager.isMuted(uuid)
     if (muteEntry != null) {
         val remainingStr = if (muteEntry.isPermanent) "永久" else formatRemainingMs(muteEntry.remainingMs)
-        player.sendComponent("<red>你当前处于禁言状态！剩余时间: <yellow>$remainingStr")
+        player.sendComponent("<#E08A98>你当前处于禁言状态！剩余时间: <#EFDF8F>$remainingStr")
         if (muteEntry.reason.isNotBlank()) {
-            player.sendComponent("<gray>理由: ${muteEntry.reason}")
+            player.sendComponent("<#A9B4C3>理由: ${muteEntry.reason}")
         }
     }
 
     val warnCount = PunishManager.getWarnCount(uuid)
     if (warnCount > 0) {
-        player.sendComponent("<yellow>你当前有 <red>$warnCount <yellow>条警告记录")
+        player.sendComponent("<#EFDF8F>你当前有 <#E08A98>$warnCount <#EFDF8F>条警告记录")
     }
 }
 

@@ -52,15 +52,15 @@ object FriendCommand {
                 val target = context.player("target").castSafely<Player>() ?: return@execute
 
                 if (requester.uniqueId == target.uniqueId) {
-                    requester.sendMessage("<red>不能添加自己为好友".toComponent())
+                    requester.sendMessage("<#E08A98>不能添加自己为好友".toComponent())
                     return@execute
                 }
 
                 if (FriendManager.sendRequest(requester, target)) {
-                    requester.sendMessage("<green>已向 <yellow>${target.name} <green>发送好友申请".toComponent())
-                    target.sendMessage("<gold>■ <yellow>${requester.name} <white>向你发送了好友申请，输入 <yellow>/friend requests <white>处理".toComponent())
+                    requester.sendMessage("<#8FD4A6>已向 <#EFDF8F>${target.name} <#8FD4A6>发送好友申请".toComponent())
+                    target.sendMessage("<#DFBD7C>■ <#EFDF8F>${requester.name} <#F2F5FA>向你发送了好友申请，输入 <#EFDF8F>/friend requests <#F2F5FA>处理".toComponent())
                 } else {
-                    requester.sendMessage("<red>无法发送申请：对方已是好友、申请已存在或你的好友数量已达上限".toComponent())
+                    requester.sendMessage("<#E08A98>无法发送申请：对方已是好友、申请已存在或你的好友数量已达上限".toComponent())
                 }
             }
         }
@@ -72,15 +72,15 @@ object FriendCommand {
             execute<CommandSender> { sender, context, _ ->
                 val target = (sender as? Player) ?: return@execute
                 val requester = context.player("target").castSafely<Player>() ?: run {
-                    sender.sendComponent("<red>该玩家不在线")
+                    sender.sendComponent("<#E08A98>该玩家不在线")
                     return@execute
                 }
 
                 if (FriendManager.accept(target, requester.uniqueId)) {
-                    target.sendMessage("<green>已同意 <yellow>${requester.name} <green>的好友申请".toComponent())
-                    requester.sendMessage("<green>✦ <yellow>${target.name} <green>同意了你的好友申请！".toComponent())
+                    target.sendMessage("<#8FD4A6>已同意 <#EFDF8F>${requester.name} <#8FD4A6>的好友申请".toComponent())
+                    requester.sendMessage("<#8FD4A6>✦ <#EFDF8F>${target.name} <#8FD4A6>同意了你的好友申请！".toComponent())
                 } else {
-                    target.sendMessage("<red>无法添加该好友（好友数量已达上限或申请不存在）".toComponent())
+                    target.sendMessage("<#E08A98>无法添加该好友（好友数量已达上限或申请不存在）".toComponent())
                 }
             }
         }
@@ -92,15 +92,15 @@ object FriendCommand {
             execute<CommandSender> { sender, context, _ ->
                 val target = (sender as? Player) ?: return@execute
                 val requester = context.player("target").castSafely<Player>() ?: run {
-                    sender.sendComponent("<red>该玩家不在线")
+                    sender.sendComponent("<#E08A98>该玩家不在线")
                     return@execute
                 }
 
                 if (FriendManager.deny(target, requester.uniqueId)) {
-                    target.sendMessage("<gray>已拒绝 <white>${requester.name} <gray>的好友申请".toComponent())
-                    requester.sendMessage("<gray>✦ <yellow>${target.name} <gray>拒绝了你的好友申请".toComponent())
+                    target.sendMessage("<#A9B4C3>已拒绝 <#F2F5FA>${requester.name} <#A9B4C3>的好友申请".toComponent())
+                    requester.sendMessage("<#A9B4C3>✦ <#EFDF8F>${target.name} <#A9B4C3>拒绝了你的好友申请".toComponent())
                 } else {
-                    target.sendMessage("<red>该申请不存在".toComponent())
+                    target.sendMessage("<#E08A98>该申请不存在".toComponent())
                 }
             }
         }
@@ -114,19 +114,19 @@ object FriendCommand {
 
                 val targetId = resolvePlayerId(context["name"])
                 if (targetId == null) {
-                    sender.sendComponent("<red>找不到玩家 <white>${context["name"]}")
+                    sender.sendComponent("<#E08A98>找不到玩家 <#F2F5FA>${context["name"]}")
                     return@execute
                 }
 
                 val targetName = Bukkit.getOfflinePlayer(targetId).name ?: context["name"]
                 if (FriendManager.remove(player, targetId)) {
-                    player.sendMessage("<red>已删除好友 <yellow>$targetName".toComponent())
+                    player.sendMessage("<#E08A98>已删除好友 <#EFDF8F>$targetName".toComponent())
                     val target = Bukkit.getPlayer(targetId)
                     if (target != null && target.isOnline) {
-                        target.sendMessage("<gray>✦ <yellow>${player.name} <gray>将你从好友列表中删除了".toComponent())
+                        target.sendMessage("<#A9B4C3>✦ <#EFDF8F>${player.name} <#A9B4C3>将你从好友列表中删除了".toComponent())
                     }
                 } else {
-                    player.sendMessage("<red>$targetName <red>不是你的好友".toComponent())
+                    player.sendMessage("<#E08A98>$targetName <#E08A98>不是你的好友".toComponent())
                 }
             }
         }

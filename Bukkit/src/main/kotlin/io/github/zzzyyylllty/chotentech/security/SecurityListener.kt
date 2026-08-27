@@ -73,9 +73,9 @@ object SecurityListener {
             }
         } else {
             // 宽松检查或 safemode=false: 仅提示
-            player.sendComponent("<red>该操作已被安全系统拦截。</red>")
+            player.sendComponent("<#E08A98>该操作已被安全系统拦截。</#E08A98>")
             if (!result.isRelaxed) {
-                player.sendComponent("<gray>（检查组: ${result.checkName}）</gray>")
+                player.sendComponent("<#A9B4C3>（检查组: ${result.checkName}）</#A9B4C3>")
             }
         }
     }
@@ -105,7 +105,7 @@ object SecurityListener {
             // president 白名单/身份组内的玩家允许正常执行 /op /deop
             if (isPresident(player)) {
                 devLog("SecurityListener: ${player.name} (president) used /$firstPart, exempted from OP check")
-                player.sendComponent("<green>您的 OP 已获 president 授权,该操作已放行。</green>")
+                player.sendComponent("<#8FD4A6>您的 OP 已获 president 授权,该操作已放行。</#8FD4A6>")
                 return
             }
             event.isCancelled = true
@@ -117,7 +117,7 @@ object SecurityListener {
             if (group != null) {
                 // 有身份组 → 仅报告和撤销，不处罚
                 devLog("SecurityListener: ${player.name} (group: ${group.name}) tried to use /$firstPart, OP revoked")
-                player.sendComponent("<red>该操作已被安全系统拦截。</red>")
+                player.sendComponent("<#E08A98>该操作已被安全系统拦截。</#E08A98>")
             } else {
                 // 无身份组 (default) → AUTH 封禁
                 handleViolation(player, SecurityManager.CheckResult(

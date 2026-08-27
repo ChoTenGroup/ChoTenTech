@@ -27,7 +27,7 @@ import io.github.zzzyyylllty.chotentech.util.guiItem
 class AllQuestMenu {
     fun open(player: Player) {
 
-        player.openMenu<PageableChest<Quest>>(mmJsonUtil.serialize("<white><shift:-16><image:kangelicon:list><shift:-176><aqua><font:minecraft:fusionpixel10>进行中的任务".toComponent())) {
+        player.openMenu<PageableChest<Quest>>(mmJsonUtil.serialize("<#F2F5FA><shift:-16><image:kangelicon:list><shift:-176><#84D1CB><font:minecraft:fusionpixel10>进行中的任务".toComponent())) {
 
             rows(6)
 
@@ -46,7 +46,7 @@ class AllQuestMenu {
             // 设置可用槽位（通过字符）
             slotsBy('@')
 
-            set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>菜单", listOf("<gray>点击打开菜单"), model = "kangelitem:void")) {
+            set('C', guiItem(XMaterial.COMPASS, "<#84D1CB><bold>菜单", listOf("<#A9B4C3>点击打开菜单"), model = "kangelitem:void")) {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "invero menu open menu ${clicker.name}")
                 clicker.closeInventory()
             }
@@ -59,56 +59,56 @@ class AllQuestMenu {
                 val cui = element.template.chotenui()
                 val profile = profile ?: run {
                     warning("玩家 ${player.name} 的 Chemdah 数据尚未加载完成")
-                    player.sendComponent("<red>您的数据正在加载，请耐心等待...")
+                    player.sendComponent("<#E08A98>您的数据正在加载，请耐心等待...")
                     null
                 }
                 val item = ChoTenUI.resolveIcon(cui?.icon, "任务 ${element.template.id}")
                 if (profile != null) {
                     val meta = item.itemMeta
-                    meta.customName(("<!i><white>「<green>" + element.template.meta<Meta<String>>("name")?.source?.legacyToMiniMessage() + "<reset><!i>」").toComponent())
+                    meta.customName(("<!i><#F2F5FA>「<#8FD4A6>" + element.template.meta<Meta<String>>("name")?.source?.legacyToMiniMessage() + "<reset><!i>」").toComponent())
                     val lore = mutableListOf<String>()
                     lore += "<!i> "
                     cui?.npcID?.let {
-                        lore += "<!i><white><b>|<reset> <!i><aqua>任务来自 <gold>$it"
+                        lore += "<!i><#F2F5FA><b>|<reset> <!i><#84D1CB>任务来自 <#DFBD7C>$it"
                         lore += "<!i> "
                     }
-                    lore += "<!i><white><b>|<reset> <!i><aqua>进程"
+                    lore += "<!i><#F2F5FA><b>|<reset> <!i><#84D1CB>进程"
                     element.tasks.forEach {
                         val name = it.meta<Meta<String>>("name")?.source?.legacyToMiniMessage()
                         lore += if (it.isCompleted(profile)) {
-                            "<!i> <dark_gray>- <#88aacc>$name <#33ffaa>已完成"
+                            "<!i> <#6E7A8C>- <#bec9d3>$name <#94dbbe>已完成"
                         } else {
                             val progress = it.objective.getProgress(profile, it)
                             val value = progress.value.toString().toDouble().roundTo(1).toString().removeSuffix(".0")
                             val target = progress.target.toString().toDouble().roundTo(1).toString().removeSuffix(".0")
-                            "<!i> <dark_gray>- <#88aacc>$name <#ff3311>$value<#aaaabb>/$target"
+                            "<!i> <#6E7A8C>- <#bec9d3>$name <#d3877a>$value<#cfcfd4>/$target"
                         }
                     }
                     lore += "<!i> "
                     cui?.descriptionIndex?.let {
-                        lore += "<!i><white><b>|<reset> <!i><aqua>引子"
+                        lore += "<!i><#F2F5FA><b>|<reset> <!i><#84D1CB>引子"
                         it.forEach {
-                            lore += "<!i><#aacc88>$it"
+                            lore += "<!i><#c9d3be>$it"
                         }
                         lore += "<!i> "
                     }
                     cui?.description?.let {
-                        lore += "<!i><white><b>|<reset> <!i><aqua>介绍"
+                        lore += "<!i><#F2F5FA><b>|<reset> <!i><#84D1CB>介绍"
                         it.forEach {
-                            lore += "<!i><#ccaa88>$it"
+                            lore += "<!i><#d3c9be>$it"
                         }
                         lore += "<!i> "
                     }
                     cui?.descriptionReward?.let {
-                        lore += "<!i><white><b>|<reset> <!i><aqua>奖励"
+                        lore += "<!i><#F2F5FA><b>|<reset> <!i><#84D1CB>奖励"
                         it.forEach {
-                            lore += "<!i> <dark_gray>- <#88aacc>$it"
+                            lore += "<!i> <#6E7A8C>- <#bec9d3>$it"
                         }
                         lore += "<!i> "
                     }
-                    lore += "<!i><white><b>|<reset> <i>${providerText(cui)}"
-                    lore += "<!i><yellow>点击 <green>打开详细菜单"
-                    lore += "<!i><yellow>右键 <green>追踪任务"
+                    lore += "<!i><#F2F5FA><b>|<reset> <i>${providerText(cui)}"
+                    lore += "<!i><#EFDF8F>点击 <#8FD4A6>打开详细菜单"
+                    lore += "<!i><#EFDF8F>右键 <#8FD4A6>追踪任务"
                     lore += "<!i> "
                     meta.lore(lore.toComponent())
                     cui?.model?.let { meta.itemModel = NamespacedKey.fromString(it) }
@@ -145,12 +145,12 @@ class AllQuestMenu {
 
             // 设置上一页按钮
             setPreviousPage(7) { _, page ->
-                guiItem(XMaterial.ARROW, "<green>上一页", model = if (page) "kangelitem:previous" else "kangelitem:previous_no")
+                guiItem(XMaterial.ARROW, "<#8FD4A6>上一页", model = if (page) "kangelitem:previous" else "kangelitem:previous_no")
             }
 
             // 设置下一页按钮
             setNextPage(8) { _, page ->
-                guiItem(XMaterial.ARROW, "<green>下一页", model = if (page) "kangelitem:next" else "kangelitem:next_no")
+                guiItem(XMaterial.ARROW, "<#8FD4A6>下一页", model = if (page) "kangelitem:next" else "kangelitem:next_no")
             }
         }
     }
@@ -172,12 +172,12 @@ fun providerText(cui: ChoTenUI?): String {
         else -> "公有"
     }
     return when (cui?.provider?.uppercase()) {
-        "ZERO" -> "<dark_blue>由 ZERO 提供的${typeText}任务"
-        "XINGCHEN" -> "<aqua>由 星辰闪烁 提供的${typeText}任务"
-        "FANXING" -> "<dark_aqua>由 可爱的小狗拔牙 提供的${typeText}任务"
-        "ACHU", "THEACHU" -> "<light_purple>由 TheAchu 提供的${typeText}任务"
-        "CEDRIC" -> "<gold>由 Parte 提供的${typeText}任务"
-        null -> "<gray>原生${typeText}任务"
-        else -> "<dark_blue>由 ${cui.provider} 提供的${typeText}任务"
+        "ZERO" -> "<#637FAF>由 ZERO 提供的${typeText}任务"
+        "XINGCHEN" -> "<#84D1CB>由 星辰闪烁 提供的${typeText}任务"
+        "FANXING" -> "<#5FA8A3>由 可爱的小狗拔牙 提供的${typeText}任务"
+        "ACHU", "THEACHU" -> "<#CDAEEF>由 TheAchu 提供的${typeText}任务"
+        "CEDRIC" -> "<#DFBD7C>由 Parte 提供的${typeText}任务"
+        null -> "<#A9B4C3>原生${typeText}任务"
+        else -> "<#637FAF>由 ${cui.provider} 提供的${typeText}任务"
     }
 }

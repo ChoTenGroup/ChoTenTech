@@ -66,7 +66,7 @@ object BaseManager {
                 warning("加载基地 $idef 失败: ${e.message}")
             }
         }
-        ChoTenTech.consoleSender.sendComponent("<green>已加载 ${baseMap.size} 个基地")
+        ChoTenTech.consoleSender.sendComponent("<#8FD4A6>已加载 ${baseMap.size} 个基地")
     }
 
     fun getBaseByRegion(regionId: String): Base? {
@@ -103,18 +103,18 @@ object BaseManager {
         if (data.discoveredBases.contains(idef)) return false
 
         data.discoveredBases.add(idef)
-        player.sendComponent("<gold>■ <green>发现新基地: <yellow>${base.name}")
-        player.sendComponent("<gray>${base.lore.joinToString("") ?: ""}")
+        player.sendComponent("<#DFBD7C>■ <#8FD4A6>发现新基地: <#EFDF8F>${base.name}")
+        player.sendComponent("<#A9B4C3>${base.lore.joinToString("") ?: ""}")
         return true
     }
 
     fun joinBase(player: Player, idef: String): Boolean {
         val base = baseMap[idef] ?: run {
-            player.sendComponent("<red>基地 $idef 不存在！")
+            player.sendComponent("<#E08A98>基地 $idef 不存在！")
             return false
         }
         if (!base.enable) {
-            player.sendComponent("<red>该基地尚不可用！")
+            player.sendComponent("<#E08A98>该基地尚不可用！")
             return false
         }
         val data = player.getData() ?: return false
@@ -123,8 +123,8 @@ object BaseManager {
         data.subTag = base.idef
         grantBaseStartItems(player, data, idef)
 
-        player.sendComponent("<green>你已加入 <gold>${base.name}")
-        player.sendComponent("<gray>阵营: ${base.faction} | 基地: ${base.name}")
+        player.sendComponent("<#8FD4A6>你已加入 <#DFBD7C>${base.name}")
+        player.sendComponent("<#A9B4C3>阵营: ${base.faction} | 基地: ${base.name}")
 
         val loc = base.spawn
         val world = Bukkit.getWorld(loc.world)
@@ -197,7 +197,7 @@ object BaseManager {
         if (slot > 1) {
             data.grantedStartItems.add(idef)
             DataManager.saveData(player)
-            player.sendComponent("<gold>■ <yellow>基地仓库已放入初始物资,打开仓库查看")
+            player.sendComponent("<#DFBD7C>■ <#EFDF8F>基地仓库已放入初始物资,打开仓库查看")
         }
     }
 
@@ -240,21 +240,21 @@ object BaseManager {
         FactionInfo(
             tag = "MEG",
             displayName = "探险者总署",
-            color = "<#ffdd00>",
+            color = "<#cfc26e>",
             description = "我们是一线希望。我们承诺尽可能保护所有人，\n探索从未有人见过的非凡地方，我们会保证你的安全。\n这是他们所承诺的。随着冷战愈演愈烈，\n在战争被波及到的流浪者们纷纷涌向 M.E.G.。\n然而，M.E.G. 必须继续维护其名号的高标准，\n否则，阈限世界将损失一个伟大的组织......",
             iconModel = "kangelitem:itm/bookmark/meg",
         ),
         FactionInfo(
             tag = "BNTG",
             displayName = "不结盟贸易集团",
-            color = "<#33ffaa>",
+            color = "<#94dbbe>",
             description = "金钱归我，荣耀归你。\nB.N.T.G.，亦称不结盟贸易集团。\n一个通过电汇、钞票和股票证书联系在一起的组织。\n只要你能带来收益，你就是B.N.T.G.的不错人选。\n我们等待着，渴望一个未来，一个可能属于金钱和荣耀的秩序。",
             iconModel = "kangelitem:itm/bookmark/bntg",
         ),
         FactionInfo(
             tag = "UEC",
             displayName = "无羁探险者联盟",
-            color = "<#ff3d00>",
+            color = "<#cf856e>",
             description = "U.E.C.创立的宗旨是\"人们的安全高于一切\"。至少他们是这么说的。\n无羁探险者联盟通过创立傀儡组织，扶持代理人来攫取利益。\n一个臭名昭著的例子是\"无尽下水道\"组织，许多U.E.C.的居民都定居于此。\n无羁探险者联盟是一个结合了经济联盟、军事联盟和一体化项目的组织。",
             iconModel = "kangelitem:itm/bookmark/uec",
         ),

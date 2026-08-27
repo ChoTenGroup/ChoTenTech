@@ -48,11 +48,11 @@ object ProfileCreationPending {
     fun register(player: Player, callback: (String) -> Unit) {
         pending[player.uniqueId.toString()] = callback
         player.closeInventory()
-        player.sendMessage("<gold>┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".toComponent())
-        player.sendMessage("<gold>┃ <yellow>请在聊天栏输入新玩家档案的名称：".toComponent())
-        player.sendMessage("<gold>┃ <gray>输入完成后按 Enter 发送即可".toComponent())
-        player.sendMessage("<gold>┃ <red>输入 cancel 取消创建".toComponent())
-        player.sendMessage("<gold>┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".toComponent())
+        player.sendMessage("<#DFBD7C>┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".toComponent())
+        player.sendMessage("<#DFBD7C>┃ <#EFDF8F>请在聊天栏输入新玩家档案的名称：".toComponent())
+        player.sendMessage("<#DFBD7C>┃ <#A9B4C3>输入完成后按 Enter 发送即可".toComponent())
+        player.sendMessage("<#DFBD7C>┃ <#E08A98>输入 cancel 取消创建".toComponent())
+        player.sendMessage("<#DFBD7C>┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".toComponent())
     }
 
     fun handleChat(player: Player, message: String): Boolean {
@@ -61,19 +61,19 @@ object ProfileCreationPending {
         pending.remove(uuid)
 
         if (message.equals("cancel", ignoreCase = true)) {
-            player.sendMessage("<red>已取消创建玩家档案".toComponent())
+            player.sendMessage("<#E08A98>已取消创建玩家档案".toComponent())
             ProfileSelectionGUI().open(player)
             return true
         }
 
         if (message.length > 32) {
-            player.sendMessage("<red>名称过长，最多32个字符".toComponent())
+            player.sendMessage("<#E08A98>名称过长，最多32个字符".toComponent())
             ProfileSelectionGUI().open(player)
             return true
         }
 
         if (message.isBlank()) {
-            player.sendMessage("<red>名称不能为空".toComponent())
+            player.sendMessage("<#E08A98>名称不能为空".toComponent())
             ProfileSelectionGUI().open(player)
             return true
         }
@@ -89,11 +89,11 @@ object ProfileDeletionPending {
     fun register(player: Player, callback: () -> Unit) {
         pending[player.uniqueId.toString()] = callback
         player.closeInventory()
-        player.sendMessage("<red>┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".toComponent())
-        player.sendMessage("<red>┃ <yellow>确认删除此玩家档案？此操作不可撤销！".toComponent())
-        player.sendMessage("<red>┃ <green>输入 confirm 确认删除".toComponent())
-        player.sendMessage("<red>┃ <gray>输入 cancel 取消".toComponent())
-        player.sendMessage("<red>┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".toComponent())
+        player.sendMessage("<#E08A98>┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".toComponent())
+        player.sendMessage("<#E08A98>┃ <#EFDF8F>确认删除此玩家档案？此操作不可撤销！".toComponent())
+        player.sendMessage("<#E08A98>┃ <#8FD4A6>输入 confirm 确认删除".toComponent())
+        player.sendMessage("<#E08A98>┃ <#A9B4C3>输入 cancel 取消".toComponent())
+        player.sendMessage("<#E08A98>┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".toComponent())
     }
 
     fun handleChat(player: Player, message: String): Boolean {
@@ -102,7 +102,7 @@ object ProfileDeletionPending {
         pending.remove(uuid)
 
         if (message.equals("cancel", ignoreCase = true)) {
-            player.sendMessage("<green>已取消删除".toComponent())
+            player.sendMessage("<#8FD4A6>已取消删除".toComponent())
             ProfileSelectionGUI().open(player)
             return true
         }
@@ -112,7 +112,7 @@ object ProfileDeletionPending {
             return true
         }
 
-        player.sendMessage("<red>未知命令，输入 confirm 确认删除，cancel 取消".toComponent())
+        player.sendMessage("<#E08A98>未知命令，输入 confirm 确认删除，cancel 取消".toComponent())
         ProfileSelectionGUI().open(player)
         return true
     }
@@ -215,7 +215,7 @@ class ProfileSelectionGUI {
         sharedCid: Long
     ) {
         player.openMenu<PageableChest<ProfileInfo>>(
-            mmJsonUtil.serialize("<white><shift:-16><image:kangelicon:list><shift:-176><aqua><font:minecraft:fusionpixel10>选择玩家档案".toComponent())
+            mmJsonUtil.serialize("<#F2F5FA><shift:-16><image:kangelicon:list><shift:-176><#84D1CB><font:minecraft:fusionpixel10>选择玩家档案".toComponent())
         ) {
             rows(6)
 
@@ -228,7 +228,7 @@ class ProfileSelectionGUI {
                 "         "
             )
 
-            set('C', guiItem(XMaterial.BARRIER, "<red><bold>关闭", listOf("<!i> <yellow>点击 <red>关闭界面"), model = "kangelitem:void")) {
+            set('C', guiItem(XMaterial.BARRIER, "<#E08A98><bold>关闭", listOf("<!i> <#EFDF8F>点击 <#E08A98>关闭界面"), model = "kangelitem:void")) {
                 clicker.closeInventory()
                 // 未选择档案时保持 pending,移动时会再次弹出选择窗口
                 dismissGui(clicker)
@@ -236,7 +236,7 @@ class ProfileSelectionGUI {
 
             set('D', buildCreateItem(infos.size, maxProfiles)) {
                 if (infos.size >= maxProfiles) {
-                    clicker.sendMessage("<red>已达到最大玩家档案数量 ($maxProfiles)".toComponent())
+                    clicker.sendMessage("<#E08A98>已达到最大玩家档案数量 ($maxProfiles)".toComponent())
                     clicker.playSound(clicker.location, Sound.ENTITY_VILLAGER_NO, 1f, 1f)
                     return@set
                 }
@@ -246,7 +246,7 @@ class ProfileSelectionGUI {
                     val uuid = clicker.uniqueId.toString()
                     val existing = ProfileManager.getProfileInfos(uuid)
                     if (existing.any { it.profileName == name }) {
-                        clicker.sendMessage("<red>玩家档案名 <yellow>$name <red>已存在".toComponent())
+                        clicker.sendMessage("<#E08A98>玩家档案名 <#EFDF8F>$name <#E08A98>已存在".toComponent())
                         open(clicker)
                         return@register
                     }
@@ -263,11 +263,11 @@ class ProfileSelectionGUI {
                             data.profileLocation = RespawnPoint.fromLocation(spawnLoc)
                             ProfileManager.saveProfileData(uuid, data.profileId, ProfileManager.stripSharedFields(data))
                         }
-                        clicker.sendMessage("<green>玩家档案 <yellow>$name <green>创建成功！".toComponent())
-                        clicker.sendMessage("<green>已切换到新玩家档案".toComponent())
+                        clicker.sendMessage("<#8FD4A6>玩家档案 <#EFDF8F>$name <#8FD4A6>创建成功！".toComponent())
+                        clicker.sendMessage("<#8FD4A6>已切换到新玩家档案".toComponent())
                         clicker.playSound(clicker.location, Sound.BLOCK_RESPAWN_ANCHOR_SET_SPAWN, 1f, 1f)
                     } else {
-                        clicker.sendMessage("<red>创建失败，请检查是否达到上限".toComponent())
+                        clicker.sendMessage("<#E08A98>创建失败，请检查是否达到上限".toComponent())
                         open(clicker)
                     }
                 }
@@ -294,23 +294,23 @@ class ProfileSelectionGUI {
                     clicker.closeInventory()
                     switchProfile(clicker, info.profileId)
                     releaseFromPending(clicker)
-                    clicker.sendMessage("<green>已切换到玩家档案: <yellow>${info.profileName}".toComponent())
+                    clicker.sendMessage("<#8FD4A6>已切换到玩家档案: <#EFDF8F>${info.profileName}".toComponent())
                     clicker.playSound(clicker.location, Sound.BLOCK_RESPAWN_ANCHOR_SET_SPAWN, 1f, 1f)
                 } else if (infos.size > 1) {
                     // Click active profile when multiple exist — prompt deletion
                     ProfileDeletionPending.register(clicker) {
                         val profileName = info.profileName
                         if (deleteProfile(clicker, info.profileId)) {
-                            clicker.sendMessage("<gold>已删除玩家档案: <yellow>$profileName".toComponent())
+                            clicker.sendMessage("<#DFBD7C>已删除玩家档案: <#EFDF8F>$profileName".toComponent())
                             clicker.playSound(clicker.location, Sound.ENTITY_ITEM_BREAK, 1f, 1f)
                         } else {
-                            clicker.sendMessage("<red>删除玩家档案失败".toComponent())
+                            clicker.sendMessage("<#E08A98>删除玩家档案失败".toComponent())
                         }
                         // 删除激活档案后玩家仍处于 pending 且无界面,重新打开选择界面避免软锁
                         open(clicker)
                     }
                 } else {
-                    clicker.sendMessage("<gray>当前已是此玩家档案".toComponent())
+                    clicker.sendMessage("<#A9B4C3>当前已是此玩家档案".toComponent())
                 }
             }
 
@@ -319,11 +319,11 @@ class ProfileSelectionGUI {
             }
 
             setPreviousPage(7) { _, page ->
-                guiItem(XMaterial.ARROW, "<green>上一页", model = if (page) "kangelitem:previous" else "kangelitem:previous_no")
+                guiItem(XMaterial.ARROW, "<#8FD4A6>上一页", model = if (page) "kangelitem:previous" else "kangelitem:previous_no")
             }
 
             setNextPage(8) { _, page ->
-                guiItem(XMaterial.ARROW, "<green>下一页", model = if (page) "kangelitem:next" else "kangelitem:next_no")
+                guiItem(XMaterial.ARROW, "<#8FD4A6>下一页", model = if (page) "kangelitem:next" else "kangelitem:next_no")
             }
         }
     }
@@ -339,14 +339,14 @@ class ProfileSelectionGUI {
         val item = mat.parseItem() ?: ItemStack(Material.PLAYER_HEAD)
         val meta = item.itemMeta ?: return item
 
-        val statusColor = if (isActive) "<green>" else "<gray>"
+        val statusColor = if (isActive) "<#8FD4A6>" else "<#A9B4C3>"
 
         meta.displayName("${statusColor}<bold>${info.profileName}".toComponent())
 
         val lore = mutableListOf<String>()
-        lore += loreInfo("CID", "<white>$sharedCid")
-        lore += loreInfo("ID", "<white>${info.profileId}")
-        lore += loreInfo("创建", "<white>${
+        lore += loreInfo("CID", "<#F2F5FA>$sharedCid")
+        lore += loreInfo("ID", "<#F2F5FA>${info.profileId}")
+        lore += loreInfo("创建", "<#F2F5FA>${
             dateTimeFormatter.format(
                 Instant.ofEpochMilli(info.createTime).atZone(ZoneId.systemDefault()).toLocalDateTime()
             ).substringBefore(" ")
@@ -357,13 +357,13 @@ class ProfileSelectionGUI {
             lore += loreSection("阵营声望")
             display.reputation.forEach { (faction, value) ->
                 val color = when (faction.uppercase()) {
-                    "MEG" -> "<#ffdd00>"
-                    "BNTG" -> "<#33ffaa>"
-                    "UEC" -> "<#ff3d00>"
-                    else -> "<white>"
+                    "MEG" -> "<#cfc26e>"
+                    "BNTG" -> "<#94dbbe>"
+                    "UEC" -> "<#cf856e>"
+                    else -> "<#F2F5FA>"
                 }
                 val sign = if (value >= 0) "+" else ""
-                lore += loreDash("$color$faction <white>$sign$value")
+                lore += loreDash("$color$faction <#F2F5FA>$sign$value")
             }
         }
 
@@ -373,25 +373,25 @@ class ProfileSelectionGUI {
         val mins = (totalSec % 3600) / 60
         val gameTimeStr = GameTimeManager.formatOneLine(display.gameTimeHours)
         lore += loreSpace()
-        lore += loreInfo("游戏内时间", "<white>$gameTimeStr")
+        lore += loreInfo("游戏内时间", "<#F2F5FA>$gameTimeStr")
         lore += loreSpace()
-        lore += loreInfo("游玩", "<white>${hours}小时 ${mins}分钟")
-        lore += loreInfo("已探索", "<white>${display.exploredLevels}层, ${display.discoveredBases}基地")
+        lore += loreInfo("游玩", "<#F2F5FA>${hours}小时 ${mins}分钟")
+        lore += loreInfo("已探索", "<#F2F5FA>${display.exploredLevels}层, ${display.discoveredBases}基地")
         val levelName = display.activeLevelStr?.let { levelsList[it] }?.let { "${it.prefix}${it.name}" }
         if (levelName != null) {
-            lore += loreInfo("层级位置", "<white>$levelName")
+            lore += loreInfo("层级位置", "<#F2F5FA>$levelName")
         }
-        lore += loreInfo("积分", "<#FFCC66>${display.money}")
-        lore += loreInfo("贸易点", "<#22FF66>${display.point}")
+        lore += loreInfo("积分", "<#e8d9ba>${display.money}")
+        lore += loreInfo("贸易点", "<#87d7a0>${display.point}")
 
         lore += loreSpace()
         if (isActive) {
-            lore += loreInfo("状态", "<green>当前使用")
+            lore += loreInfo("状态", "<#8FD4A6>当前使用")
             if (profileCount > 1) {
-                lore += "<!i> <yellow>点击 <red>删除"
+                lore += "<!i> <#EFDF8F>点击 <#E08A98>删除"
             }
         } else {
-            lore += "<!i> <yellow>点击 <green>切换"
+            lore += "<!i> <#EFDF8F>点击 <#8FD4A6>切换"
         }
 
         meta.lore(lore.toComponent())
@@ -406,17 +406,17 @@ class ProfileSelectionGUI {
         val meta = item.itemMeta ?: return item
 
         if (canCreate) {
-            meta.displayName("<green><bold>创建新玩家档案".toComponent())
+            meta.displayName("<#8FD4A6><bold>创建新玩家档案".toComponent())
             meta.lore(listOf(
-                loreInfo("当前", "<yellow>$current <gray>/ <yellow>$max"),
-                "<!i> <yellow>点击 <green>创建新的玩家档案",
-                loreInfo("说明", "<gray>新玩家档案会独立存储进度")
+                loreInfo("当前", "<#EFDF8F>$current <#A9B4C3>/ <#EFDF8F>$max"),
+                "<!i> <#EFDF8F>点击 <#8FD4A6>创建新的玩家档案",
+                loreInfo("说明", "<#A9B4C3>新玩家档案会独立存储进度")
             ).toComponent())
         } else {
-            meta.displayName("<red><bold>已达上限".toComponent())
+            meta.displayName("<#E08A98><bold>已达上限".toComponent())
             meta.lore(listOf(
-                loreInfo("当前", "<yellow>$current <gray>/ <yellow>$max"),
-                loreInfo("状态", "<red>已达到最大玩家档案数量")
+                loreInfo("当前", "<#EFDF8F>$current <#A9B4C3>/ <#EFDF8F>$max"),
+                loreInfo("状态", "<#E08A98>已达到最大玩家档案数量")
             ).toComponent())
         }
 

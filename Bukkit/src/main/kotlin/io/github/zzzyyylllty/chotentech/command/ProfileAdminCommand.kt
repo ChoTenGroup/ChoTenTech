@@ -37,15 +37,15 @@ object ProfileAdminCommand {
                 val archived = ProfileManager.getArchivedProfileInfos(uuid)
 
                 if (archived.isEmpty()) {
-                    sender.sendComponent("<yellow>${target.name} 没有已存档的档案")
+                    sender.sendComponent("<#EFDF8F>${target.name} 没有已存档的档案")
                     return@execute
                 }
 
                 val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm")
-                sender.sendComponent("<gold>${target.name} 的已存档档案 (${archived.size} 个):")
+                sender.sendComponent("<#DFBD7C>${target.name} 的已存档档案 (${archived.size} 个):")
                 for (info in archived) {
                     val time = if (info.archivedAt > 0) dateFormat.format(Date(info.archivedAt)) else "未知"
-                    sender.sendComponent(" <gray>#${info.profileId} <white>${info.profileName} <dark_gray>($time)")
+                    sender.sendComponent(" <#A9B4C3>#${info.profileId} <#F2F5FA>${info.profileName} <#6E7A8C>($time)")
                 }
             }
         }
@@ -62,9 +62,9 @@ object ProfileAdminCommand {
                     val profileId = context["profileId"]
 
                     if (ProfileManager.restoreProfile(uuid, profileId)) {
-                        sender.sendComponent("<green>已恢复 ${target.name} 的档案 #$profileId")
+                        sender.sendComponent("<#8FD4A6>已恢复 ${target.name} 的档案 #$profileId")
                     } else {
-                        sender.sendComponent("<red>恢复失败，请检查档案ID是否正确或名称是否冲突")
+                        sender.sendComponent("<#E08A98>恢复失败，请检查档案ID是否正确或名称是否冲突")
                     }
                 }
             }

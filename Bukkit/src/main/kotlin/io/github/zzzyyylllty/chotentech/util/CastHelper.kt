@@ -1,7 +1,8 @@
 package io.github.zzzyyylllty.chotentech.util.serialize
 
 object CastHelper {
-    fun smartCast(input: String): Any? {
+    fun smartCast(input: String?): Any? {
+        if (input == null) return null
         return when {
             input.matches(Regex("^-?\\d{1,10}$")) -> {
                 try {
@@ -26,6 +27,22 @@ object CastHelper {
             }
             input.matches(Regex("^(true|false)$", RegexOption.IGNORE_CASE)) -> input.toBoolean()
             else -> input // 默认为 String
+        }
+    }
+
+    fun increaseAny(first: Any, second: Any): Any? {
+        return if (first is Int) {
+            first.plus(second.toString().toInt())
+        } else if (first is Double) {
+            first.plus(second.toString().toDouble())
+        } else if (first is Float) {
+            first.plus(second.toString().toFloat())
+        } else if (first is String) {
+            first.plus(second.toString())
+        } else if (first is Long) {
+            first.plus(second.toString().toLong())
+        } else {
+            first.toString().plus(second.toString())
         }
     }
 }

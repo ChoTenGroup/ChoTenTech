@@ -40,12 +40,12 @@ class RankSelectionMenu {
     fun open(player: Player) {
         val types = RankManager.getTypes().toList()
         if (types.isEmpty()) {
-            player.sendMessage("<red>当前没有可用的称号类型。".toComponent())
+            player.sendMessage("<#E08A98>当前没有可用的称号类型。".toComponent())
             return
         }
 
         player.openMenu<PageableChest<String>>(
-            mmJsonUtil.serialize("<white><shift:-16><image:kangelicon:list><shift:-176><aqua><font:minecraft:fusionpixel10>称号选择".toComponent())
+            mmJsonUtil.serialize("<#F2F5FA><shift:-16><image:kangelicon:list><shift:-176><#84D1CB><font:minecraft:fusionpixel10>称号选择".toComponent())
         ) {
             rows(6)
 
@@ -58,7 +58,7 @@ class RankSelectionMenu {
                 "         "
             )
 
-            set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>菜单", listOf("<!i> <yellow>点击 <green>打开菜单"), model = "kangelitem:void")) {
+            set('C', guiItem(XMaterial.COMPASS, "<#84D1CB><bold>菜单", listOf("<!i> <#EFDF8F>点击 <#8FD4A6>打开菜单"), model = "kangelitem:void")) {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "invero menu open menu ${clicker.name}")
                 clicker.closeInventory()
             }
@@ -71,13 +71,13 @@ class RankSelectionMenu {
                 val effectiveName = RankManager.getEffectiveRank(player, type)?.name ?: "无"
                 val effectiveFull = RankManager.getEffectiveRankDisplay(player, type, "current")
                 val lore = mutableListOf(
-                    loreInfo("当前", "<white>$effectiveName")
+                    loreInfo("当前", "<#F2F5FA>$effectiveName")
                 )
                 if (effectiveFull.isNotBlank() && (type == "prefix" || type == "suffix")) {
-                    lore += "<!i><gray>(全称: <white>$effectiveFull)"
+                    lore += "<!i><#A9B4C3>(全称: <#F2F5FA>$effectiveFull)"
                 }
-                lore += "<!i> <yellow>点击 <green>查看"
-                guiItem(XMaterial.BOOK, "<gold>${typeNameMap[type] ?: type}", lore)
+                lore += "<!i> <#EFDF8F>点击 <#8FD4A6>查看"
+                guiItem(XMaterial.BOOK, "<#DFBD7C>${typeNameMap[type] ?: type}", lore)
             }
 
             onClick { event, type ->
@@ -92,11 +92,11 @@ class RankSelectionMenu {
             }
 
             setPreviousPage(7) { _, page ->
-                guiItem(XMaterial.ARROW, "<aqua>上一页", model = if (page) "kangelitem:previous" else "kangelitem:previous_no")
+                guiItem(XMaterial.ARROW, "<#84D1CB>上一页", model = if (page) "kangelitem:previous" else "kangelitem:previous_no")
             }
 
             setNextPage(8) { _, page ->
-                guiItem(XMaterial.ARROW, "<aqua>下一页", model = if (page) "kangelitem:next" else "kangelitem:next_no")
+                guiItem(XMaterial.ARROW, "<#84D1CB>下一页", model = if (page) "kangelitem:next" else "kangelitem:next_no")
             }
         }
     }
@@ -108,7 +108,7 @@ class RankSelectionMenu {
         val orderedRanks = eligibleRanks.sortedByDescending { it.id == effectiveId }
 
         player.openMenu<PageableChest<RankConfig>>(
-            mmJsonUtil.serialize("<white><shift:-16><image:kangelicon:list><shift:-176><aqua><font:minecraft:fusionpixel10>${typeNameMap[type] ?: type}".toComponent())
+            mmJsonUtil.serialize("<#F2F5FA><shift:-16><image:kangelicon:list><shift:-176><#84D1CB><font:minecraft:fusionpixel10>${typeNameMap[type] ?: type}".toComponent())
         ) {
             rows(6)
 
@@ -121,7 +121,7 @@ class RankSelectionMenu {
                 "         "
             )
 
-            set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>菜单", listOf("<!i> <yellow>点击 <green>返回称号选择"), model = "kangelitem:void")) {
+            set('C', guiItem(XMaterial.COMPASS, "<#84D1CB><bold>菜单", listOf("<!i> <#EFDF8F>点击 <#8FD4A6>返回称号选择"), model = "kangelitem:void")) {
                 clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
                 open(clicker)
             }
@@ -157,11 +157,11 @@ class RankSelectionMenu {
             }
 
             setPreviousPage(7) { _, page ->
-                guiItem(XMaterial.ARROW, "<aqua>上一页", model = if (page) "kangelitem:previous" else "kangelitem:previous_no")
+                guiItem(XMaterial.ARROW, "<#84D1CB>上一页", model = if (page) "kangelitem:previous" else "kangelitem:previous_no")
             }
 
             setNextPage(8) { _, page ->
-                guiItem(XMaterial.ARROW, "<aqua>下一页", model = if (page) "kangelitem:next" else "kangelitem:next_no")
+                guiItem(XMaterial.ARROW, "<#84D1CB>下一页", model = if (page) "kangelitem:next" else "kangelitem:next_no")
             }
         }
     }
@@ -171,32 +171,32 @@ class RankSelectionMenu {
         val item = mat.parseItem() ?: ItemStack(Material.BOOK)
         val meta = item.itemMeta ?: return item
 
-        val statusColor = if (isActive) "<green>" else "<gray>"
+        val statusColor = if (isActive) "<#8FD4A6>" else "<#A9B4C3>"
 
         meta.displayName("${statusColor}<b>${rank.name}".toComponent())
 
         val lore = mutableListOf<String>()
 
-        lore += loreInfo("名称", "<white>${rank.name}")
+        lore += loreInfo("名称", "<#F2F5FA>${rank.name}")
 
         if (rank.display.isNotEmpty()) {
             lore += loreSpace()
             lore += loreSection("展示方式")
             rank.display.forEach { (key, value) ->
-                lore += "<!i><#88aacc>${displayKeyMap[key] ?: key}：<white>$value"
+                lore += "<!i><#bec9d3>${displayKeyMap[key] ?: key}：<#F2F5FA>$value"
             }
         }
 
         if (rank.desc.isNotBlank()) {
             lore += loreSpace()
             lore += loreSection("描述")
-            wrapDesc(rank.desc).forEach { lore += "<!i><#aacc88>$it" }
+            wrapDesc(rank.desc).forEach { lore += "<!i><#c9d3be>$it" }
         }
 
         if (rank.get.isNotBlank()) {
             lore += loreSpace()
             lore += loreSection("获取方式")
-            lore += "<!i><#ccaa88>${rank.get}"
+            lore += "<!i><#d3c9be>${rank.get}"
         }
 
         meta.lore(lore.toComponent())

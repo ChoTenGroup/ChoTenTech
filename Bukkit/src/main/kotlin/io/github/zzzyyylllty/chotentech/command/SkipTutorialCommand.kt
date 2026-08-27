@@ -29,7 +29,7 @@ object SkipTutorialCommand {
                 it.template.id.equals("tutorial", ignoreCase = true)
             } ?: false
             if (!tutorialActive) {
-                sender.sendComponent("<red>你还没有接取教程任务,无法跳过")
+                sender.sendComponent("<#E08A98>你还没有接取教程任务,无法跳过")
                 return@execute
             }
 
@@ -41,7 +41,7 @@ object SkipTutorialCommand {
             val world = Bukkit.getWorld("Area0") ?: Bukkit.getWorlds().first()
             val loc = if (world.name == "Area0") Location(world, -6.0, 14.0, 5.0) else world.spawnLocation
             sender.teleport(loc)
-            sender.sendComponent("<green>已跳过教学,传送至出生点")
+            sender.sendComponent("<#8FD4A6>已跳过教学,传送至出生点")
         }
     }
 }

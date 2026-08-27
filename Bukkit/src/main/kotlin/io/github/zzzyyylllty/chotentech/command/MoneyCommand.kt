@@ -35,11 +35,11 @@ object MoneyCommand {
                     val player = context.player("user").castSafely<Player>()!!
                     val amount = context["amount"].toLongOrNull()
                     if (amount == null || amount < 1) {
-                        sender.sendComponent("<red>数量必须为正整数")
+                        sender.sendComponent("<#E08A98>数量必须为正整数")
                         return@execute
                     }
                     CurrencyManager.addBalance(player, "money", amount)
-                    sender.sendComponent("<green>已给予 ${player.name} $amount ${CurrencyManager.displayName("money")}")
+                    sender.sendComponent("<#8FD4A6>已给予 ${player.name} $amount ${CurrencyManager.displayName("money")}")
                 }
                 suggestion<CommandSender>(uncheck = true) { _, _ -> listOf("100", "1000", "10000") }
             }
@@ -54,11 +54,11 @@ object MoneyCommand {
                     val player = context.player("user").castSafely<Player>()!!
                     val amount = context["amount"].toLongOrNull()
                     if (amount == null || amount < 1) {
-                        sender.sendComponent("<red>数量必须为正整数")
+                        sender.sendComponent("<#E08A98>数量必须为正整数")
                         return@execute
                     }
                     CurrencyManager.addBalance(player, "money", amount)
-                    sender.sendComponent("<green>已给予 ${player.name} $amount ${CurrencyManager.displayName("money")}")
+                    sender.sendComponent("<#8FD4A6>已给予 ${player.name} $amount ${CurrencyManager.displayName("money")}")
                 }
                 suggestion<CommandSender>(uncheck = true) { _, _ -> listOf("100", "1000", "10000") }
             }
@@ -73,13 +73,13 @@ object MoneyCommand {
                     val player = context.player("user").castSafely<Player>()!!
                     val amount = context["amount"].toLongOrNull()
                     if (amount == null || amount < 1) {
-                        sender.sendComponent("<red>数量必须为正整数")
+                        sender.sendComponent("<#E08A98>数量必须为正整数")
                         return@execute
                     }
                     if (CurrencyManager.removeBalance(player, "money", amount)) {
-                        sender.sendComponent("<green>已从 ${player.name} 扣除 $amount ${CurrencyManager.displayName("money")}")
+                        sender.sendComponent("<#8FD4A6>已从 ${player.name} 扣除 $amount ${CurrencyManager.displayName("money")}")
                     } else {
-                        sender.sendComponent("<red>${player.name} 的${CurrencyManager.displayName("money")}不足")
+                        sender.sendComponent("<#E08A98>${player.name} 的${CurrencyManager.displayName("money")}不足")
                     }
                 }
                 suggestion<CommandSender>(uncheck = true) { _, _ -> listOf("100", "1000", "10000") }
@@ -95,13 +95,13 @@ object MoneyCommand {
                     val player = context.player("user").castSafely<Player>()!!
                     val amount = context["amount"].toLongOrNull()
                     if (amount == null || amount < 1) {
-                        sender.sendComponent("<red>数量必须为正整数")
+                        sender.sendComponent("<#E08A98>数量必须为正整数")
                         return@execute
                     }
                     if (CurrencyManager.removeBalance(player, "money", amount)) {
-                        sender.sendComponent("<green>已从 ${player.name} 扣除 $amount ${CurrencyManager.displayName("money")}")
+                        sender.sendComponent("<#8FD4A6>已从 ${player.name} 扣除 $amount ${CurrencyManager.displayName("money")}")
                     } else {
-                        sender.sendComponent("<red>${player.name} 的${CurrencyManager.displayName("money")}不足")
+                        sender.sendComponent("<#E08A98>${player.name} 的${CurrencyManager.displayName("money")}不足")
                     }
                 }
                 suggestion<CommandSender>(uncheck = true) { _, _ -> listOf("100", "1000", "10000") }
@@ -117,11 +117,11 @@ object MoneyCommand {
                     val player = context.player("user").castSafely<Player>()!!
                     val amount = context["amount"].toLongOrNull()
                     if (amount == null || amount < 0) {
-                        sender.sendComponent("<red>数量必须为非负整数")
+                        sender.sendComponent("<#E08A98>数量必须为非负整数")
                         return@execute
                     }
                     CurrencyManager.setBalance(player, "money", amount)
-                    sender.sendComponent("<green>已将 ${player.name} 的${CurrencyManager.displayName("money")}设为 $amount")
+                    sender.sendComponent("<#8FD4A6>已将 ${player.name} 的${CurrencyManager.displayName("money")}设为 $amount")
                 }
                 suggestion<CommandSender>(uncheck = true) { _, _ -> listOf("0", "100", "1000") }
             }

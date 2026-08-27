@@ -34,9 +34,9 @@ object ChoTenAttributeMainCommand {
     @CommandBody
     val about = subCommand {
         execute<CommandSender> { sender, context, argument -> //
-            sender.sendComponent("<gradient:aqua:yellow>ChoTenAttribute</gradient> <#ccccff>$pluginVersion")
-            sender.sendComponent("<gradient:#6600ff:#aa00aa>Running on:</gradient> <light_purple>${runningPlatform.name} - $minecraftVersion")
-            sender.sendComponent("<#660099>Plugin by AkaCandyKAngel.")
+            sender.sendComponent("<gradient:#84D1CB:#EFDF8F>ChoTenAttribute</gradient> <#d9d9f2>$pluginVersion")
+            sender.sendComponent("<gradient:#946ecf:#ad3aad>Running on:</gradient> <#CDAEEF>${runningPlatform.name} - $minecraftVersion")
+            sender.sendComponent("<#7d36a1>Plugin by AkaCandyKAngel.")
         }
     }
 
@@ -47,7 +47,7 @@ object ChoTenAttributeMainCommand {
             try {
                 reloadCustomConfig()
             } catch (e: Exception) {
-                severeS("<red>Error thrown. check console for info.</red>")
+                severeS("<#E08A98>Error thrown. check console for info.</#E08A98>")
                 e.printStackTrace()
             }
         }
@@ -69,7 +69,7 @@ object ChoTenAttributeMainCommand {
 fun CommandComponent.createAttributeHelper(checkPermissions: Boolean = true) {
     execute<ProxyCommandSender> { sender, context, _ ->
         val command = context.command
-        val builder = StringBuilder("<gradient:yellow:aqua>Usage: /${command.name}<gradient>")
+        val builder = StringBuilder("<gradient:#EFDF8F:#84D1CB>Usage: /${command.name}<gradient>")
         var newline = false
 
         fun check(children: List<CommandComponent>): List<CommandComponent> {
@@ -93,21 +93,21 @@ fun CommandComponent.createAttributeHelper(checkPermissions: Boolean = true) {
             when (compound) {
                 is CommandComponentLiteral -> {
                     if (size == 1) {
-                        builder.append(" ").append("<gradient:#ccaaff:#9900ff:#ff0099>${compound.aliases[0]}</gradient>")
+                        builder.append(" ").append("<gradient:#d0bfea:#a86ecf:#cf6ea8>${compound.aliases[0]}</gradient>")
                     } else {
                         newline = true
                         builder.appendLine()
                         builder.append(space(offset))
                         if (level > 1) {
-                            builder.append(if (end) " " else "<#888888>│")
+                            builder.append(if (end) " " else "<#a7a7a7>│")
                         }
                         builder.append(space(level))
                         if (index + 1 < size) {
-                            builder.append("<gradient:#888888:#cccccc>├── </gradient>")
+                            builder.append("<gradient:#a7a7a7:#d9d9d9>├── </gradient>")
                         } else {
-                            builder.append("<gradient:#888888:#cccccc>└── </gradient>")
+                            builder.append("<gradient:#a7a7a7:#d9d9d9>└── </gradient>")
                         }
-                        builder.append("<gradient:#ccaaff:#9900ff:#ff0099>${compound.aliases[0]}</gradient>")
+                        builder.append("<gradient:#d0bfea:#a86ecf:#cf6ea8>${compound.aliases[0]}</gradient>")
                     }
                     option = false
                     comment = compound.aliases[0].length
@@ -120,10 +120,10 @@ fun CommandComponent.createAttributeHelper(checkPermissions: Boolean = true) {
                     }
                     comment = if (compound.optional || option) {
                         option = true
-                        builder.append(" ").append("<#66ffcc>[<$value>]")
+                        builder.append(" ").append("<#bae8d9>[<$value>]")
                         compound.comment.length + 4
                     } else {
-                        builder.append(" ").append("<#ffcc66><$value>")
+                        builder.append(" ").append("<#e8d9ba><$value>")
                         compound.comment.length + 2
                     }
                 }

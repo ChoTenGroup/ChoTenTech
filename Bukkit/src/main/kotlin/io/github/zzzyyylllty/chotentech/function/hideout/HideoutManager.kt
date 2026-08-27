@@ -5,7 +5,7 @@ import io.github.zzzyyylllty.chotentech.data.PlayerData
 import io.github.zzzyyylllty.chotentech.data.getData
 import io.github.zzzyyylllty.chotentech.function.BaseManager
 import io.github.zzzyyylllty.chotentech.function.player.sendComponent
-import io.github.zzzyyylllty.chotentech.quetiapine.data.PlayerDataManager
+import io.github.zzzyyylllty.chotentech.data.PlayerDataManager
 import io.github.zzzyyylllty.chotentech.util.ItemSerializer
 import org.bukkit.Bukkit
 import org.bukkit.Sound
@@ -185,7 +185,7 @@ object HideoutManager {
                 }
             }
             player.playSound(player, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.MASTER, 1f, 1f)
-            player.sendComponent("<green>合成完成: <yellow>${recipe.id}")
+            player.sendComponent("<#8FD4A6>合成完成: <#EFDF8F>${recipe.id}")
         }
     }
 
@@ -240,7 +240,7 @@ object HideoutManager {
             if (whole > 0) {
                 hideout.productionAccumulators["mine"] = current - whole
                 io.github.zzzyyylllty.chotentech.util.EconomyUtil.deposit(player, whole.toDouble())
-                player.sendComponent("<yellow>矿场产出 <green>$whole <yellow>CitCoin")
+                player.sendComponent("<#EFDF8F>矿场产出 <#8FD4A6>$whole <#EFDF8F>CitCoin")
             }
         }
     }
@@ -254,23 +254,23 @@ object HideoutManager {
         val recipe = HideoutConfig.getRecipe(recipeId) ?: return false
         val moduleLevel = hideout.getModuleLevel(recipe.module)
         if (moduleLevel < recipe.minLevel) {
-            player.sendComponent("<red>${HideoutConfig.getModule(recipe.module)?.name ?: recipe.module} 等级不足！需要 ${recipe.module} Lv.${recipe.minLevel}")
+            player.sendComponent("<#E08A98>${HideoutConfig.getModule(recipe.module)?.name ?: recipe.module} 等级不足！需要 ${recipe.module} Lv.${recipe.minLevel}")
             return false
         }
 
         if (!isGeneratorRunning(hideout)) {
-            player.sendComponent("<red>发电机未运行，无法进行合成！")
+            player.sendComponent("<#E08A98>发电机未运行，无法进行合成！")
             return false
         }
 
         if (hideout.craftingQueues.any { it.recipeId == recipeId }) {
-            player.sendComponent("<red>该配方已在合成队列中！")
+            player.sendComponent("<#E08A98>该配方已在合成队列中！")
             return false
         }
 
         for (req in recipe.inputs) {
             if (!hasRequiredItem(player, req)) {
-                player.sendComponent("<red>缺少材料: ${req.sertralineId?.let { ItemNameHelper.getDisplayName(it) } ?: req.material} x${req.amount}")
+                player.sendComponent("<#E08A98>缺少材料: ${req.sertralineId?.let { ItemNameHelper.getDisplayName(it) } ?: req.material} x${req.amount}")
                 return false
             }
         }
@@ -292,7 +292,7 @@ object HideoutManager {
             playerName = player.name,
         )
 
-        player.sendComponent("<green>开始合成: <yellow>${recipe.id} <gray>(需 ${craftTime} 秒)")
+        player.sendComponent("<#8FD4A6>开始合成: <#EFDF8F>${recipe.id} <#A9B4C3>(需 ${craftTime} 秒)")
         return true
     }
 
@@ -336,7 +336,7 @@ object HideoutManager {
         val baseKey = getCurrentBaseKey(player)
         val hideout = data.hideoutData[baseKey] ?: return false
         if (!hideout.isModuleBuilt("generator")) {
-            player.sendComponent("<red>发电机未建造！")
+            player.sendComponent("<#E08A98>发电机未建造！")
             return false
         }
 
@@ -345,13 +345,13 @@ object HideoutManager {
 
         val fuel = HideoutConfig.getFuelTypeByItem(item)
         if (fuel == null) {
-            player.sendComponent("<red>该物品不能作为燃料！")
+            player.sendComponent("<#E08A98>该物品不能作为燃料！")
             return false
         }
 
         val emptySlot = (0 until 5).firstOrNull { !hideout.fuelInventory.containsKey(it) }
         if (emptySlot == null) {
-            player.sendComponent("<red>燃料槽已满！")
+            player.sendComponent("<#E08A98>燃料槽已满！")
             return false
         }
 
@@ -361,7 +361,7 @@ object HideoutManager {
         item.amount--
         if (item.amount <= 0) player.inventory.setItem(slot, null)
 
-        player.sendComponent("<green>已添加燃料: ${fuel.id}")
+        player.sendComponent("<#8FD4A6>已添加燃料: ${fuel.id}")
         return true
     }
 
@@ -376,7 +376,7 @@ object HideoutManager {
         if (whole > 0) {
             hideout.productionAccumulators["mine"] = acc - whole
             io.github.zzzyyylllty.chotentech.util.EconomyUtil.deposit(player, whole.toDouble())
-            player.sendComponent("<green>从矿场提取了 <yellow>$whole <green>CitCoin")
+            player.sendComponent("<#8FD4A6>从矿场提取了 <#EFDF8F>$whole <#8FD4A6>CitCoin")
         }
         return true
     }
@@ -389,7 +389,7 @@ object HideoutManager {
 
         // 检查是否已有同模块正在升级
         if (hideout.pendingUpgrades.any { it.moduleId == moduleId }) {
-            player.sendComponent("<red>该模块正在升级中！")
+            player.sendComponent("<#E08A98>该模块正在升级中！")
             return false
         }
 
@@ -397,7 +397,7 @@ object HideoutManager {
         val currentLevel = hideout.getModuleLevel(moduleId)
 
         if (currentLevel >= module.maxLevel) {
-            player.sendComponent("<red>${module.name} 已达最高等级！")
+            player.sendComponent("<#E08A98>${module.name} 已达最高等级！")
             return false
         }
 
@@ -408,7 +408,7 @@ object HideoutManager {
         for (cost in levelCfg.upgradeCost) {
             val req = ItemRequirement(cost.material, cost.sertralineId, cost.amount)
             if (!hasRequiredItem(player, req)) {
-                player.sendComponent("<red>缺少升级材料: ${cost.sertralineId?.let { ItemNameHelper.getDisplayName(it) } ?: cost.material} x${cost.amount}")
+                player.sendComponent("<#E08A98>缺少升级材料: ${cost.sertralineId?.let { ItemNameHelper.getDisplayName(it) } ?: cost.material} x${cost.amount}")
                 return false
             }
         }
@@ -417,7 +417,7 @@ object HideoutManager {
         for (cc in levelCfg.currencyCost) {
             if (!io.github.zzzyyylllty.chotentech.util.CurrencyUtil.hasBalance(player, cc.currency, cc.amount)) {
                 val bal = io.github.zzzyyylllty.chotentech.util.CurrencyUtil.getBalance(player, cc.currency)
-                player.sendComponent("<red>缺少货币: ${cc.currency} x${"%.0f".format(cc.amount)} (当前: ${"%.0f".format(bal)})")
+                player.sendComponent("<#E08A98>缺少货币: ${cc.currency} x${"%.0f".format(cc.amount)} (当前: ${"%.0f".format(bal)})")
                 return false
             }
         }
@@ -442,7 +442,7 @@ object HideoutManager {
         )
 
         if (levelCfg.upgradeTime > 0) {
-            player.sendComponent("<green>${module.name} 升级已开始 (需 ${levelCfg.upgradeTime} 秒)，可离线等待完成")
+            player.sendComponent("<#8FD4A6>${module.name} 升级已开始 (需 ${levelCfg.upgradeTime} 秒)，可离线等待完成")
         } else {
             // 无耗时直接完成
             applyUpgrade(player, hideout, moduleId, nextLevel)
@@ -473,7 +473,7 @@ object HideoutManager {
             if (hideout.fuelAmount > capacity) hideout.fuelAmount = capacity
         }
 
-        player.sendComponent("<green>${module?.name ?: moduleId} 已升级到 Lv.$targetLevel！")
+        player.sendComponent("<#8FD4A6>${module?.name ?: moduleId} 已升级到 Lv.$targetLevel！")
         player.playSound(player, Sound.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.MASTER, 1f, 1f)
     }
 
@@ -483,7 +483,7 @@ object HideoutManager {
         val hideout = data.hideoutData[baseKey] ?: return false
         val level = hideout.getModuleLevel("bedroom")
         if (level <= 0) {
-            player.sendComponent("<red>卧室未建造！")
+            player.sendComponent("<#E08A98>卧室未建造！")
             return false
         }
 
@@ -492,7 +492,7 @@ object HideoutManager {
         val elapsed = System.currentTimeMillis() - hideout.bedroomLastUse
         if (elapsed < cooldown) {
             val remaining = (cooldown - elapsed) / 1000
-            player.sendComponent("<red>卧室仍在休息中，剩余 ${remaining / 60} 分 ${remaining % 60} 秒")
+            player.sendComponent("<#E08A98>卧室仍在休息中，剩余 ${remaining / 60} 分 ${remaining % 60} 秒")
             return false
         }
 
@@ -508,7 +508,7 @@ object HideoutManager {
                 )
             )
         }
-        player.sendComponent("<green>你在卧室休息了一会，感觉恢复了精力！")
+        player.sendComponent("<#8FD4A6>你在卧室休息了一会，感觉恢复了精力！")
         return true
     }
 
@@ -518,19 +518,19 @@ object HideoutManager {
         val hideout = data.hideoutData[baseKey] ?: return false
         val level = hideout.getModuleLevel("medical_station")
         if (level <= 0) {
-            player.sendComponent("<red>医疗站未建造！")
+            player.sendComponent("<#E08A98>医疗站未建造！")
             return false
         }
 
         val points = hideout.productionAccumulators["medical_station"] ?: 0.0
         if (points < 1.0) {
-            player.sendComponent("<red>医疗点数不足 (当前: ${"%.1f".format(points)})")
+            player.sendComponent("<#E08A98>医疗点数不足 (当前: ${"%.1f".format(points)})")
             return false
         }
 
         hideout.productionAccumulators["medical_station"] = points - 1.0
         player.setHealth(player.health.coerceAtMost(player.maxHealth - 1) + 1.0)
-        player.sendComponent("<green>消耗 1 医疗点数，恢复 1 生命值")
+        player.sendComponent("<#8FD4A6>消耗 1 医疗点数，恢复 1 生命值")
         return true
     }
 
@@ -540,14 +540,14 @@ object HideoutManager {
         val hideout = data.hideoutData[baseKey] ?: return false
         val level = hideout.getModuleLevel(moduleId)
         if (level <= 0) {
-            player.sendComponent("<red>该模块未建造！")
+            player.sendComponent("<#E08A98>该模块未建造！")
             return false
         }
 
         val cfg = HideoutConfig.getModule(moduleId)?.getLevelConfig(level) ?: return false
         val acc = hideout.productionAccumulators[moduleId] ?: 0.0
         if (acc < 1.0 || cfg.productionItem == null) {
-            player.sendComponent("<red>没有可提取的产出 (累积: ${"%.1f".format(acc)})")
+            player.sendComponent("<#E08A98>没有可提取的产出 (累积: ${"%.1f".format(acc)})")
             return false
         }
 
@@ -557,7 +557,7 @@ object HideoutManager {
         if (item != null) {
             val remaining = player.inventory.addItem(item)
             remaining.values.forEach { leftover -> player.world.dropItem(player.location, leftover) }
-            player.sendComponent("<green>从 ${cfg.productionItem} 提取了 <yellow>$whole <green>个")
+            player.sendComponent("<#8FD4A6>从 ${cfg.productionItem} 提取了 <#EFDF8F>$whole <#8FD4A6>个")
         }
         return true
     }
@@ -573,13 +573,13 @@ object HideoutManager {
         val key = baseKey ?: getCurrentBaseKey(player)
         val hideout = data.hideoutData.getOrPut(key) { HideoutPlayerData() }
         if (hideout.unlocked) {
-            player.sendComponent("<red>该基地的个人基地已解锁！")
+            player.sendComponent("<#E08A98>该基地的个人基地已解锁！")
             return false
         }
         hideout.unlocked = true
         // 自动建造前置模块
-        player.sendComponent("<gold>■■ <green>个人基地已解锁！<gold> ■■")
-        player.sendComponent("<gray>前往基地总览建造模块并添加燃料开始运作。")
+        player.sendComponent("<#DFBD7C>■■ <#8FD4A6>个人基地已解锁！<#DFBD7C> ■■")
+        player.sendComponent("<#A9B4C3>前往基地总览建造模块并添加燃料开始运作。")
         return true
     }
 }

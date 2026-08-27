@@ -35,18 +35,18 @@ import taboolib.common.platform.function.submitAsync
 //    val player = event.player
 //    val chunk = DataManager.getChunkData(event.block.chunk) ?: run {
 //        event.isCancelled = true
-//        player.sendComponent("<red>这个区块的数据正在加载，请稍等片刻!")
+//        player.sendComponent("<#E08A98>这个区块的数据正在加载，请稍等片刻!")
 //        return
 //    }
 //
 //    if (player.gameMode == GameMode.SPECTATOR || player.gameMode == GameMode.CREATIVE) {
 //        if (player.getData()?.editorMode == true) {
-//            player.sendActionBar("<green><b>编辑模式，破坏的方块已从记录中取消。".toComponent())
+//            player.sendActionBar("<#8FD4A6><b>编辑模式，破坏的方块已从记录中取消。".toComponent())
 //            chunk.data.unbreakableBlock.remove(event.block.getPos())
 //            chunk.data.breakableBlock.remove(event.block.getPos())
 //            chunk.dirty = true
 //        } else {
-//            player.sendActionBar("<yellow><b>非编辑模式，破坏的方块将不做处理。".toComponent())
+//            player.sendActionBar("<#EFDF8F><b>非编辑模式，破坏的方块将不做处理。".toComponent())
 //        }
 //        return
 //    }
@@ -65,24 +65,24 @@ import taboolib.common.platform.function.submitAsync
 //    val player = event.player
 //    val chunk = DataManager.getChunkData(event.block.chunk) ?: run {
 //        event.isCancelled = true
-//        player.sendComponent("<red>这个区块的数据正在加载，请稍等片刻!")
+//        player.sendComponent("<#E08A98>这个区块的数据正在加载，请稍等片刻!")
 //        return
 //    }
 //
 //    if (player.gameMode == GameMode.SPECTATOR || player.gameMode == GameMode.CREATIVE) {
 //        if (player.getData()?.editorMode == true) {
-//            player.sendActionBar("<green><b>编辑模式，放置的方块不可被破坏。".toComponent())
+//            player.sendActionBar("<#8FD4A6><b>编辑模式，放置的方块不可被破坏。".toComponent())
 //            chunk.data.unbreakableBlock.add(event.block.getPos())
 //            chunk.dirty = true
 //        } else {
-//            player.sendActionBar("<yellow><b>非编辑模式，放置的方块将不做处理。".toComponent())
+//            player.sendActionBar("<#EFDF8F><b>非编辑模式，放置的方块将不做处理。".toComponent())
 //        }
 //        return
 //    }
 //
 //    if (unplaceableBlocks.containsMatchIn(event.block.type.name)) {
 //        event.isCancelled = true
-//        player.sendComponent("<red>不允许放置这个方块")
+//        player.sendComponent("<#E08A98>不允许放置这个方块")
 //        return
 //    }
 //

@@ -11,7 +11,7 @@ bases:
     faction: MEG
     model: "meg_alpha"
     enable: true
-    dev: "<#22ebff>道阻且长"
+    dev: "<#87d0d7>道阻且长"
     lore:
       - "ALPHA基地坐落于 Level 1 ——宜居地带的廊道内。"
       - "它也是 M.E.G. 的重要基地之一。"
@@ -35,7 +35,7 @@ bases:
     faction: MEG
     model: "meg_beta"
     enable: false
-    dev: "<#22ebff>道阻且长"
+    dev: "<#87d0d7>道阻且长"
     lore:
       - "BETA基地坐落于 Level 11 无垠城市。"
       - "是 M.E.G. 内居民最多的基地。"
@@ -56,7 +56,7 @@ bases:
     faction: MEG
     model: "meg_gamma"
     enable: false
-    dev: "<#22ebff>道阻且长"
+    dev: "<#87d0d7>道阻且长"
     lore:
       - "GAMMA基地坐落在前期比较危险的 Level 3 内。"
       - "这里的装备很齐全，但是食物和药品经常短缺。"
@@ -77,7 +77,7 @@ bases:
     faction: MEG
     model: "meg_omega"
     enable: false
-    dev: "<#22ebff>道阻且长"
+    dev: "<#87d0d7>道阻且长"
     lore:
       - "OMEGA基地坐落于前期最安全的 Level 4，废弃办公室。"
       - "是食物和杏仁水的主要产地和后勤保障。"
@@ -97,7 +97,7 @@ bases:
     faction: MEG
     model: "meg_epsilon"
     enable: false
-    dev: "<#ff9966>夕阳一梦"
+    dev: "<#e8c9ba>夕阳一梦"
     lore:
       - "EPSILON基地坐落于冷战前线Level 283。"
       - "在输掉战争后，Epsilon基地因各种原因半独立，"
@@ -118,7 +118,7 @@ bases:
     faction: MEG
     model: "meg_delta"
     enable: false
-    dev: "<#888888>???"
+    dev: "<#a7a7a7>???"
     lore:
       - "坐落于交易中心——Level 230。"
       - "M.E.G.修复了这里老旧的基础设施，肃清了实体。"
@@ -139,7 +139,7 @@ bases:
     faction: MEG
     model: "meg_hotel"
     enable: false
-    dev: "<#cfaf60>旅馆秩序"
+    dev: "<#cabea3>旅馆秩序"
     lore:
       - "这个基地坐落在 Level 5。"
       - "为保护其他团体免受实体伤害而建立。"
@@ -160,7 +160,7 @@ bases:
     faction: MEG
     model: "meg_six"
     enable: false
-    dev: "<#667788>踏入深暗"
+    dev: "<#8e969d>踏入深暗"
     lore:
       - "第六层基地坐落于 Level 6.1，"
       - "用于适应 Level 6 黑暗而危险的环境。"
@@ -180,7 +180,7 @@ bases:
     faction: MEG
     model: "meg_emptynest"
     enable: false
-    dev: "<#ff9966>夕阳一梦"
+    dev: "<#e8c9ba>夕阳一梦"
     lore:
       - "极度危险的 Level 8 中的一抹火炬。"
       - "绵延两三千格的洞穴内的最后希望。"
@@ -200,7 +200,7 @@ bases:
     faction: BNTG
     model: "bntg_traders"
     enable: false
-    dev: "<#22ebff>道阻且长"
+    dev: "<#87d0d7>道阻且长"
     lore:
       - "Level 1 跃金段的商人之家是 B.N.T.G. 最著名的基地，"
       - "商人之家是B.N.T.G.物流、贸易的运作核心。"
@@ -220,7 +220,7 @@ bases:
     faction: BNTG
     model: "bntg_el3a"
     enable: false
-    dev: "<#ff9966>夕阳一梦"
+    dev: "<#e8c9ba>夕阳一梦"
     lore:
       - "EL3A办公区是 B.N.T.G. 的重要占领地，"
       - "它取代了 M.E.G. 的成果，在 Level 2内人尽皆知。"
@@ -240,7 +240,7 @@ bases:
     faction: BNTG
     model: "bntg_reserves"
     enable: false
-    dev: "<#ff9966>夕阳一梦"
+    dev: "<#e8c9ba>夕阳一梦"
     lore:
       - "这里是 B.N.T.G. 的主要物资存储的设施。"
       - "基地内物价高昂，也非常危险。"
@@ -260,7 +260,7 @@ bases:
     faction: BNTG
     model: "bntg_whitecastle"
     enable: false
-    dev: "<#ccff66>道阻且长"
+    dev: "<#d9e8ba>道阻且长"
     lore:
       - "B.N.T.G.的一个小基地，"
       - "用于 Level 283的资源提取。"
@@ -281,7 +281,7 @@ bases:
     faction: UEC
     model: "uec_sewers"
     enable: false
-    dev: "<#ccff66>道阻且长"
+    dev: "<#d9e8ba>道阻且长"
     lore:
       - "U.E.C. 声称澹涿浃居民十分感激他们的作为，"
       - "我们让他们过上了幸福安宁的生活，"

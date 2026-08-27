@@ -1,5 +1,5 @@
 BlackSmith:
-  name: "<gold>铁匠"
+  name: "<#DFBD7C>铁匠"
   items:
     # Lv.1 - 基础材料
     coal:

@@ -1,11 +1,11 @@
 package io.github.zzzyyylllty.chotentech.listener
 
 import io.github.zzzyyylllty.chotentech.ChoTenTech.levels
-import io.github.zzzyyylllty.chotentech.quetiapine.data.PlayerDataManager
-import io.github.zzzyyylllty.chotentech.quetiapine.event.QuetiapineAddExpEvent
-import io.github.zzzyyylllty.chotentech.quetiapine.event.QuetiapineAddLevelEvent
-import io.github.zzzyyylllty.chotentech.quetiapine.event.QuetiapineRemoveLevelEvent
-import io.github.zzzyyylllty.chotentech.quetiapine.util.devLog
+import io.github.zzzyyylllty.chotentech.data.PlayerDataManager
+import io.github.zzzyyylllty.chotentech.event.QuetiapineAddExpEvent
+import io.github.zzzyyylllty.chotentech.event.QuetiapineAddLevelEvent
+import io.github.zzzyyylllty.chotentech.event.QuetiapineRemoveLevelEvent
+import io.github.zzzyyylllty.chotentech.util.devLog
 import org.bukkit.Bukkit
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake

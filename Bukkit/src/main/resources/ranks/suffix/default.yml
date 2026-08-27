@@ -10,8 +10,8 @@ default:
 
 trader:
   display:
-    current: " <!i><gradient:#ffaa00:#ffff55>[商]</gradient>"
-    short: " <!i><gradient:#ffaa00:#ffff55>[商]</gradient>"
+    current: " <!i><gradient:#cfae6e:#e4e4ad>[商]</gradient>"
+    short: " <!i><gradient:#cfae6e:#e4e4ad>[商]</gradient>"
   name: "商贾后缀"
   desc: "商人专属后缀。"
   get: "通过交易获得。"

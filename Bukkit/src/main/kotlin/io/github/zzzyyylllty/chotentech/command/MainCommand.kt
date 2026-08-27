@@ -32,25 +32,25 @@ object MainCommand {
     @CommandBody
     val about = subCommand {
         execute<CommandSender> { sender, context, argument -> //
-            sender.sendComponent("<gradient:aqua:yellow>ChoTenTech</gradient> <#ccccff>$pluginVersion")
-            sender.sendComponent("<gradient:#6600ff:#aa00aa>Running on:</gradient> <light_purple>${runningPlatform.name} - $minecraftVersion")
-            sender.sendComponent("<#660099>Plugin by AkaCandyKAngel.")
+            sender.sendComponent("<gradient:#84D1CB:#EFDF8F>ChoTenTech</gradient> <#d9d9f2>$pluginVersion")
+            sender.sendComponent("<gradient:#946ecf:#ad3aad>Running on:</gradient> <#CDAEEF>${runningPlatform.name} - $minecraftVersion")
+            sender.sendComponent("<#7d36a1>Plugin by AkaCandyKAngel.")
         }
     }
 
     @CommandBody
     val reload = subCommand {
         execute<CommandSender> { sender, context, argument ->
-            sender.sendComponent("<gradient:aqua:yellow>reloading...")
+            sender.sendComponent("<gradient:#84D1CB:#EFDF8F>reloading...")
             try {
                 reloadCustomConfig()
                 // saves.yml 热重载(主线程执行,异步 reloadCustomConfig 不包含存档点)
                 io.github.zzzyyylllty.chotentech.function.savepoint.SavePointConfig.load()
                 io.github.zzzyyylllty.chotentech.function.savepoint.SavePointManager.createHolograms()
-                sender.sendComponent("<gradient:aqua:yellow>reloading... Complete.")
+                sender.sendComponent("<gradient:#84D1CB:#EFDF8F>reloading... Complete.")
             } catch (e: Exception) {
-                sender.sendComponent("<red>Error thrown. check console for info.</red>")
-                sender.sendComponent("<red>$e</red>")
+                sender.sendComponent("<#E08A98>Error thrown. check console for info.</#E08A98>")
+                sender.sendComponent("<#E08A98>$e</#E08A98>")
             }
         }
     }
@@ -89,7 +89,7 @@ object MainCommand {
 fun CommandComponent.createModernHelper(checkPermissions: Boolean = true) {
     execute<ProxyCommandSender> { sender, context, _ ->
         val command = context.command
-        val builder = StringBuilder("<gradient:yellow:aqua>Usage: /${command.name}<gradient>")
+        val builder = StringBuilder("<gradient:#EFDF8F:#84D1CB>Usage: /${command.name}<gradient>")
         var newline = false
 
         fun check(children: List<CommandComponent>): List<CommandComponent> {
@@ -111,21 +111,21 @@ fun CommandComponent.createModernHelper(checkPermissions: Boolean = true) {
             when (compound) {
                 is CommandComponentLiteral -> {
                     if (size == 1) {
-                        builder.append(" ").append("<gradient:#66ccff:#ffffff>${compound.aliases[0]}<>")
+                        builder.append(" ").append("<gradient:#bad9e8:#ffffff>${compound.aliases[0]}<>")
                     } else {
                         newline = true
                         builder.appendLine()
                         builder.append(space(offset))
                         if (level > 1) {
-                            builder.append(if (end) " " else "<#888888>│")
+                            builder.append(if (end) " " else "<#a7a7a7>│")
                         }
                         builder.append(space(level))
                         if (index + 1 < size) {
-                            builder.append("<gradient:#888888:#cccccc>├── </gradient>")
+                            builder.append("<gradient:#a7a7a7:#d9d9d9>├── </gradient>")
                         } else {
-                            builder.append("<gradient:#888888:#cccccc>└── </gradient>")
+                            builder.append("<gradient:#a7a7a7:#d9d9d9>└── </gradient>")
                         }
-                        builder.append("<gradient:#66ccff:#ffffff>${compound.aliases[0]}</gradient>")
+                        builder.append("<gradient:#bad9e8:#ffffff>${compound.aliases[0]}</gradient>")
                     }
                     option = false
                     comment = compound.aliases[0].length
@@ -138,10 +138,10 @@ fun CommandComponent.createModernHelper(checkPermissions: Boolean = true) {
                     }
                     comment = if (compound.optional || option) {
                         option = true
-                        builder.append(" ").append("<#66ffcc>[<$value>]")
+                        builder.append(" ").append("<#bae8d9>[<$value>]")
                         compound.comment.length + 4
                     } else {
-                        builder.append(" ").append("<#ffcc66><$value>")
+                        builder.append(" ").append("<#e8d9ba><$value>")
                         compound.comment.length + 2
                     }
                 }

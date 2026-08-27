@@ -58,7 +58,7 @@ object InsuranceManager {
 
         val meta = item.itemMeta ?: return item
         val existingName = meta.displayName()
-        val suffix = mmUtil.deserialize(" <gold>[已投保]")
+        val suffix = mmUtil.deserialize(" <#DFBD7C>[已投保]")
         meta.displayName(
             if (existingName != null) existingName.append(suffix)
             else Component.translatable(item.type.translationKey()).append(suffix)
@@ -76,7 +76,7 @@ object InsuranceManager {
         val current = meta.displayName()
         if (current != null) {
             val serialized = mmStrictUtil.serialize(current)
-            val cleaned = serialized.replace(" <gold>[已投保]", "")
+            val cleaned = serialized.replace(" <#DFBD7C>[已投保]", "")
             if (cleaned.isNotBlank()) {
                 meta.displayName(mmUtil.deserialize(cleaned))
             } else {

@@ -53,12 +53,12 @@ object ChatListener {
         }
         if (channel == null) {
             event.isCancelled = true
-            player.sendComponent("<red>没有可用的聊天频道。")
+            player.sendComponent("<#E08A98>没有可用的聊天频道。")
             return
         }
         if (text.isBlank()) {
             event.isCancelled = true
-            player.sendComponent("<yellow>消息内容不能为空。")
+            player.sendComponent("<#EFDF8F>消息内容不能为空。")
             return
         }
         devLog("ChatListener: ${player.name} channel=${channel.key} text='$text'")

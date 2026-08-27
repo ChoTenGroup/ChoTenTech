@@ -2,7 +2,7 @@
 # 私聊格式（MiniMessage）：<message> 为消息内容（安全解析，不经过占位符），<sender>/<target> 为双方显示名
 # 格式层支持 PAPI 占位符；玩家消息内容绝不会被解析
 whisper:
-  send: "<gray>[私聊 → <white><target></white>]</gray> <message>"
-  receive: "<gray>[私聊 ← <white><sender></white>]</gray> <message>"
+  send: "<#A9B4C3>[私聊 → <#F2F5FA><target></#F2F5FA>]</#A9B4C3> <message>"
+  receive: "<#A9B4C3>[私聊 ← <#F2F5FA><sender></#F2F5FA>]</#A9B4C3> <message>"
   # 私聊冷却（秒）；-1 无冷却。持有 chotentech.chat.cooldown.whisper.bypass 权限可绕过
   cooldown: 1.0

@@ -49,16 +49,16 @@ import io.github.zzzyyylllty.chotentech.util.CurrencyUtil
 import io.github.zzzyyylllty.chotentech.util.EconomyUtil
 import io.github.zzzyyylllty.chotentech.util.NotificationQueue
 import io.github.zzzyyylllty.chotentech.util.devLog
-import io.github.zzzyyylllty.chotentech.quetiapine.data.LevelTemplate
-import io.github.zzzyyylllty.chotentech.quetiapine.data.Regen
-import io.github.zzzyyylllty.chotentech.quetiapine.data.RegenBlock
-import io.github.zzzyyylllty.chotentech.quetiapine.data.RegenTemplate
-import io.github.zzzyyylllty.chotentech.quetiapine.data.load.loadLevelFiles as loadQuetiapineLevelFiles
-import io.github.zzzyyylllty.chotentech.quetiapine.data.load.loadRegenFiles
+import io.github.zzzyyylllty.chotentech.data.LevelTemplate
+import io.github.zzzyyylllty.chotentech.data.Regen
+import io.github.zzzyyylllty.chotentech.data.RegenBlock
+import io.github.zzzyyylllty.chotentech.data.RegenTemplate
+import io.github.zzzyyylllty.chotentech.data.load.loadLevelFiles as loadQuetiapineLevelFiles
+import io.github.zzzyyylllty.chotentech.data.load.loadRegenFiles
 import io.github.zzzyyylllty.chotentech.listener.releaseRegenBlocks
-import io.github.zzzyyylllty.chotentech.quetiapine.logger.*
-import io.github.zzzyyylllty.chotentech.quetiapine.util.QuetiapineLocalDependencyHelper
-import io.github.zzzyyylllty.chotentech.quetiapine.util.dependencies
+import io.github.zzzyyylllty.chotentech.logger.*
+import io.github.zzzyyylllty.chotentech.util.QuetiapineLocalDependencyHelper
+import io.github.zzzyyylllty.chotentech.util.dependencies
 import io.github.zzzyyylllty.sertraline.Sertraline
 import net.momirealms.craftengine.core.world.ChunkPos
 import org.bukkit.Bukkit

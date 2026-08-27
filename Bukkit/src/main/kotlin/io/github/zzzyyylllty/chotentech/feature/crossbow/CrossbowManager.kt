@@ -491,7 +491,7 @@ object CrossbowManager {
         val contents = getMagazineContents(magazine)
         val capacity = getMagazineCapacity(magazine)
         if (contents.size >= capacity) {
-            sendActionBar(player, "<yellow>弹匣已满")
+            sendActionBar(player, "<#EFDF8F>弹匣已满")
             return false
         }
 
@@ -513,7 +513,7 @@ object CrossbowManager {
             return true
         }
 
-        sendActionBar(player, "<red>没有可装填的箭矢")
+        sendActionBar(player, "<#E08A98>没有可装填的箭矢")
         return false
     }
 
@@ -530,12 +530,12 @@ object CrossbowManager {
 
     fun getFillLevelText(percent: Double): String {
         return when {
-            percent <= 0.0 -> "<red>空</red>"
-            percent <= 0.25 -> "<gold>较少</gold>"
-            percent <= 0.50 -> "<yellow>近一半</yellow>"
-            percent <= 0.75 -> "<green>较多</green>"
-            percent < 1.0 -> "<dark_green>几乎全满</dark_green>"
-            else -> "<green>满弹</green>"
+            percent <= 0.0 -> "<#E08A98>空</#E08A98>"
+            percent <= 0.25 -> "<#DFBD7C>较少</#DFBD7C>"
+            percent <= 0.50 -> "<#EFDF8F>近一半</#EFDF8F>"
+            percent <= 0.75 -> "<#8FD4A6>较多</#8FD4A6>"
+            percent < 1.0 -> "<#6EA982>几乎全满</#6EA982>"
+            else -> "<#8FD4A6>满弹</#8FD4A6>"
         }
     }
 
@@ -555,11 +555,11 @@ object CrossbowManager {
         val percent = getFillPercent(arrowIds, capacity)
         val topArrow = getTopArrowName(player, arrowIds)
         val fillText = getFillLevelText(percent)
-        sendActionBar(player, "<yellow>$topArrow<white>箭 <gray>|</gray> $fillText")
+        sendActionBar(player, "<#EFDF8F>$topArrow<#F2F5FA>箭 <#A9B4C3>|</#A9B4C3> $fillText")
     }
 
     fun sendMagazineHint(player: Player) {
-        sendActionBar(player, "<yellow>低头以装入箭矢，抬头以检视弹匣")
+        sendActionBar(player, "<#EFDF8F>低头以装入箭矢，抬头以检视弹匣")
     }
 
     fun sendActionBar(player: Player, message: String) {

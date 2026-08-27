@@ -18,33 +18,33 @@ import kotlin.collections.joinToString
 fun launchText() {
 
     val premiumDisplayName = if (VersionHelper().isLi2CO3Premium) {
-        "<gradient:yellow:gold>" + console.asLangText("PremiumVersion")
+        "<gradient:#EFDF8F:#DFBD7C>" + console.asLangText("PremiumVersion")
     } else {
-        "<gradient:green:aqua>" + console.asLangText("FreeVersion")
+        "<gradient:#8FD4A6:#84D1CB>" + console.asLangText("FreeVersion")
     }
 
     val specialThanks =
         listOf("MAORI", "NK_XingChen", "Jesuzi", "Blue_ruins(BlueIce)", "TheAchu", "CedricHunsen")
 
     consoleSender.sendStringAsComponent(" ")
-    consoleSender.sendStringAsComponent("""<gradient:white:red>  _______      ______         ___ _________ """)
-    consoleSender.sendStringAsComponent("""<gradient:white:red> / ___/ /  ___/_  __/__ ___  / _ /_  __/ _ )""")
-    consoleSender.sendStringAsComponent("""<gradient:white:red>/ /__/ _ \/ _ \/ / / -_) _ \/ __ |/ / / _  |""")
-    consoleSender.sendStringAsComponent("""<gradient:white:red>\___/_//_/\___/_/  \__/_//_/_/ |_/_/ /____/ """)
+    consoleSender.sendStringAsComponent("""<gradient:#F2F5FA:#E08A98>  _______      ______         ___ _________ """)
+    consoleSender.sendStringAsComponent("""<gradient:#F2F5FA:#E08A98> / ___/ /  ___/_  __/__ ___  / _ /_  __/ _ )""")
+    consoleSender.sendStringAsComponent("""<gradient:#F2F5FA:#E08A98>/ /__/ _ \/ _ \/ / / -_) _ \/ __ |/ / / _  |""")
+    consoleSender.sendStringAsComponent("""<gradient:#F2F5FA:#E08A98>\___/_//_/\___/_/  \__/_//_/_/ |_/_/ /____/ """)
     consoleSender.sendStringAsComponent(" ")
-    consoleSender.sendStringWithPrefix("<dark_aqua>",consoleSender.asLangText("WelcomeSeries"))
-    consoleSender.sendStringWithPrefix("<dark_aqua>",consoleSender.asLangText("DesignBy", "<#ff66cc>AkaCandyKAngel</#ff66cc>"))
-    consoleSender.sendStringWithPrefix("<dark_aqua>",consoleSender.asLangText("SpecialThanks","<aqua>[<dark_aqua>${specialThanks.joinToString("<dark_gray>, </dark_gray>")}<aqua>]"))
-    consoleSender.sendStringWithPrefix("<dark_aqua>",consoleSender.asLangText("PoweredBy", "<#66ccff>TabooLib <gold>6.2"))
+    consoleSender.sendStringWithPrefix("<#5FA8A3>",consoleSender.asLangText("WelcomeSeries"))
+    consoleSender.sendStringWithPrefix("<#5FA8A3>",consoleSender.asLangText("DesignBy", "<#e8bad9>AkaCandyKAngel</#e8bad9>"))
+    consoleSender.sendStringWithPrefix("<#5FA8A3>",consoleSender.asLangText("SpecialThanks","<#84D1CB>[<#5FA8A3>${specialThanks.joinToString("<#6E7A8C>, </#6E7A8C>")}<#84D1CB>]"))
+    consoleSender.sendStringWithPrefix("<#5FA8A3>",consoleSender.asLangText("PoweredBy", "<#bad9e8>TabooLib <#DFBD7C>6.2"))
     consoleSender.sendStringAsComponent(" ")
-    consoleSender.sendStringWithPrefix("<#88ccff>", console.asLangText("Welcome1"))
-    consoleSender.sendStringWithPrefix("<#88ccff>", console.asLangText("Welcome2", premiumDisplayName, "${pluginVersion}<reset>", "${runningPlatform.name} - ${versionId}"))
+    consoleSender.sendStringWithPrefix("<#c6dbec>", console.asLangText("Welcome1"))
+    consoleSender.sendStringWithPrefix("<#c6dbec>", console.asLangText("Welcome2", premiumDisplayName, "${pluginVersion}<reset>", "${runningPlatform.name} - ${versionId}"))
     consoleSender.sendStringAsComponent(" ")
-    consoleSender.sendStringWithPrefix("<#66bbff>", console.asLangText("Welcome3", "https://github.com/zzzyyylllty"))
-    consoleSender.sendStringWithPrefix("<#66bbff>", console.asLangText("Welcome4", "https://github.com/zzzyyylllty/Lithium-Carbonate"))
-    consoleSender.sendStringWithPrefix("<#66bbff>", console.asLangText("Welcome5", "https://chotengroup.gitbook.io/attribute"))
+    consoleSender.sendStringWithPrefix("<#bad4e8>", console.asLangText("Welcome3", "https://github.com/zzzyyylllty"))
+    consoleSender.sendStringWithPrefix("<#bad4e8>", console.asLangText("Welcome4", "https://github.com/zzzyyylllty/Lithium-Carbonate"))
+    consoleSender.sendStringWithPrefix("<#bad4e8>", console.asLangText("Welcome5", "https://chotengroup.gitbook.io/attribute"))
     consoleSender.sendStringAsComponent(" ")
-    if (VersionHelper().isLi2CO3Premium) consoleSender.sendStringWithPrefix("<gradient:red:yellow:green:aqua:light_purple>", console.asLangText("PremiumVersionWelcome", premiumDisplayName))
+    if (VersionHelper().isLi2CO3Premium) consoleSender.sendStringWithPrefix("<gradient:#E08A98:#EFDF8F:#8FD4A6:#84D1CB:#CDAEEF>", console.asLangText("PremiumVersionWelcome", premiumDisplayName))
     consoleSender.sendStringAsComponent(" ")
 
 }

@@ -6,13 +6,13 @@
       - tell color "&6这个电源已经启动了。"
     onPrepare: 
       - title color "&e&l!" subtitle color "&c&l电源已激活"
-      - command papi inline "broadcast <white>全体人员请注意，废弃办公室<yellow>{{ &powername }}</yellow>电源的供电程序将在<green>10秒</green>后开始。" as console
+      - command papi inline "broadcast <#F2F5FA>全体人员请注意，废弃办公室<#EFDF8F>{{ &powername }}</#EFDF8F>电源的供电程序将在<#8FD4A6>10秒</#8FD4A6>后开始。" as console
     onStart: 
-      - command papi inline "broadcast <white>废弃办公室<yellow>{{ &powername }}</yellow>电源的供电程序已开始运作。" as console
+      - command papi inline "broadcast <#F2F5FA>废弃办公室<#EFDF8F>{{ &powername }}</#EFDF8F>电源的供电程序已开始运作。" as console
     onClose: 
-      - command papi inline "broadcast <white>废弃办公室<yellow>{{ &powername }}</yellow>电源的供电程序正在停止。" as console
+      - command papi inline "broadcast <#F2F5FA>废弃办公室<#EFDF8F>{{ &powername }}</#EFDF8F>电源的供电程序正在停止。" as console
     onCloseEnd: 
-      - command papi inline "broadcast <white>废弃办公室<yellow>{{ &powername }}</yellow>电源的供电程序已正常关闭。" as console
+      - command papi inline "broadcast <#F2F5FA>废弃办公室<#EFDF8F>{{ &powername }}</#EFDF8F>电源的供电程序已正常关闭。" as console
 
   leverPos:
     world: "Area3"
@@ -91,13 +91,13 @@
       - tell color "&6这个电源已经启动了。"
     onPrepare: 
       - title color "&e&l!" subtitle color "&c&l电源已激活"
-      - command papi inline "broadcast <white>全体人员请注意，废弃办公室<yellow>上层楼梯间大门</yellow>活塞门将在<green>30秒</green>后开始供电。" as console
+      - command papi inline "broadcast <#F2F5FA>全体人员请注意，废弃办公室<#EFDF8F>上层楼梯间大门</#EFDF8F>活塞门将在<#8FD4A6>30秒</#8FD4A6>后开始供电。" as console
     onStart: 
-      - command papi inline "broadcast <white>废弃办公室<yellow>上层楼梯间大门</yellow>电力正常。请尽快前往。" as console
+      - command papi inline "broadcast <#F2F5FA>废弃办公室<#EFDF8F>上层楼梯间大门</#EFDF8F>电力正常。请尽快前往。" as console
     onClose: 
-      - command papi inline "broadcast <white>废弃办公室<yellow>上层楼梯间大门</yellow>大门正在落下，请注意安全。" as console
+      - command papi inline "broadcast <#F2F5FA>废弃办公室<#EFDF8F>上层楼梯间大门</#EFDF8F>大门正在落下，请注意安全。" as console
     onCloseEnd: 
-      - command papi inline "broadcast <white>废弃办公室<yellow>上层楼梯间大门</yellow>大门已落下。" as console
+      - command papi inline "broadcast <#F2F5FA>废弃办公室<#EFDF8F>上层楼梯间大门</#EFDF8F>大门已落下。" as console
 
   leverPos:
     world: "Area3"

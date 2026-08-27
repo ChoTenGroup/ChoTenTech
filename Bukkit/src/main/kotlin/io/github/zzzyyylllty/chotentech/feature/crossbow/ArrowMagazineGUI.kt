@@ -36,7 +36,7 @@ object ArrowMagazineGUI {
             )
 
             set('#', XMaterial.GRAY_STAINED_GLASS_PANE) { name = " " }
-            set(31, guiItem(XMaterial.BARRIER, "<red>关闭"))
+            set(31, guiItem(XMaterial.BARRIER, "<#E08A98>关闭"))
 
             onBuild { _, inventory ->
                 renderArrowSlots(player, inventory, arrowIds, capacity)

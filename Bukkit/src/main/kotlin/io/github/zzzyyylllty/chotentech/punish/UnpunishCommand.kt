@@ -28,7 +28,7 @@ object UnpunishCommand {
                     val targetInput = context["target"] ?: ""
                     val resolved = resolvePlayer(targetInput)
                     if (resolved == null) {
-                        sender.sendComponent("<red>未找到玩家: $targetInput")
+                        sender.sendComponent("<#E08A98>未找到玩家: $targetInput")
                         return@submitAsync
                     }
                     val (targetUuid, targetName) = resolved
@@ -38,15 +38,15 @@ object UnpunishCommand {
                     else runCatching { PunishType.valueOf(typeStr.uppercase()) }.getOrNull()
 
                     if (typeStr.isNotBlank() && type == null) {
-                        sender.sendComponent("<red>未知处罚类型: $typeStr <gray>(可用: ${PunishType.entries.joinToString(", ") { it.name }},留空则解除全部)")
+                        sender.sendComponent("<#E08A98>未知处罚类型: $typeStr <#A9B4C3>(可用: ${PunishType.entries.joinToString(", ") { it.name }},留空则解除全部)")
                         return@submitAsync
                     }
 
                     PunishManager.deactivateAllForPlayer(targetUuid, type)
                     val typeName = type?.displayName ?: "全部"
-                    sender.sendComponent("<green>已解除 <yellow>$targetName <green>的${typeName}处罚")
+                    sender.sendComponent("<#8FD4A6>已解除 <#EFDF8F>$targetName <#8FD4A6>的${typeName}处罚")
                     if (type == null) {
-                        getOnlinePlayerByName(targetName)?.sendComponent("<green>管理员已解除你的全部处罚")
+                        getOnlinePlayerByName(targetName)?.sendComponent("<#8FD4A6>管理员已解除你的全部处罚")
                     }
                 }
             }

@@ -2,7 +2,6 @@ package io.github.zzzyyylllty.chotentech.command
 
 import io.github.zzzyyylllty.chotentech.function.player.sendComponent
 import io.github.zzzyyylllty.chotentech.function.kether.runKether
-import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import taboolib.common.platform.command.CommandBody
@@ -40,8 +39,6 @@ object ChoTenAttributeApiCommand {
         dynamic("content") {
             execute<CommandSender> { sender, context, argument ->
                 submitAsync {
-                    val mm = MiniMessage.miniMessage()
-                    // 获取参数的值
                     val content = context["content"]
                     sender.sendComponent(content)
                 }
@@ -55,12 +52,11 @@ object ChoTenAttributeApiCommand {
         dynamic("script") {
             execute<CommandSender> { sender, context, argument ->
                 submitAsync {
-                    val mm = MiniMessage.miniMessage()
                     // 获取参数的值
                     val content = context["script"]
                     val ret = runKether(listOf(content), sender)
-                    sender.sendComponent("<yellow>Kether: <gray>$content")
-                    sender.sendComponent("<yellow>Return: <gray>${ret.get()}")
+                    sender.sendComponent("<#EFDF8F>Kether: <#A9B4C3>$content")
+                    sender.sendComponent("<#EFDF8F>Return: <#A9B4C3>${ret.get()}")
                 }
             }
         }
@@ -75,12 +71,11 @@ object ChoTenAttributeApiCommand {
                     submitAsync {
                         val tabooPlayer = context.player("player")
                         val bukkitPlayer = tabooPlayer.castSafely<Player>() as CommandSender
-                        val mm = MiniMessage.miniMessage()
                         // 获取参数的值
                         val content = context["script"]
                         val ret = runKether(listOf(content), bukkitPlayer)
-                        sender.sendComponent("<yellow>Kether: <gray>$content")
-                        sender.sendComponent("<yellow>Return: <gray>${ret.get()}")
+                        sender.sendComponent("<#EFDF8F>Kether: <#A9B4C3>$content")
+                        sender.sendComponent("<#EFDF8F>Return: <#A9B4C3>${ret.get()}")
                     }
                 }
             }
@@ -92,7 +87,6 @@ object ChoTenAttributeApiCommand {
         dynamic("script") {
             execute<CommandSender> { sender, context, argument ->
                 submitAsync {
-                    val mm = MiniMessage.miniMessage()
                     // 获取参数的值
                     val content = context["script"]
                     runKether(listOf(content), sender)
@@ -110,7 +104,6 @@ object ChoTenAttributeApiCommand {
                     submitAsync {
                         val tabooPlayer = context.player("player")
                         val bukkitPlayer = tabooPlayer.castSafely<Player>() as CommandSender
-                        val mm = MiniMessage.miniMessage()
                         // 获取参数的值
                         val content = context["script"]
                         runKether(listOf(content), bukkitPlayer)

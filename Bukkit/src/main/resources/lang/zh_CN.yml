@@ -13,52 +13,52 @@ Collapsed: "[已折叠]"
 PremiumVersionWelcome: " *** 正在运行付费版本，感谢您对 quetiapine 的支持! *** "
 PremiumVersion: "付费版 (Premium)"
 FreeVersion: "免费版 (Free)"
-Player_Only_Command: "<red>本指令只能由玩家执行!"
-Player_Not_Exist: "<red>玩家不存在!"
-Level_Not_Exist: "<red>等级不存在!"
-PlayerData_Browse_Title: "<#ffff99>=== 玩家 {0} 的数据 ==="
-PlayerData_Browse_Section: "<#88eeff>  {0} <gray>== <#99ccaa>{1}"
-PlayerData_Browse_Empty: "<#ff0000>  无任何数据."
-PlayerData_Clear: "玩家数据已全部清除: <yellow>{0} <gray>- <aqua>* <gray>= <dark_gray>null"
-PlayerData_Fetch: "玩家数据已获取: <yellow>{0} <gray>- <aqua>{1} <gray>== <green>{2}"
-PlayerData_Modify: "玩家数据已修改: <yellow>{0} <gray>- <aqua>{1} <gray>= <green>{2}"
-PlayerData_Remove: "玩家数据已删除: <yellow>{0} <gray>- <aqua>{1} <gray>= <dark_gray>null"
-PlayerCooldown_Clear: "玩家冷却已全部清除: <yellow>{0} <gray>- <aqua>cooldown.* <gray>= <dark_gray>null"
-PlayerCooldown_Modify: "玩家冷却已修改: <yellow>{0} <gray>- <aqua>cooldown.{1} <gray>= <green>{2}"
-PlayerCooldown_Remove: "玩家冷却已删除: <yellow>{0} <gray>- <aqua>cooldown.{1} <gray>= <dark_gray>null"
-PlayerCooldown_Fetch: "玩家冷却已获取: <yellow>{0} <gray>- <aqua>cooldown.{1} <gray>== <green>{2}"
-PlayerLevel_Modify_Console: "<gray>玩家 <#66ffcc>{0}</#66ffcc> 的 <#66ffcc>{1}</#66ffcc> 等级已修改为 <#66ffcc>{2}</#66ffcc>"
-PlayerLevel_Modify_Player: "<gray>您的 <#66ffcc>{0}</#66ffcc> 等级已修改为 <#66ffcc>{1}</#66ffcc>"
-PlayerLevel_Reset_Console: "<gray>玩家 <#66ffcc>{0}</#66ffcc> 的 <#66ffcc>{1}</#66ffcc> 等级已重设为 <#66ffcc>{2}</#66ffcc>"
-PlayerLevel_Reset_Player: "<gray>您的 <#66ffcc>{0}</#66ffcc> 等级已重设为 <#66ffcc>{1}</#66ffcc>"
-PlayerExp_Modify_Console: "<gray>玩家 <#66ffcc>{0}</#66ffcc> 的 <#66ffcc>{1}</#66ffcc> 经验已修改为 <#66ffcc>{2}</#66ffcc>"
-PlayerExp_Modify_Player: "<gray>您的 <#66ffcc>{0}</#66ffcc> 经验已修改为 <#66ffcc>{1}</#66ffcc>"
-PlayerExp_Add_Console: "<gray>玩家 <#66ffcc>{0}</#66ffcc> 的 <#66ffcc>{1}</#66ffcc> 经验已增加 <#66ffcc>{2}</#66ffcc>"
-PlayerExp_Add_Player: "<gray>您的 <#66ffcc>{0}</#66ffcc> 经验已增加 <#66ffcc>{1}</#66ffcc>"
-PlayerExp_Remove_Console: "<gray>玩家 <#66ffcc>{0}</#66ffcc> 的 <#66ffcc>{1}</#66ffcc> 经验已减少 <#66ffcc>{2}</#66ffcc>"
-PlayerExp_Remove_Player: "<gray>您的 <#66ffcc>{0}</#66ffcc> 经验已减少 <#66ffcc>{1}</#66ffcc>"
-PlayerExp_Reset_Console: "<gray>玩家 <#66ffcc>{0}</#66ffcc> 的 <#66ffcc>{1}</#66ffcc> 经验已重设为 <#66ffcc>{2}</#66ffcc>"
-PlayerExp_Reset_Player: "<gray>您的 <#66ffcc>{0}</#66ffcc> 经验已重设为 <#66ffcc>{1}</#66ffcc>"
-Operation_Cancelled: "<gold>操作中止，这可能是因为事件被其他插件取消导致。"
+Player_Only_Command: "<#E08A98>本指令只能由玩家执行!"
+Player_Not_Exist: "<#E08A98>玩家不存在!"
+Level_Not_Exist: "<#E08A98>等级不存在!"
+PlayerData_Browse_Title: "<#ececc6>=== 玩家 {0} 的数据 ==="
+PlayerData_Browse_Section: "<#c6e6ec>  {0} <#A9B4C3>== <#c9d9cf>{1}"
+PlayerData_Browse_Empty: "<#cf6e6e>  无任何数据."
+PlayerData_Clear: "玩家数据已全部清除: <#EFDF8F>{0} <#A9B4C3>- <#84D1CB>* <#A9B4C3>= <#6E7A8C>null"
+PlayerData_Fetch: "玩家数据已获取: <#EFDF8F>{0} <#A9B4C3>- <#84D1CB>{1} <#A9B4C3>== <#8FD4A6>{2}"
+PlayerData_Modify: "玩家数据已修改: <#EFDF8F>{0} <#A9B4C3>- <#84D1CB>{1} <#A9B4C3>= <#8FD4A6>{2}"
+PlayerData_Remove: "玩家数据已删除: <#EFDF8F>{0} <#A9B4C3>- <#84D1CB>{1} <#A9B4C3>= <#6E7A8C>null"
+PlayerCooldown_Clear: "玩家冷却已全部清除: <#EFDF8F>{0} <#A9B4C3>- <#84D1CB>cooldown.* <#A9B4C3>= <#6E7A8C>null"
+PlayerCooldown_Modify: "玩家冷却已修改: <#EFDF8F>{0} <#A9B4C3>- <#84D1CB>cooldown.{1} <#A9B4C3>= <#8FD4A6>{2}"
+PlayerCooldown_Remove: "玩家冷却已删除: <#EFDF8F>{0} <#A9B4C3>- <#84D1CB>cooldown.{1} <#A9B4C3>= <#6E7A8C>null"
+PlayerCooldown_Fetch: "玩家冷却已获取: <#EFDF8F>{0} <#A9B4C3>- <#84D1CB>cooldown.{1} <#A9B4C3>== <#8FD4A6>{2}"
+PlayerLevel_Modify_Console: "<#A9B4C3>玩家 <#bae8d9>{0}</#bae8d9> 的 <#bae8d9>{1}</#bae8d9> 等级已修改为 <#bae8d9>{2}</#bae8d9>"
+PlayerLevel_Modify_Player: "<#A9B4C3>您的 <#bae8d9>{0}</#bae8d9> 等级已修改为 <#bae8d9>{1}</#bae8d9>"
+PlayerLevel_Reset_Console: "<#A9B4C3>玩家 <#bae8d9>{0}</#bae8d9> 的 <#bae8d9>{1}</#bae8d9> 等级已重设为 <#bae8d9>{2}</#bae8d9>"
+PlayerLevel_Reset_Player: "<#A9B4C3>您的 <#bae8d9>{0}</#bae8d9> 等级已重设为 <#bae8d9>{1}</#bae8d9>"
+PlayerExp_Modify_Console: "<#A9B4C3>玩家 <#bae8d9>{0}</#bae8d9> 的 <#bae8d9>{1}</#bae8d9> 经验已修改为 <#bae8d9>{2}</#bae8d9>"
+PlayerExp_Modify_Player: "<#A9B4C3>您的 <#bae8d9>{0}</#bae8d9> 经验已修改为 <#bae8d9>{1}</#bae8d9>"
+PlayerExp_Add_Console: "<#A9B4C3>玩家 <#bae8d9>{0}</#bae8d9> 的 <#bae8d9>{1}</#bae8d9> 经验已增加 <#bae8d9>{2}</#bae8d9>"
+PlayerExp_Add_Player: "<#A9B4C3>您的 <#bae8d9>{0}</#bae8d9> 经验已增加 <#bae8d9>{1}</#bae8d9>"
+PlayerExp_Remove_Console: "<#A9B4C3>玩家 <#bae8d9>{0}</#bae8d9> 的 <#bae8d9>{1}</#bae8d9> 经验已减少 <#bae8d9>{2}</#bae8d9>"
+PlayerExp_Remove_Player: "<#A9B4C3>您的 <#bae8d9>{0}</#bae8d9> 经验已减少 <#bae8d9>{1}</#bae8d9>"
+PlayerExp_Reset_Console: "<#A9B4C3>玩家 <#bae8d9>{0}</#bae8d9> 的 <#bae8d9>{1}</#bae8d9> 经验已重设为 <#bae8d9>{2}</#bae8d9>"
+PlayerExp_Reset_Player: "<#A9B4C3>您的 <#bae8d9>{0}</#bae8d9> 经验已重设为 <#bae8d9>{1}</#bae8d9>"
+Operation_Cancelled: "<#DFBD7C>操作中止，这可能是因为事件被其他插件取消导致。"
 
-Command_Error_Player_Not_Found: <red>玩家 <yellow>{0}</yellow> 未找到或不在线。
-Command_Error_Invalid_Value: <red>无效的值：<yellow>{0}</yellow>
-Command_Error_Invalid_Type: <red>无效的类型：<yellow>{0}</yellow>，可选值：ADD/PERCENT/MULTIPLY
-Command_Manage_Remove_Attempt: <yellow>尝试移除 <aqua>{1}</aqua> 的修饰符：<red>{0}</red>
-Command_Manage_Update_Success: <green>成功更新 <yellow>{0}</yellow> 的属性。
-Command_Manage_List_Header: <gold>--- <yellow>{0}</yellow> 的属性列表 ---
-Command_Manage_List_Empty: <gray>无修饰符。
-Command_Manage_List_Item: "<gray>- <aqua>{0}</aqua> 值: <white>{1}</white> 类型: <yellow>{2}</yellow> <dark_gray>{3}</dark_gray>"
-Command_Manage_Clear_Success: <green>成功清除 <yellow>{0}</yellow> 的所有修饰符。
-Command_Debug_Show_Header: <gold>--- 属性调试信息 ---
-Command_Debug_Show_Item: "<gray>{0}<gray>: <white>{1}</white>"
-Command_Debug_Show_Category_Header: "<gold>--- {0} ({1}) ---"
-Command_Debug_Show_Empty: "<yellow>该分类下无属性或分类不存在"
-Command_Debug_Show_EmptyAll: "<yellow>该玩家无任何属性数据"
-Command_Debug_Categories_Header: "<gold>===== 属性分类 ====="
-Command_Debug_Categories_Item: <yellow>{0}</yellow><gray> — {1} ({2} 个属性)
-Dodge_Triggered: <aqua>闪避！
-Block_Triggered: <green>格挡！
+Command_Error_Player_Not_Found: <#E08A98>玩家 <#EFDF8F>{0}</#EFDF8F> 未找到或不在线。
+Command_Error_Invalid_Value: <#E08A98>无效的值：<#EFDF8F>{0}</#EFDF8F>
+Command_Error_Invalid_Type: <#E08A98>无效的类型：<#EFDF8F>{0}</#EFDF8F>，可选值：ADD/PERCENT/MULTIPLY
+Command_Manage_Remove_Attempt: <#EFDF8F>尝试移除 <#84D1CB>{1}</#84D1CB> 的修饰符：<#E08A98>{0}</#E08A98>
+Command_Manage_Update_Success: <#8FD4A6>成功更新 <#EFDF8F>{0}</#EFDF8F> 的属性。
+Command_Manage_List_Header: <#DFBD7C>--- <#EFDF8F>{0}</#EFDF8F> 的属性列表 ---
+Command_Manage_List_Empty: <#A9B4C3>无修饰符。
+Command_Manage_List_Item: "<#A9B4C3>- <#84D1CB>{0}</#84D1CB> 值: <#F2F5FA>{1}</#F2F5FA> 类型: <#EFDF8F>{2}</#EFDF8F> <#6E7A8C>{3}</#6E7A8C>"
+Command_Manage_Clear_Success: <#8FD4A6>成功清除 <#EFDF8F>{0}</#EFDF8F> 的所有修饰符。
+Command_Debug_Show_Header: <#DFBD7C>--- 属性调试信息 ---
+Command_Debug_Show_Item: "<#A9B4C3>{0}<#A9B4C3>: <#F2F5FA>{1}</#F2F5FA>"
+Command_Debug_Show_Category_Header: "<#DFBD7C>--- {0} ({1}) ---"
+Command_Debug_Show_Empty: "<#EFDF8F>该分类下无属性或分类不存在"
+Command_Debug_Show_EmptyAll: "<#EFDF8F>该玩家无任何属性数据"
+Command_Debug_Categories_Header: "<#DFBD7C>===== 属性分类 ====="
+Command_Debug_Categories_Item: <#EFDF8F>{0}</#EFDF8F><#A9B4C3> — {1} ({2} 个属性)
+Dodge_Triggered: <#84D1CB>闪避！
+Block_Triggered: <#8FD4A6>格挡！
 
 # : : : : :  属性名称 : : : : :
 Attribute_max_health_Name: 生命上限

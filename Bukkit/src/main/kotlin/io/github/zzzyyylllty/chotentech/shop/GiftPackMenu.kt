@@ -51,7 +51,7 @@ class GiftPackMenu {
 
     fun open(player: Player, giftPackKey: String) {
         val pack = GiftPackManager.getPack(giftPackKey) ?: run {
-            player.sendMessage("<red>礼包 <yellow>$giftPackKey<white> <red>不存在".toComponent())
+            player.sendMessage("<#E08A98>礼包 <#EFDF8F>$giftPackKey<#F2F5FA> <#E08A98>不存在".toComponent())
             return
         }
 
@@ -71,7 +71,7 @@ class GiftPackMenu {
             }
         }
 
-        val titleStr = "<white><shift:-16><image:kangelicon:buyshop><shift:-176><aqua><font:minecraft:fusionpixel10>${pack.name}"
+        val titleStr = "<#F2F5FA><shift:-16><image:kangelicon:buyshop><shift:-176><#84D1CB><font:minecraft:fusionpixel10>${pack.name}"
 
         player.openMenu<Chest>(mmJsonUtil.serialize(titleStr.toComponent())) {
             rows(6)
@@ -86,13 +86,13 @@ class GiftPackMenu {
             )
 
             // Close buttons (row 0, col 0-2)
-            val closeItem = guiItem(XMaterial.BARRIER, "<red>关闭", listOf("<gray>点击关闭"), model = "kangelitem:void")
+            val closeItem = guiItem(XMaterial.BARRIER, "<#E08A98>关闭", listOf("<#A9B4C3>点击关闭"), model = "kangelitem:void")
             for (slot in 0..2) set(slot, closeItem)
 
             // Previous page (placeholder)
-            set(6, guiItem(XMaterial.ARROW, "<green>上一页", model = "kangelitem:previous_no"))
+            set(6, guiItem(XMaterial.ARROW, "<#8FD4A6>上一页", model = "kangelitem:previous_no"))
             // Next page (placeholder)
-            set(7, guiItem(XMaterial.ARROW, "<green>下一页", model = "kangelitem:next_no"))
+            set(7, guiItem(XMaterial.ARROW, "<#8FD4A6>下一页", model = "kangelitem:next_no"))
 
             // ── Item slot refresh ──
             fun refreshItemSlots() {
@@ -132,30 +132,30 @@ class GiftPackMenu {
                 val meta = item.itemMeta ?: return
 
                 meta.displayName(
-                    (if (allSelected && hasBalance) "<green><b>确认购买" else "<gray><b>选择未完成")
+                    (if (allSelected && hasBalance) "<#8FD4A6><b>确认购买" else "<#A9B4C3><b>选择未完成")
                         .replacePlaceholder(player).toComponent()
                 )
 
                 val confirmLore = mutableListOf<String>()
-                confirmLore.add("<!i><gold>总价: <white>$totalPrice $currencyName")
+                confirmLore.add("<!i><#DFBD7C>总价: <#F2F5FA>$totalPrice $currencyName")
                 if (!hasBalance) {
-                    confirmLore.add("<!i><red>货币不足!")
+                    confirmLore.add("<!i><#E08A98>货币不足!")
                 } else if (allSelected) {
-                    confirmLore.add("<!i><green>点击确认购买")
+                    confirmLore.add("<!i><#8FD4A6>点击确认购买")
                 } else {
-                    confirmLore.add("<!i><red>请完成所有分类的选择")
+                    confirmLore.add("<!i><#E08A98>请完成所有分类的选择")
                 }
-                confirmLore.add("<!i><dark_gray><st>${" ".repeat(60)}</st>")
-                confirmLore.add("<!i><gray>已选:")
+                confirmLore.add("<!i><#6E7A8C><st>${" ".repeat(60)}</st>")
+                confirmLore.add("<!i><#A9B4C3>已选:")
                 for ((catKey, cat) in pack.categories) {
                     val names = (selectedIds[catKey] ?: emptySet()).map { id ->
                         cat.items.find { it.id == id }?.displayName ?: id.substringAfterLast(":")
-                    }.ifEmpty { listOf("<red>未选择") }
-                    confirmLore.add("<!i> <white>${cat.displayName}: <gray>${names.joinToString(", ")}")
+                    }.ifEmpty { listOf("<#E08A98>未选择") }
+                    confirmLore.add("<!i> <#F2F5FA>${cat.displayName}: <#A9B4C3>${names.joinToString(", ")}")
                 }
                 if (totalPrice > pack.price) {
                     confirmLore.add("")
-                    confirmLore.add("<!i><red>含特殊加价: ${totalPrice - pack.price} $currencyName")
+                    confirmLore.add("<!i><#E08A98>含特殊加价: ${totalPrice - pack.price} $currencyName")
                 }
 
                 meta.lore(confirmLore.map { it.replacePlaceholder(player).toComponent() })
@@ -180,20 +180,20 @@ class GiftPackMenu {
                 val item = mat.parseItem() ?: ItemStack(Material.KNOWLEDGE_BOOK)
                 val meta = item.itemMeta ?: return
                 NamespacedKey.fromString("kangelicon:book")?.let { meta.itemModel = it }
-                meta.displayName("<gold><b>礼包信息".replacePlaceholder(player).toComponent())
+                meta.displayName("<#DFBD7C><b>礼包信息".replacePlaceholder(player).toComponent())
 
                 val infoLore = mutableListOf<String>()
-                infoLore.add("<!i><gray>礼包商品详情")
+                infoLore.add("<!i><#A9B4C3>礼包商品详情")
                 infoLore.add("")
-                infoLore.add("<!i><gold>礼包: <white>${pack.name}")
-                infoLore.add("<!i><gold>基础价格: <white>${pack.price} $currencyName")
+                infoLore.add("<!i><#DFBD7C>礼包: <#F2F5FA>${pack.name}")
+                infoLore.add("<!i><#DFBD7C>基础价格: <#F2F5FA>${pack.price} $currencyName")
                 for ((itemId, modifier) in pack.priceModifiers) {
                     val shortName = itemId.substringAfterLast(":")
-                    infoLore.add("<!i>  <red>※ ${shortName} +$modifier $currencyName")
+                    infoLore.add("<!i>  <#E08A98>※ ${shortName} +$modifier $currencyName")
                 }
-                infoLore.add("<!i><gold>当前总价: <white>$totalPrice $currencyName")
+                infoLore.add("<!i><#DFBD7C>当前总价: <#F2F5FA>$totalPrice $currencyName")
                 infoLore.add("")
-                infoLore.add("<!i><gold>你的余额: <white>$balance $currencyName")
+                infoLore.add("<!i><#DFBD7C>你的余额: <#F2F5FA>$balance $currencyName")
 
                 meta.lore(infoLore.map { it.replacePlaceholder(player).toComponent() })
                 item.setItemMeta(meta)
@@ -216,18 +216,18 @@ class GiftPackMenu {
                     val meta = item.itemMeta ?: continue
 
                     meta.displayName(
-                        (if (isCurrent) "<green><b>▶ ${cat.displayName}" else "<white>${cat.displayName}")
+                        (if (isCurrent) "<#8FD4A6><b>▶ ${cat.displayName}" else "<#F2F5FA>${cat.displayName}")
                             .replacePlaceholder(player).toComponent()
                     )
                     val catLore = mutableListOf(
-                        "<!i><gray>点击切换品类",
-                        "<!i><white>可选 ${cat.items.size} 种",
-                        "<!i><gold>最多选择: ${cat.maxSelect}",
-                        "<!i><green>已选: $selectedCount/${cat.maxSelect}"
+                        "<!i><#A9B4C3>点击切换品类",
+                        "<!i><#F2F5FA>可选 ${cat.items.size} 种",
+                        "<!i><#DFBD7C>最多选择: ${cat.maxSelect}",
+                        "<!i><#8FD4A6>已选: $selectedCount/${cat.maxSelect}"
                     )
                     if (isCurrent) {
                         catLore.add("")
-                        catLore.add("<!i><green>▶ 当前品类")
+                        catLore.add("<!i><#8FD4A6>▶ 当前品类")
                         meta.setEnchantmentGlintOverride(true)
                     } else {
                         meta.setEnchantmentGlintOverride(false)
@@ -278,7 +278,7 @@ class GiftPackMenu {
                     } else if (currentSelected.size < cat.maxSelect) {
                         currentSelected.add(clicked.id)
                     } else {
-                        clicker.sendMessage("<red>该分类最多选择 ${cat.maxSelect} 个物品!".toComponent())
+                        clicker.sendMessage("<#E08A98>该分类最多选择 ${cat.maxSelect} 个物品!".toComponent())
                         return@onClick
                     }
 
@@ -325,16 +325,16 @@ class GiftPackMenu {
         meta.displayName(entry.displayName.replacePlaceholder(player).toComponent())
 
         val lore = mutableListOf<String>()
-        lore.add("<!i><dark_gray><st>${" ".repeat(60)}</st>")
+        lore.add("<!i><#6E7A8C><st>${" ".repeat(60)}</st>")
         if (isSelected) {
-            lore.add("<!i><green>✓ 已选择")
-            lore.add("<!i><gray>点击取消选择")
+            lore.add("<!i><#8FD4A6>✓ 已选择")
+            lore.add("<!i><#A9B4C3>点击取消选择")
             meta.setEnchantmentGlintOverride(true)
         } else {
-            lore.add("<!i><gray>点击选择")
+            lore.add("<!i><#A9B4C3>点击选择")
             meta.setEnchantmentGlintOverride(false)
         }
-        lore.add("<!i><dark_gray><st>${" ".repeat(60)}</st>")
+        lore.add("<!i><#6E7A8C><st>${" ".repeat(60)}</st>")
         meta.lore(lore.map { it.replacePlaceholder(player).toComponent() })
         display.setItemMeta(meta)
         return display
@@ -347,7 +347,7 @@ class GiftPackMenu {
         for ((catKey, cat) in pack.categories) {
             val count = selectedIds[catKey]?.size ?: 0
             if (count < cat.maxSelect) {
-                player.sendMessage("<red>请完成所有分类的选择! (${cat.displayName} 需要选 ${cat.maxSelect} 个)".toComponent())
+                player.sendMessage("<#E08A98>请完成所有分类的选择! (${cat.displayName} 需要选 ${cat.maxSelect} 个)".toComponent())
                 return
             }
         }
@@ -365,7 +365,7 @@ class GiftPackMenu {
         // Check balance
         val currencyName = CurrencyManager.displayName(pack.currency)
         if (!CurrencyManager.hasBalance(player, pack.currency, totalPrice)) {
-            player.sendMessage("<red>$currencyName 不足! 需要 $totalPrice".toComponent())
+            player.sendMessage("<#E08A98>$currencyName 不足! 需要 $totalPrice".toComponent())
             return
         }
 
@@ -377,12 +377,12 @@ class GiftPackMenu {
             val given = giveItem(player, itemId, 1)
             if (given > 0) {
                 val dn = findDisplayName(pack, itemId)
-                player.sendMessage("<green>获得 <yellow>$dn".toComponent())
+                player.sendMessage("<#8FD4A6>获得 <#EFDF8F>$dn".toComponent())
             }
         }
 
         player.playSound(LEVELUP)
-        player.sendMessage("<green>礼包购买成功! 花费: $totalPrice $currencyName".toComponent())
+        player.sendMessage("<#8FD4A6>礼包购买成功! 花费: $totalPrice $currencyName".toComponent())
 
         submit(delay = 1) { player.closeInventory() }
     }

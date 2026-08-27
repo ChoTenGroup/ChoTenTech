@@ -31,7 +31,7 @@ class SettingsMenu {
         val settingItems = SettingRegistry.all.map { SettingItem(it) }
 
         player.openMenu<PageableChest<SettingItem>>(
-            mmJsonUtil.serialize("<white><shift:-16><image:kangelicon:list><shift:-176><aqua><font:minecraft:fusionpixel10>玩家设置".toComponent())
+            mmJsonUtil.serialize("<#F2F5FA><shift:-16><image:kangelicon:list><shift:-176><#84D1CB><font:minecraft:fusionpixel10>玩家设置".toComponent())
         ) {
             rows(6)
 
@@ -65,9 +65,9 @@ class SettingsMenu {
                         s.values[def.id] = (!s.getBoolean(def.id)).toString()
                         clicker.getData()?.pvpEnabled = s.getBoolean(def.id)
                         if (s.getBoolean(def.id)) {
-                            clicker.sendComponent("<red>⚔ PVP模式已<dark_red>开启</dark_red>")
+                            clicker.sendComponent("<#E08A98>⚔ PVP模式已<#B46572>开启</#B46572>")
                         } else {
-                            clicker.sendComponent("<green>☮ PVP模式已<dark_green>关闭</dark_green>")
+                            clicker.sendComponent("<#8FD4A6>☮ PVP模式已<#6EA982>关闭</#6EA982>")
                         }
                         playClick(sid)
                     }
@@ -76,7 +76,7 @@ class SettingsMenu {
                         val cmd = if (s.getBoolean(def.id)) "on" else "off"
                         clicker.performCommand("scoreboard $cmd")
                         val status = if (s.getBoolean(def.id)) "开启" else "关闭"
-                        clicker.sendComponent("<gray>计分板已<white>$status")
+                        clicker.sendComponent("<#A9B4C3>计分板已<#F2F5FA>$status")
                         playClick(sid)
                     }
                     "sound" -> {
@@ -90,7 +90,7 @@ class SettingsMenu {
                             SettingType.TOGGLE -> {
                                 s.values[def.id] = (!s.getBoolean(def.id)).toString()
                                 val status = if (s.getBoolean(def.id)) "开启" else "关闭"
-                                clicker.sendComponent("<gray>${def.name}已<white>$status")
+                                clicker.sendComponent("<#A9B4C3>${def.name}已<#F2F5FA>$status")
                                 playClick(sid)
                             }
                             SettingType.CYCLE -> {
@@ -98,7 +98,7 @@ class SettingsMenu {
                                 val currentIdx = options.indexOfFirst { it.first == s.get(def.id) }
                                 val nextIdx = (currentIdx + 1) % options.size
                                 s.values[def.id] = options[nextIdx].first
-                                clicker.sendComponent("<gray>${def.name}已切换至: <white>${options[nextIdx].second}")
+                                clicker.sendComponent("<#A9B4C3>${def.name}已切换至: <#F2F5FA>${options[nextIdx].second}")
                                 playClick(sid)
                             }
                         }
@@ -116,22 +116,22 @@ class SettingsMenu {
                 }
             }
 
-            set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>菜单", listOf("<!i> <yellow>点击 <green>打开菜单"), model = "kangelitem:void")) {
+            set('C', guiItem(XMaterial.COMPASS, "<#84D1CB><bold>菜单", listOf("<!i> <#EFDF8F>点击 <#8FD4A6>打开菜单"), model = "kangelitem:void")) {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "invero menu open menu ${clicker.name}")
                 clicker.closeInventory()
             }
 
-            set('R', guiItem(XMaterial.RED_DYE, "<red><bold>恢复默认设置", listOf(
+            set('R', guiItem(XMaterial.RED_DYE, "<#E08A98><bold>恢复默认设置", listOf(
                 loreSection("恢复默认"),
-                "<!i><gray>将所有设置恢复为默认值",
+                "<!i><#A9B4C3>将所有设置恢复为默认值",
                 loreSpace(),
-                loreInfo("注意", "<red>PVP 模式 / 计分板 / 音效等将一并重置"),
+                loreInfo("注意", "<#E08A98>PVP 模式 / 计分板 / 音效等将一并重置"),
                 loreSpace(),
-                "<!i> <yellow>SHIFT + 右键 <red>立即恢复"
+                "<!i> <#EFDF8F>SHIFT + 右键 <#E08A98>立即恢复"
             ), model = "kangelitem:void")) {
                 val e = clickEventOrNull()
                 if (e == null || !e.isShiftClick || !e.isRightClick) {
-                    clicker.sendComponent("<red>请按住 <yellow>SHIFT <red>并<yellow>右键<red>以恢复默认设置")
+                    clicker.sendComponent("<#E08A98>请按住 <#EFDF8F>SHIFT <#E08A98>并<#EFDF8F>右键<#E08A98>以恢复默认设置")
                     return@set
                 }
                 val sid = clicker.uniqueId.toString()
@@ -143,7 +143,7 @@ class SettingsMenu {
                         "scoreboard" -> clicker.performCommand("scoreboard ${if (s.getBoolean(def.id)) "on" else "off"}")
                     }
                 }
-                clicker.sendComponent("<red>♻ 已恢复默认设置")
+                clicker.sendComponent("<#E08A98>♻ 已恢复默认设置")
                 playClick(sid)
                 ProfileManager.saveSharedData(sid)
                 resetElementsCache()
@@ -151,11 +151,11 @@ class SettingsMenu {
             }
 
             setPreviousPage(7) { _, page ->
-                guiItem(XMaterial.ARROW, "<dark_aqua><b>上一页", model = if (page) "kangelitem:previous" else "kangelitem:previous_no")
+                guiItem(XMaterial.ARROW, "<#5FA8A3><b>上一页", model = if (page) "kangelitem:previous" else "kangelitem:previous_no")
             }
 
             setNextPage(8) { _, page ->
-                guiItem(XMaterial.ARROW, "<dark_aqua><b>下一页", model = if (page) "kangelitem:next" else "kangelitem:next_no")
+                guiItem(XMaterial.ARROW, "<#5FA8A3><b>下一页", model = if (page) "kangelitem:next" else "kangelitem:next_no")
             }
         }
     }
@@ -177,9 +177,9 @@ class SettingsMenu {
         val currentValue = settings.get(def.id)
         val currentLabel = def.options.firstOrNull { it.first == currentValue }?.second ?: currentValue
         val displayStatus = if (def.type == SettingType.CYCLE) {
-            "<yellow>[$currentLabel]"
+            "<#EFDF8F>[$currentLabel]"
         } else {
-            val statusColor = if (enabled) "<green>" else "<red>"
+            val statusColor = if (enabled) "<#8FD4A6>" else "<#E08A98>"
             "${statusColor}[${if (enabled) "已开启" else "已关闭"}]"
         }
 
@@ -189,23 +189,23 @@ class SettingsMenu {
         val descLines = def.desc.lines()
         if (descLines.size > 1) {
             lore += loreSection("说明")
-            descLines.forEach { lore += "<!i><gray>$it" }
+            descLines.forEach { lore += "<!i><#A9B4C3>$it" }
         } else {
-            lore += loreInfo("说明", "<gray>${descLines.firstOrNull() ?: ""}")
+            lore += loreInfo("说明", "<#A9B4C3>${descLines.firstOrNull() ?: ""}")
         }
         lore += loreSpace()
         if (def.type == SettingType.CYCLE) {
             lore += loreSection("选项")
             def.options.forEach { (value, label) ->
-                val color = if (value == currentValue) "<green>" else "<gray>"
+                val color = if (value == currentValue) "<#8FD4A6>" else "<#A9B4C3>"
                 lore += loreDash("$color$label")
             }
             lore += loreSpace()
-            lore += loreInfo("当前值", "<green>$currentLabel")
+            lore += loreInfo("当前值", "<#8FD4A6>$currentLabel")
         } else {
-            lore += "<!i> <yellow>点击 <green>${if (enabled) "关闭" else "开启"}"
+            lore += "<!i> <#EFDF8F>点击 <#8FD4A6>${if (enabled) "关闭" else "开启"}"
         }
-        lore += loreInfo("ID", "<dark_gray>${def.id}")
+        lore += loreInfo("ID", "<#6E7A8C>${def.id}")
 
         meta.lore(lore.map { it.toComponent() })
         item.setItemMeta(meta)

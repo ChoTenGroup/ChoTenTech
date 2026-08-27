@@ -108,10 +108,10 @@ object BleedoutManager {
         player.isFlying = false
 
         player.showTitle(net.kyori.adventure.title.Title.title(
-            "<red>⛔ 倒地".toComponent(),
-            "<gray>等待队友救援或流血而死...".toComponent()
+            "<#E08A98>⛔ 倒地".toComponent(),
+            "<#A9B4C3>等待队友救援或流血而死...".toComponent()
         ))
-        player.sendMessage("<red>⛔ 你受到了致命伤！<gray>倒地期间行动缓慢，等待队友救援吧。".toComponent())
+        player.sendMessage("<#E08A98>⛔ 你受到了致命伤！<#A9B4C3>倒地期间行动缓慢，等待队友救援吧。".toComponent())
     }
 
     // ---- Revival ----
@@ -119,19 +119,19 @@ object BleedoutManager {
     fun startRevival(reviver: Player, downed: Player) {
         val state = downedPlayers[downed.uniqueId] ?: return
         if (state.beingRevivedBy != null) {
-            reviver.sendActionBar("<yellow>该玩家正在被其他人救援中".toComponent())
+            reviver.sendActionBar("<#EFDF8F>该玩家正在被其他人救援中".toComponent())
             return
         }
         if (reviver == downed) {
-            reviver.sendActionBar("<red>你不能救援自己！".toComponent())
+            reviver.sendActionBar("<#E08A98>你不能救援自己！".toComponent())
             return
         }
         state.beingRevivedBy = reviver.uniqueId
         state.revivalTicks = 0
         state.bleedoutTicks = state.maxBleedoutTicks // 重置倒地倒计时并暂停
         state.giveUpTicks = 0
-        reviver.sendMessage("<green>✦ 开始救援 ${downed.name}... 请保持靠近。".toComponent())
-        downed.sendMessage("<green>✦ ${reviver.name} 正在救援你...".toComponent())
+        reviver.sendMessage("<#8FD4A6>✦ 开始救援 ${downed.name}... 请保持靠近。".toComponent())
+        downed.sendMessage("<#8FD4A6>✦ ${reviver.name} 正在救援你...".toComponent())
     }
 
     fun cancelRevival(downedUuid: UUID, reason: String = "") {
@@ -140,8 +140,8 @@ object BleedoutManager {
         state.beingRevivedBy = null
         state.revivalTicks = 0
         if (reason.isNotEmpty()) {
-            Bukkit.getPlayer(reviverUuid)?.sendActionBar("<yellow>$reason".toComponent())
-            Bukkit.getPlayer(downedUuid)?.sendActionBar("<red>救援中断 — $reason".toComponent())
+            Bukkit.getPlayer(reviverUuid)?.sendActionBar("<#EFDF8F>$reason".toComponent())
+            Bukkit.getPlayer(downedUuid)?.sendActionBar("<#E08A98>救援中断 — $reason".toComponent())
         }
     }
 
@@ -156,14 +156,14 @@ object BleedoutManager {
         player.health = (maxHp * pct).coerceAtLeast(1.0)
 
         player.showTitle(net.kyori.adventure.title.Title.title(
-            "<green>✅ 已复苏".toComponent(),
-            "<gray>你被队友从死亡线上拉了回来".toComponent()
+            "<#8FD4A6>✅ 已复苏".toComponent(),
+            "<#A9B4C3>你被队友从死亡线上拉了回来".toComponent()
         ))
-        player.sendMessage("<green>✅ 你已被成功救援！".toComponent())
+        player.sendMessage("<#8FD4A6>✅ 你已被成功救援！".toComponent())
 
         val reviverUuid = state.beingRevivedBy
         if (reviverUuid != null) {
-            Bukkit.getPlayer(reviverUuid)?.sendMessage("<green>✅ 成功救援 ${player.name}！".toComponent())
+            Bukkit.getPlayer(reviverUuid)?.sendMessage("<#8FD4A6>✅ 成功救援 ${player.name}！".toComponent())
         }
     }
 
@@ -180,13 +180,13 @@ object BleedoutManager {
         player.health = (maxHp * pct).coerceAtLeast(1.0)
 
         player.showTitle(net.kyori.adventure.title.Title.title(
-            "<green>✅ 已复苏".toComponent(),
-            "<gray>你被拉了起来".toComponent()
+            "<#8FD4A6>✅ 已复苏".toComponent(),
+            "<#A9B4C3>你被拉了起来".toComponent()
         ))
-        player.sendMessage("<green>✅ 你已被拉起！".toComponent())
+        player.sendMessage("<#8FD4A6>✅ 你已被拉起！".toComponent())
 
         if (reviverUuid != null) {
-            Bukkit.getPlayer(reviverUuid)?.sendMessage("<gray>${player.name} 已被拉起，救援结束".toComponent())
+            Bukkit.getPlayer(reviverUuid)?.sendMessage("<#A9B4C3>${player.name} 已被拉起，救援结束".toComponent())
         }
         return true
     }
@@ -199,7 +199,7 @@ object BleedoutManager {
 
         val player = Bukkit.getPlayer(uuid) ?: return
 
-        player.sendMessage("<red>💀 你因失血过多而死亡...".toComponent())
+        player.sendMessage("<#E08A98>💀 你因失血过多而死亡...".toComponent())
         submit {
             // Guard: player may have been revived, healed, or reconnected since the submit was queued
             if (player.isOnline && !player.isDead && player.health > 0.0 && player.health < 2.0) {
@@ -299,7 +299,7 @@ object BleedoutManager {
             var bar = bleedoutBossBars[uuid]
             if (bar == null) {
                 bar = BossBar.bossBar(
-                    "<red>🩸 失血中...".toComponent(),
+                    "<#E08A98>🩸 失血中...".toComponent(),
                     1.0f, BossBar.Color.RED, BossBar.Overlay.PROGRESS
                 )
                 bar.addViewer(player)
@@ -308,12 +308,12 @@ object BleedoutManager {
             // 救援中显示救援进度，否则显示失血进度
             if (state.beingRevivedBy != null) {
                 val pct = state.revivalTicks * 100 / state.revivalMaxTicks
-                bar.name("<green>✦ 救援中... $pct%".toComponent())
+                bar.name("<#8FD4A6>✦ 救援中... $pct%".toComponent())
                 bar.progress((state.revivalTicks.toFloat() / state.revivalMaxTicks).coerceIn(0f, 1f))
                 bar.color(BossBar.Color.GREEN)
             } else {
                 val pct = state.bleedoutTicks * 100 / state.maxBleedoutTicks
-                bar.name("<red>🩸 失血中... $pct%".toComponent())
+                bar.name("<#E08A98>🩸 失血中... $pct%".toComponent())
                 bar.progress((state.bleedoutTicks.toFloat() / state.maxBleedoutTicks).coerceIn(0f, 1f))
                 bar.color(BossBar.Color.RED)
             }
@@ -323,15 +323,15 @@ object BleedoutManager {
             when {
                 state.giveUpTicks > 0 -> {
                     val pct = state.giveUpTicks * 100 / GIVE_UP_TICKS
-                    player.sendActionBar("<red>⛔ 放弃中... ${pct}% <gray>(松开Shift取消)".toComponent())
+                    player.sendActionBar("<#E08A98>⛔ 放弃中... ${pct}% <#A9B4C3>(松开Shift取消)".toComponent())
                 }
                 state.beingRevivedBy != null -> {
                     val name = Bukkit.getOfflinePlayer(state.beingRevivedBy!!).name ?: "未知"
                     val pct = state.revivalTicks * 100 / state.revivalMaxTicks
-                    player.sendActionBar("<red>⛔ 倒地中 <gray>| <green>$name <gray>救援中 $pct%".toComponent())
+                    player.sendActionBar("<#E08A98>⛔ 倒地中 <#A9B4C3>| <#8FD4A6>$name <#A9B4C3>救援中 $pct%".toComponent())
                 }
                 else -> {
-                    player.sendActionBar("<red>⛔ 倒地中 <gray>| <white>${sec}秒 <gray>后失血死亡  <dark_gray>[Shift放弃]".toComponent())
+                    player.sendActionBar("<#E08A98>⛔ 倒地中 <#A9B4C3>| <#F2F5FA>${sec}秒 <#A9B4C3>后失血死亡  <#6E7A8C>[Shift放弃]".toComponent())
                 }
             }
         }
@@ -458,7 +458,7 @@ object BleedoutManager {
         event.isCancelled = true
         val state = downedPlayers[target.uniqueId] ?: return
         if (state.beingRevivedBy != null) {
-            event.player.sendActionBar("<yellow>该玩家正在被其他人救援中".toComponent())
+            event.player.sendActionBar("<#EFDF8F>该玩家正在被其他人救援中".toComponent())
             return
         }
         startRevival(event.player, target)
@@ -486,7 +486,7 @@ object BleedoutManager {
         if (!downedPlayers.containsKey(uuid)) return
         if (event.newGameMode == GameMode.CREATIVE || event.newGameMode == GameMode.SPECTATOR) {
             cleanupState(uuid)
-            event.player.sendActionBar("<green>已取消倒地状态".toComponent())
+            event.player.sendActionBar("<#8FD4A6>已取消倒地状态".toComponent())
         }
     }
 

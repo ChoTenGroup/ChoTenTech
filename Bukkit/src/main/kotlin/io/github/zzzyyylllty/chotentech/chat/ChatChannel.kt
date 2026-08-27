@@ -25,7 +25,7 @@ data class ChatChannel(
             if (group == "default" || group == "console") continue
             if (player.hasPermission("chotentech.chat.format.$group")) return format
         }
-        return formats["default"] ?: "<username><gray>: </gray><message>"
+        return formats["default"] ?: "<username><#A9B4C3>: </#A9B4C3><message>"
     }
 
     fun consoleFormat(): String =

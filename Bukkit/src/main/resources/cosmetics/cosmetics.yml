@@ -302,7 +302,7 @@ default_kill_msg:
   particle_count: 0
   particle_speed: 0.0
   particle_height: 0.0
-  message_format: "<yellow>%player% <gray>击杀了 <red>%target%"
+  message_format: "<#EFDF8F>%player% <#A9B4C3>击杀了 <#E08A98>%target%"
 
 epic_kill_msg:
   slot: KILL_MESSAGE
@@ -314,7 +314,7 @@ epic_kill_msg:
   particle_count: 0
   particle_speed: 0.0
   particle_height: 0.0
-  message_format: "<gold>⚔ <yellow>%player% <gold>用神威击杀了 <red>%target% <gold>⚔"
+  message_format: "<#DFBD7C>⚔ <#EFDF8F>%player% <#DFBD7C>用神威击杀了 <#E08A98>%target% <#DFBD7C>⚔"
 
 headshot_kill_msg:
   slot: KILL_MESSAGE
@@ -326,7 +326,7 @@ headshot_kill_msg:
   particle_count: 0
   particle_speed: 0.0
   particle_height: 0.0
-  message_format: "<aqua>☠ <white>%player% <aqua>一枪爆头击杀了 <red>%target% <aqua>☠"
+  message_format: "<#84D1CB>☠ <#F2F5FA>%player% <#84D1CB>一枪爆头击杀了 <#E08A98>%target% <#84D1CB>☠"
 
 anime_kill_msg:
   slot: KILL_MESSAGE
@@ -338,7 +338,7 @@ anime_kill_msg:
   particle_count: 0
   particle_speed: 0.0
   particle_height: 0.0
-  message_format: "<light_purple>✨ <white>%player% <light_purple>用华丽的招式击败了 <red>%target% <light_purple>✨"
+  message_format: "<#CDAEEF>✨ <#F2F5FA>%player% <#CDAEEF>用华丽的招式击败了 <#E08A98>%target% <#CDAEEF>✨"
 
 void_kill_msg:
   slot: KILL_MESSAGE
@@ -350,7 +350,7 @@ void_kill_msg:
   particle_count: 0
   particle_speed: 0.0
   particle_height: 0.0
-  message_format: "<dark_gray>◈ <dark_purple>%player% <dark_gray>将 <red>%target% <dark_gray>拖入了无尽的虚空 <dark_gray>◈"
+  message_format: "<#6E7A8C>◈ <#977FB8>%player% <#6E7A8C>将 <#E08A98>%target% <#6E7A8C>拖入了无尽的虚空 <#6E7A8C>◈"
 
 # ===== 粒子环绕 (AURA) — 螺旋风格 =====
 dragon_spiral:

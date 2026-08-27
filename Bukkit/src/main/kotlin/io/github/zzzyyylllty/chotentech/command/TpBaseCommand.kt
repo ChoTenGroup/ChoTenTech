@@ -35,7 +35,7 @@ object TpBaseCommand {
                 val idef = context["base"].uppercase()
                 val base = BaseManager.baseMap[idef]
                 if (base == null) {
-                    sender.sendComponent("<red>基地 $idef 不存在！")
+                    sender.sendComponent("<#E08A98>基地 $idef 不存在！")
                     return@execute
                 }
                 // 查找基地区域所在世界(WG 区域可能不在配置出生点所在世界)
@@ -54,19 +54,19 @@ object TpBaseCommand {
                     val reg = WorldEditRegionConverter.convertToRegion(region)
                     submit {
                         sender.teleport(Location(regionWorld, reg.center.x(), reg.center.y(), reg.center.z()))
-                        sender.sendComponent("<green>已传送到 <yellow>${base.name}<green> 的中心点")
+                        sender.sendComponent("<#8FD4A6>已传送到 <#EFDF8F>${base.name}<#8FD4A6> 的中心点")
                     }
                 } else {
                     // 区域不存在时回退到配置的出生点
                     val loc = base.spawn
                     val world = Bukkit.getWorld(loc.world)
                     if (world == null) {
-                        sender.sendComponent("<red>基地 ${base.name} 的世界 ${loc.world} 不存在！")
+                        sender.sendComponent("<#E08A98>基地 ${base.name} 的世界 ${loc.world} 不存在！")
                         return@execute
                     }
                     submit {
                         sender.teleport(Location(world, loc.x, loc.y, loc.z, loc.yaw, loc.pitch))
-                        sender.sendComponent("<green>已传送到 <yellow>${base.name}")
+                        sender.sendComponent("<#8FD4A6>已传送到 <#EFDF8F>${base.name}")
                     }
                 }
             }

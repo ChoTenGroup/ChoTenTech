@@ -28,7 +28,7 @@ class CoverMenu {
 
         val rows = ceil(items.size / 9.0).toInt().coerceIn(1, 6)
 
-        player.openMenu<Chest>(mmJsonUtil.serialize("<white><shift:-16><image:kangelicon:list><shift:-176><aqua><font:minecraft:fusionpixel10>${coverTitle}".toComponent())) {
+        player.openMenu<Chest>(mmJsonUtil.serialize("<#F2F5FA><shift:-16><image:kangelicon:list><shift:-176><#84D1CB><font:minecraft:fusionpixel10>${coverTitle}".toComponent())) {
             rows(rows.coerceAtMost(6))
 
             onBuild { _, inv ->

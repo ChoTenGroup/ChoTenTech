@@ -77,7 +77,7 @@ fun onPlayerMove(event: PlayerMoveEvent) {
                             submit(delay = levelTitleEndTicks) {
                                 if (!player.isOnline) return@submit
                                 player.showTitle(net.kyori.adventure.title.Title.title(
-                                    "<aqua><b>${base.name}</b></aqua>".toComponent(),
+                                    "<#84D1CB><b>${base.name}</b></#84D1CB>".toComponent(),
                                     base.title.toComponent(),
                                     net.kyori.adventure.title.Title.Times.times(
                                         java.time.Duration.ofMillis(500),

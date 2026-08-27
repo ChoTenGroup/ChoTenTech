@@ -16,8 +16,8 @@ import io.github.zzzyyylllty.chotentech.function.ChocoManager
 import io.github.zzzyyylllty.chotentech.function.HealthAnimationManager
 import io.github.zzzyyylllty.chotentech.function.RankManager
 import io.github.zzzyyylllty.chotentech.function.timer.resetNoclipExpState
-import io.github.zzzyyylllty.chotentech.quetiapine.util.mmPlainUtil
-import io.github.zzzyyylllty.chotentech.quetiapine.util.mmUtil
+import io.github.zzzyyylllty.chotentech.util.minimessage.mmPlainUtil
+import io.github.zzzyyylllty.chotentech.util.minimessage.mmUtil
 import io.github.zzzyyylllty.chotentech.util.toComponent
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -39,15 +39,15 @@ fun onPlayerDeath(event: PlayerDeathEvent) {
     val player = event.player
 
     // 窗口击杀自定义死亡消息
-    val displayName = RankManager.buildPlayerListNameExtra(player, "<yellow>", "</yellow>") // 前缀 + 玩家名 + 后缀(称号系统)
+    val displayName = RankManager.buildPlayerListNameExtra(player, "<#EFDF8F>", "</#EFDF8F>") // 前缀 + 玩家名 + 后缀(称号系统)
     if (windowDamagedPlayers.remove(player.uniqueId.toString())) {
         isFirstTimeLookWindow.remove(player.uniqueId.toString())
-        event.deathMessage("<red>$displayName 被窗户吞噬了".toComponent())
+        event.deathMessage("<#E08A98>$displayName 被窗户吞噬了".toComponent())
     } else {
         val message = event.deathMessage()
         val orgMessage = message?.let { mmUtil.serialize(it) }?.replace(REGEX, "")
         if (orgMessage != null)
-                event.deathMessage(mmUtil.deserialize("<red>" + orgMessage.replace(player.name, displayName + "<red>")))
+                event.deathMessage(mmUtil.deserialize("<#E08A98>" + orgMessage.replace(player.name, displayName + "<#E08A98>")))
 
     }
 
@@ -103,8 +103,8 @@ fun onPlayerDeath(event: PlayerDeathEvent) {
         }
         player.world.playSound(player.location, Sound.ENTITY_ZOMBIE_VILLAGER_CURE, 1.0f, 1.0f)
         player.showTitle(net.kyori.adventure.title.Title.title(
-            "<red>💀".toComponent(),
-            "<gray>你已死亡".toComponent()
+            "<#E08A98>💀".toComponent(),
+            "<#A9B4C3>你已死亡".toComponent()
         ))
     }
 }

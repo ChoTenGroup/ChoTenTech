@@ -7,7 +7,7 @@ import io.github.zzzyyylllty.chotentech.shop.ShopMenu
 import io.github.zzzyyylllty.chotentech.util.CurrencyUtil
 import io.github.zzzyyylllty.chotentech.util.toComponent
 import io.github.zzzyyylllty.sertraline.Sertraline
-import io.github.zzzyyylllty.chotentech.kether.evalKetherBoolean
+import io.github.zzzyyylllty.chotentech.function.kether.evalKetherBoolean
 import org.bukkit.Bukkit
 import org.bukkit.Sound
 import org.bukkit.entity.Player
@@ -79,26 +79,26 @@ object NoclipConditionChecker {
 
     /** 构建切出点条件指引聊天文本:告诉玩家如何提交物品满足条件 */
     fun buildConditionGuide(noclipPoint: NoclipPoint): String {
-        val c = noclipPoint.conditions ?: return "<#FFCC66>此处切出需要满足条件"
-        val sb = StringBuilder("<#FFCC66>切出点 <white>${noclipPoint.name ?: "未命名"}<#FFCC66> 需要满足条件:")
+        val c = noclipPoint.conditions ?: return "<#e8d9ba>此处切出需要满足条件"
+        val sb = StringBuilder("<#e8d9ba>切出点 <#F2F5FA>${noclipPoint.name ?: "未命名"}<#e8d9ba> 需要满足条件:")
         c.item?.let { cond ->
             val items = cond.items.joinToString(", ") { "${ShopMenu.lookupItemName(it.id)} x${it.amount}" }
-            sb.append("\n<gray>- <aqua>提交物品: <white>$items <gray>(携带所需物品站在切出点内,低头下蹲切出后自动提交)")
+            sb.append("\n<#A9B4C3>- <#84D1CB>提交物品: <#F2F5FA>$items <#A9B4C3>(携带所需物品站在切出点内,低头下蹲切出后自动提交)")
         }
         c.car?.let { cond ->
-            sb.append("\n<gray>- <aqua>支付: <white>${cond.cost} x${cond.amount} <gray>(下蹲时自动扣除)")
+            sb.append("\n<#A9B4C3>- <#84D1CB>支付: <#F2F5FA>${cond.cost} x${cond.amount} <#A9B4C3>(下蹲时自动扣除)")
         }
         c.coop?.let { cond ->
-            sb.append("\n<gray>- <aqua>合作: <white>需要 ${cond.require} 人同时站在切出点内")
+            sb.append("\n<#A9B4C3>- <#84D1CB>合作: <#F2F5FA>需要 ${cond.require} 人同时站在切出点内")
         }
         c.signal?.let {
-            sb.append("\n<gray>- <aqua>信号: <white>在指定区域手持信号物品")
+            sb.append("\n<#A9B4C3>- <#84D1CB>信号: <#F2F5FA>在指定区域手持信号物品")
         }
         c.dropbag?.let {
-            sb.append("\n<gray>- <aqua>空包: <white>清空指定栏位后切出")
+            sb.append("\n<#A9B4C3>- <#84D1CB>空包: <#F2F5FA>清空指定栏位后切出")
         }
         c.condition?.let {
-            sb.append("\n<gray>- <aqua>条件: <white>满足特殊条件")
+            sb.append("\n<#A9B4C3>- <#84D1CB>条件: <#F2F5FA>满足特殊条件")
         }
         return sb.toString()
     }
@@ -181,7 +181,7 @@ object NoclipConditionChecker {
             ChoTenTech.sessionUnlockedNoclips[key] = true
         }
 
-        player.sendActionBar("<green>允许切出".toComponent())
+        player.sendActionBar("<#8FD4A6>允许切出".toComponent())
         return ConditionResult.Allowed
     }
 
@@ -272,7 +272,7 @@ object NoclipConditionChecker {
             ChoTenTech.sessionUnlockedNoclips[key] = true
         }
 
-        player.sendActionBar("<green>允许切出".toComponent())
+        player.sendActionBar("<#8FD4A6>允许切出".toComponent())
         return ConditionResult.Allowed
     }
 
@@ -336,7 +336,7 @@ object NoclipConditionChecker {
         val key = unlockKey(player, noclipPoint)
         ChoTenTech.sessionUnlockedNoclips[key] = true
 
-        player.sendActionBar("<green>信号已发送，现在可以切出了。".toComponent())
+        player.sendActionBar("<#8FD4A6>信号已发送，现在可以切出了。".toComponent())
         return true
     }
 

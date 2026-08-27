@@ -44,7 +44,7 @@ object ChoTenDataCommand {
         execute<Player> { sender, context, argument ->
             val target = !(sender.getData()?.editorMode ?: false)
             sender.getData()?.editorMode = target
-            sender.sendComponent("<aqua>编辑器模式已设为 $target。")
+            sender.sendComponent("<#84D1CB>编辑器模式已设为 $target。")
         }
     }
 
@@ -60,7 +60,7 @@ object ChoTenDataCommand {
 
                                 HUDManager(player!!).addHUD(context["key"], context["content"], context["time"].toDouble())
 
-                                if (sender !is ConsoleCommandSender) sender.sendComponent("<red>${context["key"]+","+ context["content"]+","+ context["time"].toDouble()}")
+                                if (sender !is ConsoleCommandSender) sender.sendComponent("<#E08A98>${context["key"]+","+ context["content"]+","+ context["time"].toDouble()}")
 
                             }
                         }
@@ -138,7 +138,7 @@ object ChoTenDataCommand {
                                     }
                                 }
 
-                                if (sender !is ConsoleCommandSender) sender.sendComponent("<red>${context["type"]} = <yellow>$finalValue")
+                                if (sender !is ConsoleCommandSender) sender.sendComponent("<#E08A98>${context["type"]} = <#EFDF8F>$finalValue")
 
                             }
                         }
@@ -162,24 +162,24 @@ object ChoTenDataCommand {
                     execute<CommandSender> { sender, context, _ ->
                         val player = context.player("user").castSafely<Player>()!!
                         val data = playerDataMap[player.uniqueId.toString()] ?: run {
-                            sender.sendComponent("<red>玩家数据为空")
+                            sender.sendComponent("<#E08A98>玩家数据为空")
                             return@execute
                         }
                         when (context["action"]) {
                             "set" -> {
                                 val slots = context["value"].toIntOrNull()
                                 if (slots == null || slots < 1) {
-                                    sender.sendComponent("<red>格数必须为大于 0 的整数")
+                                    sender.sendComponent("<#E08A98>格数必须为大于 0 的整数")
                                     return@execute
                                 }
                                 data.warehouseBaseSlots = slots
-                                sender.sendComponent("<green>已将 ${player.name} 的仓库基础格数设为 <yellow>$slots")
+                                sender.sendComponent("<#8FD4A6>已将 ${player.name} 的仓库基础格数设为 <#EFDF8F>$slots")
                             }
                             "reset" -> {
                                 data.warehouseBaseSlots = null
-                                sender.sendComponent("<green>已重置 ${player.name} 的仓库基础格数为默认值")
+                                sender.sendComponent("<#8FD4A6>已重置 ${player.name} 的仓库基础格数为默认值")
                             }
-                            else -> sender.sendComponent("<red>未知操作，可用: set <数量>, reset")
+                            else -> sender.sendComponent("<#E08A98>未知操作，可用: set <数量>, reset")
                         }
                     }
                 }
@@ -198,7 +198,7 @@ object ChoTenDataCommand {
                     val player = context.player("user").castSafely<Player>()!!
                     val faction = context["faction"].uppercase()
                     val value = ReputationManager.getReputation(player, faction)
-                    sender.sendComponent("<gold>$faction <gray>- 信誉: <yellow>$value")
+                    sender.sendComponent("<#DFBD7C>$faction <#A9B4C3>- 信誉: <#EFDF8F>$value")
                 }
                 dynamic("operation") {
                     int("value", listOf("100", "500", "1000", "-500")) {
@@ -207,7 +207,7 @@ object ChoTenDataCommand {
                             val faction = context["faction"].uppercase()
                             val value = context["value"].toLongOrNull()
                             if (value == null) {
-                                sender.sendComponent("<red>数值必须为整数")
+                                sender.sendComponent("<#E08A98>数值必须为整数")
                                 return@execute
                             }
                             when (context["operation"]) {
@@ -215,12 +215,12 @@ object ChoTenDataCommand {
                                 "-" -> ReputationManager.addReputation(player, faction, -value)
                                 "=" -> ReputationManager.setReputation(player, faction, value)
                                 else -> {
-                                    sender.sendComponent("<red>未知操作，可用: + - =")
+                                    sender.sendComponent("<#E08A98>未知操作，可用: + - =")
                                     return@execute
                                 }
                             }
                             val current = ReputationManager.getReputation(player, faction)
-                            sender.sendComponent("<green>已将 ${player.name} 的 $faction 信誉设为 <yellow>$current")
+                            sender.sendComponent("<#8FD4A6>已将 ${player.name} 的 $faction 信誉设为 <#EFDF8F>$current")
                         }
                     }
                     suggestion<CommandSender> { _, _ ->
@@ -242,7 +242,7 @@ object ChoTenDataCommand {
                     val player = context.player("user").castSafely<Player>()!!
                     val npc = context["npc"]
                     val value = ReputationManager.getAffection(player, npc)
-                    sender.sendComponent("<gold>$npc <gray>- 信任度: <yellow>$value")
+                    sender.sendComponent("<#DFBD7C>$npc <#A9B4C3>- 信任度: <#EFDF8F>$value")
                 }
                 dynamic("operation") {
                     int("value", listOf("100", "500", "1000", "-500")) {
@@ -251,7 +251,7 @@ object ChoTenDataCommand {
                             val npc = context["npc"]
                             val value = context["value"].toLongOrNull()
                             if (value == null) {
-                                sender.sendComponent("<red>数值必须为整数")
+                                sender.sendComponent("<#E08A98>数值必须为整数")
                                 return@execute
                             }
                             when (context["operation"]) {
@@ -259,12 +259,12 @@ object ChoTenDataCommand {
                                 "-" -> ReputationManager.addAffection(player, npc, -value)
                                 "=" -> ReputationManager.setAffection(player, npc, value)
                                 else -> {
-                                    sender.sendComponent("<red>未知操作，可用: + - =")
+                                    sender.sendComponent("<#E08A98>未知操作，可用: + - =")
                                     return@execute
                                 }
                             }
                             val current = ReputationManager.getAffection(player, npc)
-                            sender.sendComponent("<green>已将 ${player.name} 对 $npc 的信任度设为 <yellow>$current")
+                            sender.sendComponent("<#8FD4A6>已将 ${player.name} 对 $npc 的信任度设为 <#EFDF8F>$current")
                         }
                     }
                     suggestion<CommandSender> { _, _ ->
@@ -290,17 +290,17 @@ object ChoTenDataCommand {
                         val level = runCatching { ResultLevel.valueOf(levelName) }.getOrNull()
                         if (level == null) {
                             val names = ResultLevel.entries.joinToString(" ") { "${it.displayName}(${it.name})" }
-                            sender.sendComponent("<red>未知结果等级，可用: $names")
+                            sender.sendComponent("<#E08A98>未知结果等级，可用: $names")
                             return@execute
                         }
                         val config = conflictConfigs[conflictId]
                         if (config == null) {
-                            sender.sendComponent("<red>未找到冲突事件: $conflictId")
+                            sender.sendComponent("<#E08A98>未找到冲突事件: $conflictId")
                             return@execute
                         }
                         val changes = ReputationManager.applyConflictReputation(player, conflictId, level)
                         if (changes.isEmpty()) {
-                            sender.sendComponent("<red>该结果等级未配置声望变化")
+                            sender.sendComponent("<#E08A98>该结果等级未配置声望变化")
                             return@execute
                         }
                         val report = ReputationManager.formatReputationReport(player, config.name, level, changes)
@@ -329,7 +329,7 @@ object ChoTenDataCommand {
                             submitAsync {
                                 val player = context.player("user").castSafely<Player>()!!
                                 val data = playerDataMap[player.uniqueId.toString()] ?: run {
-                                    sender.sendComponent("<red>玩家数据为空")
+                                    sender.sendComponent("<#E08A98>玩家数据为空")
                                     return@submitAsync
                                 }
 
@@ -338,7 +338,7 @@ object ChoTenDataCommand {
                                     "SATURATION" -> data.customSaturation
                                     "CONSUMPTION" -> data.consumption
                                     else -> {
-                                        sender.sendComponent("<red>未知的变量类型，可用: HUNGER SATURATION CONSUMPTION")
+                                        sender.sendComponent("<#E08A98>未知的变量类型，可用: HUNGER SATURATION CONSUMPTION")
                                         return@submitAsync
                                     }
                                 }
@@ -348,7 +348,7 @@ object ChoTenDataCommand {
                                     "-" -> varValue - context["value"].toDouble()
                                     "=" -> context["value"].toDouble()
                                     else -> {
-                                        sender.sendComponent("<red>未知的运算类型，可用: + - =")
+                                        sender.sendComponent("<#E08A98>未知的运算类型，可用: + - =")
                                         return@submitAsync
                                     }
                                 }
@@ -359,7 +359,7 @@ object ChoTenDataCommand {
                                     "CONSUMPTION" -> data.consumption = maxOf(finalValue, 0.0)
                                 }
 
-                                if (sender !is ConsoleCommandSender) sender.sendComponent("<red>${context["type"]} = <yellow>$finalValue")
+                                if (sender !is ConsoleCommandSender) sender.sendComponent("<#E08A98>${context["type"]} = <#EFDF8F>$finalValue")
                             }
                         }
                     }
@@ -384,7 +384,7 @@ object ChoTenDataCommand {
                             submitAsync {
                                 val player = context.player("user").castSafely<Player>()!!
                                 val data = playerDataMap[player.uniqueId.toString()] ?: run {
-                                    sender.sendComponent("<red>玩家数据为空")
+                                    sender.sendComponent("<#E08A98>玩家数据为空")
                                     return@submitAsync
                                 }
 
@@ -394,7 +394,7 @@ object ChoTenDataCommand {
                                     "PROTEIN" -> data.protein
                                     "FAT" -> data.fat
                                     else -> {
-                                        sender.sendComponent("<red>未知的变量类型，可用: GRAIN VITAMIN PROTEIN FAT")
+                                        sender.sendComponent("<#E08A98>未知的变量类型，可用: GRAIN VITAMIN PROTEIN FAT")
                                         return@submitAsync
                                     }
                                 }
@@ -404,7 +404,7 @@ object ChoTenDataCommand {
                                     "-" -> varValue - context["value"].toDouble()
                                     "=" -> context["value"].toDouble()
                                     else -> {
-                                        sender.sendComponent("<red>未知的运算类型，可用: + - =")
+                                        sender.sendComponent("<#E08A98>未知的运算类型，可用: + - =")
                                         return@submitAsync
                                     }
                                 }
@@ -416,7 +416,7 @@ object ChoTenDataCommand {
                                     "FAT" -> data.fat = maxOf(finalValue, 0.0)
                                 }
 
-                                if (sender !is ConsoleCommandSender) sender.sendComponent("<red>${context["type"]} = <yellow>$finalValue")
+                                if (sender !is ConsoleCommandSender) sender.sendComponent("<#E08A98>${context["type"]} = <#EFDF8F>$finalValue")
                             }
                         }
                     }
@@ -441,7 +441,7 @@ object ChoTenDataCommand {
                             submitAsync {
                                 val player = context.player("user").castSafely<Player>()!!
                                 val data = playerDataMap[player.uniqueId.toString()] ?: run {
-                                    sender.sendComponent("<red>玩家数据为空")
+                                    sender.sendComponent("<#E08A98>玩家数据为空")
                                     return@submitAsync
                                 }
 
@@ -449,7 +449,7 @@ object ChoTenDataCommand {
                                     "EXTERNAL" -> data.externalInjury
                                     "INTERNAL" -> data.internalInjury
                                     else -> {
-                                        sender.sendComponent("<red>未知的变量类型，可用: EXTERNAL INTERNAL")
+                                        sender.sendComponent("<#E08A98>未知的变量类型，可用: EXTERNAL INTERNAL")
                                         return@submitAsync
                                     }
                                 }
@@ -459,7 +459,7 @@ object ChoTenDataCommand {
                                     "-" -> varValue - context["value"].toDouble()
                                     "=" -> context["value"].toDouble()
                                     else -> {
-                                        sender.sendComponent("<red>未知的运算类型，可用: + - =")
+                                        sender.sendComponent("<#E08A98>未知的运算类型，可用: + - =")
                                         return@submitAsync
                                     }
                                 }
@@ -469,7 +469,7 @@ object ChoTenDataCommand {
                                     "INTERNAL" -> data.internalInjury = maxOf(finalValue, 0.0)
                                 }
 
-                                if (sender !is ConsoleCommandSender) sender.sendComponent("<red>${context["type"]} = <yellow>$finalValue")
+                                if (sender !is ConsoleCommandSender) sender.sendComponent("<#E08A98>${context["type"]} = <#EFDF8F>$finalValue")
                             }
                         }
                     }
@@ -494,7 +494,7 @@ object ChoTenDataCommand {
                             submitAsync {
                                 val player = context.player("user").castSafely<Player>()!!
                                 val data = playerDataMap[player.uniqueId.toString()] ?: run {
-                                    sender.sendComponent("<red>玩家数据为空")
+                                    sender.sendComponent("<#E08A98>玩家数据为空")
                                     return@submitAsync
                                 }
 
@@ -502,7 +502,7 @@ object ChoTenDataCommand {
                                     "STAMINA" -> data.stamina
                                     "HANDSTAMINA" -> data.handStamina
                                     else -> {
-                                        sender.sendComponent("<red>未知的变量类型，可用: STAMINA HANDSTAMINA")
+                                        sender.sendComponent("<#E08A98>未知的变量类型，可用: STAMINA HANDSTAMINA")
                                         return@submitAsync
                                     }
                                 }
@@ -512,7 +512,7 @@ object ChoTenDataCommand {
                                     "-" -> varValue - context["value"].toDouble()
                                     "=" -> context["value"].toDouble()
                                     else -> {
-                                        sender.sendComponent("<red>未知的运算类型，可用: + - =")
+                                        sender.sendComponent("<#E08A98>未知的运算类型，可用: + - =")
                                         return@submitAsync
                                     }
                                 }
@@ -522,7 +522,7 @@ object ChoTenDataCommand {
                                     "HANDSTAMINA" -> data.handStamina = maxOf(finalValue, 0.0)
                                 }
 
-                                if (sender !is ConsoleCommandSender) sender.sendComponent("<red>${context["type"]} = <yellow>$finalValue")
+                                if (sender !is ConsoleCommandSender) sender.sendComponent("<#E08A98>${context["type"]} = <#EFDF8F>$finalValue")
                             }
                         }
                     }

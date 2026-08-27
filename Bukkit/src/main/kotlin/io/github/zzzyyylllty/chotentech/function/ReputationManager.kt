@@ -75,13 +75,13 @@ object ReputationManager {
         val data = playerDataMap[player.uniqueId.toString()] ?: return ""
         val levelDisplay = "${level.displayColor}${level.displayName}"
 
-        sb.appendLine("<gold>===== 冲突: ${conflictName} - $levelDisplay <gold>=====")
+        sb.appendLine("<#DFBD7C>===== 冲突: ${conflictName} - $levelDisplay <#DFBD7C>=====")
         for (change in changes) {
             val current = data.reputation.getOrDefault(change.faction, 0L)
             val prev = current - change.change
             val prefix = if (change.change >= 0) "+" else ""
-            val changeColor = if (change.change >= 0) "<green>" else "<red>"
-            sb.appendLine("<gray>${change.faction}: <white>$prev <gray>-> <white>$current  $changeColor($prefix${change.change})")
+            val changeColor = if (change.change >= 0) "<#8FD4A6>" else "<#E08A98>"
+            sb.appendLine("<#A9B4C3>${change.faction}: <#F2F5FA>$prev <#A9B4C3>-> <#F2F5FA>$current  $changeColor($prefix${change.change})")
         }
         return sb.toString()
     }

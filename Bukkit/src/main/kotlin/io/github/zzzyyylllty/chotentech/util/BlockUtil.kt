@@ -1,4 +1,4 @@
-package io.github.zzzyyylllty.chotentech.util//package io.github.zzzyyylllty.chotentech.attribute.util
+package io.github.zzzyyylllty.chotentech.util
 //
 //import net.momirealms.craftengine.bukkit.api.CraftEngineBlocks
 //import net.momirealms.craftengine.core.util.Key

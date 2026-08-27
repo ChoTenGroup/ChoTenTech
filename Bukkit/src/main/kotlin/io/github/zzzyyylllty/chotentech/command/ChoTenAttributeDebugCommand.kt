@@ -209,7 +209,7 @@ object ChoTenAttributeDebugCommand {
                 sender.sendComponent(sender.asLangText("Command_Debug_Show_Category_Header", catName, entries.size.toString()))
                 entries.toSortedMap().forEach { id, value ->
                     val displayName = getAttributeDisplayName(sender, id)
-                    sender.sendComponent("<gray>  ${displayName}<gray>: <white>$value</white>")
+                    sender.sendComponent("<#A9B4C3>  ${displayName}<#A9B4C3>: <#F2F5FA>$value</#F2F5FA>")
                 }
             }
         } else if (category in CATEGORY_NAMES) {
@@ -224,7 +224,7 @@ object ChoTenAttributeDebugCommand {
             sender.sendComponent(sender.asLangText("Command_Debug_Show_Category_Header", catName, entries.size.toString()))
             entries.toSortedMap().forEach { (id, value) ->
                 val displayName = getAttributeDisplayName(sender, id)
-                sender.sendComponent("<gray>  ${displayName}<gray>: <white>$value</white>")
+                sender.sendComponent("<#A9B4C3>  ${displayName}<#A9B4C3>: <#F2F5FA>$value</#F2F5FA>")
             }
         } else {
             sender.sendComponent(sender.asLangText("Command_Debug_Show_Empty"))

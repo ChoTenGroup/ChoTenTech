@@ -30,13 +30,13 @@ fun onPlayerPlaceBlock(event: BlockPlaceEvent) {
     val level = player.getPlayerLevel()
     if (level == null || !level.isPlaceable) {
         event.isCancelled = true
-        player.sendComponent("<red>当前层级不允许放置方块!")
+        player.sendComponent("<#E08A98>当前层级不允许放置方块!")
         return
     }
 
     if (!event.blockReplacedState.type.isAir()) {
         event.isCancelled = true
-        player.sendComponent("<red>你不能在非空气方块上放置方块!")
+        player.sendComponent("<#E08A98>你不能在非空气方块上放置方块!")
         return
     }
 
@@ -46,7 +46,7 @@ fun onPlayerPlaceBlock(event: BlockPlaceEvent) {
 
     // Cancel all other block placement
     event.isCancelled = true
-    player.sendComponent("<red>不允许放置这个方块!")
+    player.sendComponent("<#E08A98>不允许放置这个方块!")
 }
 
 @SubscribeEvent(priority = EventPriority.LOWEST)

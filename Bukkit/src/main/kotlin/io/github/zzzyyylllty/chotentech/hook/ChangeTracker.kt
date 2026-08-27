@@ -60,9 +60,9 @@ object ChangeTracker {
             config.getString("change-arrows.down", "▼") ?: "▼"
         }
         val color = if (up) {
-            config.getString("change-arrows.up-color", "<#88ff88>") ?: "<#88ff88>"
+            config.getString("change-arrows.up-color", "<#c6ecc6>") ?: "<#c6ecc6>"
         } else {
-            config.getString("change-arrows.down-color", "<#ff8888>") ?: "<#ff8888>"
+            config.getString("change-arrows.down-color", "<#ecc6c6>") ?: "<#ecc6c6>"
         }
         return color + arrow.repeat(count)
     }

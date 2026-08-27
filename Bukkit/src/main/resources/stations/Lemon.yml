@@ -1,5 +1,5 @@
 Lemon:
-  name: "<gold>柠檬"
+  name: "<#DFBD7C>柠檬"
   queue: 8
   recipes:
     leather_helmet:
