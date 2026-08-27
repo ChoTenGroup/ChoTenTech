@@ -27,7 +27,7 @@ class NoclipBrowseMenu {
         val noclips = level.noclips
         val exploredNoclips = data.exploreredNoclips[level.id] ?: hashSetOf()
 
-        player.openMenu<PageableChest<NoclipPoint>>(mmJsonUtil.serialize("<white><shift:-16><image:kangelicon:list><shift:-176><aqua><font:minecraft:fusionpixel10>${level.prefix}${level.name} 切出点".toComponent())) {
+        player.openMenu<PageableChest<NoclipPoint>>(mmJsonUtil.serialize("<#F2F5FA><shift:-16><image:kangelicon:list><shift:-176><#84D1CB><font:minecraft:fusionpixel10>${level.prefix}${level.name} 切出点".toComponent())) {
             rows(6)
 
             map(
@@ -39,7 +39,7 @@ class NoclipBrowseMenu {
                 "         "
             )
 
-            set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>返回", listOf("<gray>点击返回层级列表"), model = "kangelitem:void")) {
+            set('C', guiItem(XMaterial.COMPASS, "<#84D1CB><bold>返回", listOf("<#A9B4C3>点击返回层级列表"), model = "kangelitem:void")) {
                 LevelBrowseMenu().open(clicker)
             }
 
@@ -56,11 +56,11 @@ class NoclipBrowseMenu {
             }
 
             setPreviousPage(7) { _, page ->
-                guiItem(XMaterial.ARROW, "<green>上一页", model = if (page) "kangelitem:previous" else "kangelitem:previous_no")
+                guiItem(XMaterial.ARROW, "<#8FD4A6>上一页", model = if (page) "kangelitem:previous" else "kangelitem:previous_no")
             }
 
             setNextPage(8) { _, page ->
-                guiItem(XMaterial.ARROW, "<green>下一页", model = if (page) "kangelitem:next" else "kangelitem:next_no")
+                guiItem(XMaterial.ARROW, "<#8FD4A6>下一页", model = if (page) "kangelitem:next" else "kangelitem:next_no")
             }
         }
     }
@@ -69,18 +69,18 @@ class NoclipBrowseMenu {
         if (!explored) {
             val item = XMaterial.GRAY_DYE.parseItem() ?: ItemStack(Material.GRAY_DYE)
             val meta = item.itemMeta ?: return item
-            meta.displayName("<dark_gray>${noclip.name ?: "???"}</dark_gray>".toComponent())
+            meta.displayName("<#6E7A8C>${noclip.name ?: "???"}</#6E7A8C>".toComponent())
             meta.lore(listOf(
-                loreInfo("状态", "<red>未解锁")
+                loreInfo("状态", "<#E08A98>未解锁")
             ).toComponent())
             item.setItemMeta(meta)
             return item
         }
 
         val (icon, nameColor) = when {
-            noclip.conditions != null -> XMaterial.YELLOW_DYE to "<yellow>"
-            noclip.elevatorOnly -> XMaterial.CYAN_DYE to "<dark_aqua>"
-            else -> XMaterial.LIGHT_BLUE_DYE to "<aqua>"
+            noclip.conditions != null -> XMaterial.YELLOW_DYE to "<#EFDF8F>"
+            noclip.elevatorOnly -> XMaterial.CYAN_DYE to "<#5FA8A3>"
+            else -> XMaterial.LIGHT_BLUE_DYE to "<#84D1CB>"
         }
         val mat = icon.parseItem() ?: ItemStack(Material.LIGHT_BLUE_DYE)
         val meta = mat.itemMeta ?: return mat
@@ -91,12 +91,12 @@ class NoclipBrowseMenu {
             levelsList[id]?.let { "${it.prefix}${it.name}" } ?: id
         } ?: "未知"
         val lore = mutableListOf<String>()
-        lore += loreInfo("目标层级", "<yellow>$displayLevel")
-        lore += loreInfo("基础成功率", "<yellow>${noclip.basicSuccessRate}%")
+        lore += loreInfo("目标层级", "<#EFDF8F>$displayLevel")
+        lore += loreInfo("基础成功率", "<#EFDF8F>${noclip.basicSuccessRate}%")
         lore += loreSpace()
 
         if (noclip.conditions != null) {
-            lore += loreInfo("触发方式", "<yellow>条件触发")
+            lore += loreInfo("触发方式", "<#EFDF8F>条件触发")
             lore += loreSpace()
         }
 
@@ -105,25 +105,25 @@ class NoclipBrowseMenu {
         val loc2 = noclip.noclipPointLocation2
         val center = loc1.clone().add(loc2).multiply(0.5)
         lore += loreSection("位置")
-        lore += loreDash("<white>世界: <gray>$world")
-        lore += loreDash("<white>坐标: <gray>${center.x.toInt()}, ${center.y.toInt()}, ${center.z.toInt()}")
+        lore += loreDash("<#F2F5FA>世界: <#A9B4C3>$world")
+        lore += loreDash("<#F2F5FA>坐标: <#A9B4C3>${center.x.toInt()}, ${center.y.toInt()}, ${center.z.toInt()}")
         lore += loreSpace()
 
         if (noclip.targetLevel != null) {
             lore += loreSection("消耗")
-            if (noclip.hunger > 0) lore += loreDash("<red>饥饿惩罚: ${noclip.hunger}")
-            if (noclip.damage > 0) lore += loreDash("<red>失败伤害: ${noclip.damage}❤")
-            if (noclip.cooldown > 0) lore += loreDash("<gray>冷却: ${noclip.cooldown}秒")
-            lore += loreDash("<gray>切出时间: ${noclip.noclippingTime}秒")
+            if (noclip.hunger > 0) lore += loreDash("<#E08A98>饥饿惩罚: ${noclip.hunger}")
+            if (noclip.damage > 0) lore += loreDash("<#E08A98>失败伤害: ${noclip.damage}❤")
+            if (noclip.cooldown > 0) lore += loreDash("<#A9B4C3>冷却: ${noclip.cooldown}秒")
+            lore += loreDash("<#A9B4C3>切出时间: ${noclip.noclippingTime}秒")
         }
 
         if (noclip.autoNoclip) {
             lore += loreSpace()
-            lore += loreInfo("特性", "<aqua>自动切出")
+            lore += loreInfo("特性", "<#84D1CB>自动切出")
         }
         if (noclip.elevatorOnly) {
             lore += loreSpace()
-            lore += loreInfo("特性", "<gold>仅限电梯")
+            lore += loreInfo("特性", "<#DFBD7C>仅限电梯")
         }
 
         meta.lore(lore.toComponent())

@@ -136,9 +136,9 @@ object FriendManager {
                 }
             }
             file.delete()
-            devLog("<gray>[Friend] 已将 friends.yml 迁移到数据库")
+            devLog("<#A9B4C3>[Friend] 已将 friends.yml 迁移到数据库")
         } catch (e: Exception) {
-            devLog("<yellow>[Friend] friends.yml 迁移失败: ${e.message}")
+            devLog("<#EFDF8F>[Friend] friends.yml 迁移失败: ${e.message}")
         }
     }
 
@@ -152,13 +152,13 @@ object FriendManager {
         // Notify online friends that this player logged in
         for (friendId in getFriends(uuid)) {
             val friend = Bukkit.getPlayer(friendId) ?: continue
-            friend.sendMessage("<aqua>✦ 你的好友 <yellow>${player.name} <aqua>上线了".toComponent())
+            friend.sendMessage("<#84D1CB>✦ 你的好友 <#EFDF8F>${player.name} <#84D1CB>上线了".toComponent())
         }
 
         // Remind about pending friend requests
         val pending = requests[uuid]?.size ?: 0
         if (pending > 0) {
-            player.sendMessage("<gold>■ <yellow>你有 <white>$pending <yellow>条好友申请，输入 <white>/friend requests <yellow>查看".toComponent())
+            player.sendMessage("<#DFBD7C>■ <#EFDF8F>你有 <#F2F5FA>$pending <#EFDF8F>条好友申请，输入 <#F2F5FA>/friend requests <#EFDF8F>查看".toComponent())
         }
     }
 }

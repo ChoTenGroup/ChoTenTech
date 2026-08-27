@@ -1,7 +1,7 @@
 combat:
   display:
     raw: "Combat"
-    default: "<red>战斗</red>"
+    default: "<#E08A98>战斗</#E08A98>"
     legacy: "&c战斗"
   level:
     min: 0
@@ -9,7 +9,7 @@ combat:
     max: 100
     display:
       0:
-        default: "<gray>Lv.%level%</gray>"
+        default: "<#A9B4C3>Lv.%level%</#A9B4C3>"
     exp:
       0:
         type: calculator

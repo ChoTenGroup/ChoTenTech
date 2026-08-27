@@ -185,13 +185,13 @@ object KeyDoorSertralineManager {
         val player = event.player
         val item = player.inventory.itemInMainHand
         if (item.type.isAir || item.amount <= 0) {
-            sendActionBar(player, "<red>需要手持 <white>${doorConfig.name}</white> 钥匙")
+            sendActionBar(player, "<#E08A98>需要手持 <#F2F5FA>${doorConfig.name}</#F2F5FA> 钥匙")
             return
         }
 
         val sertralineId = Sertraline.api().getId(item)
         if (sertralineId != doorConfig.id) {
-            sendActionBar(player, "<red>需要手持 <white>${doorConfig.name}</white> 钥匙")
+            sendActionBar(player, "<#E08A98>需要手持 <#F2F5FA>${doorConfig.name}</#F2F5FA> 钥匙")
             return
         }
 

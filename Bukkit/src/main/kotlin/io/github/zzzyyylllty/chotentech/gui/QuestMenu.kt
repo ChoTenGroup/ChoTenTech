@@ -38,7 +38,7 @@ class QuestMenu {
 
         val questName = quest.template.meta<Meta<String>>("name")?.source
 
-        player.openMenu<PageableChest<Task>>(mmJsonUtil.serialize("<white><shift:-16><image:kangelicon:list><shift:-176><aqua><font:minecraft:fusionpixel10>任务: $questName".toComponent())) {
+        player.openMenu<PageableChest<Task>>(mmJsonUtil.serialize("<#F2F5FA><shift:-16><image:kangelicon:list><shift:-176><#84D1CB><font:minecraft:fusionpixel10>任务: $questName".toComponent())) {
 
             rows(6)
 
@@ -56,7 +56,7 @@ class QuestMenu {
             // 设置可用槽位（通过字符）
             slotsBy('@')
 
-            set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>菜单", listOf("<gray>点击打开菜单"), model = "kangelitem:void")) {
+            set('C', guiItem(XMaterial.COMPASS, "<#84D1CB><bold>菜单", listOf("<#A9B4C3>点击打开菜单"), model = "kangelitem:void")) {
 
                 player.playSound(player.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
                 player.closeInventory()
@@ -75,13 +75,13 @@ class QuestMenu {
             onGenerate(async = true) { player, element, index, slot ->
                 val profile = profile ?: run {
                     warning("玩家 ${player.name} 的 Chemdah 数据尚未加载完成")
-                    player.sendComponent("<red>您的数据正在加载，请耐心等待...")
+                    player.sendComponent("<#E08A98>您的数据正在加载，请耐心等待...")
                     player.closeInventory()
                     return@onGenerate ItemStack(Material.GRAY_STAINED_GLASS_PANE)
                 }
                 if (profile.questMap[quest.template.id] == null && index == 0) {
                     devLog("questMap: ${profile.questMap}")
-                    player.sendComponent("<red>当前任务已不再进行,自动返回上个菜单...")
+                    player.sendComponent("<#E08A98>当前任务已不再进行,自动返回上个菜单...")
                     player.closeInventory()
                     AllQuestMenu().open(player)
                     return@onGenerate ItemStack(Material.GRAY_STAINED_GLASS_PANE)
@@ -93,15 +93,15 @@ class QuestMenu {
                     val value = progress.value.toString().toDouble().roundTo(1).toString().removeSuffix(".0")
                     val target = progress.target.toString().toDouble().roundTo(1).toString().removeSuffix(".0")
                     val meta = item.itemMeta
-                    meta.customName(("<!i><white>「<gray>" + element.meta<Meta<String>>("name")?.source?.legacyToMiniMessage() + "<reset><white><!i>」").toComponent())
+                    meta.customName(("<!i><#F2F5FA>「<#A9B4C3>" + element.meta<Meta<String>>("name")?.source?.legacyToMiniMessage() + "<reset><#F2F5FA><!i>」").toComponent())
                     val lore = mutableListOf<String>()
                     lore += loreSpace()
-                    lore += loreInfo("进度", "<#99FC65>${(progress.percent * 100.0).roundToInt()}%")
+                    lore += loreInfo("进度", "<#c8e6b8>${(progress.percent * 100.0).roundToInt()}%")
                     lore += loreSpace()
-                    lore += loreInfo("当前任务进度", "<#66CCFF>$value<gray>/<#FFCC66>$target")
+                    lore += loreInfo("当前任务进度", "<#bad9e8>$value<#A9B4C3>/<#e8d9ba>$target")
                     lore += loreSpace()
                     if (element.objective.name == "choten submit") {
-                        lore += loreDash("<yellow>在NPC处提交任务物品")
+                        lore += loreDash("<#EFDF8F>在NPC处提交任务物品")
                     }
                     meta.lore(lore.toComponent())
                     item.setItemMeta(meta)
@@ -138,17 +138,17 @@ class QuestMenu {
 
             // 设置上一页按钮
             setPreviousPage(7) { _, page ->
-                guiItem(XMaterial.ARROW, "<green>上一页", model = if (page) "kangelitem:previous" else "kangelitem:previous_no")
+                guiItem(XMaterial.ARROW, "<#8FD4A6>上一页", model = if (page) "kangelitem:previous" else "kangelitem:previous_no")
             }
 
             // 设置下一页按钮
             setNextPage(8) { _, page ->
-                guiItem(XMaterial.ARROW, "<green>下一页", model = if (page) "kangelitem:next" else "kangelitem:next_no")
+                guiItem(XMaterial.ARROW, "<#8FD4A6>下一页", model = if (page) "kangelitem:next" else "kangelitem:next_no")
             }
 
 
 //            set(45) {
-//                GuiItem("back", "BARRIER", "<red><b>返回").build().apply {
+//                GuiItem("back", "BARRIER", "<#E08A98><b>返回").build().apply {
 //                    val m = itemMeta ?: return@apply
 //                    m.itemModel = NamespacedKey.fromString("kangelitem:void")
 //                    setItemMeta(m)

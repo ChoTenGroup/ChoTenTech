@@ -2,7 +2,7 @@
 # key 用于命令与存储（/ch global、activeChannel），建议保持与文件名一致
 key: global
 # 频道显示名（MiniMessage）
-display-name: "<gray>[<aqua>全服</aqua>]</gray>"
+display-name: "<#A9B4C3>[<#84D1CB>全服</#84D1CB>]</#A9B4C3>"
 # 聊天格式（MiniMessage）。
 #  - default: 默认格式（必填）
 #  - console: 控制台显示格式（可选，纯文本标签会被剥离）
@@ -10,10 +10,10 @@ display-name: "<gray>[<aqua>全服</aqua>]</gray>"
 # 可用自定义标签：<username> <display_name> <message> <channel> <team_name>
 # PAPI 占位符（%player_level% 等）只会在格式层解析，玩家消息内容绝不会被解析
 formats:
-  default: "<gray>[<yellow>%player_level%</yellow> <#E3D4D1>L%chotentech_level_number%</#E3D4D1>]%chotentech_prefix%%chotentech_namecolor%<username><reset>%chotentech_suffix%<reset><gray>: <reset>%chotentech_chatcolor%<message>%luckperms_meta_messagesuffix%<reset>"
+  default: "<#A9B4C3>[<#EFDF8F>%player_level%</#EFDF8F> <#ded7d5>L%chotentech_level_number%</#ded7d5>]%chotentech_prefix%%chotentech_namecolor%<username><reset>%chotentech_suffix%<reset><#A9B4C3>: <reset>%chotentech_chatcolor%<message>%luckperms_meta_messagesuffix%<reset>"
   console: "[%player_level%] %player_name%: <message>"
   # 示例：给持有 chotentech.chat.format.vip 权限的玩家使用
-  # vip: "<gold>[VIP]</gold> <username><gray>: </gray><message>"
+  # vip: "<#DFBD7C>[VIP]</#DFBD7C> <username><#A9B4C3>: </#A9B4C3><message>"
 # 快速前缀：聊天时输入 ".g 消息" 直接发送到本频道；留空禁用
 quick-prefix: ".g"
 # 可见半径：-1 全服可见 / 0 仅同世界 / >0 方块距离

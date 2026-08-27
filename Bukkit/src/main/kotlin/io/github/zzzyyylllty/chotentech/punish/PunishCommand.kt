@@ -29,7 +29,7 @@ object MuteCommand {
                     val targetInput = context["target"] ?: ""
                     val resolved = resolvePlayer(targetInput)
                     if (resolved == null) {
-                        sender.sendComponent("<red>未找到玩家: $targetInput")
+                        sender.sendComponent("<#E08A98>未找到玩家: $targetInput")
                         return@submitAsync
                     }
                     val (targetUuid, targetName) = resolved
@@ -54,7 +54,7 @@ object MuteCommand {
                     val maxMs = PunishManager.getMaxDuration(sender)
                     if (maxMs != -1L && durationMs > maxMs) {
                         durationMs = maxMs
-                        sender.sendComponent("<yellow>你的权限最大允许 ${formatDurationMs(maxMs)} 的禁言。已按最大时长执行。")
+                        sender.sendComponent("<#EFDF8F>你的权限最大允许 ${formatDurationMs(maxMs)} 的禁言。已按最大时长执行。")
                     }
 
                     val operatorUuid = if (sender is Player) sender.uniqueId.toString() else null
@@ -75,13 +75,13 @@ object MuteCommand {
                     val result = PunishManager.issue(entry)
 
                     if (!parsed.silent && targetPlayer != null) {
-                        targetPlayer.sendComponent("<red>你已被禁言！时长: ${formatDurationMs(durationMs)}，理由: $reason")
+                        targetPlayer.sendComponent("<#E08A98>你已被禁言！时长: ${formatDurationMs(durationMs)}，理由: $reason")
                     }
 
                     val durationStr = if (durationMs == -1L) "永久" else formatDurationMs(durationMs)
-                    sender.sendComponent("<green>已禁言 <yellow>$targetName<green>，时长: <yellow>$durationStr<green>，ID: <yellow>${result.id}")
+                    sender.sendComponent("<#8FD4A6>已禁言 <#EFDF8F>$targetName<#8FD4A6>，时长: <#EFDF8F>$durationStr<#8FD4A6>，ID: <#EFDF8F>${result.id}")
                     if (!parsed.silent) {
-                        Bukkit.broadcast("<yellow>$targetName <red>已被管理员 <yellow>$operatorName <red>禁言，时长: <yellow>$durationStr".toComponent())
+                        Bukkit.broadcast("<#EFDF8F>$targetName <#E08A98>已被管理员 <#EFDF8F>$operatorName <#E08A98>禁言，时长: <#EFDF8F>$durationStr".toComponent())
                     }
                 }
             }
@@ -108,7 +108,7 @@ object KickCommand {
                     val targetInput = context["target"] ?: ""
                     val resolved = resolvePlayer(targetInput)
                     if (resolved == null) {
-                        sender.sendComponent("<red>未找到玩家: $targetInput")
+                        sender.sendComponent("<#E08A98>未找到玩家: $targetInput")
                         return@submitAsync
                     }
                     val (targetUuid, targetName) = resolved
@@ -138,9 +138,9 @@ object KickCommand {
                         targetPlayer.kick(net.kyori.adventure.text.Component.text(reason))
                     }
 
-                    sender.sendComponent("<green>已踢出 <yellow>$targetName<green>，理由: $reason")
+                    sender.sendComponent("<#8FD4A6>已踢出 <#EFDF8F>$targetName<#8FD4A6>，理由: $reason")
                     if (!parsed.silent) {
-                        Bukkit.broadcast("<yellow>$targetName <red>已被管理员 <yellow>$operatorName <red>踢出服务器".toComponent())
+                        Bukkit.broadcast("<#EFDF8F>$targetName <#E08A98>已被管理员 <#EFDF8F>$operatorName <#E08A98>踢出服务器".toComponent())
                     }
                 }
             }
@@ -167,7 +167,7 @@ object WarnCommand {
                     val targetInput = context["target"] ?: ""
                     val resolved = resolvePlayer(targetInput)
                     if (resolved == null) {
-                        sender.sendComponent("<red>未找到玩家: $targetInput")
+                        sender.sendComponent("<#E08A98>未找到玩家: $targetInput")
                         return@submitAsync
                     }
                     val (targetUuid, targetName) = resolved
@@ -193,9 +193,9 @@ object WarnCommand {
                     val result = PunishManager.issue(entry)
                     val warnCount = PunishManager.getWarnCount(targetUuid)
 
-                    sender.sendComponent("<green>已警告 <yellow>$targetName<green>，累计警告: <yellow>$warnCount<green>，ID: <yellow>${result.id}")
+                    sender.sendComponent("<#8FD4A6>已警告 <#EFDF8F>$targetName<#8FD4A6>，累计警告: <#EFDF8F>$warnCount<#8FD4A6>，ID: <#EFDF8F>${result.id}")
                     if (targetPlayer != null) {
-                        targetPlayer.sendComponent("<red>你已被警告！理由: $reason (累计 $warnCount 次)")
+                        targetPlayer.sendComponent("<#E08A98>你已被警告！理由: $reason (累计 $warnCount 次)")
                     }
                 }
             }
@@ -222,7 +222,7 @@ object BanCommand {
                     val targetInput = context["target"] ?: ""
                     val resolved = resolvePlayer(targetInput)
                     if (resolved == null) {
-                        sender.sendComponent("<red>未找到玩家: $targetInput")
+                        sender.sendComponent("<#E08A98>未找到玩家: $targetInput")
                         return@submitAsync
                     }
                     val (targetUuid, targetName) = resolved
@@ -237,7 +237,7 @@ object BanCommand {
                     val maxMs = PunishManager.getMaxDuration(sender)
                     if (maxMs != -1L && durationMs != -1L && durationMs > maxMs) {
                         durationMs = maxMs
-                        sender.sendComponent("<yellow>你的权限最大允许 ${formatDurationMs(maxMs)} 的封禁。已按最大时长执行。")
+                        sender.sendComponent("<#EFDF8F>你的权限最大允许 ${formatDurationMs(maxMs)} 的封禁。已按最大时长执行。")
                     }
 
                     val operatorUuid = if (sender is Player) sender.uniqueId.toString() else null
@@ -263,7 +263,7 @@ object BanCommand {
 
                     val durationStr = if (durationMs == -1L) "永久" else formatDurationMs(durationMs)
                     val authNote = if (!parsed.skipAuth) " (附带AUTH验证)" else ""
-                    sender.sendComponent("<green>已封禁 <yellow>$targetName<green>，时长: <yellow>$durationStr<green>$authNote，ID: <yellow>${result.id}")
+                    sender.sendComponent("<#8FD4A6>已封禁 <#EFDF8F>$targetName<#8FD4A6>，时长: <#EFDF8F>$durationStr<#8FD4A6>$authNote，ID: <#EFDF8F>${result.id}")
 
                     if (targetPlayer != null) {
                         val kickMsg = buildString {
@@ -276,7 +276,7 @@ object BanCommand {
                     }
 
                     if (!parsed.silent) {
-                        Bukkit.broadcast("<yellow>$targetName <red>已被管理员 <yellow>$operatorName <red>封禁，时长: <yellow>$durationStr".toComponent())
+                        Bukkit.broadcast("<#EFDF8F>$targetName <#E08A98>已被管理员 <#EFDF8F>$operatorName <#E08A98>封禁，时长: <#EFDF8F>$durationStr".toComponent())
                     }
                 }
             }
@@ -303,7 +303,7 @@ object AuthPunishCommand {
                     val targetInput = context["target"] ?: ""
                     val resolved = resolvePlayer(targetInput)
                     if (resolved == null) {
-                        sender.sendComponent("<red>未找到玩家: $targetInput")
+                        sender.sendComponent("<#E08A98>未找到玩家: $targetInput")
                         return@submitAsync
                     }
                     val (targetUuid, targetName) = resolved
@@ -331,7 +331,7 @@ object AuthPunishCommand {
                     val result = PunishManager.issue(entry)
 
                     val durationStr = if (durationMs == -1L) "永久" else formatDurationMs(durationMs)
-                    sender.sendComponent("<green>已对 <yellow>$targetName <green>添加AUTH验证，时长: <yellow>$durationStr<green>，ID: <yellow>${result.id}")
+                    sender.sendComponent("<#8FD4A6>已对 <#EFDF8F>$targetName <#8FD4A6>添加AUTH验证，时长: <#EFDF8F>$durationStr<#8FD4A6>，ID: <#EFDF8F>${result.id}")
 
                     if (targetPlayer != null) {
                         targetPlayer.kick(net.kyori.adventure.text.Component.text("你被要求进行身份验证！\n理由: $reason\n时长: $durationStr\n请主动联系管理员解除"))
@@ -361,7 +361,7 @@ object WipeCommand {
                     val targetInput = context["target"] ?: ""
                     val resolved = resolvePlayer(targetInput)
                     if (resolved == null) {
-                        sender.sendComponent("<red>未找到玩家: $targetInput")
+                        sender.sendComponent("<#E08A98>未找到玩家: $targetInput")
                         return@submitAsync
                     }
                     val (targetUuid, targetName) = resolved
@@ -370,8 +370,8 @@ object WipeCommand {
                     val parsed = parseWipeArgs(argument)
                     val scope = parsed.scope
                     if (scope == null) {
-                        sender.sendComponent("<red>请指定清除范围: all / inventory / 货币ID(如MEG,BNTG)")
-                        sender.sendComponent("<red>用法: /wipe <玩家> <作用域> [理由]")
+                        sender.sendComponent("<#E08A98>请指定清除范围: all / inventory / 货币ID(如MEG,BNTG)")
+                        sender.sendComponent("<#E08A98>用法: /wipe <玩家> <作用域> [理由]")
                         return@submitAsync
                     }
                     val reason = parsed.reason.ifBlank { "违反服务器规则" }
@@ -411,13 +411,13 @@ object WipeCommand {
 
                     if (targetPlayer != null) {
                         PunishManager.clearWipedData(targetPlayer, scope)
-                        targetPlayer.sendComponent("<red>你的数据已被管理员清除！范围: $scope，理由: $reason")
+                        targetPlayer.sendComponent("<#E08A98>你的数据已被管理员清除！范围: $scope，理由: $reason")
                     } else {
-                        sender.sendComponent("<yellow>玩家离线，物品栏数据将在下次上线时清除。备份已保存。")
+                        sender.sendComponent("<#EFDF8F>玩家离线，物品栏数据将在下次上线时清除。备份已保存。")
                     }
 
-                    sender.sendComponent("<green>已清除 <yellow>$targetName <green>的数据，范围: <yellow>$scope<green>，ID: <yellow>${result.id}")
-                    sender.sendComponent("<green>备份已保存。可使用 <yellow>/resumewipe ${result.id} <green>还原")
+                    sender.sendComponent("<#8FD4A6>已清除 <#EFDF8F>$targetName <#8FD4A6>的数据，范围: <#EFDF8F>$scope<#8FD4A6>，ID: <#EFDF8F>${result.id}")
+                    sender.sendComponent("<#8FD4A6>备份已保存。可使用 <#EFDF8F>/resumewipe ${result.id} <#8FD4A6>还原")
                 }
             }
             suggestion<CommandSender> { _, _ ->
@@ -443,7 +443,7 @@ object ResumeWipeCommand {
                 submitAsync {
                     val punishId = context["punishment_id"]?.toLongOrNull()
                     if (punishId == null || punishId <= 0) {
-                        sender.sendComponent("<red>请输入有效的处罚ID")
+                        sender.sendComponent("<#E08A98>请输入有效的处罚ID")
                         return@submitAsync
                     }
 
@@ -452,9 +452,9 @@ object ResumeWipeCommand {
 
                     val success = PunishManager.restoreWipe(punishId, operatorName, operatorUuid)
                     if (success) {
-                        sender.sendComponent("<green>已还原处罚 ID: <yellow>$punishId <green>的数据")
+                        sender.sendComponent("<#8FD4A6>已还原处罚 ID: <#EFDF8F>$punishId <#8FD4A6>的数据")
                     } else {
-                        sender.sendComponent("<red>未找到处罚 ID: $punishId 的备份数据，或还原失败")
+                        sender.sendComponent("<#E08A98>未找到处罚 ID: $punishId 的备份数据，或还原失败")
                     }
                 }
             }

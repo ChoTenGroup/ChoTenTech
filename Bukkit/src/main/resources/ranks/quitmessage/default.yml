@@ -1,6 +1,6 @@
 default:
   display:
-    current: "<yellow><player> 离开了服务器</yellow>"
+    current: "<#EFDF8F><player> 离开了服务器</#EFDF8F>"
     short: ""
   name: "默认离开信息"
   desc: "所有玩家的默认离开信息。"
@@ -10,8 +10,8 @@ default:
 
 vip:
   display:
-    current: "<!i><gradient:#ffaa00:#ffff55>[VIP]</gradient> <yellow><player> 离开了服务器</yellow>"
-    short: "<yellow><player> 离开了服务器</yellow>"
+    current: "<!i><gradient:#cfae6e:#e4e4ad>[VIP]</gradient> <#EFDF8F><player> 离开了服务器</#EFDF8F>"
+    short: "<#EFDF8F><player> 离开了服务器</#EFDF8F>"
   name: "VIP 离开信息"
   desc: "VIP 玩家专属离开信息。"
   get: "在商店购买 VIP 以获得本离开信息。"

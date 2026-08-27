@@ -4,7 +4,7 @@ backpack:
   tag: "cho-backpack"
 
   # 物品被拒绝放入时的提示消息 (MiniMessage 格式)
-  deny-slot-message: "<red>该物品不能放入此背包！"
+  deny-slot-message: "<#E08A98>该物品不能放入此背包！"
 
   # 背包类型定义
   types:

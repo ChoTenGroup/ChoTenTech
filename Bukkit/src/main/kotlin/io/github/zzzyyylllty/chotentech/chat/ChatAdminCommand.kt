@@ -20,12 +20,12 @@ object ChatAdminCommand {
     @CommandBody
     val main = mainCommand {
         execute<CommandSender> { sender, _, _ ->
-            sender.sendComponent("<yellow>正在重载聊天配置...")
+            sender.sendComponent("<#EFDF8F>正在重载聊天配置...")
             try {
                 io.github.zzzyyylllty.chotentech.ChoTenTech.reloadCustomConfig()
-                sender.sendComponent("<green>聊天配置重载完成。")
+                sender.sendComponent("<#8FD4A6>聊天配置重载完成。")
             } catch (e: Exception) {
-                sender.sendComponent("<red>重载失败: $e")
+                sender.sendComponent("<#E08A98>重载失败: $e")
             }
         }
     }

@@ -20,13 +20,13 @@ enum class DamageType(
     val category: DamageCategory,
     val color: String
 ) {
-    PHYSICAL("physical", "物理", DamageCategory.NORMAL, "<red>"),
-    BURN("burn", "灼烧", DamageCategory.NORMAL, "<gold>"),
-    FROST("frost", "霜寒", DamageCategory.NORMAL, "<blue>"),
-    SHOCK("shock", "电击", DamageCategory.NORMAL, "<yellow>"),
-    PSYCHIC("psychic", "精神", DamageCategory.SPECIAL, "<dark_aqua>"),
-    EROSION("erosion", "侵蚀", DamageCategory.SPECIAL, "<dark_purple>"),
-    DECAY("decay", "衰退", DamageCategory.SPECIAL, "<black>");
+    PHYSICAL("physical", "物理", DamageCategory.NORMAL, "<#E08A98>"),
+    BURN("burn", "灼烧", DamageCategory.NORMAL, "<#DFBD7C>"),
+    FROST("frost", "霜寒", DamageCategory.NORMAL, "<#94AFE8>"),
+    SHOCK("shock", "电击", DamageCategory.NORMAL, "<#EFDF8F>"),
+    PSYCHIC("psychic", "精神", DamageCategory.SPECIAL, "<#5FA8A3>"),
+    EROSION("erosion", "侵蚀", DamageCategory.SPECIAL, "<#977FB8>"),
+    DECAY("decay", "衰退", DamageCategory.SPECIAL, "<#2A2F3A>");
 
     companion object {
         fun fromId(id: String): DamageType? = entries.find { it.id == id }

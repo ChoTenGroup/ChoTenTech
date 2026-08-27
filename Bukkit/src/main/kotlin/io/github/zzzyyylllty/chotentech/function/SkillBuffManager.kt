@@ -4,7 +4,7 @@ import io.github.zzzyyylllty.chotentech.data.AttributeModifier
 import io.github.zzzyyylllty.chotentech.data.ModifierSource
 import io.github.zzzyyylllty.chotentech.data.ModifierType
 import io.github.zzzyyylllty.chotentech.manager.AttributeManager
-import io.github.zzzyyylllty.chotentech.quetiapine.data.PlayerDataManager
+import io.github.zzzyyylllty.chotentech.data.PlayerDataManager
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.entity.Player

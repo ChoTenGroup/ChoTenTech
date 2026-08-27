@@ -1,7 +1,7 @@
 strength:
   display:
     raw: "Strength"
-    default: "<gold>力量</gold>"
+    default: "<#DFBD7C>力量</#DFBD7C>"
     legacy: "&6力量"
   level:
     min: 0
@@ -9,7 +9,7 @@ strength:
     max: 100
     display:
       0:
-        default: "<gray>Lv.%level%</gray>"
+        default: "<#A9B4C3>Lv.%level%</#A9B4C3>"
     exp:
       0:
         type: calculator

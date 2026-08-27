@@ -9,7 +9,7 @@ level-0:
     one: 安全
     two: 稳定
     three: 未确认实体
-    prefix: <#FFFF88>
+    prefix: <#ececc6>
   number: 0
   sanity:
     regen: 0.2
@@ -1185,7 +1185,7 @@ level-28:
     one: 大体安全
     two: 相当稳定
     three: 极少量实体
-    prefix: <#0000FF>
+    prefix: <#6e6ecf>
   number: 28
   author: AkaCandyKAngel
   tip: 'Level 28以其独有的标志性地标——嵐石要塞而闻名.'

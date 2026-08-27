@@ -33,10 +33,10 @@ object DropCommand {
             val current = dropLockEnabled.getOrDefault(uuid, false)
             if (current) {
                 dropLockEnabled[uuid] = false
-                sender.sendComponent("<red>🔒 丢弃锁已<dark_red>关闭</dark_red>，物品将被阻止丢弃")
+                sender.sendComponent("<#E08A98>🔒 丢弃锁已<#B46572>关闭</#B46572>，物品将被阻止丢弃")
             } else {
                 dropLockEnabled[uuid] = true
-                sender.sendComponent("<green>🔓 丢弃锁已<dark_green>开启</dark_green>，你可以丢弃物品")
+                sender.sendComponent("<#8FD4A6>🔓 丢弃锁已<#6EA982>开启</#6EA982>，你可以丢弃物品")
             }
         }
     }
@@ -45,7 +45,7 @@ object DropCommand {
     val on = subCommand {
         execute<Player> { sender, _, _ ->
             dropLockEnabled[sender.uniqueId.toString()] = true
-            sender.sendComponent("<green>🔓 丢弃锁已<dark_green>开启</dark_green>，你可以丢弃物品")
+            sender.sendComponent("<#8FD4A6>🔓 丢弃锁已<#6EA982>开启</#6EA982>，你可以丢弃物品")
         }
     }
 
@@ -53,7 +53,7 @@ object DropCommand {
     val off = subCommand {
         execute<Player> { sender, _, _ ->
             dropLockEnabled[sender.uniqueId.toString()] = false
-            sender.sendComponent("<red>🔒 丢弃锁已<dark_red>关闭</dark_red>，物品将被阻止丢弃")
+            sender.sendComponent("<#E08A98>🔒 丢弃锁已<#B46572>关闭</#B46572>，物品将被阻止丢弃")
         }
     }
 }

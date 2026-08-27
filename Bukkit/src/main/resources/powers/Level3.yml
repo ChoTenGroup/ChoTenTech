@@ -6,13 +6,13 @@
       - tell color "&6这个电源已经启动了。"
     onPrepare:
       - title color "&e&l!" subtitle color "&c&l电源已激活"
-      - command papi inline "broadcast <white>发电站安保人员注意，<yellow>主电梯</yellow>供电程序正在激活。" as console
+      - command papi inline "broadcast <#F2F5FA>发电站安保人员注意，<#EFDF8F>主电梯</#EFDF8F>供电程序正在激活。" as console
     onStart:
-      - command papi inline "broadcast <white>发电站安保人员注意，<yellow>主电梯</yellow>供电程序已完成初始化并成功激活。当前剩余电力预计可维持五分钟。外按钮已可使用。" as console
+      - command papi inline "broadcast <#F2F5FA>发电站安保人员注意，<#EFDF8F>主电梯</#EFDF8F>供电程序已完成初始化并成功激活。当前剩余电力预计可维持五分钟。外按钮已可使用。" as console
     onClose:
-      - command papi inline "broadcast <white>发电站安保人员注意，<yellow>主电梯</yellow>供电程序即将停止。" as console
+      - command papi inline "broadcast <#F2F5FA>发电站安保人员注意，<#EFDF8F>主电梯</#EFDF8F>供电程序即将停止。" as console
     onCloseEnd:
-      - command papi inline "broadcast <white>发电站安保人员注意，<yellow>主电梯</yellow>供电程序已停止。" as console
+      - command papi inline "broadcast <#F2F5FA>发电站安保人员注意，<#EFDF8F>主电梯</#EFDF8F>供电程序已停止。" as console
 
   leverPos:
     world: "Area2"
@@ -91,13 +91,13 @@
       - tell color "&6这个电源已经启动了。"
     onPrepare:
       - title color "&e&l!" subtitle color "&c&l电源已激活"
-      - command papi inline "broadcast <white>发电站安保人员注意，<yellow>货运电梯</yellow>供电程序正在激活。" as console
+      - command papi inline "broadcast <#F2F5FA>发电站安保人员注意，<#EFDF8F>货运电梯</#EFDF8F>供电程序正在激活。" as console
     onStart:
-      - command papi inline "broadcast <white>发电站安保人员注意，<yellow>货运电梯</yellow>供电程序已完成初始化并成功激活。当前剩余电力预计可维持五分钟。外按钮已可使用。" as console
+      - command papi inline "broadcast <#F2F5FA>发电站安保人员注意，<#EFDF8F>货运电梯</#EFDF8F>供电程序已完成初始化并成功激活。当前剩余电力预计可维持五分钟。外按钮已可使用。" as console
     onClose:
-      - command papi inline "broadcast <white>发电站安保人员注意，<yellow>货运电梯</yellow>供电程序即将停止。" as console
+      - command papi inline "broadcast <#F2F5FA>发电站安保人员注意，<#EFDF8F>货运电梯</#EFDF8F>供电程序即将停止。" as console
     onCloseEnd:
-      - command papi inline "broadcast <white>发电站安保人员注意，<yellow>货运电梯</yellow>供电程序已停止。" as console
+      - command papi inline "broadcast <#F2F5FA>发电站安保人员注意，<#EFDF8F>货运电梯</#EFDF8F>供电程序已停止。" as console
 
   leverPos:
     world: "Area2"
@@ -176,13 +176,13 @@
       - tell color "&6这个电源已经启动了。"
     onPrepare: 
       - title color "&e&l!" subtitle color "&c&l电源已激活"
-      - command papi inline "broadcast <white>发电站工作人员须知，<yellow>旅馆木梯</yellow>开始提供电力，正在变压为旧版电力电压，可能需要更长时间..." as console
+      - command papi inline "broadcast <#F2F5FA>发电站工作人员须知，<#EFDF8F>旅馆木梯</#EFDF8F>开始提供电力，正在变压为旧版电力电压，可能需要更长时间..." as console
     onStart: 
-      - command papi inline "broadcast <white>发电站工作人员须知，<yellow>旅馆木梯</yellow>变压已完成，当前可维持约10分钟电力，请工作人员尽快前往地点。" as console
+      - command papi inline "broadcast <#F2F5FA>发电站工作人员须知，<#EFDF8F>旅馆木梯</#EFDF8F>变压已完成，当前可维持约10分钟电力，请工作人员尽快前往地点。" as console
     onClose: 
-      - command papi inline "broadcast <white>发电站工作人员须知，<yellow>旅馆木梯</yellow>供电程序正在停止。" as console
+      - command papi inline "broadcast <#F2F5FA>发电站工作人员须知，<#EFDF8F>旅馆木梯</#EFDF8F>供电程序正在停止。" as console
     onCloseEnd: 
-      - command papi inline "broadcast <white>发电站工作人员须知，<yellow>旅馆木梯</yellow>供电程序已正常退出。" as console
+      - command papi inline "broadcast <#F2F5FA>发电站工作人员须知，<#EFDF8F>旅馆木梯</#EFDF8F>供电程序已正常退出。" as console
 
   leverPos:
     world: "Area2"

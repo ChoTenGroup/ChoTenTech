@@ -53,7 +53,8 @@ object BackpackManager {
         // updateByKey 以 key 对象覆盖全部列：先加载现有记录，保留 disabled/openedBy/suspectedPlayers
         val existing = mapper.findOneByKey(key)
         if (existing != null) {
-            mapper.updateByKey(existing.copy(content = jsonContent))
+            // 同步 slotCount/type，避免类型配置变更后格数与存储内容错位（否则下次打开会丢尾部物品）
+            mapper.updateByKey(existing.copy(content = jsonContent, slotCount = slotCount, type = typeId))
         } else {
             mapper.updateByKey(key)
         }

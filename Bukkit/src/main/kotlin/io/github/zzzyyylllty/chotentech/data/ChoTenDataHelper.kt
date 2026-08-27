@@ -562,7 +562,7 @@ object DataManager {
         submit { BaseManager.grantAutoStartItems(player, data) }
         // Initialize quetiapine skill defaults ONLY after profile data is loaded,
         // so existing saved levels/exp are not overwritten by stale detached-map writes.
-        io.github.zzzyyylllty.chotentech.quetiapine.data.QuetiapineDataBridge.initProfile(player)
+        io.github.zzzyyylllty.chotentech.data.QuetiapineDataBridge.initProfile(player)
         // Increment join count
         ProfileManager.getSharedData(player.uniqueId.toString()).joinCount++
         saveData(player)
@@ -641,8 +641,8 @@ object DataManager {
                 player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, SoundCategory.MASTER, 1f, 1.7f)
                 player.showTitle(
                     Title.title(
-                        "<yellow>阈限<aqua>天际<dark_blue>服务器".toComponent(),
-                        "<green>${player.name}".toComponent()
+                        "<#EFDF8F>阈限<#84D1CB>天际<#637FAF>服务器".toComponent(),
+                        "<#8FD4A6>${player.name}".toComponent()
                     )
                 )
             }
@@ -651,14 +651,14 @@ object DataManager {
         }
     }
 
-    val title = "<#66FF99><b>道阻且长".toComponent()
+    val title = "<#bae8c9><b>道阻且长".toComponent()
 
     fun sendLoadingTips(player: Player, message: String) {
         player.playSound(player, Sound.BLOCK_NOTE_BLOCK_SNARE, SoundCategory.MASTER, 1f, 2f)
         player.showTitle(
             Title.title(
                 title,
-                "<aqua>${message}<#2CBAA8>...".toComponent(),
+                "<#84D1CB>${message}<#70b3ab>...".toComponent(),
                 Title.Times.times(
                     java.time.Duration.ofMillis(0),
                     java.time.Duration.ofMillis(1000),
@@ -890,8 +890,8 @@ class ChoTenDataHelper(val player: Player) {
         if (isNew) {
             val level = data.activeLevel
             if (level != null) {
-                player.sendMessage("<gold>■ <green>发现新层级: <yellow>${level.prefix}${level.name}".toComponent())
-                player.sendMessage("<gray>${level.generateLore()}".toComponent())
+                player.sendMessage("<#DFBD7C>■ <#8FD4A6>发现新层级: <#EFDF8F>${level.prefix}${level.name}".toComponent())
+                player.sendMessage("<#A9B4C3>${level.generateLore()}".toComponent())
             }
         }
 

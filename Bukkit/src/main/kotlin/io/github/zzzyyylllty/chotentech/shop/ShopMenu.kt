@@ -73,7 +73,7 @@ object ShopMenu : Listener {
     fun open(player: Player, shopId: String) {
         if (itemOutputNames.isEmpty()) loadItemOutputNames()
         val shop = ShopManager.getShop(shopId) ?: run {
-            player.sendMessage("<red>商店 <yellow>$shopId<white> <red>不存在<white>".toComponent())
+            player.sendMessage("<#E08A98>商店 <#EFDF8F>$shopId<#F2F5FA> <#E08A98>不存在<#F2F5FA>".toComponent())
             return
         }
         val session = PlayerShopSession.get(player)
@@ -109,7 +109,7 @@ object ShopMenu : Listener {
 
     private fun openShop(player: Player, shop: ShopConfig, session: PlayerShopSession) {
         val items = shop.items.values.toList()
-        val titleStr = "<white><shift:-16><image:kangelicon:${computeTitleStatus(session, items, player, shop)}><shift:-176><aqua><font:minecraft:fusionpixel10>${shop.name}"
+        val titleStr = "<#F2F5FA><shift:-16><image:kangelicon:${computeTitleStatus(session, items, player, shop)}><shift:-176><#84D1CB><font:minecraft:fusionpixel10>${shop.name}"
 
         player.openMenu<PageableChest<ShopItemEntry>>(
             mmJsonUtil.serialize(titleStr.toComponent())
@@ -122,7 +122,7 @@ object ShopMenu : Listener {
             map(*layout.toTypedArray())
 
             slotsBy('I')
-            set('-', guiItem(XMaterial.COMPASS, "<aqua><bold> ", listOf("<!i> <dark_gray>这里什么都没有"), model = "kangelitem:void"))
+            set('-', guiItem(XMaterial.COMPASS, "<#84D1CB><bold> ", listOf("<!i> <#6E7A8C>这里什么都没有"), model = "kangelitem:void"))
 
 
             elements { getFilteredItems(player, shop, session) }
@@ -175,10 +175,10 @@ object ShopMenu : Listener {
                 buyStack.itemMeta?.let { meta ->
                     val lore = mutableListOf<String>()
                     if (shop.guiItems.modeBuy.lore.isNotBlank()) {
-                        shop.guiItems.modeBuy.lore.split("\n").forEach { lore.add("<!i><gray>$it") }
+                        shop.guiItems.modeBuy.lore.split("\n").forEach { lore.add("<!i><#A9B4C3>$it") }
                     }
                     lore.add("")
-                    lore.add(if (buyIsCurrent) "<!i><green>▶ 当前模式" else "<!i><gray>点击切换")
+                    lore.add(if (buyIsCurrent) "<!i><#8FD4A6>▶ 当前模式" else "<!i><#A9B4C3>点击切换")
                     meta.lore(lore.map { it.replacePlaceholder(player).toComponent() })
                     NamespacedKey.fromString("kangelitem:void")?.let { meta.itemModel = it }
                     buyStack.setItemMeta(meta)
@@ -200,10 +200,10 @@ object ShopMenu : Listener {
                 sellStack.itemMeta?.let { meta ->
                     val lore = mutableListOf<String>()
                     if (shop.guiItems.modeSell.lore.isNotBlank()) {
-                        shop.guiItems.modeSell.lore.split("\n").forEach { lore.add("<!i><gray>$it") }
+                        shop.guiItems.modeSell.lore.split("\n").forEach { lore.add("<!i><#A9B4C3>$it") }
                     }
                     lore.add("")
-                    lore.add(if (sellIsCurrent) "<!i><green>▶ 当前模式" else "<!i><gray>点击切换")
+                    lore.add(if (sellIsCurrent) "<!i><#8FD4A6>▶ 当前模式" else "<!i><#A9B4C3>点击切换")
                     meta.lore(lore.map { it.replacePlaceholder(player).toComponent() })
                     NamespacedKey.fromString("kangelitem:void")?.let { meta.itemModel = it }
                     sellStack.setItemMeta(meta)
@@ -266,7 +266,7 @@ object ShopMenu : Listener {
             // O = sell placement mode (top-right slot)
             val sellLore = if (session.isBuyMode) "只在出售模式下可用" else "将物品放入格子中出售"
             val sellModel = if (session.isBuyMode) "kangelicon:sellgui_not" else "kangelicon:sellgui"
-            val sellStack = buildDisplayItem(player, DisplayItem("<white><b>出售物品", sellLore), "HOPPER")
+            val sellStack = buildDisplayItem(player, DisplayItem("<#F2F5FA><b>出售物品", sellLore), "HOPPER")
             sellStack.itemMeta?.let { m ->
                 NamespacedKey.fromString(sellModel)?.let { m.itemModel = it }
                 sellStack.setItemMeta(m)
@@ -274,7 +274,7 @@ object ShopMenu : Listener {
             set('O', sellStack) {
                 clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
                 if (session.isBuyMode) {
-                    clicker.sendMessage("<red>该功能只在出售模式下可用<white>".toComponent())
+                    clicker.sendMessage("<#E08A98>该功能只在出售模式下可用<#F2F5FA>".toComponent())
                     return@set
                 }
                 clicker.closeInventory()
@@ -327,42 +327,25 @@ object ShopMenu : Listener {
         }
     }
 
-    /** Update the open inventory title to reflect current state */
+    /** 原地更新主商店的动态按钮(C/N), 不重开界面。
+     * 原实现用 player.openInventory(新箱子) 重建: 会关闭当前视图, PageableChest 的
+     * 页面/元素缓存随旧 inventory 实例失效, 且若注册了 onClose 会误触发。改为原地刷新。
+     */
     private fun refreshTitle(player: Player, shop: ShopConfig, session: PlayerShopSession) {
-        val items = shop.items.values.toList()
-        val status = computeTitleStatus(session, items, player, shop)
-        val newTitle = "<white><shift:-16><image:kangelicon:$status><shift:-176><aqua><font:minecraft:fusionpixel10>${shop.name}"
-        val view = player.openInventory
-        val oldTop = view.topInventory
-        val newTop = org.bukkit.Bukkit.createInventory(oldTop.holder, oldTop.size, newTitle.toComponent())
-        for (i in 0 until oldTop.size) {
-            newTop.setItem(i, oldTop.getItem(i))
-        }
-        player.openInventory(newTop)
+        val layout = if (session.isBuyMode) shop.guiBuy.split("\n") else shop.guiSell.split("\n")
+        updateDynamicSlots(player, shop, layout)
     }
 
-    /** Compute the sellgui status based on whether any items are placed in I slots */
-    private fun computeSellGuiStatus(player: Player, shop: ShopConfig, layout: List<String>): String {
-        val inv = player.openInventory.topInventory
-        val iSlots = getAllSlotsFor('I', layout)
-        for (slot in iSlots) {
-            val item = inv.getItem(slot) ?: continue
-            if (!item.type.isAir) return "sellshop"
-        }
-        return "sellshop_notsel"
-    }
-
-    /** Refresh the sell placement menu title to reflect current item state */
+    /** 原地刷新出售放置菜单, 不重开界面。
+     * 原实现用 player.openInventory(新箱子) 重建, 会关闭旧视图并触发本菜单的 onClose →
+     * returnItems(iSlots), 把已放入 I 格的物品再复制回背包(刷物品);
+     * 且新箱子里的物品是按引用复制的副本, 复制漏洞因此成立。改为只原地更新 N 信息按钮。
+     */
     private fun refreshSellPlacementTitle(player: Player, shop: ShopConfig, layout: List<String>) {
-        val status = computeSellGuiStatus(player, shop, layout)
-        val newTitle = "<white><shift:-16><image:kangelicon:$status><shift:-176><aqua><font:minecraft:fusionpixel10>${shop.name}"
-        val view = player.openInventory
-        val oldTop = view.topInventory
-        val newTop = org.bukkit.Bukkit.createInventory(oldTop.holder, oldTop.size, newTitle.toComponent())
-        for (i in 0 until oldTop.size) {
-            newTop.setItem(i, oldTop.getItem(i))
+        val inv = player.openInventory.topInventory
+        for (slot in getAllSlotsFor('N', layout)) {
+            inv.setItem(slot, buildKnowledgeItem(player, shop, PlayerShopSession.get(player)))
         }
-        player.openInventory(newTop)
     }
 
     /** Update all confirm and info button slots in-place without closing the UI */
@@ -446,7 +429,7 @@ object ShopMenu : Listener {
     private fun checkAllRequirements(player: Player, requirements: List<Requirement>, shop: ShopConfig? = null): Boolean {
         for (req in requirements) {
             if (!checkRequirement(player, req, shop)) {
-                player.sendMessage("<red>需要: ${req.display}<white>".toComponent())
+                player.sendMessage("<#E08A98>需要: ${req.display}<#F2F5FA>".toComponent())
                 return false
             }
         }
@@ -461,25 +444,25 @@ object ShopMenu : Listener {
             val m = stack.itemMeta ?: return stack
 
             val glore = mutableListOf<String>()
-            glore.add("<!i><dark_gray><st>${" ".repeat(60)}</st>")
-            glore.add("<!i><gold><bold>礼包商品")
+            glore.add("<!i><#6E7A8C><st>${" ".repeat(60)}</st>")
+            glore.add("<!i><#DFBD7C><bold>礼包商品")
             if (pack != null) {
-                glore.add("<!i><white>${pack.name}")
+                glore.add("<!i><#F2F5FA>${pack.name}")
                 glore.add("<!i> ")
-                glore.add("<!i><yellow>基础价格: <white>${pack.price} ${CurrencyManager.displayName(pack.currency)}")
+                glore.add("<!i><#EFDF8F>基础价格: <#F2F5FA>${pack.price} ${CurrencyManager.displayName(pack.currency)}")
                 for ((itemId, modifier) in pack.priceModifiers) {
-                    glore.add("<!i>  <red>※ ${itemId.substringAfterLast(":")} +$modifier ${CurrencyManager.displayName(pack.currency)}")
+                    glore.add("<!i>  <#E08A98>※ ${itemId.substringAfterLast(":")} +$modifier ${CurrencyManager.displayName(pack.currency)}")
                 }
                 glore.add("<!i> ")
-                glore.add("<!i><gray>内含物品:")
+                glore.add("<!i><#A9B4C3>内含物品:")
                 for ((_, cat) in pack.categories) {
-                    val names = cat.items.joinToString(", ") { it.displayName.removePrefix("<white>").removePrefix("<green>").removePrefix("<gold>") }
-                    glore.add("<!i> <aqua>${cat.displayName.removePrefix("<white>").removePrefix("<green>").removePrefix("<gold>")}: <white>$names")
+                    val names = cat.items.joinToString(", ") { it.displayName.removePrefix("<#F2F5FA>").removePrefix("<#8FD4A6>").removePrefix("<#DFBD7C>") }
+                    glore.add("<!i> <#84D1CB>${cat.displayName.removePrefix("<#F2F5FA>").removePrefix("<#8FD4A6>").removePrefix("<#DFBD7C>")}: <#F2F5FA>$names")
                 }
             }
-            glore.add("<!i><dark_gray><st>${" ".repeat(60)}</st>")
-            glore.add("<!i><green>点击打开礼包菜单")
-            glore.add("<!i><gray>可在菜单中选择具体物品")
+            glore.add("<!i><#6E7A8C><st>${" ".repeat(60)}</st>")
+            glore.add("<!i><#8FD4A6>点击打开礼包菜单")
+            glore.add("<!i><#A9B4C3>可在菜单中选择具体物品")
 
             m.lore(glore.map { it.replacePlaceholder(player).toComponent() })
             stack.setItemMeta(m)
@@ -494,7 +477,7 @@ object ShopMenu : Listener {
         }
 
         val lore = mutableListOf<String>()
-        lore.add("<!i><dark_gray><st>${" ".repeat(60)}</st>")
+        lore.add("<!i><#6E7A8C><st>${" ".repeat(60)}</st>")
 
         val session = PlayerShopSession.get(player)
 
@@ -503,38 +486,38 @@ object ShopMenu : Listener {
         if (displayReqs.isNotEmpty()) {
             for (req in displayReqs) {
                 val met = checkRequirement(player, req, shop)
-                val color = if (met) "<green>" else "<red>"
+                val color = if (met) "<#8FD4A6>" else "<#E08A98>"
                 lore.add("<!i>${color}条件: ${req.display}")
             }
-            lore.add("<!i><dark_gray><st>${" ".repeat(60)}</st>")
+            lore.add("<!i><#6E7A8C><st>${" ".repeat(60)}</st>")
         }
 
         // Costs display (buy mode) or rewards (sell mode)
         if (session.isBuyMode && entry.buy.isNotEmpty()) {
-            lore.add("<!i><yellow>价格:")
+            lore.add("<!i><#EFDF8F>价格:")
             for (cost in entry.buy) {
                 when (cost.type) {
                     CostType.CURRENCY -> {
                         val currencyName = CurrencyManager.displayName(cost.currency ?: "money")
                         val amount = if (cost.dynamicPricing != null) getDynamicPrice(cost, entry.key) else cost.amount
-                        val dynStr = if (cost.dynamicPricing != null) " <gray>(浮动 ${cost.dynamicPricing.min}-${cost.dynamicPricing.max})" else ""
-                        lore.add("<!i> <aqua>● $currencyName: <white>$amount$dynStr")
+                        val dynStr = if (cost.dynamicPricing != null) " <#A9B4C3>(浮动 ${cost.dynamicPricing.min}-${cost.dynamicPricing.max})" else ""
+                        lore.add("<!i> <#84D1CB>● $currencyName: <#F2F5FA>$amount$dynStr")
                     }
                     CostType.ITEM -> {
-                        lore.add("<!i> <aqua>● ${formatItemName(cost.item ?: "?")} <gray>x${cost.amount}")
+                        lore.add("<!i> <#84D1CB>● ${formatItemName(cost.item ?: "?")} <#A9B4C3>x${cost.amount}")
                     }
                 }
             }
         } else if (!session.isBuyMode && entry.sell.isNotEmpty()) {
-            lore.add("<!i><yellow>出售可得:")
+            lore.add("<!i><#EFDF8F>出售可得:")
             for (reward in entry.sell) {
                 when (reward.type) {
                     CostType.CURRENCY -> {
                         val currencyName = CurrencyManager.displayName(reward.currency ?: "money")
-                        lore.add("<!i> <aqua>● $currencyName: <white>${reward.amount}")
+                        lore.add("<!i> <#84D1CB>● $currencyName: <#F2F5FA>${reward.amount}")
                     }
                     CostType.ITEM -> {
-                        lore.add("<!i> <aqua>● ${formatItemName(reward.item ?: "?")} <gray>x${reward.amount}")
+                        lore.add("<!i> <#84D1CB>● ${formatItemName(reward.item ?: "?")} <#A9B4C3>x${reward.amount}")
                     }
                 }
             }
@@ -545,16 +528,16 @@ object ShopMenu : Listener {
             if (entry.limit.player > 0) {
                 ShopManager.checkAndResetPlayerLimit(entry.key, player.uniqueId.toString(), entry.limit.playerReset)
                 val bought = ShopManager.getPlayerPurchaseCount(entry.key, player.uniqueId.toString())
-                lore.add("<!i><gray>个人限购: $bought/${entry.limit.player}")
+                lore.add("<!i><#A9B4C3>个人限购: $bought/${entry.limit.player}")
             }
             if (entry.limit.global > 0) {
                 ShopManager.checkAndResetGlobalLimit(entry.key, entry.limit.globalReset)
                 val globalBought = ShopManager.getGlobalPurchaseCount(entry.key)
-                lore.add("<!i><gray>全服已购: $globalBought/${entry.limit.global}")
+                lore.add("<!i><#A9B4C3>全服已购: $globalBought/${entry.limit.global}")
             }
         }
 
-        lore.add("<!i><dark_gray><st>${" ".repeat(60)}</st>")
+        lore.add("<!i><#6E7A8C><st>${" ".repeat(60)}</st>")
 
         // Check if adding 1 more is affordable or meets conditions
         val qtyNow = session.getQuantity(entry.key)
@@ -569,15 +552,15 @@ object ShopMenu : Listener {
             countItem(player, entry.id) < qtyNow
         }
         if (cannotAddMore) {
-            lore.add("<!i><red>条件不足")
+            lore.add("<!i><#E08A98>条件不足")
         }
 
         if (selected) {
             val qty = PlayerShopSession.get(player).getQuantity(entry.key)
-            lore.add("<!i><green>已选择: $qty")
-            lore.add("<!i><gray>左键+1 · 潜行左键+10 · 右键-1 · 潜行右键取消")
+            lore.add("<!i><#8FD4A6>已选择: $qty")
+            lore.add("<!i><#A9B4C3>左键+1 · 潜行左键+10 · 右键-1 · 潜行右键取消")
         } else {
-            lore.add("<!i><green>点击选择")
+            lore.add("<!i><#8FD4A6>点击选择")
         }
 
         meta.lore(lore.map { it.replacePlaceholder(player).toComponent() })
@@ -594,10 +577,10 @@ object ShopMenu : Listener {
         val result = mat.parseItem() ?: ItemStack(Material.BARRIER)
         val meta = result.itemMeta ?: return result
 
-        meta.displayName((item.name + "<white>").replacePlaceholder(player).toComponent())
+        meta.displayName((item.name + "<#F2F5FA>").replacePlaceholder(player).toComponent())
         if (item.lore.isNotBlank()) {
             val loreLines = item.lore.split("\n").map {
-                "<!i><gray>${it.replacePlaceholder(player)}"
+                "<!i><#A9B4C3>${it.replacePlaceholder(player)}"
             }
             meta.lore(loreLines.toComponent())
         }
@@ -690,18 +673,18 @@ object ShopMenu : Listener {
         val pointName = CurrencyManager.displayName("point")
         val tapeName = CurrencyManager.displayName("tape")
 
-        meta.displayName((item.name + "<white>").replacePlaceholder(player).toComponent())
+        meta.displayName((item.name + "<#F2F5FA>").replacePlaceholder(player).toComponent())
 
         val loreLines = mutableListOf<String>()
         if (item.lore.isNotBlank()) {
-            item.lore.split("\n").forEach { loreLines.add("<!i><gray>$it") }
+            item.lore.split("\n").forEach { loreLines.add("<!i><#A9B4C3>$it") }
         }
         loreLines.add("")
-        loreLines.add("<!i><gold>当前模式: <white>$modeStr")
-        loreLines.add("<!i><gold>你的货币:")
-        loreLines.add("<!i> <aqua>$moneyName: <white>$moneyBalance")
-        loreLines.add("<!i> <aqua>$pointName: <white>$pointBalance")
-        loreLines.add("<!i> <aqua>$tapeName: <white>$tapeBalance")
+        loreLines.add("<!i><#DFBD7C>当前模式: <#F2F5FA>$modeStr")
+        loreLines.add("<!i><#DFBD7C>你的货币:")
+        loreLines.add("<!i> <#84D1CB>$moneyName: <#F2F5FA>$moneyBalance")
+        loreLines.add("<!i> <#84D1CB>$pointName: <#F2F5FA>$pointBalance")
+        loreLines.add("<!i> <#84D1CB>$tapeName: <#F2F5FA>$tapeBalance")
 
         // Merchant level display
         if (shop.levels.isNotEmpty()) {
@@ -710,22 +693,22 @@ object ShopMenu : Listener {
             val maxLevel = shop.levels.keys.maxOrNull() ?: 0
             val levelBar = (0..maxLevel).joinToString(" ") { lvl ->
                 when {
-                    lvl < currentLevel -> "<dark_gray>[$lvl]</dark_gray>"
-                    lvl == currentLevel -> "<green>[$lvl]</green>"
-                    else -> "<gray>[$lvl]"
+                    lvl < currentLevel -> "<#6E7A8C>[$lvl]</#6E7A8C>"
+                    lvl == currentLevel -> "<#8FD4A6>[$lvl]</#8FD4A6>"
+                    else -> "<#A9B4C3>[$lvl]"
                 }
             }
-            loreLines.add("<!i><gray>当前商人等级: $levelBar")
+            loreLines.add("<!i><#A9B4C3>当前商人等级: $levelBar")
 
             val nextLevel = currentLevel + 1
             if (nextLevel <= maxLevel) {
                 val reqs = shop.levels[nextLevel] ?: emptyList()
                 if (reqs.isNotEmpty()) {
                     loreLines.add("")
-                    loreLines.add("<!i><gray>下一级需求:")
+                    loreLines.add("<!i><#A9B4C3>下一级需求:")
                     for (req in reqs) {
                         val met = meetsSingleRequirement(player, shop, req)
-                        val style = if (met) "<i><gray>" else "<white>"
+                        val style = if (met) "<i><#A9B4C3>" else "<#F2F5FA>"
                         when (req.type) {
                             "level" -> {
                                 val current = getPlayerLevel(player)
@@ -823,7 +806,7 @@ object ShopMenu : Listener {
             when {
                 canAfford -> shop.guiItems.confirmBuy.have
                 else -> shop.guiItems.confirmBuy.have.copy(
-                    name = "<red><b>货币不足",
+                    name = "<#E08A98><b>货币不足",
                     lore = "缺少足够的货币或物品\n无法购买"
                 )
             }
@@ -831,7 +814,7 @@ object ShopMenu : Listener {
             when {
                 canAfford -> shop.guiItems.confirmSell.have
                 else -> shop.guiItems.confirmSell.have.copy(
-                    name = "<red><b>物品不足",
+                    name = "<#E08A98><b>物品不足",
                     lore = "你没有足够的物品\n无法出售"
                 )
             }
@@ -850,51 +833,51 @@ object ShopMenu : Listener {
 
         val loreLines = mutableListOf<String>()
         if (confirmCfg.lore.isNotBlank()) {
-            confirmCfg.lore.split("\n").forEach { loreLines.add("<!i><gray>$it") }
+            confirmCfg.lore.split("\n").forEach { loreLines.add("<!i><#A9B4C3>$it") }
         }
 
         loreLines.add("")
-        loreLines.add("<!i><gold>已选物品:")
+        loreLines.add("<!i><#DFBD7C>已选物品:")
         for ((itemKey, qty) in selected) {
             val itemName = formatItemName(shop.items[itemKey]?.id ?: itemKey)
-            loreLines.add("<!i> <white>$itemName <gray>x$qty")
+            loreLines.add("<!i> <#F2F5FA>$itemName <#A9B4C3>x$qty")
         }
 
         if (session.isBuyMode) {
             loreLines.add("")
-            loreLines.add("<!i><yellow>需要支付:")
+            loreLines.add("<!i><#EFDF8F>需要支付:")
             for ((currency, amount) in totalCurrency) {
-                loreLines.add("<!i> <red>● ${CurrencyManager.displayName(currency)}: $amount")
+                loreLines.add("<!i> <#E08A98>● ${CurrencyManager.displayName(currency)}: $amount")
             }
             for ((item, amount) in totalItems) {
-                loreLines.add("<!i> <red>● ${formatItemName(item)} x$amount")
+                loreLines.add("<!i> <#E08A98>● ${formatItemName(item)} x$amount")
             }
             if (!canAfford) {
                 loreLines.add("")
-                loreLines.add("<!i><red><bold>货币不足!")
+                loreLines.add("<!i><#E08A98><bold>货币不足!")
             } else {
                 loreLines.add("")
-                loreLines.add("<!i><green>点击确认购买")
+                loreLines.add("<!i><#8FD4A6>点击确认购买")
             }
         } else {
             loreLines.add("")
-            loreLines.add("<!i><yellow>可获得:")
+            loreLines.add("<!i><#EFDF8F>可获得:")
             for ((currency, amount) in totalCurrency) {
-                loreLines.add("<!i> <green>● ${CurrencyManager.displayName(currency)}: $amount")
+                loreLines.add("<!i> <#8FD4A6>● ${CurrencyManager.displayName(currency)}: $amount")
             }
             for ((item, amount) in totalItems) {
-                loreLines.add("<!i> <green>● ${formatItemName(item)} x$amount")
+                loreLines.add("<!i> <#8FD4A6>● ${formatItemName(item)} x$amount")
             }
             if (!canAfford) {
                 loreLines.add("")
-                loreLines.add("<!i><red><bold>物品不足!")
+                loreLines.add("<!i><#E08A98><bold>物品不足!")
             } else {
                 loreLines.add("")
-                loreLines.add("<!i><green>点击确认出售")
+                loreLines.add("<!i><#8FD4A6>点击确认出售")
             }
         }
 
-        loreLines.add("<!i><gray>右键取消所有选择")
+        loreLines.add("<!i><#A9B4C3>右键取消所有选择")
 
         meta.lore(loreLines.map { it.replacePlaceholder(player).toComponent() })
 
@@ -909,7 +892,7 @@ object ShopMenu : Listener {
     private fun processConfirm(player: Player, shop: ShopConfig, session: PlayerShopSession) {
         val selected = session.selectedItems.entries.filter { it.value > 0 }
         if (selected.isEmpty()) {
-            player.sendMessage("<red>你没有选择任何物品".toComponent())
+            player.sendMessage("<#E08A98>你没有选择任何物品".toComponent())
             return
         }
         if (session.isBuyMode) processBuy(player, shop, session)
@@ -926,13 +909,13 @@ object ShopMenu : Listener {
 
             // 兜底:未标注购买价格的商品不允许免费购买
             if (entry.buy.isEmpty()) {
-                player.sendMessage("<red>商品 ${formatItemName(entry.id)} 未标注购买价格,无法购买<white>".toComponent())
+                player.sendMessage("<#E08A98>商品 ${formatItemName(entry.id)} 未标注购买价格,无法购买<#F2F5FA>".toComponent())
                 return
             }
 
             for (req in entry.buyRequirements) {
                 if (!checkRequirement(player, req, shop)) {
-                    player.sendMessage("<red>不满足购买 <yellow>${formatItemName(entry.id)} <red>的条件: ${req.display}<white>".toComponent())
+                    player.sendMessage("<#E08A98>不满足购买 <#EFDF8F>${formatItemName(entry.id)} <#E08A98>的条件: ${req.display}<#F2F5FA>".toComponent())
                     return
                 }
             }
@@ -942,7 +925,7 @@ object ShopMenu : Listener {
                     ShopManager.checkAndResetPlayerLimit(entry.key, player.uniqueId.toString(), entry.limit.playerReset)
                     val bought = ShopManager.getPlayerPurchaseCount(entry.key, player.uniqueId.toString())
                     if (bought + qty > entry.limit.player) {
-                        player.sendMessage("<red>已达到个人限购数量 ($bought/${entry.limit.player})<white>".toComponent())
+                        player.sendMessage("<#E08A98>已达到个人限购数量 ($bought/${entry.limit.player})<#F2F5FA>".toComponent())
                         return
                     }
                 }
@@ -950,7 +933,7 @@ object ShopMenu : Listener {
                     ShopManager.checkAndResetGlobalLimit(entry.key, entry.limit.globalReset)
                     val globalBought = ShopManager.getGlobalPurchaseCount(entry.key)
                     if (globalBought + qty > entry.limit.global) {
-                        player.sendMessage("<red>该商品全服已售罄".toComponent())
+                        player.sendMessage("<#E08A98>该商品全服已售罄".toComponent())
                         return
                     }
                 }
@@ -969,14 +952,14 @@ object ShopMenu : Listener {
         // Verify affordability
         for ((currency, amount) in costs) {
             if (!CurrencyManager.hasBalance(player, currency, amount)) {
-                player.sendMessage("<red>${CurrencyManager.displayName(currency)}<red>不足! 需要 $amount<white>".toComponent())
+                player.sendMessage("<#E08A98>${CurrencyManager.displayName(currency)}<#E08A98>不足! 需要 $amount<#F2F5FA>".toComponent())
                 return
             }
         }
         for ((itemId, amount) in itemsToTake) {
             val count = countItem(player, itemId)
             if (count < amount) {
-                player.sendMessage("<red>${formatItemName(itemId)}<red> 不足! 需要 $amount, 你有 $count<white>".toComponent())
+                player.sendMessage("<#E08A98>${formatItemName(itemId)}<#E08A98> 不足! 需要 $amount, 你有 $count<#F2F5FA>".toComponent())
                 return
             }
         }
@@ -985,7 +968,7 @@ object ShopMenu : Listener {
         for ((itemKey, qty) in selected) {
             val entry = shop.items[itemKey] ?: continue
             if (resolveItem(player, entry.id) == null) {
-                player.sendMessage("<red>商品 ${formatItemName(entry.id)} 无法发放，请联系管理员<white>".toComponent())
+                player.sendMessage("<#E08A98>商品 ${formatItemName(entry.id)} 无法发放，请联系管理员<#F2F5FA>".toComponent())
                 return
             }
         }
@@ -1003,13 +986,13 @@ object ShopMenu : Listener {
             val entry = shop.items[itemKey] ?: continue
             val given = giveItem(player, entry.id, qty.toInt())
             if (given > 0) {
-                player.sendMessage("<green>获得 <yellow>${formatItemName(entry.id)} <green>x$given<white>".toComponent())
+                player.sendMessage("<#8FD4A6>获得 <#EFDF8F>${formatItemName(entry.id)} <#8FD4A6>x$given<#F2F5FA>".toComponent())
                 ShopManager.recordPurchase(entry.key, player.uniqueId.toString(), qty)
             }
         }
 
         player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
-        player.sendMessage("<green>购买成功!".toComponent())
+        player.sendMessage("<#8FD4A6>购买成功!".toComponent())
         session.clearSelection()
         session.currentPage = 0
         submit(delay = 1) { openShop(player, shop, session) }
@@ -1023,19 +1006,19 @@ object ShopMenu : Listener {
 
             // 兜底:未标注出售价格的商品不允许白送
             if (entry.sell.isEmpty()) {
-                player.sendMessage("<red>商品 ${formatItemName(entry.id)} 未标注出售价格,无法出售<white>".toComponent())
+                player.sendMessage("<#E08A98>商品 ${formatItemName(entry.id)} 未标注出售价格,无法出售<#F2F5FA>".toComponent())
                 return
             }
 
             for (req in entry.sellRequirements) {
                 if (!checkRequirement(player, req, shop)) {
-                    player.sendMessage("<red>不满足出售 <yellow>${formatItemName(entry.id)} <red>的条件: ${req.display}<white>".toComponent())
+                    player.sendMessage("<#E08A98>不满足出售 <#EFDF8F>${formatItemName(entry.id)} <#E08A98>的条件: ${req.display}<#F2F5FA>".toComponent())
                     return
                 }
             }
             val count = countItem(player, entry.id)
             if (count < qty) {
-                player.sendMessage("<red>你没有足够的 <yellow>${formatItemName(entry.id)}<red>! 需要 $qty, 你有 $count<white>".toComponent())
+                player.sendMessage("<#E08A98>你没有足够的 <#EFDF8F>${formatItemName(entry.id)}<#E08A98>! 需要 $qty, 你有 $count<#F2F5FA>".toComponent())
                 return
             }
         }
@@ -1054,18 +1037,18 @@ object ShopMenu : Listener {
                     CostType.CURRENCY -> {
                         CurrencyManager.addBalance(player, reward.currency ?: "money", amount)
                         val name = CurrencyManager.displayName(reward.currency ?: "money")
-                        rewardSummary.add("<yellow>$name <green>x$amount")
+                        rewardSummary.add("<#EFDF8F>$name <#8FD4A6>x$amount")
                     }
                     CostType.ITEM -> {
                         giveItem(player, reward.item ?: "?", amount.toInt())
-                        rewardSummary.add("<yellow>${formatItemName(reward.item ?: "?")} <green>x$amount")
+                        rewardSummary.add("<#EFDF8F>${formatItemName(reward.item ?: "?")} <#8FD4A6>x$amount")
                     }
                 }
             }
         }
 
         player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
-        player.sendMessage("<green>出售成功! 获得: ${rewardSummary.joinToString(", ")}<white>".toComponent())
+        player.sendMessage("<#8FD4A6>出售成功! 获得: ${rewardSummary.joinToString(", ")}<#F2F5FA>".toComponent())
 
         // Record sales for level quota tracking
         for ((itemKey, qty) in selected) {
@@ -1088,15 +1071,15 @@ object ShopMenu : Listener {
         val iSlots = getAllSlotsFor('I', layout)
         val session = PlayerShopSession.get(player)
 
-        player.openMenu<Chest>(mmJsonUtil.serialize("<white><shift:-16><image:kangelicon:sellshop_notsel><shift:-176><aqua><font:minecraft:fusionpixel10>${shop.name}".toComponent())) {
+        player.openMenu<Chest>(mmJsonUtil.serialize("<#F2F5FA><shift:-16><image:kangelicon:sellshop_notsel><shift:-176><#84D1CB><font:minecraft:fusionpixel10>${shop.name}".toComponent())) {
             rows(6)
             map(*layout.toTypedArray())
             handLocked(false)
-            set('-', guiItem(XMaterial.COMPASS, "<aqua><bold> ", listOf("<!i> <dark_gray>这里什么都没有"), model = "kangelitem:void"))
+            set('-', guiItem(XMaterial.COMPASS, "<#84D1CB><bold> ", listOf("<!i> <#6E7A8C>这里什么都没有"), model = "kangelitem:void"))
 
 
             // O = back to main shop
-            val backStack = buildDisplayItem(player, DisplayItem("<white><b>返回商店", "点击返回商店"), "BARRIER")
+            val backStack = buildDisplayItem(player, DisplayItem("<#F2F5FA><b>返回商店", "点击返回商店"), "BARRIER")
             backStack.itemMeta?.let { m ->
                 NamespacedKey.fromString("kangelicon:sellgui_activate")?.let { m.itemModel = it }
                 backStack.setItemMeta(m)
@@ -1117,10 +1100,10 @@ object ShopMenu : Listener {
                 buyStack.itemMeta?.let { meta ->
                     val lore = mutableListOf<String>()
                     if (shop.guiItems.modeBuy.lore.isNotBlank()) {
-                        shop.guiItems.modeBuy.lore.split("\n").forEach { lore.add("<!i><gray>$it") }
+                        shop.guiItems.modeBuy.lore.split("\n").forEach { lore.add("<!i><#A9B4C3>$it") }
                     }
                     lore.add("")
-                    lore.add("<!i><gray>点击切换")
+                    lore.add("<!i><#A9B4C3>点击切换")
                     meta.lore(lore.map { it.replacePlaceholder(player).toComponent() })
                     NamespacedKey.fromString("kangelitem:void")?.let { meta.itemModel = it }
                     buyStack.setItemMeta(meta)
@@ -1141,10 +1124,10 @@ object ShopMenu : Listener {
                 sellStack.itemMeta?.let { meta ->
                     val lore = mutableListOf<String>()
                     if (shop.guiItems.modeSell.lore.isNotBlank()) {
-                        shop.guiItems.modeSell.lore.split("\n").forEach { lore.add("<!i><gray>$it") }
+                        shop.guiItems.modeSell.lore.split("\n").forEach { lore.add("<!i><#A9B4C3>$it") }
                     }
                     lore.add("")
-                    lore.add("<!i><green>▶ 当前模式")
+                    lore.add("<!i><#8FD4A6>▶ 当前模式")
                     meta.lore(lore.map { it.replacePlaceholder(player).toComponent() })
                     NamespacedKey.fromString("kangelitem:void")?.let { meta.itemModel = it }
                     sellStack.setItemMeta(meta)
@@ -1160,7 +1143,7 @@ object ShopMenu : Listener {
             }
 
             // C = confirm sell
-            val sellConfirmStack = buildDisplayItem(player, DisplayItem("<green><b>确认出售", "出售所有已放入的物品\n无法出售的物品将返还背包"), "GREEN_CONCRETE")
+            val sellConfirmStack = buildDisplayItem(player, DisplayItem("<#8FD4A6><b>确认出售", "出售所有已放入的物品\n无法出售的物品将返还背包"), "GREEN_CONCRETE")
             sellConfirmStack.itemMeta?.let { m ->
                 NamespacedKey.fromString("kangelitem:void")?.let { m.itemModel = it }
                 sellConfirmStack.setItemMeta(m)
@@ -1233,12 +1216,12 @@ object ShopMenu : Listener {
                         CostType.CURRENCY -> {
                             CurrencyManager.addBalance(player, reward.currency ?: "money", amount)
                             val name = CurrencyManager.displayName(reward.currency ?: "money")
-                            rewardSummary.add("<yellow>$name <green>x$amount")
+                            rewardSummary.add("<#EFDF8F>$name <#8FD4A6>x$amount")
                             ShopManager.recordSale(shop.idef, player.uniqueId.toString(), reward.currency ?: "money", amount)
                         }
                         CostType.ITEM -> {
                             giveItem(player, reward.item ?: "?", amount.toInt())
-                            rewardSummary.add("<yellow>${formatItemName(reward.item ?: "?")} <green>x$amount")
+                            rewardSummary.add("<#EFDF8F>${formatItemName(reward.item ?: "?")} <#8FD4A6>x$amount")
                         }
                     }
                 }
@@ -1253,10 +1236,10 @@ object ShopMenu : Listener {
 
         player.playSound(player.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
         if (soldCount > 0) {
-            player.sendMessage("<green>出售成功! 获得: ${rewardSummary.joinToString(", ")}<white>".toComponent())
+            player.sendMessage("<#8FD4A6>出售成功! 获得: ${rewardSummary.joinToString(", ")}<#F2F5FA>".toComponent())
             player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
         } else {
-            player.sendMessage("<red>没有可出售的物品".toComponent())
+            player.sendMessage("<#E08A98>没有可出售的物品".toComponent())
         }
     }
 
@@ -1371,10 +1354,10 @@ object ShopMenu : Listener {
         val mat = try { XMaterial.valueOf(material) } catch (_: Exception) { XMaterial.HOPPER }
         val result = mat.parseItem() ?: ItemStack(Material.HOPPER)
         val meta = result.itemMeta ?: return result
-        meta.displayName("<!i><white><b>$label".replacePlaceholder(player).toComponent())
+        meta.displayName("<!i><#F2F5FA><b>$label".replacePlaceholder(player).toComponent())
         val lore = allNames.map { name ->
-            if (name == currentName) "<!i><green>▶ <white>$name"
-            else "<!i><gray>$name"
+            if (name == currentName) "<!i><#8FD4A6>▶ <#F2F5FA>$name"
+            else "<!i><#A9B4C3>$name"
         }
         meta.lore(lore.map { it.replacePlaceholder(player).toComponent() })
         model?.let { NamespacedKey.fromString(it)?.let { key -> meta.itemModel = key } }
@@ -1549,7 +1532,7 @@ object ShopMenu : Listener {
             if (leftover.isNotEmpty()) break
         }
         if (remaining > 0) {
-            player.sendMessage("<red>背包已满! 有 $remaining 个 ${formatItemName(itemId)}<red> 掉落在了地上。<white>".toComponent())
+            player.sendMessage("<#E08A98>背包已满! 有 $remaining 个 ${formatItemName(itemId)}<#E08A98> 掉落在了地上。<#F2F5FA>".toComponent())
             player.world.dropItem(player.location, template.clone().apply { this.amount = remaining })
         }
         return given

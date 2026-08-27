@@ -62,7 +62,7 @@ class CoolNumberMenu(
 
         player.openMenu<PageableChest<CoolNumberInfo>>(
             mmJsonUtil.serialize(
-                "<black><font:minecraft:fusionpixel10>靓号商城".toComponent()
+                "<#2A2F3A><font:minecraft:fusionpixel10>靓号商城".toComponent()
             )
         ) {
             rows(6)
@@ -126,11 +126,11 @@ class CoolNumberMenu(
             }
 
             setPreviousPage(0) { _, hasPrev ->
-                guiItem(XMaterial.ARROW, "<green>上一页", model = if (hasPrev) "kangelitem:previous" else "kangelitem:previous_no")
+                guiItem(XMaterial.ARROW, "<#8FD4A6>上一页", model = if (hasPrev) "kangelitem:previous" else "kangelitem:previous_no")
             }
 
             setNextPage(8) { _, hasNext ->
-                guiItem(XMaterial.ARROW, "<green>下一页", model = if (hasNext) "kangelitem:next" else "kangelitem:next_no")
+                guiItem(XMaterial.ARROW, "<#8FD4A6>下一页", model = if (hasNext) "kangelitem:next" else "kangelitem:next_no")
             }
 
             // ── Search button (slot 4 + 9*5 = 49) ──
@@ -177,10 +177,10 @@ class CoolNumberMenu(
     private fun buildDigitItem(digit: Int, active: Boolean): ItemStack {
         val item = XMaterial.LIME_STAINED_GLASS_PANE.parseItem() ?: ItemStack(Material.LIME_STAINED_GLASS_PANE)
         val meta = item.itemMeta ?: return item
-        val color = if (active) "<green><b>" else "<gray>"
+        val color = if (active) "<#8FD4A6><b>" else "<#A9B4C3>"
         meta.displayName("${color}$digit 位靓号".toComponent())
         val lore = mutableListOf(
-            if (active) "<!i><green>✓ 已选中" else "<!i> <yellow>点击 <green>选择"
+            if (active) "<!i><#8FD4A6>✓ 已选中" else "<!i> <#EFDF8F>点击 <#8FD4A6>选择"
         )
         meta.lore(lore.toComponent())
         item.setItemMeta(meta)
@@ -190,11 +190,11 @@ class CoolNumberMenu(
     private fun buildCategoryItem(category: CoolNumberCategory, active: Boolean): ItemStack {
         val item = XMaterial.BOOK.parseItem() ?: ItemStack(Material.BOOK)
         val meta = item.itemMeta ?: return item
-        val color = if (active) "<gold><b>" else "<white>"
+        val color = if (active) "<#DFBD7C><b>" else "<#F2F5FA>"
         meta.displayName("${color}${category.displayName}".toComponent())
         meta.lore(listOf(
-            loreInfo("说明", "<gray>${category.desc}"),
-            if (active) "<!i><gold>✓ 已选中" else "<!i> <yellow>点击 <green>选择"
+            loreInfo("说明", "<#A9B4C3>${category.desc}"),
+            if (active) "<!i><#DFBD7C>✓ 已选中" else "<!i> <#EFDF8F>点击 <#8FD4A6>选择"
         ).toComponent())
         item.setItemMeta(meta)
         return item
@@ -207,12 +207,12 @@ class CoolNumberMenu(
         meta.displayName("${info.tier.color}<b>${info.number}".toComponent())
 
         meta.lore(listOf(
-            loreInfo("分数", "<yellow>${info.score}"),
+            loreInfo("分数", "<#EFDF8F>${info.score}"),
             loreInfo("等级", "${info.tier.color}${info.tier.displayName}"),
-            loreInfo("贸易点", "<green>${info.pointPrice}"),
-            loreInfo("磁带", "<aqua>${info.tapePrice}"),
+            loreInfo("贸易点", "<#8FD4A6>${info.pointPrice}"),
+            loreInfo("磁带", "<#84D1CB>${info.tapePrice}"),
             loreSpace(),
-            "<!i> <yellow>点击 <green>查看详情"
+            "<!i> <#EFDF8F>点击 <#8FD4A6>查看详情"
         ).toComponent())
         item.setItemMeta(meta)
         return item
@@ -221,10 +221,10 @@ class CoolNumberMenu(
     private fun buildSearchItem(): ItemStack {
         val item = XMaterial.COMPASS.parseItem() ?: ItemStack(Material.COMPASS)
         val meta = item.itemMeta ?: return item
-        meta.displayName("<b><aqua>搜索靓号".toComponent())
+        meta.displayName("<b><#84D1CB>搜索靓号".toComponent())
         meta.lore(listOf(
-            "<!i> <yellow>点击 <green>输入号码搜索",
-            "<!i><gray>输入 cancel 取消",
+            "<!i> <#EFDF8F>点击 <#8FD4A6>输入号码搜索",
+            "<!i><#A9B4C3>输入 cancel 取消",
             loreSpace(),
             loreInfo("禁止", CoolNumberManager.bannedNumbers.joinToString(", "))
         ).toComponent())

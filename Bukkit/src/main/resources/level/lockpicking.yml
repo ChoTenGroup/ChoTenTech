@@ -1,7 +1,7 @@
 lockpicking:
   display:
     raw: "Lockpicking"
-    default: "<dark_green>开锁</dark_green>"
+    default: "<#6EA982>开锁</#6EA982>"
     legacy: "&2开锁"
   level:
     min: 0
@@ -9,7 +9,7 @@ lockpicking:
     max: 100
     display:
       0:
-        default: "<gray>Lv.%level%</gray>"
+        default: "<#A9B4C3>Lv.%level%</#A9B4C3>"
     exp:
       0:
         type: calculator

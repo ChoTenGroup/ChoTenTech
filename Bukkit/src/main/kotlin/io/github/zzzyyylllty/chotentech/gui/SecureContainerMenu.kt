@@ -32,7 +32,7 @@ class SecureContainerMenu {
     fun open(player: Player) {
         val data = player.getData() ?: return
         val maxSlots = slots()
-        val lockedItem = guiItem(XMaterial.GRAY_STAINED_GLASS_PANE, "<gray>未解锁格", listOf("<!i><dark_gray>该格暂不可用"))
+        val lockedItem = guiItem(XMaterial.GRAY_STAINED_GLASS_PANE, "<#A9B4C3>未解锁格", listOf("<!i><#6E7A8C>该格暂不可用"))
 
         fun loadContents(inv: Inventory) {
             CONTENT_SLOTS.forEachIndexed { index, rawSlot ->
@@ -50,7 +50,7 @@ class SecureContainerMenu {
             return index >= maxSlots
         }
 
-        player.openMenu<Chest>(mmJsonUtil.serialize("<white><shift:-16><image:kangelicon:list><shift:-176><aqua><font:minecraft:fusionpixel10>${title()}".toComponent())) {
+        player.openMenu<Chest>(mmJsonUtil.serialize("<#F2F5FA><shift:-16><image:kangelicon:list><shift:-176><#84D1CB><font:minecraft:fusionpixel10>${title()}".toComponent())) {
             rows(6)
             handLocked(false)
 
@@ -63,8 +63,8 @@ class SecureContainerMenu {
                 "---------"
             )
 
-            set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>菜单", listOf("<!i> <yellow>点击 <green>打开菜单"), model = "kangelitem:void"))
-            set('-', guiItem(XMaterial.COMPASS, "<aqua><bold> ", listOf("<!i> <dark_gray>这里什么都没有"), model = "kangelitem:void"))
+            set('C', guiItem(XMaterial.COMPASS, "<#84D1CB><bold>菜单", listOf("<!i> <#EFDF8F>点击 <#8FD4A6>打开菜单"), model = "kangelitem:void"))
+            set('-', guiItem(XMaterial.COMPASS, "<#84D1CB><bold> ", listOf("<!i> <#6E7A8C>这里什么都没有"), model = "kangelitem:void"))
 
             onBuild { _, inv -> loadContents(inv) }
 

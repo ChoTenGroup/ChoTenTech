@@ -240,12 +240,12 @@ fun onPlayerDamage(event: EntityDamageEvent) {
         // 播放受击特效
         damageTypeHitEffects[damageType]?.let { playHitEffect(player, it) }
 
-        devLog("<gray>[伤害] ${player.name} <red>${damage}💥</red> " +
-                "<gold>${damageType.displayName}</gold> " +
-                "<white>精神-${"%.2f".format(actualSanityLoss)}</white>" +
-                if (sanityReduction > 0) "<dark_gray>(止痛-${sanityReductionPct}%)</dark_gray>" else "" +
-                "<green> 外伤-${"%.1f".format(extLoss)}</green> " +
-                "<blue>内伤-${"%.1f".format(intLoss)}</blue></gray>")
+        devLog("<#A9B4C3>[伤害] ${player.name} <#E08A98>${damage}💥</#E08A98> " +
+                "<#DFBD7C>${damageType.displayName}</#DFBD7C> " +
+                "<#F2F5FA>精神-${"%.2f".format(actualSanityLoss)}</#F2F5FA>" +
+                if (sanityReduction > 0) "<#6E7A8C>(止痛-${sanityReductionPct}%)</#6E7A8C>" else "" +
+                "<#8FD4A6> 外伤-${"%.1f".format(extLoss)}</#8FD4A6> " +
+                "<#94AFE8>内伤-${"%.1f".format(intLoss)}</#94AFE8></#A9B4C3>")
     } else {
         // 回退：基于 DamageCause 的原始映射
         val ratios = damageRatios[event.cause] ?: InjuryRatios(0.3, 0.2)
@@ -260,10 +260,10 @@ fun onPlayerDamage(event: EntityDamageEvent) {
         // 播放受击特效（回退）
         damageCauseHitEffects[event.cause]?.let { playHitEffect(player, it) }
 
-        devLog("<gray>[伤害] ${player.name} <red>${damage}💥</red> <gold>${event.cause.name}</gold> " +
-                "<white>精神-${"%.2f".format(actualSanityLoss)}</white>" +
-                if (sanityReduction > 0) "<dark_gray>(止痛-${sanityReductionPct}%)</dark_gray>" else "" +
-                "<green> 外伤-${"%.1f".format(extLoss)}</green> " +
-                "<blue>内伤-${"%.1f".format(intLoss)}</blue></gray>")
+        devLog("<#A9B4C3>[伤害] ${player.name} <#E08A98>${damage}💥</#E08A98> <#DFBD7C>${event.cause.name}</#DFBD7C> " +
+                "<#F2F5FA>精神-${"%.2f".format(actualSanityLoss)}</#F2F5FA>" +
+                if (sanityReduction > 0) "<#6E7A8C>(止痛-${sanityReductionPct}%)</#6E7A8C>" else "" +
+                "<#8FD4A6> 外伤-${"%.1f".format(extLoss)}</#8FD4A6> " +
+                "<#94AFE8>内伤-${"%.1f".format(intLoss)}</#94AFE8></#A9B4C3>")
     }
 }

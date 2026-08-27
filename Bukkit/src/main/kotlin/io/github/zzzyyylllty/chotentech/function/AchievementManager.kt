@@ -157,7 +157,7 @@ object AchievementManager {
                     completedTime = System.currentTimeMillis()
                 )
                 devLog("[成就] 玩家 ${player.name} 自动完成成就: ${achievement.name}")
-                NotificationQueue.enqueue(player.uniqueId, "<green>[成就] 恭喜你完成了成就: <yellow>${achievement.name}<green>！")
+                NotificationQueue.enqueue(player.uniqueId, "<#8FD4A6>[成就] 恭喜你完成了成就: <#EFDF8F>${achievement.name}<#8FD4A6>！")
             }
         }
     }

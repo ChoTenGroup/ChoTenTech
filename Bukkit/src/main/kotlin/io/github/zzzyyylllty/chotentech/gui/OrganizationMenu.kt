@@ -26,7 +26,7 @@ class OrganizationMenu {
     fun open(player: Player) {
         val data = player.getData() ?: return
 
-        player.openMenu<Chest>(mmJsonUtil.serialize("<white><shift:-16><image:kangelicon:list><shift:-176><aqua><font:minecraft:fusionpixel10>超级组织".toComponent())) {
+        player.openMenu<Chest>(mmJsonUtil.serialize("<#F2F5FA><shift:-16><image:kangelicon:list><shift:-176><#84D1CB><font:minecraft:fusionpixel10>超级组织".toComponent())) {
             rows(6)
 
             map(
@@ -40,7 +40,7 @@ class OrganizationMenu {
 
             set('#', XMaterial.BLACK_STAINED_GLASS_PANE) { name = " " }
 
-            set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>菜单", listOf("<!i> <yellow>点击 <green>打开菜单"), model = "kangelitem:void")) {
+            set('C', guiItem(XMaterial.COMPASS, "<#84D1CB><bold>菜单", listOf("<!i> <#EFDF8F>点击 <#8FD4A6>打开菜单"), model = "kangelitem:void")) {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "invero menu open menu ${clicker.name}")
                 clicker.closeInventory()
             }
@@ -50,7 +50,7 @@ class OrganizationMenu {
                 if (clickEvent().click.name == "RIGHT" || clickEvent().click.name == "SHIFT_RIGHT") {
                     ReputationRecordMenu(factions[0]).open(clicker)
                 } else {
-                    clicker.sendMessage("<gray>请 <yellow>右键 <gray>查看信誉记录".toComponent())
+                    clicker.sendMessage("<#A9B4C3>请 <#EFDF8F>右键 <#A9B4C3>查看信誉记录".toComponent())
                 }
             }
 
@@ -59,7 +59,7 @@ class OrganizationMenu {
                 if (clickEvent().click.name == "RIGHT" || clickEvent().click.name == "SHIFT_RIGHT") {
                     ReputationRecordMenu(factions[1]).open(clicker)
                 } else {
-                    clicker.sendMessage("<gray>请 <yellow>右键 <gray>查看信誉记录".toComponent())
+                    clicker.sendMessage("<#A9B4C3>请 <#EFDF8F>右键 <#A9B4C3>查看信誉记录".toComponent())
                 }
             }
 
@@ -68,7 +68,7 @@ class OrganizationMenu {
                 if (clickEvent().click.name == "RIGHT" || clickEvent().click.name == "SHIFT_RIGHT") {
                     ReputationRecordMenu(factions[2]).open(clicker)
                 } else {
-                    clicker.sendMessage("<gray>请 <yellow>右键 <gray>查看信誉记录".toComponent())
+                    clicker.sendMessage("<#A9B4C3>请 <#EFDF8F>右键 <#A9B4C3>查看信誉记录".toComponent())
                 }
             }
         }
@@ -79,7 +79,7 @@ class OrganizationMenu {
         val meta = item.itemMeta ?: return item
 
         NamespacedKey.fromString(faction.iconModel)?.let { meta.itemModel = it }
-        meta.displayName("${faction.color}<b>${faction.displayName}</b> <gray>（${faction.tag}）".toComponent())
+        meta.displayName("${faction.color}<b>${faction.displayName}</b> <#A9B4C3>（${faction.tag}）".toComponent())
 
         val data = player.getData()
         val rep = data?.reputation?.getOrDefault(faction.tag, 0L) ?: 0L
@@ -90,12 +90,12 @@ class OrganizationMenu {
         lore += loreInfo("缩写", faction.tag)
         lore += loreInfo("基地数量", BaseManager.getBasesByFaction(faction.tag).size.toString())
         lore += loreInfo("我的归属", belong)
-        lore += loreInfo("信誉", "<white>$rep")
+        lore += loreInfo("信誉", "<#F2F5FA>$rep")
         lore += loreSpace()
         lore += loreSection("简介")
-        faction.description.lines().forEach { lore += "<!i><gray>$it" }
+        faction.description.lines().forEach { lore += "<!i><#A9B4C3>$it" }
         lore += loreSpace()
-        lore += "<!i> <yellow>右键 <green>查看信誉记录"
+        lore += "<!i> <#EFDF8F>右键 <#8FD4A6>查看信誉记录"
 
         meta.lore(lore.toComponent())
         item.setItemMeta(meta)

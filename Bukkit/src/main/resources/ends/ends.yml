@@ -1,7 +1,7 @@
 generic:
   icon: END_STONE
   name: "结束"
-  color: "#aaaa99"
+  color: "#c3c3bd"
   major: "至此，阈限天际迎来了一缕曙光..."
   message: |-
     感谢您完成了阈限天际中一个势力的所有内容！

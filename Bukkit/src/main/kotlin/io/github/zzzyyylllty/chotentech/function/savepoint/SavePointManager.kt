@@ -72,7 +72,7 @@ object SavePointManager {
                 val textData = TextHologramData(holoId, pos)
                 textData.setText(
                     listOf(
-                        if (sp.isBase) "<aqua><b>基地存档点</b></aqua>" else "<green><b>存档点</b></green>",
+                        if (sp.isBase) "<#84D1CB><b>基地存档点</b></#84D1CB>" else "<#8FD4A6><b>存档点</b></#8FD4A6>",
                         sp.name
                     )
                 )
@@ -270,8 +270,8 @@ object SavePointManager {
             val pct = prog.ticks * 100 / prog.maxTicks
             val totalBars = 10
             val filled = (prog.ticks * totalBars / prog.maxTicks).toInt().coerceIn(0, totalBars)
-            val bar = "<green>${"▌".repeat(filled)}<gray>${"▌".repeat(totalBars - filled)}"
-            player.sendActionBar("<green>✦ 正在建立存档... $bar <white>$pct%".toComponent())
+            val bar = "<#8FD4A6>${"▌".repeat(filled)}<#A9B4C3>${"▌".repeat(totalBars - filled)}"
+            player.sendActionBar("<#8FD4A6>✦ 正在建立存档... $bar <#F2F5FA>$pct%".toComponent())
             if (prog.ticks >= prog.maxTicks) {
                 prog.callback()
                 savingPlayers.remove(player.uniqueId)
@@ -279,7 +279,7 @@ object SavePointManager {
         } else {
             // Look up without sneak → hint
             if (inZone && player.location.pitch <= -80 && !savingPlayers.containsKey(player.uniqueId)) {
-                player.sendActionBar("<gray>蹲下并抬头 <white>${if (sp!!.isBase) 5 else 3}秒<gray> 建立存档".toComponent())
+                player.sendActionBar("<#A9B4C3>蹲下并抬头 <#F2F5FA>${if (sp!!.isBase) 5 else 3}秒<#A9B4C3> 建立存档".toComponent())
             }
             savingPlayers.remove(player.uniqueId)
 
@@ -291,13 +291,13 @@ object SavePointManager {
 
     private fun onEnterSaveZone(player: Player, sp: SavePoint) {
         // 每次进入存档点区域都显示提示
-        player.sendMessage("<gold>■ <yellow>你发现了一个存档点！".toComponent())
-        player.sendMessage("<gray>蹲下并抬头 <white>${if (sp.isBase) 5 else 3}秒<gray> 可在此建立存档。".toComponent())
+        player.sendMessage("<#DFBD7C>■ <#EFDF8F>你发现了一个存档点！".toComponent())
+        player.sendMessage("<#A9B4C3>蹲下并抬头 <#F2F5FA>${if (sp.isBase) 5 else 3}秒<#A9B4C3> 可在此建立存档。".toComponent())
 
-        val typeName = if (sp.isBase) "<aqua>基地存档点" else "<green>存档点"
+        val typeName = if (sp.isBase) "<#84D1CB>基地存档点" else "<#8FD4A6>存档点"
         player.showTitle(net.kyori.adventure.title.Title.title(
             typeName.toComponent(),
-            "<gray>${sp.name}".toComponent(),
+            "<#A9B4C3>${sp.name}".toComponent(),
             net.kyori.adventure.title.Title.Times.times(
                 java.time.Duration.ofMillis(500),
                 java.time.Duration.ofMillis(2000),
@@ -309,14 +309,14 @@ object SavePointManager {
     private fun completeSave(player: Player, sp: SavePoint, data: PlayerData) {
         if (sp.isBase) {
             data.baseSave = sp.id
-            player.sendMessage("<aqua>■ 基地存档点已更新: <yellow>${sp.name}".toComponent())
+            player.sendMessage("<#84D1CB>■ 基地存档点已更新: <#EFDF8F>${sp.name}".toComponent())
         } else {
             data.normalSave = sp.id
-            player.sendMessage("<green>■ 存档点已更新: <yellow>${sp.name}".toComponent())
+            player.sendMessage("<#8FD4A6>■ 存档点已更新: <#EFDF8F>${sp.name}".toComponent())
         }
         player.showTitle(net.kyori.adventure.title.Title.title(
-            "<green>✅ 存档成功".toComponent(),
-            "<gray>${sp.name}".toComponent(),
+            "<#8FD4A6>✅ 存档成功".toComponent(),
+            "<#A9B4C3>${sp.name}".toComponent(),
             net.kyori.adventure.title.Title.Times.times(
                 java.time.Duration.ofMillis(200),
                 java.time.Duration.ofMillis(1500),
@@ -332,8 +332,8 @@ object SavePointManager {
         if (data.normalSave != null) {
             val setting = ProfileManager.getSharedData(player.uniqueId.toString()).settings
             if (setting.getBoolean("recallMessage")) {
-                player.sendMessage("<red>✦ 看起来你不太走运...".toComponent())
-                player.sendMessage("<yellow>✦ 在蓝色的基地存档点内抬头，即可返回上个普通的绿色存档点。".toComponent())
+                player.sendMessage("<#E08A98>✦ 看起来你不太走运...".toComponent())
+                player.sendMessage("<#EFDF8F>✦ 在蓝色的基地存档点内抬头，即可返回上个普通的绿色存档点。".toComponent())
             }
         }
     }
@@ -350,7 +350,7 @@ object SavePointManager {
 
         val ticks = recallingPlayers.merge(player.uniqueId, 1) { old, _ -> old + 1 }!!
         val pct = ticks * 100 / 3
-        player.sendActionBar("<yellow>⏪ 返回上个存档点... $pct%".toComponent())
+        player.sendActionBar("<#EFDF8F>⏪ 返回上个存档点... $pct%".toComponent())
 
         if (ticks >= 3) {
             doRecall(player, data)
@@ -361,7 +361,7 @@ object SavePointManager {
     private fun doRecall(player: Player, data: PlayerData) {
         val normalSp = SavePointConfig.get(data.normalSave ?: return) ?: return
         player.teleportAsync(normalSp.effectiveHoloPos)
-        player.sendMessage("<green>■ 已返回普通存档点: <yellow>${normalSp.name}".toComponent())
+        player.sendMessage("<#8FD4A6>■ 已返回普通存档点: <#EFDF8F>${normalSp.name}".toComponent())
     }
 
     // ---- Lifecycle ----

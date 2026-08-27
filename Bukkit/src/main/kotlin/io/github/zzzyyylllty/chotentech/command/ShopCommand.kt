@@ -42,7 +42,7 @@ object ShopCommand {
                     val targetName = context["player"]
                     val target = org.bukkit.Bukkit.getPlayerExact(targetName)
                     if (target == null) {
-                        sender.sendMessage("<red>玩家 $targetName 不在线".toComponent())
+                        sender.sendMessage("<#E08A98>玩家 $targetName 不在线".toComponent())
                         return@execute
                     }
                     ShopMenu.open(target, shopId)

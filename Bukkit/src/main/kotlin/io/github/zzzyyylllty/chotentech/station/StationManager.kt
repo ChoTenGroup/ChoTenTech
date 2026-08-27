@@ -3,7 +3,7 @@ package io.github.zzzyyylllty.chotentech.station
 import io.github.zzzyyylllty.chotentech.data.getData
 import io.github.zzzyyylllty.chotentech.function.CurrencyManager
 import io.github.zzzyyylllty.chotentech.function.ReputationManager
-import io.github.zzzyyylllty.chotentech.kether.evalKetherBoolean
+import io.github.zzzyyylllty.chotentech.function.kether.evalKetherBoolean
 import io.github.zzzyyylllty.chotentech.player.sendComponent
 import io.github.zzzyyylllty.chotentech.shop.CostType
 import io.github.zzzyyylllty.chotentech.shop.ShopMenu
@@ -174,7 +174,7 @@ object StationManager {
         val queue = getQueue(player, station.id)
         val maxSlots = getMaxQueueSlots(player, station)
         if (queue.size >= maxSlots) {
-            player.sendComponent("<red>合成站队列已满! 领取完成的物品后可继续制作")
+            player.sendComponent("<#E08A98>合成站队列已满! 领取完成的物品后可继续制作")
             return false
         }
 
@@ -182,7 +182,7 @@ object StationManager {
         val cond = recipe.condition
         if (cond != null && !conditionMet(player, recipe)) {
             val desc = cond.display?.replace('\n', ' ') ?: "该配方的制作条件"
-            player.sendComponent("<red>制作条件未满足: <yellow>$desc")
+            player.sendComponent("<#E08A98>制作条件未满足: <#EFDF8F>$desc")
             return false
         }
 
@@ -192,7 +192,7 @@ object StationManager {
                 CostType.CURRENCY -> {
                     val cur = cost.currency ?: "money"
                     if (!CurrencyManager.hasBalance(player, cur, cost.amount)) {
-                        player.sendComponent("<red>缺少货币: ${CurrencyManager.displayName(cur)} x${cost.amount}")
+                        player.sendComponent("<#E08A98>缺少货币: ${CurrencyManager.displayName(cur)} x${cost.amount}")
                         return false
                     }
                 }
@@ -200,7 +200,7 @@ object StationManager {
                     val id = cost.item ?: continue
                     val have = countItem(player, id)
                     if (have < cost.amount) {
-                        player.sendComponent("<red>缺少材料: ${displayName(id)} x${cost.amount} (现有 $have)")
+                        player.sendComponent("<#E08A98>缺少材料: ${displayName(id)} x${cost.amount} (现有 $have)")
                         return false
                     }
                 }
@@ -216,7 +216,7 @@ object StationManager {
         }
 
         queue += StationQueueItem(recipe.key, System.currentTimeMillis(), recipe.time)
-        player.sendComponent("<green>开始制作: <yellow>${displayName(recipe.output)} <gray>(需 ${recipe.time} 秒)")
+        player.sendComponent("<#8FD4A6>开始制作: <#EFDF8F>${displayName(recipe.output)} <#A9B4C3>(需 ${recipe.time} 秒)")
         player.playSound(player.location, Sound.BLOCK_SMITHING_TABLE_USE, 1f, 1f)
         return true
     }
@@ -224,28 +224,28 @@ object StationManager {
     /** 领取已完成的队列任务,成功返回 true */
     fun claim(player: Player, station: StationConfig, entry: StationQueueItem): Boolean {
         if (!entry.isComplete) {
-            player.sendComponent("<red>该物品仍在制作中, 剩余 ${entry.remainingTime} 秒")
+            player.sendComponent("<#E08A98>该物品仍在制作中, 剩余 ${entry.remainingTime} 秒")
             return false
         }
         val queue = getQueue(player, station.id)
         val recipe = station.recipes[entry.recipeId] ?: run {
             queue.remove(entry)
-            player.sendComponent("<red>配方已失效, 已移除该队列任务")
+            player.sendComponent("<#E08A98>配方已失效, 已移除该队列任务")
             return false
         }
         val item = buildOutputItem(player, recipe) ?: run {
             // 产出无法构建时同样移除队列任务, 避免该槽位永久被占满无法继续制作
             queue.remove(entry)
-            player.sendComponent("<red>产出物品无法构建, 已移除该队列任务, 请联系管理员")
+            player.sendComponent("<#E08A98>产出物品无法构建, 已移除该队列任务, 请联系管理员")
             return false
         }
         val given = giveItem(player, item, recipe.output)
         // giveItem 背包放不下的会掉在地上,物品必定交付,因此始终从队列移除,防止重复领取
         queue.remove(entry)
         if (given > 0) {
-            player.sendComponent("<green>领取成功: <yellow>${displayName(recipe.output)} <green>x$given")
+            player.sendComponent("<#8FD4A6>领取成功: <#EFDF8F>${displayName(recipe.output)} <#8FD4A6>x$given")
         } else {
-            player.sendComponent("<yellow>${displayName(recipe.output)} <green>已领取(背包已满, 物品掉落在脚边)")
+            player.sendComponent("<#EFDF8F>${displayName(recipe.output)} <#8FD4A6>已领取(背包已满, 物品掉落在脚边)")
         }
         player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
         return true
@@ -345,7 +345,7 @@ object StationManager {
         if (remaining > 0) {
             // 掉落提示使用配方显示名(outputId), 避免显示材质英文名
             val name = outputId?.let { displayName(it) } ?: displayName(template.type.name)
-            player.sendComponent("<red>背包已满! 有 $remaining 个 <yellow>$name <red>掉落在了地上")
+            player.sendComponent("<#E08A98>背包已满! 有 $remaining 个 <#EFDF8F>$name <#E08A98>掉落在了地上")
             player.world.dropItem(player.location, template.clone().apply { amount = remaining })
         }
         return given

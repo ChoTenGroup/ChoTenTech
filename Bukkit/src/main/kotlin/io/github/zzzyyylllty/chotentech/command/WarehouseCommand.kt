@@ -24,12 +24,12 @@ object WarehouseCommand {
         execute<Player> { sender, _, _ ->
             val data = sender.getData()
             if (data == null) {
-                sender.sendComponent("<red>数据加载失败！")
+                sender.sendComponent("<#E08A98>数据加载失败！")
                 return@execute
             }
             val baseIdef = data.subTag ?: getCurrentBaseIdef(sender)
             if (baseIdef == null) {
-                sender.sendComponent("<red>你没有加入任何基地，也无法检测到所在的基地！")
+                sender.sendComponent("<#E08A98>你没有加入任何基地，也无法检测到所在的基地！")
                 return@execute
             }
             WarehouseMenu().open(sender, baseIdef)
@@ -65,7 +65,7 @@ object WhForceCommand {
             execute<Player> { sender, context, _ ->
                 val baseIdef = context["base"].uppercase()
                 if (BaseManager.baseMap[baseIdef] == null) {
-                    sender.sendComponent("<red>基地 $baseIdef 不存在！")
+                    sender.sendComponent("<#E08A98>基地 $baseIdef 不存在！")
                     return@execute
                 }
                 WarehouseMenu().open(sender, baseIdef)

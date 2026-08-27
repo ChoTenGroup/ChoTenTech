@@ -162,7 +162,7 @@ fun loadLevel(root: String, config: Configuration) {
                 one = section?.getString("one") ?: "安全",
                 two = section?.getString("two") ?: "稳定",
                 three = section?.getString("three") ?: "实体绝迹",
-                prefix = section?.getString("prefix") ?: "<#66CCFF>"
+                prefix = section?.getString("prefix") ?: "<#bad9e8>"
             )
         } else {
             sdClassList[config.getString("$root.sdclass") ?: "1"] ?: SurvivalDifficulty(
@@ -170,7 +170,7 @@ fun loadLevel(root: String, config: Configuration) {
                 one = "安全",
                 two = "稳定",
                 three = "实体绝迹",
-                prefix = "<#66CCFF>"
+                prefix = "<#bad9e8>"
             )
         }
 

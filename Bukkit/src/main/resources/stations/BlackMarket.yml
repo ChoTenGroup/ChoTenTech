@@ -1,5 +1,5 @@
 BlackMarket:
-  name: "<black>黑市"
+  name: "<#2A2F3A>黑市"
   queue: 8
   recipes:
     thermite:

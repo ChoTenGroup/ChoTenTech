@@ -25,7 +25,7 @@ object SetSpawnCommand {
     @CommandBody
     val main = mainCommand {
         execute<CommandSender> { sender, _, _ ->
-            sender.sendStringAsComponent("<red>用法: /setspawn <玩家> <世界> <x> <y> <z>")
+            sender.sendStringAsComponent("<#E08A98>用法: /setspawn <玩家> <世界> <x> <y> <z>")
         }
         player("target") {
             dynamic("world") {
@@ -41,13 +41,13 @@ object SetSpawnCommand {
                             execute<CommandSender> { sender, context, _ ->
                                 val target = Bukkit.getPlayerExact(context["target"])
                                 if (target == null) {
-                                    sender.sendStringAsComponent("<red>玩家 ${context["target"]} 不在线！")
+                                    sender.sendStringAsComponent("<#E08A98>玩家 ${context["target"]} 不在线！")
                                     return@execute
                                 }
 
                                 val world = Bukkit.getWorld(context["world"])
                                 if (world == null) {
-                                    sender.sendStringAsComponent("<red>世界 ${context["world"]} 不存在！")
+                                    sender.sendStringAsComponent("<#E08A98>世界 ${context["world"]} 不存在！")
                                     return@execute
                                 }
 
@@ -55,13 +55,13 @@ object SetSpawnCommand {
                                 val y = context["y"].toDoubleOrNull()
                                 val z = context["z"].toDoubleOrNull()
                                 if (x == null || y == null || z == null) {
-                                    sender.sendStringAsComponent("<red>坐标必须为有效数字！")
+                                    sender.sendStringAsComponent("<#E08A98>坐标必须为有效数字！")
                                     return@execute
                                 }
 
                                 val data = playerDataMap[target.uniqueId.toString()]
                                 if (data == null) {
-                                    sender.sendStringAsComponent("<red>玩家数据未加载！")
+                                    sender.sendStringAsComponent("<#E08A98>玩家数据未加载！")
                                     return@execute
                                 }
 
@@ -75,8 +75,8 @@ object SetSpawnCommand {
                                     yaw = 0f,
                                     pitch = 0f
                                 )
-                                sender.sendStringAsComponent("<green>已将 ${target.name} 的重生点设为 ${world.name} $x $y $z")
-                                target.sendStringAsComponent("<green>管理员已将你的重生点设为 ${world.name} $x $y $z")
+                                sender.sendStringAsComponent("<#8FD4A6>已将 ${target.name} 的重生点设为 ${world.name} $x $y $z")
+                                target.sendStringAsComponent("<#8FD4A6>管理员已将你的重生点设为 ${world.name} $x $y $z")
                             }
                         }
                     }

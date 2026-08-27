@@ -41,7 +41,7 @@ class AchievementMenu {
         val sortedEntries = AchievementManager.getSortedEntries(player)
 
         player.openMenu<PageableChest<AchievementManager.AchievementEntry>>(
-            mmJsonUtil.serialize("<white><shift:-16><image:kangelicon:list><shift:-176><aqua><font:minecraft:fusionpixel10>成就列表 [$completed/$total]".toComponent())
+            mmJsonUtil.serialize("<#F2F5FA><shift:-16><image:kangelicon:list><shift:-176><#84D1CB><font:minecraft:fusionpixel10>成就列表 [$completed/$total]".toComponent())
         ) {
             rows(6)
 
@@ -54,7 +54,7 @@ class AchievementMenu {
                 "         "
             )
 
-            set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>菜单", listOf("<!i> <yellow>点击 <green>打开菜单"), model = "kangelitem:void")) {
+            set('C', guiItem(XMaterial.COMPASS, "<#84D1CB><bold>菜单", listOf("<!i> <#EFDF8F>点击 <#8FD4A6>打开菜单"), model = "kangelitem:void")) {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "invero menu open menu ${clicker.name}")
                 clicker.closeInventory()
             }
@@ -81,7 +81,7 @@ class AchievementMenu {
             }
 
             setPreviousPage(7) { _, page ->
-                buildSimpleItem(XMaterial.ARROW, "<dark_aqua><b>上一页").apply {
+                buildSimpleItem(XMaterial.ARROW, "<#5FA8A3><b>上一页").apply {
                     val m = itemMeta ?: return@apply
                     m.itemModel = NamespacedKey.fromString(if (page) "kangelitem:previous" else "kangelitem:previous_no")
                     setItemMeta(m)
@@ -89,7 +89,7 @@ class AchievementMenu {
             }
 
             setNextPage(8) { _, page ->
-                buildSimpleItem(XMaterial.ARROW, "<dark_aqua><b>下一页").apply {
+                buildSimpleItem(XMaterial.ARROW, "<#5FA8A3><b>下一页").apply {
                     val m = itemMeta ?: return@apply
                     m.itemModel = NamespacedKey.fromString(if (page) "kangelitem:next" else "kangelitem:next_no")
                     setItemMeta(m)
@@ -104,12 +104,12 @@ class AchievementMenu {
         val meta = item.itemMeta ?: return item
 
         meta.displayName(
-            if (showHowto) "<gold>达成方法: <green>显示中".toComponent()
-            else "<gold>达成方法: <gray>已隐藏".toComponent()
+            if (showHowto) "<#DFBD7C>达成方法: <#8FD4A6>显示中".toComponent()
+            else "<#DFBD7C>达成方法: <#A9B4C3>已隐藏".toComponent()
         )
         meta.lore(listOf(
-            "<!i> <yellow>点击 <green>${if (showHowto) "隐藏" else "显示"}达成方法",
-            loreInfo("效果", "<gray>开启后将看到成就的达成条件")
+            "<!i> <#EFDF8F>点击 <#8FD4A6>${if (showHowto) "隐藏" else "显示"}达成方法",
+            loreInfo("效果", "<#A9B4C3>开启后将看到成就的达成条件")
         ).toComponent())
         item.setItemMeta(meta)
         return item
@@ -143,8 +143,8 @@ class AchievementMenu {
 
         // 名称
         meta.displayName(
-            if (isCompleted) "<green><b>✦</b> ${entry.achievement.name}".toComponent()
-            else "<gray><b>?</b> ${entry.achievement.name}".toComponent()
+            if (isCompleted) "<#8FD4A6><b>✦</b> ${entry.achievement.name}".toComponent()
+            else "<#A9B4C3><b>?</b> ${entry.achievement.name}".toComponent()
         )
 
         val cat = AchievementManager.categories[entry.achievement.category]
@@ -156,25 +156,25 @@ class AchievementMenu {
 
         // 描述
         lore += loreSection("描述")
-        entry.achievement.description.forEach { lore += "<!i><#cccccc>$it" }
+        entry.achievement.description.forEach { lore += "<!i><#d9d9d9>$it" }
         lore += loreSpace()
 
         // 达成方法 (可隐藏)
         if (entry.achievement.howto.isNotEmpty()) {
             lore += loreSection("达成方法")
-            entry.achievement.howto.forEach { lore += loreDash("<#ffaa66>$it") }
+            entry.achievement.howto.forEach { lore += loreDash("<#e8cfba>$it") }
             lore += loreSpace()
         }
 
         // 完成状态
         if (isCompleted) {
-            lore += loreInfo("状态", "<green>✓ 已完成")
+            lore += loreInfo("状态", "<#8FD4A6>✓ 已完成")
             val time = entry.progress?.completedTime
             if (time != null) {
-                lore += loreInfo("完成时间", "<dark_gray>${dateFormat.format(Date(time))}")
+                lore += loreInfo("完成时间", "<#6E7A8C>${dateFormat.format(Date(time))}")
             }
         } else {
-            lore += loreInfo("状态", "<red>✗ 未完成")
+            lore += loreInfo("状态", "<#E08A98>✗ 未完成")
         }
 
         meta.lore(lore.toComponent())

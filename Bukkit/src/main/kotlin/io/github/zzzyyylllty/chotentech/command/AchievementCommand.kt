@@ -37,13 +37,13 @@ object AchievementCommand {
                     val achId = context["achievement"]
 
                     if (AchievementManager.complete(target, achId)) {
-                        sender.sendComponent("<green>已为 <yellow>${target.name} <green>完成成就: <yellow>${AchievementManager.achievements[achId]?.name ?: achId}")
-                        target.sendComponent("<green>恭喜！你获得了成就: <yellow>${AchievementManager.achievements[achId]?.name ?: achId}")
+                        sender.sendComponent("<#8FD4A6>已为 <#EFDF8F>${target.name} <#8FD4A6>完成成就: <#EFDF8F>${AchievementManager.achievements[achId]?.name ?: achId}")
+                        target.sendComponent("<#8FD4A6>恭喜！你获得了成就: <#EFDF8F>${AchievementManager.achievements[achId]?.name ?: achId}")
                     } else {
                         if (AchievementManager.achievements[achId] == null) {
-                            sender.sendComponent("<red>成就 $achId 不存在")
+                            sender.sendComponent("<#E08A98>成就 $achId 不存在")
                         } else {
-                            sender.sendComponent("<red>玩家 ${target.name} 已完成该成就")
+                            sender.sendComponent("<#E08A98>玩家 ${target.name} 已完成该成就")
                         }
                     }
                 }
@@ -70,21 +70,21 @@ object AchievementCommand {
     @CommandBody
     val list = subCommand {
         execute<CommandSender> { sender, _, _ ->
-            sender.sendComponent("<gold>===== 成就列表 =====")
+            sender.sendComponent("<#DFBD7C>===== 成就列表 =====")
             for ((id, ach) in AchievementManager.achievements) {
                 val cat = AchievementManager.categories[ach.category]?.name ?: ach.category
-                sender.sendComponent("<gray>$id <white>- <yellow>${ach.name} <dark_gray>($cat)")
+                sender.sendComponent("<#A9B4C3>$id <#F2F5FA>- <#EFDF8F>${ach.name} <#6E7A8C>($cat)")
             }
-            sender.sendComponent("<gold>共 ${AchievementManager.achievements.size} 个成就")
+            sender.sendComponent("<#DFBD7C>共 ${AchievementManager.achievements.size} 个成就")
         }
     }
 
     @CommandBody
     val reload = subCommand {
         execute<CommandSender> { sender, _, _ ->
-            sender.sendComponent("<yellow>正在重载成就配置...")
+            sender.sendComponent("<#EFDF8F>正在重载成就配置...")
             io.github.zzzyyylllty.chotentech.ChoTenTech.reloadAchievements()
-            sender.sendComponent("<green>成就配置已重载。当前 ${AchievementManager.achievements.size} 个成就")
+            sender.sendComponent("<#8FD4A6>成就配置已重载。当前 ${AchievementManager.achievements.size} 个成就")
         }
     }
 }

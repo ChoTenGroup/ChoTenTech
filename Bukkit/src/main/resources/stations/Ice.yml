@@ -1,5 +1,5 @@
 Ice:
-  name: "<gold>冰块"
+  name: "<#DFBD7C>冰块"
   queue: 8
   recipes:
     barbecue:

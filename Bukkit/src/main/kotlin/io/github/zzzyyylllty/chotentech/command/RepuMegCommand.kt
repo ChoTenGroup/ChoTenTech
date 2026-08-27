@@ -23,7 +23,7 @@ import taboolib.common.platform.command.subCommand
 object RepuMegCommand {
 
     private const val FACTION = "MEG"
-    private const val REASON = "<dark_gray>(杂项扣除)"
+    private const val REASON = "<#6E7A8C>(杂项扣除)"
 
     @CommandBody
     val main = mainCommand {
@@ -38,13 +38,13 @@ object RepuMegCommand {
                     val player = context.player("user").castSafely<Player>()!!
                     val amount = context["amount"].toLongOrNull()
                     if (amount == null || amount < 1) {
-                        sender.sendComponent("<red>数量必须为正整数")
+                        sender.sendComponent("<#E08A98>数量必须为正整数")
                         return@execute
                     }
                     ReputationManager.addReputation(player, FACTION, amount)
                     ReputationManager.addRecord(player, null, FACTION, null, amount)
-                    sender.sendComponent("<green>已给予 ${player.name} $amount MEG声望 $REASON")
-                    player.sendComponent("<gold>MEG声望 <green>+$amount $REASON")
+                    sender.sendComponent("<#8FD4A6>已给予 ${player.name} $amount MEG声望 $REASON")
+                    player.sendComponent("<#DFBD7C>MEG声望 <#8FD4A6>+$amount $REASON")
                 }
                 suggestion<CommandSender>(uncheck = true) { _, _ -> listOf("100", "1000", "10000") }
             }
@@ -59,13 +59,13 @@ object RepuMegCommand {
                     val player = context.player("user").castSafely<Player>()!!
                     val amount = context["amount"].toLongOrNull()
                     if (amount == null || amount < 1) {
-                        sender.sendComponent("<red>数量必须为正整数")
+                        sender.sendComponent("<#E08A98>数量必须为正整数")
                         return@execute
                     }
                     ReputationManager.addReputation(player, FACTION, amount)
                     ReputationManager.addRecord(player, null, FACTION, null, amount)
-                    sender.sendComponent("<green>已给予 ${player.name} $amount MEG声望 $REASON")
-                    player.sendComponent("<gold>MEG声望 <green>+$amount $REASON")
+                    sender.sendComponent("<#8FD4A6>已给予 ${player.name} $amount MEG声望 $REASON")
+                    player.sendComponent("<#DFBD7C>MEG声望 <#8FD4A6>+$amount $REASON")
                 }
                 suggestion<CommandSender>(uncheck = true) { _, _ -> listOf("100", "1000", "10000") }
             }
@@ -80,17 +80,17 @@ object RepuMegCommand {
                     val player = context.player("user").castSafely<Player>()!!
                     val amount = context["amount"].toLongOrNull()
                     if (amount == null || amount < 1) {
-                        sender.sendComponent("<red>数量必须为正整数")
+                        sender.sendComponent("<#E08A98>数量必须为正整数")
                         return@execute
                     }
                     if (ReputationManager.getReputation(player, FACTION) < amount) {
-                        sender.sendComponent("<red>${player.name} 的MEG声望不足")
+                        sender.sendComponent("<#E08A98>${player.name} 的MEG声望不足")
                         return@execute
                     }
                     ReputationManager.addReputation(player, FACTION, -amount)
                     ReputationManager.addRecord(player, null, FACTION, null, -amount)
-                    sender.sendComponent("<green>已从 ${player.name} 扣除 $amount MEG声望 $REASON")
-                    player.sendComponent("<gold>MEG声望 <red>-$amount $REASON")
+                    sender.sendComponent("<#8FD4A6>已从 ${player.name} 扣除 $amount MEG声望 $REASON")
+                    player.sendComponent("<#DFBD7C>MEG声望 <#E08A98>-$amount $REASON")
                 }
                 suggestion<CommandSender>(uncheck = true) { _, _ -> listOf("100", "1000", "10000") }
             }
@@ -105,17 +105,17 @@ object RepuMegCommand {
                     val player = context.player("user").castSafely<Player>()!!
                     val amount = context["amount"].toLongOrNull()
                     if (amount == null || amount < 1) {
-                        sender.sendComponent("<red>数量必须为正整数")
+                        sender.sendComponent("<#E08A98>数量必须为正整数")
                         return@execute
                     }
                     if (ReputationManager.getReputation(player, FACTION) < amount) {
-                        sender.sendComponent("<red>${player.name} 的MEG声望不足")
+                        sender.sendComponent("<#E08A98>${player.name} 的MEG声望不足")
                         return@execute
                     }
                     ReputationManager.addReputation(player, FACTION, -amount)
                     ReputationManager.addRecord(player, null, FACTION, null, -amount)
-                    sender.sendComponent("<green>已从 ${player.name} 扣除 $amount MEG声望 $REASON")
-                    player.sendComponent("<gold>MEG声望 <red>-$amount $REASON")
+                    sender.sendComponent("<#8FD4A6>已从 ${player.name} 扣除 $amount MEG声望 $REASON")
+                    player.sendComponent("<#DFBD7C>MEG声望 <#E08A98>-$amount $REASON")
                 }
                 suggestion<CommandSender>(uncheck = true) { _, _ -> listOf("100", "1000", "10000") }
             }
@@ -130,7 +130,7 @@ object RepuMegCommand {
                     val player = context.player("user").castSafely<Player>()!!
                     val amount = context["amount"].toLongOrNull()
                     if (amount == null || amount < 0) {
-                        sender.sendComponent("<red>数量必须为非负整数")
+                        sender.sendComponent("<#E08A98>数量必须为非负整数")
                         return@execute
                     }
                     val delta = amount - ReputationManager.getReputation(player, FACTION)
@@ -138,7 +138,7 @@ object RepuMegCommand {
                     if (delta != 0L) {
                         ReputationManager.addRecord(player, null, FACTION, null, delta)
                     }
-                    sender.sendComponent("<green>已将 ${player.name} 的MEG声望设为 $amount")
+                    sender.sendComponent("<#8FD4A6>已将 ${player.name} 的MEG声望设为 $amount")
                 }
                 suggestion<CommandSender>(uncheck = true) { _, _ -> listOf("0", "100", "1000") }
             }

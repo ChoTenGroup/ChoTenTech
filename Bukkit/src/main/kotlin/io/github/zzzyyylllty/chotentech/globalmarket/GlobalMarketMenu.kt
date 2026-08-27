@@ -47,7 +47,7 @@ object GlobalMarketMenu : Listener {
         val session = GlobalMarketManager.getListingSession(player)
         session.step = ListingStep.NONE
 
-        val title = "<black><shift:-16><image:kangelicon:chest><shift:-176><white><font:minecraft:fusionpixel10>¹ 全球市场"
+        val title = "<#2A2F3A><shift:-16><image:kangelicon:chest><shift:-176><#F2F5FA><font:minecraft:fusionpixel10>¹ 全球市场"
 
         player.openMenu<PageableChest<MarketListing>>(
             mmJsonUtil.serialize(title.toComponent())
@@ -81,8 +81,8 @@ object GlobalMarketMenu : Listener {
             }
 
             set('M', buildButton(player, listOf(
-                "<yellow><b>我的上架",
-                "<!i><gray>点击查看你上架的商品"
+                "<#EFDF8F><b>我的上架",
+                "<!i><#A9B4C3>点击查看你上架的商品"
             ), "CHEST")) {
                 clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
                 clicker.closeInventory()
@@ -91,13 +91,13 @@ object GlobalMarketMenu : Listener {
             }
 
             set('C', buildButton(player, listOf(
-                "<green><b>上架物品",
-                "<!i><gray>点击上架新物品",
-                "<!i><gray>当前: ${GlobalMarketManager.getPlayerListingCount(player.uniqueId)}/${GlobalMarketManager.config.maxListingsPerPlayer}"
+                "<#8FD4A6><b>上架物品",
+                "<!i><#A9B4C3>点击上架新物品",
+                "<!i><#A9B4C3>当前: ${GlobalMarketManager.getPlayerListingCount(player.uniqueId)}/${GlobalMarketManager.config.maxListingsPerPlayer}"
             ), "HOPPER")) {
                 clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
                 if (GlobalMarketManager.getPlayerListingCount(clicker.uniqueId) >= GlobalMarketManager.config.maxListingsPerPlayer) {
-                    clicker.sendMessage("<red>你的上架数量已达上限!".toComponent())
+                    clicker.sendMessage("<#E08A98>你的上架数量已达上限!".toComponent())
                     return@set
                 }
                 clicker.closeInventory()
@@ -106,8 +106,8 @@ object GlobalMarketMenu : Listener {
             }
 
             set('S', buildButton(player, listOf(
-                "<gold><b>领取收益",
-                "<!i><gray>点击领取出售所得"
+                "<#DFBD7C><b>领取收益",
+                "<!i><#A9B4C3>点击领取出售所得"
             ), "GOLD_NUGGET")) {
                 clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
                 val result = GlobalMarketManager.claimProceeds(clicker)
@@ -120,16 +120,16 @@ object GlobalMarketMenu : Listener {
             // < at slot 51 (row 5, col 6)
             setPreviousPage(51) { _, hasPrev ->
                 buildButton(player, listOf(
-                    if (hasPrev) "<white><b>上一页" else "<gray><b>已是第一页",
-                    "<!i><gray>点击翻页"
+                    if (hasPrev) "<#F2F5FA><b>上一页" else "<#A9B4C3><b>已是第一页",
+                    "<!i><#A9B4C3>点击翻页"
                 ), "ARROW")
             }
 
             // > at slot 52 (row 5, col 7)
             setNextPage(52) { _, hasNext ->
                 buildButton(player, listOf(
-                    if (hasNext) "<white><b>下一页" else "<gray><b>已是最后一页",
-                    "<!i><gray>点击翻页"
+                    if (hasNext) "<#F2F5FA><b>下一页" else "<#A9B4C3><b>已是最后一页",
+                    "<!i><#A9B4C3>点击翻页"
                 ), "ARROW")
             }
         }
@@ -139,7 +139,7 @@ object GlobalMarketMenu : Listener {
 
     private fun openConfirmBuy(player: Player, listing: MarketListing) {
         player.openMenu<Chest>(
-            mmJsonUtil.serialize("<black><shift:-16><image:kangelicon:chest><shift:-176><white><font:minecraft:fusionpixel10>¹ 确认购买".toComponent())
+            mmJsonUtil.serialize("<#2A2F3A><shift:-16><image:kangelicon:chest><shift:-176><#F2F5FA><font:minecraft:fusionpixel10>¹ 确认购买".toComponent())
         ) {
             rows(3)
 
@@ -152,16 +152,16 @@ object GlobalMarketMenu : Listener {
             set('A', buildListingItem(player, listing))
 
             set('B', buildButton(player, listOf(
-                "<gold><b>价格信息",
-                "<!i><gray>单价: ${listing.price.toLong()} ${CurrencyManager.displayName(listing.currency)}",
-                "<!i><gray>你的余额: ${CurrencyManager.getBalance(player, listing.currency)} ${CurrencyManager.displayName(listing.currency)}"
+                "<#DFBD7C><b>价格信息",
+                "<!i><#A9B4C3>单价: ${listing.price.toLong()} ${CurrencyManager.displayName(listing.currency)}",
+                "<!i><#A9B4C3>你的余额: ${CurrencyManager.getBalance(player, listing.currency)} ${CurrencyManager.displayName(listing.currency)}"
             ), "GOLD_NUGGET"))
 
             set('C', buildButton(player, listOf(
-                "<green><b>确认购买",
-                "<!i><gray>花费 ${listing.price.toLong()} ${CurrencyManager.displayName(listing.currency)}",
-                "<!i><gray>购买此物品",
-                "<!i><dark_red>确认后将无法退款"
+                "<#8FD4A6><b>确认购买",
+                "<!i><#A9B4C3>花费 ${listing.price.toLong()} ${CurrencyManager.displayName(listing.currency)}",
+                "<!i><#A9B4C3>购买此物品",
+                "<!i><#B46572>确认后将无法退款"
             ), "GREEN_CONCRETE")) {
                 clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
                 clicker.closeInventory()
@@ -178,7 +178,7 @@ object GlobalMarketMenu : Listener {
 
     private fun openMyListings(player: Player) {
         player.openMenu<PageableChest<MarketListing>>(
-            mmJsonUtil.serialize("<black><shift:-16><image:kangelicon:chest><shift:-176><white><font:minecraft:fusionpixel10>¹ 我的上架 - 右键下架".toComponent())
+            mmJsonUtil.serialize("<#2A2F3A><shift:-16><image:kangelicon:chest><shift:-176><#F2F5FA><font:minecraft:fusionpixel10>¹ 我的上架 - 右键下架".toComponent())
         ) {
             rows(4)
             page(0)
@@ -208,21 +208,21 @@ object GlobalMarketMenu : Listener {
                     GlobalMarketManager.cancelListing(entry.id, clicker)
                     resetElementsCache()
                 } else {
-                    clicker.sendMessage("<gray>右键点击可下架该商品".toComponent())
+                    clicker.sendMessage("<#A9B4C3>右键点击可下架该商品".toComponent())
                 }
             }
 
             // < at slot 30 (row 3, col 3)
             setPreviousPage(30) { _, hasPrev ->
                 buildButton(player, listOf(
-                    if (hasPrev) "<white><b>上一页" else "<gray><b>已是第一页"
+                    if (hasPrev) "<#F2F5FA><b>上一页" else "<#A9B4C3><b>已是第一页"
                 ), "ARROW")
             }
 
             // > at slot 31 (row 3, col 4)
             setNextPage(31) { _, hasNext ->
                 buildButton(player, listOf(
-                    if (hasNext) "<white><b>下一页" else "<gray><b>已是最后一页"
+                    if (hasNext) "<#F2F5FA><b>下一页" else "<#A9B4C3><b>已是最后一页"
                 ), "ARROW")
             }
         }
@@ -236,7 +236,7 @@ object GlobalMarketMenu : Listener {
         session.step = ListingStep.WAITING_ITEM
 
         player.openMenu<Chest>(
-            mmJsonUtil.serialize("<black><shift:-16><image:kangelicon:chest><shift:-176><white><font:minecraft:fusionpixel10>¹ 放入要上架的物品".toComponent())
+            mmJsonUtil.serialize("<#2A2F3A><shift:-16><image:kangelicon:chest><shift:-176><#F2F5FA><font:minecraft:fusionpixel10>¹ 放入要上架的物品".toComponent())
         ) {
             rows(2)
             handLocked(false)
@@ -247,15 +247,15 @@ object GlobalMarketMenu : Listener {
             )
 
             set('B', buildButton(player, listOf(
-                "<green><b>确认物品",
-                "<!i><gray>将物品放入左侧格子后点击此处",
-                "<!i><yellow>物品将被立即收取!"
+                "<#8FD4A6><b>确认物品",
+                "<!i><#A9B4C3>将物品放入左侧格子后点击此处",
+                "<!i><#EFDF8F>物品将被立即收取!"
             ), "GREEN_CONCRETE")) {
                 val inv = clicker.openInventory.topInventory
                 val item = inv.getItem(2)
 
                 if (item == null || item.type.isAir) {
-                    clicker.sendMessage("<red>请先将要上架的物品放入格子中".toComponent())
+                    clicker.sendMessage("<#E08A98>请先将要上架的物品放入格子中".toComponent())
                     return@set
                 }
 
@@ -266,7 +266,7 @@ object GlobalMarketMenu : Listener {
                     clicker.inventory.addItem(item).values.forEach { leftover ->
                         clicker.world.dropItem(clicker.location, leftover)
                     }
-                    clicker.sendMessage("<red>物品序列化失败，已返还".toComponent())
+                    clicker.sendMessage("<#E08A98>物品序列化失败，已返还".toComponent())
                     return@set
                 }
 
@@ -302,7 +302,7 @@ object GlobalMarketMenu : Listener {
         if (session.step != ListingStep.WAITING_PRICE) return
 
         player.openMenu<Chest>(
-            mmJsonUtil.serialize("<black><shift:-16><image:kangelicon:chest><shift:-176><white><font:minecraft:fusionpixel10>¹ 设置价格".toComponent())
+            mmJsonUtil.serialize("<#2A2F3A><shift:-16><image:kangelicon:chest><shift:-176><#F2F5FA><font:minecraft:fusionpixel10>¹ 设置价格".toComponent())
         ) {
             rows(4)
 
@@ -320,8 +320,8 @@ object GlobalMarketMenu : Listener {
                 if (idx >= presets.size) break
                 val price = presets[idx]
                 set(slot, buildButton(player, listOf(
-                    "<gold><b>${price.toLong()}",
-                    "<!i><gray>点击设置价格为 ${price.toLong()} ${CurrencyManager.displayName(session.currency)}"
+                    "<#DFBD7C><b>${price.toLong()}",
+                    "<!i><#A9B4C3>点击设置价格为 ${price.toLong()} ${CurrencyManager.displayName(session.currency)}"
                 ), "GOLD_NUGGET")) {
                     clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
                     session.price = price
@@ -330,23 +330,23 @@ object GlobalMarketMenu : Listener {
             }
 
             set(16, buildButton(player, listOf(
-                "<aqua><b>自定义价格",
-                "<!i><gray>点击后在聊天栏输入价格",
-                "<!i><gray>当前: ${session.price.toLong()} ${CurrencyManager.displayName(session.currency)}"
+                "<#84D1CB><b>自定义价格",
+                "<!i><#A9B4C3>点击后在聊天栏输入价格",
+                "<!i><#A9B4C3>当前: ${session.price.toLong()} ${CurrencyManager.displayName(session.currency)}"
             ), "WRITABLE_BOOK")) {
                 clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
                 // 先标记等待聊天输入，onClose 才不会返还物品
                 awaitingPrice[clicker.uniqueId] = session
                 clicker.closeInventory()
-                clicker.sendMessage("<aqua>请在聊天栏输入你想要的单价（整数），输入 <red>cancel <aqua>取消".toComponent())
+                clicker.sendMessage("<#84D1CB>请在聊天栏输入你想要的单价（整数），输入 <#E08A98>cancel <#84D1CB>取消".toComponent())
             }
 
             val confirmStack = buildButton(player, listOf(
-                "<green><b>确认上架",
-                "<!i><gray>物品: ${session.listedItem?.type?.name ?: "未知"}",
-                "<!i><gray>数量: ${session.listedItem?.amount ?: 0}",
-                "<!i><gray>价格: ${session.price.toLong()} ${CurrencyManager.displayName(session.currency)}",
-                "<!i><dark_red>确认后将收取手续费并上架"
+                "<#8FD4A6><b>确认上架",
+                "<!i><#A9B4C3>物品: ${session.listedItem?.type?.name ?: "未知"}",
+                "<!i><#A9B4C3>数量: ${session.listedItem?.amount ?: 0}",
+                "<!i><#A9B4C3>价格: ${session.price.toLong()} ${CurrencyManager.displayName(session.currency)}",
+                "<!i><#B46572>确认后将收取手续费并上架"
             ), "GREEN_CONCRETE")
             confirmStack.itemMeta?.let { m ->
                 NamespacedKey.fromString("kangelitem:void")?.let { m.itemModel = it }
@@ -355,7 +355,7 @@ object GlobalMarketMenu : Listener {
             set(31, confirmStack) {
                 clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
                 if (session.price <= 0) {
-                    clicker.sendMessage("<red>价格必须大于0".toComponent())
+                    clicker.sendMessage("<#E08A98>价格必须大于0".toComponent())
                     return@set
                 }
                 // 先标记已确认，onClose 不再返还；物品由 completeListing 处理
@@ -378,11 +378,11 @@ object GlobalMarketMenu : Listener {
         val inv = player.openInventory.topInventory
         if (inv.size != 36) return
         val confirmStack = buildButton(player, listOf(
-            "<green><b>确认上架",
-            "<!i><gray>物品: ${session.listedItem?.type?.name ?: "未知"}",
-            "<!i><gray>数量: ${session.listedItem?.amount ?: 0}",
-            "<!i><gray>价格: ${session.price.toLong()} ${CurrencyManager.displayName(session.currency)}",
-            "<!i><dark_red>确认后将收取手续费并上架"
+            "<#8FD4A6><b>确认上架",
+            "<!i><#A9B4C3>物品: ${session.listedItem?.type?.name ?: "未知"}",
+            "<!i><#A9B4C3>数量: ${session.listedItem?.amount ?: 0}",
+            "<!i><#A9B4C3>价格: ${session.price.toLong()} ${CurrencyManager.displayName(session.currency)}",
+            "<!i><#B46572>确认后将收取手续费并上架"
         ), "GREEN_CONCRETE")
         confirmStack.itemMeta?.let { m ->
             NamespacedKey.fromString("kangelitem:void")?.let { m.itemModel = it }
@@ -393,7 +393,7 @@ object GlobalMarketMenu : Listener {
 
     private fun completeListing(player: Player, session: MarketListingSession) {
         val item = session.listedItem ?: run {
-            player.sendMessage("<red>物品数据丢失".toComponent())
+            player.sendMessage("<#E08A98>物品数据丢失".toComponent())
             session.reset()
             return
         }
@@ -401,7 +401,7 @@ object GlobalMarketMenu : Listener {
             player.inventory.addItem(item).values.forEach { leftover ->
                 player.world.dropItem(player.location, leftover)
             }
-            player.sendMessage("<red>物品数据丢失，已返还".toComponent())
+            player.sendMessage("<#E08A98>物品数据丢失，已返还".toComponent())
             session.reset()
             return
         }
@@ -428,7 +428,7 @@ object GlobalMarketMenu : Listener {
                 player.inventory.addItem(item).values.forEach { leftover ->
                     player.world.dropItem(player.location, leftover)
                 }
-                player.sendMessage("<red>[全球市场] 余额不足，无法支付手续费（${fee.toLong()} ${CurrencyManager.displayName(session.currency)}），物品已返还".toComponent())
+                player.sendMessage("<#E08A98>[全球市场] 余额不足，无法支付手续费（${fee.toLong()} ${CurrencyManager.displayName(session.currency)}），物品已返还".toComponent())
                 session.reset()
                 return
             }
@@ -436,14 +436,14 @@ object GlobalMarketMenu : Listener {
 
         session.step = ListingStep.CONFIRMING
         if (GlobalMarketManager.addListing(listing)) {
-            player.sendMessage("<green>[全球市场] 上架成功! ".toComponent())
-            player.sendMessage("<green>价格: ${session.price.toLong()} ${CurrencyManager.displayName(session.currency)}${if (fee > 0) " (手续费: $fee)" else ""}".toComponent())
+            player.sendMessage("<#8FD4A6>[全球市场] 上架成功! ".toComponent())
+            player.sendMessage("<#8FD4A6>价格: ${session.price.toLong()} ${CurrencyManager.displayName(session.currency)}${if (fee > 0) " (手续费: $fee)" else ""}".toComponent())
             player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
         } else {
             player.inventory.addItem(item).values.forEach { leftover ->
                 player.world.dropItem(player.location, leftover)
             }
-            player.sendMessage("<red>[全球市场] 上架失败，物品已返还".toComponent())
+            player.sendMessage("<#E08A98>[全球市场] 上架失败，物品已返还".toComponent())
             if (fee > 0) {
                 CurrencyManager.addBalance(player, session.currency, fee.toLong())
             }
@@ -462,7 +462,7 @@ object GlobalMarketMenu : Listener {
         val msg = event.message.trim()
         if (msg.equals("cancel", ignoreCase = true)) {
             submit(delay = 0) {
-                player.sendMessage("<red>已取消自定义价格".toComponent())
+                player.sendMessage("<#E08A98>已取消自定义价格".toComponent())
                 awaitingPrice.remove(player.uniqueId)
                 val s = GlobalMarketManager.getListingSession(player)
                 val held = s.listedItem
@@ -478,14 +478,14 @@ object GlobalMarketMenu : Listener {
 
         val price = msg.toDoubleOrNull()
         if (price == null || price <= 0) {
-            player.sendMessage("<red>请输入有效的正整数价格，或输入 cancel 取消".toComponent())
+            player.sendMessage("<#E08A98>请输入有效的正整数价格，或输入 cancel 取消".toComponent())
             return
         }
 
         submit(delay = 0) {
             session.price = price
             awaitingPrice.remove(player.uniqueId)
-            player.sendMessage("<green>已设置价格为 $price ${CurrencyManager.displayName(session.currency)}".toComponent())
+            player.sendMessage("<#8FD4A6>已设置价格为 $price ${CurrencyManager.displayName(session.currency)}".toComponent())
             openPriceSelector(player)
         }
     }
@@ -498,17 +498,17 @@ object GlobalMarketMenu : Listener {
         val meta = item.itemMeta ?: return item
 
         val lore = mutableListOf(
-            "<!i><dark_gray><st>${" ".repeat(60)}</st>",
-            "<!i><yellow>上架者: <white>${listing.sellerName}",
-            "<!i><yellow>价格: <white>${listing.price.toLong()} ${CurrencyManager.displayName(listing.currency)}",
-            "<!i><yellow>数量: <white>${listing.itemAmount}"
+            "<!i><#6E7A8C><st>${" ".repeat(60)}</st>",
+            "<!i><#EFDF8F>上架者: <#F2F5FA>${listing.sellerName}",
+            "<!i><#EFDF8F>价格: <#F2F5FA>${listing.price.toLong()} ${CurrencyManager.displayName(listing.currency)}",
+            "<!i><#EFDF8F>数量: <#F2F5FA>${listing.itemAmount}"
         )
         if (listing.expireAt > 0) {
             val remaining = (listing.expireAt - System.currentTimeMillis()) / 86400000L
-            lore.add("<!i><gray>剩余 ${remaining} 天")
+            lore.add("<!i><#A9B4C3>剩余 ${remaining} 天")
         }
-        lore.add("<!i><dark_gray><st>${" ".repeat(60)}</st>")
-        lore.add("<!i><green>点击购买")
+        lore.add("<!i><#6E7A8C><st>${" ".repeat(60)}</st>")
+        lore.add("<!i><#8FD4A6>点击购买")
 
         meta.lore(lore.map { it.replacePlaceholder(player).toComponent() })
         item.setItemMeta(meta)
@@ -524,7 +524,7 @@ object GlobalMarketMenu : Listener {
         val result = mat.parseItem() ?: ItemStack(Material.STONE)
         val meta = result.itemMeta ?: return result
 
-        meta.displayName((lines.first() + "<white>").replacePlaceholder(player).toComponent())
+        meta.displayName((lines.first() + "<#F2F5FA>").replacePlaceholder(player).toComponent())
         if (lines.size > 1) {
             val loreLines = lines.drop(1).map { it.replacePlaceholder(player) }
             meta.lore(loreLines.toComponent())

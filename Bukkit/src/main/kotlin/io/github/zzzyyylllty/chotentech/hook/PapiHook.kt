@@ -23,7 +23,7 @@ import io.github.zzzyyylllty.chotentech.function.HealthAnimationManager
 import io.github.zzzyyylllty.chotentech.function.MetaManager
 import io.github.zzzyyylllty.chotentech.function.RankManager
 import io.github.zzzyyylllty.chotentech.function.WeightManager
-import io.github.zzzyyylllty.chotentech.quetiapine.data.PlayerDataManager
+import io.github.zzzyyylllty.chotentech.data.PlayerDataManager
 import taboolib.platform.compat.PlaceholderExpansion
 import taboolib.platform.compat.replacePlaceholder
 import kotlin.math.floor
@@ -34,9 +34,12 @@ object ExamplePapiHook : PlaceholderExpansion {
 
     override val identifier: String = "chotentech"
 
-    // 处理在线玩家请求
+    // 处理在线玩家请求 (占位符输出已统一为 HEX 色,外部消费方可直接解析)
     override fun onPlaceholderRequest(player: Player?, args: String): String {
+        return resolvePlaceholder(player, args)
+    }
 
+    private fun resolvePlaceholder(player: Player?, args: String): String {
         var list = args.split("_")
 
         when (list[0].lowercase()) {
@@ -166,7 +169,7 @@ object ExamplePapiHook : PlaceholderExpansion {
                         "noclipping" -> {
                             if (data.noclipping) 1 else 0
                         }
-                        "sub" -> if (data.noclipping) "<#66DD25>${data.noclipPoint?.name ?: "..."}" else level?.name ?: "???"
+                        "sub" -> if (data.noclipping) "<#95c27d>${data.noclipPoint?.name ?: "..."}" else level?.name ?: "???"
                         "fullraw" -> {
                             if (level == null) return "???"
                             val number = level.number
@@ -284,19 +287,19 @@ object ExamplePapiHook : PlaceholderExpansion {
 
                         for (effect in groupedCustom) {
                             val name = STATUS_EFFECT_DISPLAY[effect.type] ?: effect.type
-                            val color = EFFECT_COLOR[effect.type] ?: "<white>"
+                            val color = EFFECT_COLOR[effect.type] ?: "<#F2F5FA>"
                             val levelStr = if (effect.level > 1) " ${effect.level.toRoman()}" else ""
                             val timeStr = if (effect.remainingDuration >= 1000) "${effect.remainingDuration / 1000}s" else ""
-                            parts += "$color$name$levelStr${if (timeStr.isNotEmpty()) " <#AAAAAA>$timeStr" else ""}"
+                            parts += "$color$name$levelStr${if (timeStr.isNotEmpty()) " <#c9c9c9>$timeStr" else ""}"
                         }
 
                         if (hasMalnutrition) {
-                            parts += "<#FFAA00>营养不良"
+                            parts += "<#cfae6e>营养不良"
                         }
 
                         for (effect in activeVanilla) {
                             val name = VANILLA_EFFECT_DISPLAY[effect.type] ?: effect.type.key.value()
-                            val color = VANILLA_EFFECT_COLOR[effect.type] ?: "<white>"
+                            val color = VANILLA_EFFECT_COLOR[effect.type] ?: "<#F2F5FA>"
                             val levelStr = if (effect.amplifier > 0) " ${(effect.amplifier + 1).toRoman()}" else ""
                             val timeStr = if (effect.duration >= 20) "${effect.duration / 20}s" else ""
                             parts += "$color$name$levelStr${if (timeStr.isNotEmpty()) " $timeStr" else ""}"
@@ -329,19 +332,19 @@ object ExamplePapiHook : PlaceholderExpansion {
 
                         for (effect in groupedCustom) {
                             val name = STATUS_EFFECT_DISPLAY[effect.type] ?: effect.type
-                            val color = EFFECT_COLOR[effect.type] ?: "<white>"
+                            val color = EFFECT_COLOR[effect.type] ?: "<#F2F5FA>"
                             val levelStr = if (effect.level > 1) " ${effect.level.toRoman()}" else ""
                             val timeStr = if (effect.remainingDuration >= 1000) "${effect.remainingDuration / 1000}s" else ""
-                            parts += "$color$name$levelStr${if (timeStr.isNotEmpty()) " <#AAAAAA>$timeStr" else ""}"
+                            parts += "$color$name$levelStr${if (timeStr.isNotEmpty()) " <#c9c9c9>$timeStr" else ""}"
                         }
 
                         if (hasMalnutrition) {
-                            parts += "<#FFAA00>营养不良"
+                            parts += "<#cfae6e>营养不良"
                         }
 
                         for (effect in activeVanilla) {
                             val name = VANILLA_EFFECT_DISPLAY[effect.type] ?: effect.type.key.value()
-                            val color = VANILLA_EFFECT_COLOR[effect.type] ?: "<white>"
+                            val color = VANILLA_EFFECT_COLOR[effect.type] ?: "<#F2F5FA>"
                             val levelStr = if (effect.amplifier > 0) " ${(effect.amplifier + 1).toRoman()}" else ""
                             val timeStr = if (effect.duration >= 20) "${effect.duration / 20}s" else ""
                             parts += "$color$name$levelStr${if (timeStr.isNotEmpty()) " $timeStr" else ""}"
@@ -440,7 +443,7 @@ object ExamplePapiHook : PlaceholderExpansion {
             "consumption" -> return "%.1f".format(player?.getData()?.consumption ?: 0.0).removeSuffix(".0")
             "pvp" -> return (player?.getData()?.pvpEnabled == true).toString()
             "ended" -> return (player?.getData()?.ended == true).toString()
-            "endedshow" -> return if (player?.getData()?.ended == true) "<green>已结档" else "<yellow>未结档"
+            "endedshow" -> return if (player?.getData()?.ended == true) "<#8FD4A6>已结档" else "<#EFDF8F>未结档"
             "endedid" -> return player?.getData()?.endedId ?: "generic"
             "gametime" -> {
                 val hours = player?.getData()?.gameTimeHours ?: return "2150.01.01 12AM"
@@ -589,8 +592,8 @@ object ExamplePapiHook : PlaceholderExpansion {
         val questName = quest.template.meta<MetaName>("name")?.displayName?.legacyToMiniMessage() ?: quest.id
 
         val lines = mutableListOf<String>()
-        lines.add("<aqua>正在追踪任务")
-        lines.add("<yellow>$questName")
+        lines.add("<#84D1CB>正在追踪任务")
+        lines.add("<#EFDF8F>$questName")
         lines.add("")
 
         for ((index, task) in quest.tasks.withIndex()) {
@@ -598,7 +601,7 @@ object ExamplePapiHook : PlaceholderExpansion {
             val isCompleted = task.isCompleted(profile)
 
             if (isCompleted) {
-                lines.add("<dark_gray>#${index + 1} $taskName<reset> <green>已完成")
+                lines.add("<#6E7A8C>#${index + 1} $taskName<reset> <#8FD4A6>已完成")
             } else {
                 val progress = task.objective.getProgress(profile, task)
                 val value = progress.value.toString().toDouble().roundToInt().toString()
@@ -606,9 +609,9 @@ object ExamplePapiHook : PlaceholderExpansion {
                 val percent = (progress.percent * 100).roundToInt()
 
                 if (progress.value.toString().toDoubleOrNull()?.takeIf { it > 0 } != null) {
-                    lines.add("<dark_gray>#${index + 1} <gray>$taskName <yellow>$value/$target <gray>($percent%)")
+                    lines.add("<#6E7A8C>#${index + 1} <#A9B4C3>$taskName <#EFDF8F>$value/$target <#A9B4C3>($percent%)")
                 } else {
-                    lines.add("<dark_gray>#${index + 1} <gray>$taskName <red>$value/$target")
+                    lines.add("<#6E7A8C>#${index + 1} <#A9B4C3>$taskName <#E08A98>$value/$target")
                 }
             }
         }
@@ -633,10 +636,10 @@ object ExamplePapiHook : PlaceholderExpansion {
                     if (d > 0) parts += "${d}天"
                     if (h > 0 || parts.isEmpty()) parts += "${h}小时"
                     lines.add("")
-                    lines.add("<red>剩余 ${parts.joinToString("")}")
+                    lines.add("<#E08A98>剩余 ${parts.joinToString("")}")
                 } else {
                     lines.add("")
-                    lines.add("<red>已超时")
+                    lines.add("<#E08A98>已超时")
                 }
             }
         }
@@ -679,22 +682,22 @@ fun String.numberFormat(): String {
  *   sanity(精神):  >90绿 / 30白 / 10黄 / <10红
  */
 private fun formatStatDisplay(player: Player, current: Double, max: Double,
-                               greenMin: Double, whiteMin: Double, yellowMin: Double): String {
-    if (max <= 0) return "<green>100 <gray>%"
+                              greenMin: Double, whiteMin: Double, yellowMin: Double): String {
+    if (max <= 0) return "<#00FF00>100 <#FFFFFF>%"   // 分隔符%改为白色
     val pct = (current / max * 100).coerceIn(0.0, 100.0)
     val showValue = player.isSneaking
     val flash = (System.currentTimeMillis() / 500) % 2 == 0L
     val color = when {
-        pct >= greenMin -> "<green>"
-        pct >= whiteMin -> "<white>"
-        pct >= yellowMin -> if (flash) "<yellow>" else "<gold>"
-        else -> if (flash) "<red>" else "<dark_red>"
+        pct >= greenMin -> "<#00FF00>"
+        pct >= whiteMin -> "<#F2F5FA>"               // 恢复为原来的白色
+        pct >= yellowMin -> if (flash) "<#FFD700>" else "<#FFA500>"
+        else -> if (flash) "<#FF0000>" else "<#FF4444>"
     }
     val num = "%.1f".format(if (showValue) current else pct).removeSuffix(".0")
     return if (showValue) {
-        "$color$num <gray>/${"%.1f".format(max).removeSuffix(".0")}"
+        "$color$num <#FFFFFF>/${"%.1f".format(max).removeSuffix(".0")}"  // 斜杠和最大值用白色
     } else {
-        "$color$num <gray>%"
+        "$color$num <#FFFFFF>%"                      // 百分号用白色
     }
 }
 
@@ -708,13 +711,13 @@ private fun formatHealthDisplay(player: Player): String {
     val pct = health / maxHealth * 100
     val flash = (System.currentTimeMillis() / 500) % 2 == 0L
     val color = when {
-        pct >= 100.0 -> "<green>"
-        pct >= 60.0 -> "<white>"
-        pct >= 20.0 -> if (flash) "<yellow>" else "<gold>"
-        else -> if (flash) "<red>" else "<dark_red>"
+        pct >= 100.0 -> "<#00FF00>"
+        pct >= 60.0 -> "<#F2F5FA>"                  // 恢复为白色
+        pct >= 20.0 -> if (flash) "<#FFD700>" else "<#FFA500>"
+        else -> if (flash) "<#FF0000>" else "<#FF4444>"
     }
-    val maxColor = if (flash && (pct < 60.0)) color else "<gray>"
-    return "$color${"%.1f".format(health).removeSuffix(".0")} $maxColor/${"%.1f".format(maxHealth).removeSuffix(".0")}"
+    // 最大值、斜杠固定为白色，不再随闪烁变化
+    return "$color${"%.1f".format(health).removeSuffix(".0")} <#FFFFFF>/${"%.1f".format(maxHealth).removeSuffix(".0")}"
 }
 
 /**
@@ -727,16 +730,16 @@ private fun formatFoodDisplay(player: Player): String {
     val showValue = player.isSneaking
     val flash = (System.currentTimeMillis() / 500) % 2 == 0L
     val color = when {
-        pct >= 90.0 -> "<green>"
-        pct >= 50.0 -> "<white>"
-        pct >= 20.0 -> if (flash) "<yellow>" else "<gold>"
-        else -> if (flash) "<red>" else "<dark_red>"
+        pct >= 90.0 -> "<#00FF00>"
+        pct >= 50.0 -> "<#F2F5FA>"                  // 恢复为白色
+        pct >= 20.0 -> if (flash) "<#FFD700>" else "<#FFA500>"
+        else -> if (flash) "<#FF0000>" else "<#FF4444>"
     }
     val num = "%.1f".format(pct).removeSuffix(".0")
     return if (showValue) {
-        "$color$num <gray>/100"
+        "$color$num <#FFFFFF>/100"                  // 斜杠和100用白色
     } else {
-        "$color$num <gray>%"
+        "$color$num <#FFFFFF>%"                    // 百分号用白色
     }
 }
 
@@ -747,12 +750,12 @@ private fun formatFoodDisplay(player: Player): String {
 private fun formatWeightDisplay(player: Player): String {
     val weight = WeightManager.getPlayerTotalWeight(player)
     val color = when {
-        weight < 20 -> "<green>"
-        weight <= 30 -> "<white>"
-        weight <= 45 -> "<yellow>"
-        else -> "<red>"
+        weight < 20 -> "<#00FF00>"
+        weight <= 30 -> "<#F2F5FA>"                 // 恢复为白色
+        weight <= 45 -> "<#FFD700>"
+        else -> "<#FF0000>"
     }
-    return "$color${"%.2f".format(weight)} <gray>kg"
+    return "$color${"%.2f".format(weight)} <#FFFFFF>kg"  // kg单位用白色
 }
 
 /** 自定义状态效果中文显示名 */
@@ -772,17 +775,17 @@ private val STATUS_EFFECT_DISPLAY = mapOf(
 
 /** 自定义状态效果颜色 */
 private val EFFECT_COLOR = mapOf(
-    SANITY_REGEN to "<#55FF55>",
-    SANITY_DRAIN to "<#FF5555>",
-    STRESS_RESISTANCE to "<#55FF55>",
-    STRESS_IMMUNITY to "<#55FF55>",
-    FRACTURE to "<#FFAA00>",
-    PAIN to "<#FF5555>",
-    MUSCLE_WEAKNESS to "<#AAAAAA>",
-    PAIN_RELIEF to "<#55FF55>",
-    HOUND_VIRUS to "<#FF55FF>",
-    IMMUNITY to "<#55FF55>",
-    STAMINA_REGEN to "<#55FF55>"
+    SANITY_REGEN to "<#ade4ad>",
+    SANITY_DRAIN to "<#e4adad>",
+    STRESS_RESISTANCE to "<#ade4ad>",
+    STRESS_IMMUNITY to "<#ade4ad>",
+    FRACTURE to "<#cfae6e>",
+    PAIN to "<#e4adad>",
+    MUSCLE_WEAKNESS to "<#c9c9c9>",
+    PAIN_RELIEF to "<#ade4ad>",
+    HOUND_VIRUS to "<#e4ade4>",
+    IMMUNITY to "<#ade4ad>",
+    STAMINA_REGEN to "<#ade4ad>"
 )
 
 /** 原版药水效果中文显示名 */
@@ -824,39 +827,39 @@ private val VANILLA_EFFECT_DISPLAY = mapOf(
 
 /** 原版药水效果颜色 */
 private val VANILLA_EFFECT_COLOR = mapOf(
-    PotionEffectType.SPEED to "<#55FF55>",
-    PotionEffectType.SLOWNESS to "<#AAAAAA>",
-    PotionEffectType.HASTE to "<#55FF55>",
-    PotionEffectType.MINING_FATIGUE to "<#AAAAAA>",
-    PotionEffectType.STRENGTH to "<#FF5555>",
-    PotionEffectType.INSTANT_HEALTH to "<#55FF55>",
-    PotionEffectType.INSTANT_DAMAGE to "<#FF5555>",
-    PotionEffectType.JUMP_BOOST to "<#55FF55>",
-    PotionEffectType.NAUSEA to "<#AA00AA>",
-    PotionEffectType.REGENERATION to "<#FF55FF>",
-    PotionEffectType.RESISTANCE to "<#55FF55>",
-    PotionEffectType.FIRE_RESISTANCE to "<#FFAA00>",
-    PotionEffectType.WATER_BREATHING to "<#55FFFF>",
-    PotionEffectType.INVISIBILITY to "<#AAAAAA>",
-    PotionEffectType.BLINDNESS to "<#555555>",
-    PotionEffectType.NIGHT_VISION to "<#55FFFF>",
-    PotionEffectType.HUNGER to "<#FF5555>",
-    PotionEffectType.WEAKNESS to "<#AAAAAA>",
-    PotionEffectType.POISON to "<#55FF55>",
-    PotionEffectType.WITHER to "<#555555>",
-    PotionEffectType.HEALTH_BOOST to "<#FF55FF>",
-    PotionEffectType.ABSORPTION to "<#FFAA00>",
-    PotionEffectType.SATURATION to "<#FF5555>",
-    PotionEffectType.GLOWING to "<#FFFF55>",
-    PotionEffectType.LEVITATION to "<#FFFF55>",
-    PotionEffectType.LUCK to "<#55FF55>",
-    PotionEffectType.UNLUCK to "<#FF5555>",
-    PotionEffectType.SLOW_FALLING to "<#55FFFF>",
-    PotionEffectType.CONDUIT_POWER to "<#55FFFF>",
-    PotionEffectType.DOLPHINS_GRACE to "<#55FFFF>",
-    PotionEffectType.BAD_OMEN to "<#FF5555>",
-    PotionEffectType.HERO_OF_THE_VILLAGE to "<#55FF55>",
-    PotionEffectType.DARKNESS to "<#555555>"
+    PotionEffectType.SPEED to "<#ade4ad>",
+    PotionEffectType.SLOWNESS to "<#c9c9c9>",
+    PotionEffectType.HASTE to "<#ade4ad>",
+    PotionEffectType.MINING_FATIGUE to "<#c9c9c9>",
+    PotionEffectType.STRENGTH to "<#e4adad>",
+    PotionEffectType.INSTANT_HEALTH to "<#ade4ad>",
+    PotionEffectType.INSTANT_DAMAGE to "<#e4adad>",
+    PotionEffectType.JUMP_BOOST to "<#ade4ad>",
+    PotionEffectType.NAUSEA to "<#ad3aad>",
+    PotionEffectType.REGENERATION to "<#e4ade4>",
+    PotionEffectType.RESISTANCE to "<#ade4ad>",
+    PotionEffectType.FIRE_RESISTANCE to "<#cfae6e>",
+    PotionEffectType.WATER_BREATHING to "<#ade4e4>",
+    PotionEffectType.INVISIBILITY to "<#c9c9c9>",
+    PotionEffectType.BLINDNESS to "<#747474>",
+    PotionEffectType.NIGHT_VISION to "<#ade4e4>",
+    PotionEffectType.HUNGER to "<#e4adad>",
+    PotionEffectType.WEAKNESS to "<#c9c9c9>",
+    PotionEffectType.POISON to "<#ade4ad>",
+    PotionEffectType.WITHER to "<#747474>",
+    PotionEffectType.HEALTH_BOOST to "<#e4ade4>",
+    PotionEffectType.ABSORPTION to "<#cfae6e>",
+    PotionEffectType.SATURATION to "<#e4adad>",
+    PotionEffectType.GLOWING to "<#e4e4ad>",
+    PotionEffectType.LEVITATION to "<#e4e4ad>",
+    PotionEffectType.LUCK to "<#ade4ad>",
+    PotionEffectType.UNLUCK to "<#e4adad>",
+    PotionEffectType.SLOW_FALLING to "<#ade4e4>",
+    PotionEffectType.CONDUIT_POWER to "<#ade4e4>",
+    PotionEffectType.DOLPHINS_GRACE to "<#ade4e4>",
+    PotionEffectType.BAD_OMEN to "<#e4adad>",
+    PotionEffectType.HERO_OF_THE_VILLAGE to "<#ade4ad>",
+    PotionEffectType.DARKNESS to "<#747474>"
 )
 
 /** 自定义效果覆盖的原版效果（避免重复显示） */

@@ -22,7 +22,7 @@ private object WhisperUtil {
 
     fun send(sender: Player, target: Player, message: String) {
         if (sender.uniqueId in ChatPlayerDataManager.get(target).ignoredPlayers) {
-            sender.sendComponent("<red>对方已将你屏蔽，无法发送私聊。")
+            sender.sendComponent("<#E08A98>对方已将你屏蔽，无法发送私聊。")
             return
         }
 
@@ -32,7 +32,7 @@ private object WhisperUtil {
             val last = cooldowns[sender.uniqueId] ?: 0L
             val elapsedSec = (System.currentTimeMillis() - last) / 1000.0
             if (elapsedSec < cooldown) {
-                sender.sendComponent("<red>私聊冷却中，请 <yellow>${"%.1f".format(cooldown - elapsedSec)}<red> 秒后再试。")
+                sender.sendComponent("<#E08A98>私聊冷却中，请 <#EFDF8F>${"%.1f".format(cooldown - elapsedSec)}<#E08A98> 秒后再试。")
                 return
             }
         }
@@ -42,13 +42,13 @@ private object WhisperUtil {
         val messageComponent = ChatFormatter.parseMessage(sender, filtered)
 
         val sendComponent = ChatFormatter.buildWithTags(
-            formatStr = format("send", "<gray>[私聊 → <white><target></white>]</gray> <message>"),
+            formatStr = format("send", "<#A9B4C3>[私聊 → <#F2F5FA><target></#F2F5FA>]</#A9B4C3> <message>"),
             player = sender,
             messageComponent = messageComponent,
             tags = mapOf("target" to target.displayName()),
         )
         val receiveComponent = ChatFormatter.buildWithTags(
-            formatStr = format("receive", "<gray>[私聊 ← <white><sender></white>]</gray> <message>"),
+            formatStr = format("receive", "<#A9B4C3>[私聊 ← <#F2F5FA><sender></#F2F5FA>]</#A9B4C3> <message>"),
             player = target,
             messageComponent = messageComponent,
             tags = mapOf("sender" to sender.displayName()),
@@ -86,11 +86,11 @@ object MsgCommand {
                 execute<Player> { sender, context, _ ->
                     val target = context.player("target") as? Player
                     if (target == null) {
-                        sender.sendComponent("<red>目标玩家不在线。")
+                        sender.sendComponent("<#E08A98>目标玩家不在线。")
                         return@execute
                     }
                     if (target == sender) {
-                        sender.sendComponent("<red>不能给自己发送私聊。")
+                        sender.sendComponent("<#E08A98>不能给自己发送私聊。")
                         return@execute
                     }
                     WhisperUtil.send(sender, target, context["message"])
@@ -117,7 +117,7 @@ object ReplyCommand {
                 val targetId = ChatPlayerDataManager.get(sender).lastWhisperTarget
                 val target = targetId?.let { Bukkit.getPlayer(it) }
                 if (target == null || !target.isOnline) {
-                    sender.sendComponent("<red>没有可回复的对象。")
+                    sender.sendComponent("<#E08A98>没有可回复的对象。")
                     return@execute
                 }
                 WhisperUtil.send(sender, target, context["message"])
@@ -142,20 +142,20 @@ object IgnoreCommand {
             execute<Player> { sender, context, _ ->
                 val target = context.player("target") as? Player
                 if (target == null) {
-                    sender.sendComponent("<red>目标玩家不在线。")
+                    sender.sendComponent("<#E08A98>目标玩家不在线。")
                     return@execute
                 }
                 if (target == sender) {
-                    sender.sendComponent("<red>不能屏蔽自己。")
+                    sender.sendComponent("<#E08A98>不能屏蔽自己。")
                     return@execute
                 }
                 val data = ChatPlayerDataManager.get(sender)
                 if (!data.ignoredPlayers.add(target.uniqueId)) {
-                    sender.sendComponent("<yellow>你已屏蔽 <white>${target.name}<yellow>。")
+                    sender.sendComponent("<#EFDF8F>你已屏蔽 <#F2F5FA>${target.name}<#EFDF8F>。")
                     return@execute
                 }
                 ChatPlayerDataManager.save(sender.uniqueId)
-                sender.sendComponent("<green>已屏蔽 <white>${target.name}<green>，将不再看到其频道消息与私聊。")
+                sender.sendComponent("<#8FD4A6>已屏蔽 <#F2F5FA>${target.name}<#8FD4A6>，将不再看到其频道消息与私聊。")
             }
         }
     }
@@ -177,16 +177,16 @@ object UnignoreCommand {
             execute<Player> { sender, context, _ ->
                 val target = context.player("target") as? Player
                 if (target == null) {
-                    sender.sendComponent("<red>目标玩家不在线。")
+                    sender.sendComponent("<#E08A98>目标玩家不在线。")
                     return@execute
                 }
                 val data = ChatPlayerDataManager.get(sender)
                 if (!data.ignoredPlayers.remove(target.uniqueId)) {
-                    sender.sendComponent("<yellow>你没有屏蔽 <white>${target.name}<yellow>。")
+                    sender.sendComponent("<#EFDF8F>你没有屏蔽 <#F2F5FA>${target.name}<#EFDF8F>。")
                     return@execute
                 }
                 ChatPlayerDataManager.save(sender.uniqueId)
-                sender.sendComponent("<green>已解除屏蔽 <white>${target.name}<green>。")
+                sender.sendComponent("<#8FD4A6>已解除屏蔽 <#F2F5FA>${target.name}<#8FD4A6>。")
             }
         }
     }
@@ -207,13 +207,13 @@ object IgnoreListCommand {
         execute<Player> { sender, _, _ ->
             val ignored = ChatPlayerDataManager.get(sender).ignoredPlayers
             if (ignored.isEmpty()) {
-                sender.sendComponent("<gray>你当前没有屏蔽任何玩家。")
+                sender.sendComponent("<#A9B4C3>你当前没有屏蔽任何玩家。")
                 return@execute
             }
-            sender.sendComponent("<gold>===== 屏蔽列表 (${ignored.size}) =====")
+            sender.sendComponent("<#DFBD7C>===== 屏蔽列表 (${ignored.size}) =====")
             ignored.forEach { id ->
                 val name = Bukkit.getOfflinePlayer(id).name ?: id.toString()
-                sender.sendComponent("<gray>- <white>$name")
+                sender.sendComponent("<#A9B4C3>- <#F2F5FA>$name")
             }
         }
     }

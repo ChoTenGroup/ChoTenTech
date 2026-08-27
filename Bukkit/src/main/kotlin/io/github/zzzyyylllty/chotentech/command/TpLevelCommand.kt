@@ -58,13 +58,13 @@ object TpLevelCommand {
                     val levelKey = context["level"]
                     val level = levelsList[levelKey] ?: levelsList["level-$levelKey"]
                     if (level == null) {
-                        sender.sendComponent("<red>层级 $levelKey 不存在")
+                        sender.sendComponent("<#E08A98>层级 $levelKey 不存在")
                         return@execute
                     }
                     val noclipName = context["noclip"]
                     val point = level.noclips.find { it.name == noclipName }
                     if (point == null) {
-                        sender.sendComponent("<red>切出点 $noclipName 不存在")
+                        sender.sendComponent("<#E08A98>切出点 $noclipName 不存在")
                         return@execute
                     }
                     val world = point.noclipPointWorld?.let { Bukkit.getWorld(it) }
@@ -77,7 +77,7 @@ object TpLevelCommand {
                     val cz = (v1.z + v2.z) / 2.0
                     submit {
                         sender.teleport(Location(world, cx, cy, cz))
-                        sender.sendComponent("<green>已传送到 <yellow>${level.name}<green> 的切出点 <yellow>$noclipName")
+                        sender.sendComponent("<#8FD4A6>已传送到 <#EFDF8F>${level.name}<#8FD4A6> 的切出点 <#EFDF8F>$noclipName")
                     }
                 }
             }

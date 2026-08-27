@@ -25,7 +25,7 @@ class InsuranceMenu {
     private val insuranceTitle by lazy { config.getString("insurance.insurance-title", "物品投保") ?: "物品投保" }
 
     fun open(player: Player) {
-        player.openMenu<Chest>(mmJsonUtil.serialize("<white><shift:-16><image:kangelicon:list><shift:-176><aqua><font:minecraft:fusionpixel10>${insuranceTitle}".toComponent())) {
+        player.openMenu<Chest>(mmJsonUtil.serialize("<#F2F5FA><shift:-16><image:kangelicon:list><shift:-176><#84D1CB><font:minecraft:fusionpixel10>${insuranceTitle}".toComponent())) {
             rows(6)
 
             map(
@@ -37,19 +37,19 @@ class InsuranceMenu {
                 "-B--C--B-"
             )
 
-            set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>菜单", listOf("<!i> <yellow>点击 <green>打开菜单"), model = "kangelitem:void")) {
+            set('C', guiItem(XMaterial.COMPASS, "<#84D1CB><bold>菜单", listOf("<!i> <#EFDF8F>点击 <#8FD4A6>打开菜单"), model = "kangelitem:void")) {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "invero menu open menu ${clicker.name}")
                 clicker.closeInventory()
             }
 
             onBuild { _, inv ->
                 // Left info (slot 46)
-                inv.setItem(46, guiItem(XMaterial.BOOK, "<gold>投保说明", listOf(
+                inv.setItem(46, guiItem(XMaterial.BOOK, "<#DFBD7C>投保说明", listOf(
                     loreSection("说明"),
-                    "<!i><gray>将工具或盔甲放入中间格子",
-                    "<!i><gold>[确认投保] <gray>完成投保",
-                    "<!i><gray>仅工具和盔甲可以投保",
-                    "<!i><gray>投保物品死亡不掉落"
+                    "<!i><#A9B4C3>将工具或盔甲放入中间格子",
+                    "<!i><#DFBD7C>[确认投保] <#A9B4C3>完成投保",
+                    "<!i><#A9B4C3>仅工具和盔甲可以投保",
+                    "<!i><#A9B4C3>投保物品死亡不掉落"
                 )))
 
                 // Right info — price list (slot 52)
@@ -57,16 +57,16 @@ class InsuranceMenu {
                 val tiers = config.getConfigurationSection("insurance.tiers")
                 if (tiers != null) {
                     for (key in tiers.getKeys(false)) {
-                        priceLore += loreInfo("$key", "<gold>${tiers.getDouble(key, 0.0).toLong()}")
+                        priceLore += loreInfo("$key", "<#DFBD7C>${tiers.getDouble(key, 0.0).toLong()}")
                     }
                 }
-                inv.setItem(52, guiItem(XMaterial.GOLD_INGOT, "<yellow>价格表", priceLore))
+                inv.setItem(52, guiItem(XMaterial.GOLD_INGOT, "<#EFDF8F>价格表", priceLore))
 
                 // Confirm button (slot 49)
-                inv.setItem(49, guiItem(XMaterial.ANVIL, "<gold>■ 确认投保", listOf(
+                inv.setItem(49, guiItem(XMaterial.ANVIL, "<#DFBD7C>■ 确认投保", listOf(
                     loreSection("说明"),
-                    "<!i><gray>投保中间区域的所有物品",
-                    "<!i><gray>无法投保的物品将自动返还"
+                    "<!i><#A9B4C3>投保中间区域的所有物品",
+                    "<!i><#A9B4C3>无法投保的物品将自动返还"
                 )))
             }
 
@@ -123,7 +123,7 @@ class InsuranceMenu {
         }
 
         if (items.isEmpty()) {
-            player.sendMessage(mmUtil.deserialize("<red>请放入需要投保的物品！"))
+            player.sendMessage(mmUtil.deserialize("<#E08A98>请放入需要投保的物品！"))
             return
         }
 
@@ -133,7 +133,7 @@ class InsuranceMenu {
             if (!EconomyUtil.has(player, totalCost)) {
                 player.sendMessage(
                     mmUtil.deserialize(
-                        "<red>余额不足！需要 <yellow>$totalCost</yellow>，当前余额 <yellow>${EconomyUtil.getBalance(player)}</yellow>"
+                        "<#E08A98>余额不足！需要 <#EFDF8F>$totalCost</#EFDF8F>，当前余额 <#EFDF8F>${EconomyUtil.getBalance(player)}</#EFDF8F>"
                     )
                 )
                 return
@@ -173,14 +173,14 @@ class InsuranceMenu {
 
         if (insured > 0) {
             val msg = buildString {
-                append("<green>✔ 成功投保 <yellow>$insured</yellow> 个物品")
-                if (totalPaid > 0) append("，花费 <yellow>${EconomyUtil.format(totalPaid)}</yellow>")
+                append("<#8FD4A6>✔ 成功投保 <#EFDF8F>$insured</#EFDF8F> 个物品")
+                if (totalPaid > 0) append("，花费 <#EFDF8F>${EconomyUtil.format(totalPaid)}</#EFDF8F>")
                 append("！")
             }
             player.sendMessage(mmUtil.deserialize(msg))
         }
         if (skipped > 0) {
-            player.sendMessage(mmUtil.deserialize("<gray>⚠ $skipped 个物品无法投保（非工具/盔甲或已投保）"))
+            player.sendMessage(mmUtil.deserialize("<#A9B4C3>⚠ $skipped 个物品无法投保（非工具/盔甲或已投保）"))
         }
     }
 }

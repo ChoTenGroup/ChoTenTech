@@ -55,18 +55,18 @@ fun onPlayerInteractWithWaterDispenser(event: PlayerInteractEvent) {
         val key = "${block.world.name}:${block.x}:${block.y}:${block.z}"
         val cooldownEnd = waterCooldowns[key]
         if (cooldownEnd != null && System.currentTimeMillis() < cooldownEnd) {
-            player.sendStringAsComponent("<red>这个饮水机看上去没有水了。")
+            player.sendStringAsComponent("<#E08A98>这个饮水机看上去没有水了。")
             player.playSound(player.eyeLocation, Sound.BLOCK_TRIPWIRE_CLICK_OFF, 1f, 0.7f)
             return
         }
 
         val s = Sertraline.api().buildItem("almond_water_gray", player)!!
-        player.sendStringAsComponent("<gray>你从饮水机接了一瓶杏仁水。")
+        player.sendStringAsComponent("<#A9B4C3>你从饮水机接了一瓶杏仁水。")
         TakeWaterEvent(player).callEvent()
         player.playSound(player.eyeLocation, Sound.ITEM_BOTTLE_FILL, 1f, 0.7f)
         block.world.dropItemNaturally(block.location, s)
 
-        if (random(1.0,2.0) <= 1.2) waterCooldowns[key] = System.currentTimeMillis() + 600_000L
+        if (random(1.0,2.0) <= 1.7) waterCooldowns[key] = System.currentTimeMillis() + 600_000L
     }
 }
 

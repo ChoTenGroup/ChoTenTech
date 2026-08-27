@@ -13,7 +13,7 @@ settings:
 bookmark:
   Wanderer:
     bind: 0
-    major: "<gradient:#CCCCCC:#AAAABB>流浪者"
+    major: "<gradient:#d9d9d9:#cfcfd4>流浪者"
     name: "流浪者"
     model: "kangelitem:itm/bookmark/wanderer"
     faction: WANDERER
@@ -34,8 +34,8 @@ bookmark:
     spawnpoint: Chapter1 0 100 0
   MEG:
     bind: 1
-    major: "<gradient:#FFFF99:#CCAA66>探险者总署"
-    name: "<#9999BB>职员"
+    major: "<gradient:#ececc6:#c9bea6>探险者总署"
+    name: "<#c3c3ce>职员"
     model: "kangelitem:itm/bookmark/meg"
     faction: MEG
     enable: true
@@ -54,8 +54,8 @@ bookmark:
     spawnpoint: Chapter1 0 100 0
   BNTG:
     bind: 2
-    major: "<gradient:#33FF99:#22AA66>不结盟贸易集团"
-    name: "<#9999BB>职员"
+    major: "<gradient:#94dbb8:#5cad85>不结盟贸易集团"
+    name: "<#c3c3ce>职员"
     model: "kangelitem:itm/bookmark/bntg"
     faction: BNTG
     enable: true
@@ -74,8 +74,8 @@ bookmark:
     spawnpoint: Chapter1 0 100 0
   UEC:
     bind: 3
-    major: "<gradient:#FF3300:#CC0000>无羁探险者联盟"
-    name: "<#9999BB>职员"
+    major: "<gradient:#cf816e:#c24747>无羁探险者联盟"
+    name: "<#c3c3ce>职员"
     model: "kangelitem:itm/bookmark/uec"
     faction: UEC
     enable: false
@@ -91,13 +91,13 @@ bookmark:
       解锁部分专属任务。但在某些任务完成之前，您在后续探索时可能受到阻碍。
     indev:
       info1: "开发中!"
-      info2: "将在 <#ff6600>团结<#ff6600> 版本更新后可用..."
+      info2: "将在 <#cf946e>团结<#cf946e> 版本更新后可用..."
     agent: {}
     spawnpoint: Chapter1 0 100 0
   UEC_SEWERS:
     bind: P
-    major: "<gradient:#FF3300:#CC0000>无羁探险者联盟"
-    name: "<#9999BB>水道维护者"
+    major: "<gradient:#cf816e:#c24747>无羁探险者联盟"
+    name: "<#c3c3ce>水道维护者"
     model: "kangelitem:itm/bookmark/uec_sewers"
     faction: UEC_SEWERS
     enable: false
@@ -114,6 +114,6 @@ bookmark:
       解锁部分专属任务。但在某些任务完成之前，您在后续探索时可能受到阻碍。
     indev:
       info1: "开发中!"
-      info2: "将在 <#ff6600>团结<#ff6600> 版本更新后可用..."
+      info2: "将在 <#cf946e>团结<#cf946e> 版本更新后可用..."
     agent: {}
     spawnpoint: Chapter1 0 100 0

@@ -32,14 +32,14 @@ object SanityCommand {
                 execute<CommandSender> { sender, context, _ ->
                     val player = context.player("target").castSafely<Player>()
                     if (player == null) {
-                        sender.sendComponent("<red>玩家不在线")
+                        sender.sendComponent("<#E08A98>玩家不在线")
                         return@execute
                     }
                     val helper = ChoTenDataHelper(player)
                     val amount = context["amount"]?.toDoubleOrNull()
-                    if (amount == null) { sender.sendComponent("<red>用法: /sanity add <玩家> <数量>"); return@execute }
+                    if (amount == null) { sender.sendComponent("<#E08A98>用法: /sanity add <玩家> <数量>"); return@execute }
                     helper.addSanity(amount)
-                    sender.sendComponent("<green>已为 <yellow>${player.name}<green> 增加 <yellow>$amount<green> 精神值，当前: <yellow>${"%.1f".format(helper.data.sanity)}")
+                    sender.sendComponent("<#8FD4A6>已为 <#EFDF8F>${player.name}<#8FD4A6> 增加 <#EFDF8F>$amount<#8FD4A6> 精神值，当前: <#EFDF8F>${"%.1f".format(helper.data.sanity)}")
                 }
                 suggestion<CommandSender> { _, _ -> listOf("100") }
             }
@@ -53,14 +53,14 @@ object SanityCommand {
                 execute<CommandSender> { sender, context, _ ->
                     val player = context.player("target").castSafely<Player>()
                     if (player == null) {
-                        sender.sendComponent("<red>玩家不在线")
+                        sender.sendComponent("<#E08A98>玩家不在线")
                         return@execute
                     }
                     val helper = ChoTenDataHelper(player)
                     val amount = context["amount"]?.toDoubleOrNull()
-                    if (amount == null) { sender.sendComponent("<red>用法: /sanity set <玩家> <数量>"); return@execute }
+                    if (amount == null) { sender.sendComponent("<#E08A98>用法: /sanity set <玩家> <数量>"); return@execute }
                     helper.setSanity(amount)
-                    sender.sendComponent("<green>已将 <yellow>${player.name}<green> 的精神值设为 <yellow>${"%.1f".format(helper.data.sanity)}")
+                    sender.sendComponent("<#8FD4A6>已将 <#EFDF8F>${player.name}<#8FD4A6> 的精神值设为 <#EFDF8F>${"%.1f".format(helper.data.sanity)}")
                 }
                 suggestion<CommandSender> { _, _ -> listOf("100") }
             }
@@ -73,12 +73,12 @@ object SanityCommand {
             execute<CommandSender> { sender, context, _ ->
                 val player = context.player("target").castSafely<Player>()
                 if (player == null) {
-                    sender.sendComponent("<red>玩家不在线")
+                    sender.sendComponent("<#E08A98>玩家不在线")
                     return@execute
                 }
                 val helper = ChoTenDataHelper(player)
                 helper.resetSanity()
-                sender.sendComponent("<green>已重置 <yellow>${player.name}<green> 的精神值，当前: <yellow>${"%.1f".format(helper.data.sanity)}")
+                sender.sendComponent("<#8FD4A6>已重置 <#EFDF8F>${player.name}<#8FD4A6> 的精神值，当前: <#EFDF8F>${"%.1f".format(helper.data.sanity)}")
             }
         }
     }
@@ -89,11 +89,11 @@ object SanityCommand {
             execute<CommandSender> { sender, context, _ ->
                 val player = context.player("target").castSafely<Player>()
                 if (player == null) {
-                    sender.sendComponent("<red>玩家不在线")
+                    sender.sendComponent("<#E08A98>玩家不在线")
                     return@execute
                 }
                 val helper = ChoTenDataHelper(player)
-                sender.sendComponent("<yellow>${player.name}<green> 精神值: <yellow>${"%.1f".format(helper.data.sanity)}<green> / <yellow>${"%.1f".format(helper.data.effectiveMaxSanity)}")
+                sender.sendComponent("<#EFDF8F>${player.name}<#8FD4A6> 精神值: <#EFDF8F>${"%.1f".format(helper.data.sanity)}<#8FD4A6> / <#EFDF8F>${"%.1f".format(helper.data.effectiveMaxSanity)}")
             }
         }
     }
@@ -104,12 +104,12 @@ object SanityCommand {
             execute<CommandSender> { sender, context, _ ->
                 val player = context.player("target").castSafely<Player>()
                 if (player == null) {
-                    sender.sendComponent("<red>玩家不在线")
+                    sender.sendComponent("<#E08A98>玩家不在线")
                     return@execute
                 }
                 val helper = ChoTenDataHelper(player)
                 helper.fullSanity()
-                sender.sendComponent("<green>已回满 <yellow>${player.name}<green> 的精神值")
+                sender.sendComponent("<#8FD4A6>已回满 <#EFDF8F>${player.name}<#8FD4A6> 的精神值")
             }
         }
     }
@@ -121,14 +121,14 @@ object SanityCommand {
                 execute<CommandSender> { sender, context, _ ->
                     val player = context.player("target").castSafely<Player>()
                     if (player == null) {
-                        sender.sendComponent("<red>玩家不在线")
+                        sender.sendComponent("<#E08A98>玩家不在线")
                         return@execute
                     }
                     val helper = ChoTenDataHelper(player)
                     val amount = context["amount"]?.toDoubleOrNull()
-                    if (amount == null) { sender.sendComponent("<red>用法: /sanity maxadd <玩家> <数量>"); return@execute }
+                    if (amount == null) { sender.sendComponent("<#E08A98>用法: /sanity maxadd <玩家> <数量>"); return@execute }
                     helper.addMaxSanity(amount)
-                    sender.sendComponent("<green>已为 <yellow>${player.name}<green> 增加 <yellow>$amount<green> 最大精神值，当前: <yellow>${"%.1f".format(helper.data.effectiveMaxSanity)}")
+                    sender.sendComponent("<#8FD4A6>已为 <#EFDF8F>${player.name}<#8FD4A6> 增加 <#EFDF8F>$amount<#8FD4A6> 最大精神值，当前: <#EFDF8F>${"%.1f".format(helper.data.effectiveMaxSanity)}")
                 }
                 suggestion<CommandSender> { _, _ -> listOf("100") }
             }
@@ -142,14 +142,14 @@ object SanityCommand {
                 execute<CommandSender> { sender, context, _ ->
                     val player = context.player("target").castSafely<Player>()
                     if (player == null) {
-                        sender.sendComponent("<red>玩家不在线")
+                        sender.sendComponent("<#E08A98>玩家不在线")
                         return@execute
                     }
                     val helper = ChoTenDataHelper(player)
                     val amount = context["amount"]?.toDoubleOrNull()
-                    if (amount == null) { sender.sendComponent("<red>用法: /sanity maxset <玩家> <数量>"); return@execute }
+                    if (amount == null) { sender.sendComponent("<#E08A98>用法: /sanity maxset <玩家> <数量>"); return@execute }
                     helper.setMaxSanity(amount)
-                    sender.sendComponent("<green>已将 <yellow>${player.name}<green> 的最大精神值设为 <yellow>${"%.1f".format(helper.data.effectiveMaxSanity)}")
+                    sender.sendComponent("<#8FD4A6>已将 <#EFDF8F>${player.name}<#8FD4A6> 的最大精神值设为 <#EFDF8F>${"%.1f".format(helper.data.effectiveMaxSanity)}")
                 }
                 suggestion<CommandSender> { _, _ -> listOf("100") }
             }
@@ -162,12 +162,12 @@ object SanityCommand {
             execute<CommandSender> { sender, context, _ ->
                 val player = context.player("target").castSafely<Player>()
                 if (player == null) {
-                    sender.sendComponent("<red>玩家不在线")
+                    sender.sendComponent("<#E08A98>玩家不在线")
                     return@execute
                 }
                 val helper = ChoTenDataHelper(player)
                 helper.resetMaxSanity()
-                sender.sendComponent("<green>已重置 <yellow>${player.name}<green> 的最大精神值，当前: <yellow>${"%.1f".format(helper.data.effectiveMaxSanity)}")
+                sender.sendComponent("<#8FD4A6>已重置 <#EFDF8F>${player.name}<#8FD4A6> 的最大精神值，当前: <#EFDF8F>${"%.1f".format(helper.data.effectiveMaxSanity)}")
             }
         }
     }
@@ -178,11 +178,11 @@ object SanityCommand {
             execute<CommandSender> { sender, context, _ ->
                 val player = context.player("target").castSafely<Player>()
                 if (player == null) {
-                    sender.sendComponent("<red>玩家不在线")
+                    sender.sendComponent("<#E08A98>玩家不在线")
                     return@execute
                 }
                 val helper = ChoTenDataHelper(player)
-                sender.sendComponent("<yellow>${player.name}<green> 最大精神值: <yellow>${"%.1f".format(helper.data.effectiveMaxSanity)}")
+                sender.sendComponent("<#EFDF8F>${player.name}<#8FD4A6> 最大精神值: <#EFDF8F>${"%.1f".format(helper.data.effectiveMaxSanity)}")
             }
         }
     }
@@ -194,14 +194,14 @@ object SanityCommand {
                 execute<CommandSender> { sender, context, _ ->
                     val player = context.player("target").castSafely<Player>()
                     if (player == null) {
-                        sender.sendComponent("<red>玩家不在线")
+                        sender.sendComponent("<#E08A98>玩家不在线")
                         return@execute
                     }
                     val helper = ChoTenDataHelper(player)
                     val amount = context["amount"]?.toDoubleOrNull()
-                    if (amount == null) { sender.sendComponent("<red>用法: /sanity regenadd <玩家> <数量>"); return@execute }
+                    if (amount == null) { sender.sendComponent("<#E08A98>用法: /sanity regenadd <玩家> <数量>"); return@execute }
                     helper.addSanityRegeneration(amount)
-                    sender.sendComponent("<green>已为 <yellow>${player.name}<green> 增加 <yellow>$amount<green> 精神恢复，当前: <yellow>${"%.1f".format(helper.data.sanityRegeneration)}")
+                    sender.sendComponent("<#8FD4A6>已为 <#EFDF8F>${player.name}<#8FD4A6> 增加 <#EFDF8F>$amount<#8FD4A6> 精神恢复，当前: <#EFDF8F>${"%.1f".format(helper.data.sanityRegeneration)}")
                 }
                 suggestion<CommandSender> { _, _ -> listOf("100") }
             }
@@ -215,14 +215,14 @@ object SanityCommand {
                 execute<CommandSender> { sender, context, _ ->
                     val player = context.player("target").castSafely<Player>()
                     if (player == null) {
-                        sender.sendComponent("<red>玩家不在线")
+                        sender.sendComponent("<#E08A98>玩家不在线")
                         return@execute
                     }
                     val helper = ChoTenDataHelper(player)
                     val amount = context["amount"]?.toDoubleOrNull()
-                    if (amount == null) { sender.sendComponent("<red>用法: /sanity regenset <玩家> <数量>"); return@execute }
+                    if (amount == null) { sender.sendComponent("<#E08A98>用法: /sanity regenset <玩家> <数量>"); return@execute }
                     helper.setSanityRegeneration(amount)
-                    sender.sendComponent("<green>已将 <yellow>${player.name}<green> 的精神恢复设为 <yellow>${"%.1f".format(helper.data.sanityRegeneration)}")
+                    sender.sendComponent("<#8FD4A6>已将 <#EFDF8F>${player.name}<#8FD4A6> 的精神恢复设为 <#EFDF8F>${"%.1f".format(helper.data.sanityRegeneration)}")
                 }
                 suggestion<CommandSender> { _, _ -> listOf("100") }
             }
@@ -235,12 +235,12 @@ object SanityCommand {
             execute<CommandSender> { sender, context, _ ->
                 val player = context.player("target").castSafely<Player>()
                 if (player == null) {
-                    sender.sendComponent("<red>玩家不在线")
+                    sender.sendComponent("<#E08A98>玩家不在线")
                     return@execute
                 }
                 val helper = ChoTenDataHelper(player)
                 helper.resetSanityRegeneration()
-                sender.sendComponent("<green>已重置 <yellow>${player.name}<green> 的精神恢复，当前: <yellow>${"%.1f".format(helper.data.sanityRegeneration)}")
+                sender.sendComponent("<#8FD4A6>已重置 <#EFDF8F>${player.name}<#8FD4A6> 的精神恢复，当前: <#EFDF8F>${"%.1f".format(helper.data.sanityRegeneration)}")
             }
         }
     }
@@ -251,11 +251,11 @@ object SanityCommand {
             execute<CommandSender> { sender, context, _ ->
                 val player = context.player("target").castSafely<Player>()
                 if (player == null) {
-                    sender.sendComponent("<red>玩家不在线")
+                    sender.sendComponent("<#E08A98>玩家不在线")
                     return@execute
                 }
                 val helper = ChoTenDataHelper(player)
-                sender.sendComponent("<yellow>${player.name}<green> 精神恢复: <yellow>${"%.1f".format(helper.data.sanityRegeneration)}")
+                sender.sendComponent("<#EFDF8F>${player.name}<#8FD4A6> 精神恢复: <#EFDF8F>${"%.1f".format(helper.data.sanityRegeneration)}")
             }
         }
     }
@@ -281,14 +281,14 @@ object StressCommand {
                 execute<CommandSender> { sender, context, _ ->
                     val player = context.player("target").castSafely<Player>()
                     if (player == null) {
-                        sender.sendComponent("<red>玩家不在线")
+                        sender.sendComponent("<#E08A98>玩家不在线")
                         return@execute
                     }
                     val helper = ChoTenDataHelper(player)
                     val amount = context["amount"]?.toDoubleOrNull()
-                    if (amount == null) { sender.sendComponent("<red>用法: /stress add <玩家> <数量>"); return@execute }
+                    if (amount == null) { sender.sendComponent("<#E08A98>用法: /stress add <玩家> <数量>"); return@execute }
                     helper.addStress(amount)
-                    sender.sendComponent("<green>已为 <yellow>${player.name}<green> 增加 <yellow>$amount<green> 压力，当前: <yellow>${"%.1f".format(helper.data.stress)}")
+                    sender.sendComponent("<#8FD4A6>已为 <#EFDF8F>${player.name}<#8FD4A6> 增加 <#EFDF8F>$amount<#8FD4A6> 压力，当前: <#EFDF8F>${"%.1f".format(helper.data.stress)}")
                 }
                 suggestion<CommandSender> { _, _ -> listOf("100") }
             }
@@ -302,14 +302,14 @@ object StressCommand {
                 execute<CommandSender> { sender, context, _ ->
                     val player = context.player("target").castSafely<Player>()
                     if (player == null) {
-                        sender.sendComponent("<red>玩家不在线")
+                        sender.sendComponent("<#E08A98>玩家不在线")
                         return@execute
                     }
                     val helper = ChoTenDataHelper(player)
                     val amount = context["amount"]?.toDoubleOrNull()
-                    if (amount == null) { sender.sendComponent("<red>用法: /stress set <玩家> <数量>"); return@execute }
+                    if (amount == null) { sender.sendComponent("<#E08A98>用法: /stress set <玩家> <数量>"); return@execute }
                     helper.setStress(amount)
-                    sender.sendComponent("<green>已将 <yellow>${player.name}<green> 的压力设为 <yellow>${"%.1f".format(helper.data.stress)}")
+                    sender.sendComponent("<#8FD4A6>已将 <#EFDF8F>${player.name}<#8FD4A6> 的压力设为 <#EFDF8F>${"%.1f".format(helper.data.stress)}")
                 }
                 suggestion<CommandSender> { _, _ -> listOf("100") }
             }
@@ -322,12 +322,12 @@ object StressCommand {
             execute<CommandSender> { sender, context, _ ->
                 val player = context.player("target").castSafely<Player>()
                 if (player == null) {
-                    sender.sendComponent("<red>玩家不在线")
+                    sender.sendComponent("<#E08A98>玩家不在线")
                     return@execute
                 }
                 val helper = ChoTenDataHelper(player)
                 helper.resetStress()
-                sender.sendComponent("<green>已重置 <yellow>${player.name}<green> 的压力，当前: <yellow>${"%.1f".format(helper.data.stress)}")
+                sender.sendComponent("<#8FD4A6>已重置 <#EFDF8F>${player.name}<#8FD4A6> 的压力，当前: <#EFDF8F>${"%.1f".format(helper.data.stress)}")
             }
         }
     }
@@ -338,11 +338,11 @@ object StressCommand {
             execute<CommandSender> { sender, context, _ ->
                 val player = context.player("target").castSafely<Player>()
                 if (player == null) {
-                    sender.sendComponent("<red>玩家不在线")
+                    sender.sendComponent("<#E08A98>玩家不在线")
                     return@execute
                 }
                 val helper = ChoTenDataHelper(player)
-                sender.sendComponent("<yellow>${player.name}<green> 压力: <yellow>${"%.1f".format(helper.data.stress)}<green> / 100.0")
+                sender.sendComponent("<#EFDF8F>${player.name}<#8FD4A6> 压力: <#EFDF8F>${"%.1f".format(helper.data.stress)}<#8FD4A6> / 100.0")
             }
         }
     }
@@ -368,14 +368,14 @@ object DarknessCommand {
                 execute<CommandSender> { sender, context, _ ->
                     val player = context.player("target").castSafely<Player>()
                     if (player == null) {
-                        sender.sendComponent("<red>玩家不在线")
+                        sender.sendComponent("<#E08A98>玩家不在线")
                         return@execute
                     }
                     val helper = ChoTenDataHelper(player)
                     val amount = context["amount"]?.toDoubleOrNull()
-                    if (amount == null) { sender.sendComponent("<red>用法: /darkness add <玩家> <数量>"); return@execute }
+                    if (amount == null) { sender.sendComponent("<#E08A98>用法: /darkness add <玩家> <数量>"); return@execute }
                     helper.addDarkness(amount)
-                    sender.sendComponent("<green>已为 <yellow>${player.name}<green> 增加 <yellow>$amount<green> 阴暗值，当前: <yellow>${"%.1f".format(helper.data.darkness)}")
+                    sender.sendComponent("<#8FD4A6>已为 <#EFDF8F>${player.name}<#8FD4A6> 增加 <#EFDF8F>$amount<#8FD4A6> 阴暗值，当前: <#EFDF8F>${"%.1f".format(helper.data.darkness)}")
                 }
                 suggestion<CommandSender> { _, _ -> listOf("100") }
             }
@@ -389,14 +389,14 @@ object DarknessCommand {
                 execute<CommandSender> { sender, context, _ ->
                     val player = context.player("target").castSafely<Player>()
                     if (player == null) {
-                        sender.sendComponent("<red>玩家不在线")
+                        sender.sendComponent("<#E08A98>玩家不在线")
                         return@execute
                     }
                     val helper = ChoTenDataHelper(player)
                     val amount = context["amount"]?.toDoubleOrNull()
-                    if (amount == null) { sender.sendComponent("<red>用法: /darkness set <玩家> <数量>"); return@execute }
+                    if (amount == null) { sender.sendComponent("<#E08A98>用法: /darkness set <玩家> <数量>"); return@execute }
                     helper.setDarkness(amount)
-                    sender.sendComponent("<green>已将 <yellow>${player.name}<green> 的阴暗值设为 <yellow>${"%.1f".format(helper.data.darkness)}")
+                    sender.sendComponent("<#8FD4A6>已将 <#EFDF8F>${player.name}<#8FD4A6> 的阴暗值设为 <#EFDF8F>${"%.1f".format(helper.data.darkness)}")
                 }
                 suggestion<CommandSender> { _, _ -> listOf("100") }
             }
@@ -409,12 +409,12 @@ object DarknessCommand {
             execute<CommandSender> { sender, context, _ ->
                 val player = context.player("target").castSafely<Player>()
                 if (player == null) {
-                    sender.sendComponent("<red>玩家不在线")
+                    sender.sendComponent("<#E08A98>玩家不在线")
                     return@execute
                 }
                 val helper = ChoTenDataHelper(player)
                 helper.resetDarkness()
-                sender.sendComponent("<green>已重置 <yellow>${player.name}<green> 的阴暗值，当前: <yellow>${"%.1f".format(helper.data.darkness)}")
+                sender.sendComponent("<#8FD4A6>已重置 <#EFDF8F>${player.name}<#8FD4A6> 的阴暗值，当前: <#EFDF8F>${"%.1f".format(helper.data.darkness)}")
             }
         }
     }
@@ -425,11 +425,11 @@ object DarknessCommand {
             execute<CommandSender> { sender, context, _ ->
                 val player = context.player("target").castSafely<Player>()
                 if (player == null) {
-                    sender.sendComponent("<red>玩家不在线")
+                    sender.sendComponent("<#E08A98>玩家不在线")
                     return@execute
                 }
                 val helper = ChoTenDataHelper(player)
-                sender.sendComponent("<yellow>${player.name}<green> 阴暗值: <yellow>${"%.1f".format(helper.data.darkness)}<green> / <yellow>${"%.1f".format(helper.data.effectiveMaxDarkness)}")
+                sender.sendComponent("<#EFDF8F>${player.name}<#8FD4A6> 阴暗值: <#EFDF8F>${"%.1f".format(helper.data.darkness)}<#8FD4A6> / <#EFDF8F>${"%.1f".format(helper.data.effectiveMaxDarkness)}")
             }
         }
     }
@@ -440,12 +440,12 @@ object DarknessCommand {
             execute<CommandSender> { sender, context, _ ->
                 val player = context.player("target").castSafely<Player>()
                 if (player == null) {
-                    sender.sendComponent("<red>玩家不在线")
+                    sender.sendComponent("<#E08A98>玩家不在线")
                     return@execute
                 }
                 val helper = ChoTenDataHelper(player)
                 helper.fullDarkness()
-                sender.sendComponent("<green>已填满 <yellow>${player.name}<green> 的阴暗值")
+                sender.sendComponent("<#8FD4A6>已填满 <#EFDF8F>${player.name}<#8FD4A6> 的阴暗值")
             }
         }
     }
@@ -457,14 +457,14 @@ object DarknessCommand {
                 execute<CommandSender> { sender, context, _ ->
                     val player = context.player("target").castSafely<Player>()
                     if (player == null) {
-                        sender.sendComponent("<red>玩家不在线")
+                        sender.sendComponent("<#E08A98>玩家不在线")
                         return@execute
                     }
                     val helper = ChoTenDataHelper(player)
                     val amount = context["amount"]?.toDoubleOrNull()
-                    if (amount == null) { sender.sendComponent("<red>用法: /darkness maxadd <玩家> <数量>"); return@execute }
+                    if (amount == null) { sender.sendComponent("<#E08A98>用法: /darkness maxadd <玩家> <数量>"); return@execute }
                     helper.addMaxDarkness(amount)
-                    sender.sendComponent("<green>已为 <yellow>${player.name}<green> 增加 <yellow>$amount<green> 最大阴暗值，当前: <yellow>${"%.1f".format(helper.data.effectiveMaxDarkness)}")
+                    sender.sendComponent("<#8FD4A6>已为 <#EFDF8F>${player.name}<#8FD4A6> 增加 <#EFDF8F>$amount<#8FD4A6> 最大阴暗值，当前: <#EFDF8F>${"%.1f".format(helper.data.effectiveMaxDarkness)}")
                 }
                 suggestion<CommandSender> { _, _ -> listOf("100") }
             }
@@ -478,14 +478,14 @@ object DarknessCommand {
                 execute<CommandSender> { sender, context, _ ->
                     val player = context.player("target").castSafely<Player>()
                     if (player == null) {
-                        sender.sendComponent("<red>玩家不在线")
+                        sender.sendComponent("<#E08A98>玩家不在线")
                         return@execute
                     }
                     val helper = ChoTenDataHelper(player)
                     val amount = context["amount"]?.toDoubleOrNull()
-                    if (amount == null) { sender.sendComponent("<red>用法: /darkness maxset <玩家> <数量>"); return@execute }
+                    if (amount == null) { sender.sendComponent("<#E08A98>用法: /darkness maxset <玩家> <数量>"); return@execute }
                     helper.setMaxDarkness(amount)
-                    sender.sendComponent("<green>已将 <yellow>${player.name}<green> 的最大阴暗值设为 <yellow>${"%.1f".format(helper.data.effectiveMaxDarkness)}")
+                    sender.sendComponent("<#8FD4A6>已将 <#EFDF8F>${player.name}<#8FD4A6> 的最大阴暗值设为 <#EFDF8F>${"%.1f".format(helper.data.effectiveMaxDarkness)}")
                 }
                 suggestion<CommandSender> { _, _ -> listOf("100") }
             }
@@ -498,12 +498,12 @@ object DarknessCommand {
             execute<CommandSender> { sender, context, _ ->
                 val player = context.player("target").castSafely<Player>()
                 if (player == null) {
-                    sender.sendComponent("<red>玩家不在线")
+                    sender.sendComponent("<#E08A98>玩家不在线")
                     return@execute
                 }
                 val helper = ChoTenDataHelper(player)
                 helper.resetMaxDarkness()
-                sender.sendComponent("<green>已重置 <yellow>${player.name}<green> 的最大阴暗值，当前: <yellow>${"%.1f".format(helper.data.effectiveMaxDarkness)}")
+                sender.sendComponent("<#8FD4A6>已重置 <#EFDF8F>${player.name}<#8FD4A6> 的最大阴暗值，当前: <#EFDF8F>${"%.1f".format(helper.data.effectiveMaxDarkness)}")
             }
         }
     }
@@ -514,11 +514,11 @@ object DarknessCommand {
             execute<CommandSender> { sender, context, _ ->
                 val player = context.player("target").castSafely<Player>()
                 if (player == null) {
-                    sender.sendComponent("<red>玩家不在线")
+                    sender.sendComponent("<#E08A98>玩家不在线")
                     return@execute
                 }
                 val helper = ChoTenDataHelper(player)
-                sender.sendComponent("<yellow>${player.name}<green> 最大阴暗值: <yellow>${"%.1f".format(helper.data.effectiveMaxDarkness)}")
+                sender.sendComponent("<#EFDF8F>${player.name}<#8FD4A6> 最大阴暗值: <#EFDF8F>${"%.1f".format(helper.data.effectiveMaxDarkness)}")
             }
         }
     }

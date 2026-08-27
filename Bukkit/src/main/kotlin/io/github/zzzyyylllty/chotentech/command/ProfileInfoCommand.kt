@@ -36,7 +36,7 @@ object ProfileInfoCommand {
                 val viewer = if (sender is Player) sender else target
                 ProfileInfoGUI(target).open(viewer)
                 if (sender != viewer) {
-                    sender.sendComponent("<green>已为 ${target.name} 打开档案信息界面")
+                    sender.sendComponent("<#8FD4A6>已为 ${target.name} 打开档案信息界面")
                 }
             }
         }

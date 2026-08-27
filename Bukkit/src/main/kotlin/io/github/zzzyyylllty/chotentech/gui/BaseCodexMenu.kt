@@ -44,7 +44,7 @@ class BaseCodexMenu {
                 .ifEmpty { BaseManager.baseMap.values.toList() }
         }
 
-        player.openMenu<PageableChest<Base>>(mmJsonUtil.serialize("<white><shift:-16><image:kangelicon:list><shift:-176><aqua><font:minecraft:fusionpixel10>基地图鉴".toComponent())) {
+        player.openMenu<PageableChest<Base>>(mmJsonUtil.serialize("<#F2F5FA><shift:-16><image:kangelicon:list><shift:-176><#84D1CB><font:minecraft:fusionpixel10>基地图鉴".toComponent())) {
             rows(6)
 
             map(
@@ -56,7 +56,7 @@ class BaseCodexMenu {
                 "         "
             )
 
-            set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>菜单", listOf("<gray>点击打开菜单"), model = "kangelitem:void")) {
+            set('C', guiItem(XMaterial.COMPASS, "<#84D1CB><bold>菜单", listOf("<#A9B4C3>点击打开菜单"), model = "kangelitem:void")) {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "invero menu open menu ${clicker.name}")
                 clicker.closeInventory()
             }
@@ -90,11 +90,11 @@ class BaseCodexMenu {
             }
 
             setPreviousPage(7) { _, page ->
-                guiItem(XMaterial.ARROW, "<green>上一页", model = if (page) "kangelitem:previous" else "kangelitem:previous_no")
+                guiItem(XMaterial.ARROW, "<#8FD4A6>上一页", model = if (page) "kangelitem:previous" else "kangelitem:previous_no")
             }
 
             setNextPage(8) { _, page ->
-                guiItem(XMaterial.ARROW, "<green>下一页", model = if (page) "kangelitem:next" else "kangelitem:next_no")
+                guiItem(XMaterial.ARROW, "<#8FD4A6>下一页", model = if (page) "kangelitem:next" else "kangelitem:next_no")
             }
         }
     }
@@ -105,16 +105,16 @@ class BaseCodexMenu {
         val meta = item.itemMeta ?: return item
 
         if (showAll) {
-            meta.displayName("<gold>显示模式: <green>全部基地".toComponent())
+            meta.displayName("<#DFBD7C>显示模式: <#8FD4A6>全部基地".toComponent())
             meta.lore(listOf(
-                loreInfo("当前模式", "<green>显示所有基地"),
-                "<!i> <yellow>点击 <green>切换为仅显示已发现"
+                loreInfo("当前模式", "<#8FD4A6>显示所有基地"),
+                "<!i> <#EFDF8F>点击 <#8FD4A6>切换为仅显示已发现"
             ).toComponent())
         } else {
-            meta.displayName("<gold>显示模式: <gray>仅已发现".toComponent())
+            meta.displayName("<#DFBD7C>显示模式: <#A9B4C3>仅已发现".toComponent())
             meta.lore(listOf(
-                loreInfo("当前模式", "<gray>仅显示已发现的基地"),
-                "<!i> <yellow>点击 <green>切换为显示全部"
+                loreInfo("当前模式", "<#A9B4C3>仅显示已发现的基地"),
+                "<!i> <#EFDF8F>点击 <#8FD4A6>切换为显示全部"
             ).toComponent())
         }
 
@@ -123,17 +123,17 @@ class BaseCodexMenu {
     }
 
     private fun buildStatsItem(player: Player): ItemStack {
-        val data = player.getData() ?: return guiItem(XMaterial.BARRIER, "<red>数据错误")
+        val data = player.getData() ?: return guiItem(XMaterial.BARRIER, "<#E08A98>数据错误")
         val total = BaseManager.baseMap.size
         val discovered = data.discoveredBases.count { BaseManager.baseMap.containsKey(it) }
 
         val item = XMaterial.COMPASS.parseItem() ?: ItemStack(Material.COMPASS)
         val meta = item.itemMeta ?: return item
 
-        meta.displayName("<gold>图鉴进度".toComponent())
+        meta.displayName("<#DFBD7C>图鉴进度".toComponent())
         meta.lore(listOf(
-            loreInfo("已发现", "<green>$discovered <gray>/ <yellow>$total"),
-            loreInfo("完成度", "<green>${if (total > 0) "%.1f".format(discovered.toDouble() / total * 100) else "0"}%")
+            loreInfo("已发现", "<#8FD4A6>$discovered <#A9B4C3>/ <#EFDF8F>$total"),
+            loreInfo("完成度", "<#8FD4A6>${if (total > 0) "%.1f".format(discovered.toDouble() / total * 100) else "0"}%")
         ).toComponent())
 
         item.setItemMeta(meta)
@@ -145,12 +145,12 @@ class BaseCodexMenu {
             val item = XMaterial.BLACK_STAINED_GLASS_PANE.parseItem() ?: ItemStack(Material.BLACK_STAINED_GLASS_PANE)
             val meta = item.itemMeta ?: return item
 
-            meta.displayName("<dark_gray><b>???</b>".toComponent())
+            meta.displayName("<#6E7A8C><b>???</b>".toComponent())
             meta.lore(listOf(
-                loreInfo("基地", "<dark_gray>???"),
-                loreInfo("阵营", "<dark_gray>???"),
+                loreInfo("基地", "<#6E7A8C>???"),
+                loreInfo("阵营", "<#6E7A8C>???"),
                 loreSpace(),
-                "<!i><white><b>|<reset> <!i><gray><i>尚未发现该基地！"
+                "<!i><#F2F5FA><b>|<reset> <!i><#A9B4C3><i>尚未发现该基地！"
             ).toComponent())
             item.setItemMeta(meta)
             return item
@@ -160,22 +160,22 @@ class BaseCodexMenu {
         val meta = mat.itemMeta ?: return mat
 
         val factionColor = when (base.faction.uppercase()) {
-            "MEG" -> "<#ffdd00>"
-            "BNTG" -> "<#33ffaa>"
-            "UEC" -> "<#ff3d00>"
-            else -> "<white>"
+            "MEG" -> "<#cfc26e>"
+            "BNTG" -> "<#94dbbe>"
+            "UEC" -> "<#cf856e>"
+            else -> "<#F2F5FA>"
         }
 
-        meta.displayName("<gold>${base.name}</gold>".toComponent())
+        meta.displayName("<#DFBD7C>${base.name}</#DFBD7C>".toComponent())
 
         val lore = mutableListOf<String>()
-        lore += loreInfo("基地编号", "<yellow>${base.idef}")
+        lore += loreInfo("基地编号", "<#EFDF8F>${base.idef}")
         lore += loreInfo("所属阵营", "$factionColor${base.faction}")
         lore += loreSpace()
         lore += loreSection("介绍")
-        base.lore.forEach { lore += "<!i><#cccccc>$it" }
+        base.lore.forEach { lore += "<!i><#d9d9d9>$it" }
         lore += loreSpace()
-        lore += loreInfo("区域", "<dark_gray>${base.region}")
+        lore += loreInfo("区域", "<#6E7A8C>${base.region}")
         lore += loreInfo("完成版本", "${base.dev}")
 
         meta.lore(lore.toComponent())

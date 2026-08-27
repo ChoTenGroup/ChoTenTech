@@ -44,7 +44,7 @@ fun onUseMedicalItem(event: PlayerInteractEvent) {
 
     // Pitch check: looking too far up = can't enter healing
     if (player.pitch < -80f) {
-        player.sendActionBar("<red>请先低头再进入治疗模式".toComponent())
+        player.sendActionBar("<#E08A98>请先低头再进入治疗模式".toComponent())
         return
     }
 
@@ -124,5 +124,5 @@ fun onHealingSwitchItem(event: PlayerItemHeldEvent) {
     val player = event.player
     if (!HealingManager.isInHealingOrPost(player.uniqueId)) return
     event.isCancelled = true
-    player.sendActionBar("<red>治疗中，无法切换物品".toComponent())
+    player.sendActionBar("<#E08A98>治疗中，无法切换物品".toComponent())
 }

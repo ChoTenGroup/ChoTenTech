@@ -8,7 +8,7 @@ import io.github.zzzyyylllty.chotentech.data.ModifierType
 import io.github.zzzyyylllty.chotentech.manager.AttributeManager
 import io.github.zzzyyylllty.chotentech.data.HealConfig
 import io.github.zzzyyylllty.chotentech.data.FRACTURE
-import io.github.zzzyyylllty.chotentech.quetiapine.data.PlayerDataManager
+import io.github.zzzyyylllty.chotentech.data.PlayerDataManager
 import io.github.zzzyyylllty.chotentech.util.toComponent
 import io.github.zzzyyylllty.sertraline.item.rebuildDisplay
 import io.github.zzzyyylllty.sertraline.item.rebuildName
@@ -91,9 +91,9 @@ object HealingManager {
                 || data.internalInjury < data.maxInternalInjury
                 || data.externalInjury < data.maxExternalInjury
             if (hasAnyInjury) {
-                player.sendActionBar("<yellow>无需治疗（或当前物品无法治疗某些伤势）".toComponent())
+                player.sendActionBar("<#EFDF8F>无需治疗（或当前物品无法治疗某些伤势）".toComponent())
             } else {
-                player.sendActionBar("<yellow>状态已满，无需治疗".toComponent())
+                player.sendActionBar("<#EFDF8F>状态已满，无需治疗".toComponent())
             }
             config.soundAlreadyFull.play(player)
             return
@@ -314,7 +314,7 @@ object HealingManager {
                     state.phaseTicks--
                     if (state.phaseTicks > 0) {
                         val sec = state.phaseTicks / 4 + 1
-                        player.sendActionBar("<aqua>治疗准备中... <gray>${sec}秒".toComponent())
+                        player.sendActionBar("<#84D1CB>治疗准备中... <#A9B4C3>${sec}秒".toComponent())
                         continue
                     }
                     // Transition to HEALING
@@ -351,7 +351,7 @@ object HealingManager {
                             val hpFull = maxHP - player.health <= 0
                             val capReached = config.maxHeal != -1.0 && state.totalHealedHP >= config.maxHeal
                             if (!state.hpFullWarned && (hpFull || capReached)) {
-                                player.sendMessage("<yellow>${if (hpFull) "血量已满" else "已达最大治疗量"}，不再回复血量。".toComponent())
+                                player.sendMessage("<#EFDF8F>${if (hpFull) "血量已满" else "已达最大治疗量"}，不再回复血量。".toComponent())
                                 config.soundCapReached.play(player)
                                 state.hpFullWarned = true
                             }
@@ -369,7 +369,7 @@ object HealingManager {
                             val iiFull = data.internalInjury >= data.maxInternalInjury
                             val capReached = state.totalHealedII >= config.maxIInjury
                             if (!state.iiCapWarned && (iiFull || capReached)) {
-                                player.sendMessage("<yellow>${if (iiFull) "内伤已满" else "已达最大内伤治疗量"}，不再回复内伤。".toComponent())
+                                player.sendMessage("<#EFDF8F>${if (iiFull) "内伤已满" else "已达最大内伤治疗量"}，不再回复内伤。".toComponent())
                                 config.soundCapReached.play(player)
                                 state.iiCapWarned = true
                             }
@@ -387,7 +387,7 @@ object HealingManager {
                             val eiFull = data.externalInjury >= data.maxExternalInjury
                             val capReached = state.totalHealedEI >= config.maxEInjury
                             if (!state.eiCapWarned && (eiFull || capReached)) {
-                                player.sendMessage("<yellow>${if (eiFull) "外伤已满" else "已达最大外伤治疗量"}，不再回复外伤。".toComponent())
+                                player.sendMessage("<#EFDF8F>${if (eiFull) "外伤已满" else "已达最大外伤治疗量"}，不再回复外伤。".toComponent())
                                 config.soundCapReached.play(player)
                                 state.eiCapWarned = true
                             }
@@ -415,7 +415,7 @@ object HealingManager {
                     }
 
                     config.soundStart.play(player)
-                    player.sendActionBar("<aqua>治疗中... 抬头以退出治疗模式".toComponent())
+                    player.sendActionBar("<#84D1CB>治疗中... 抬头以退出治疗模式".toComponent())
                 }
 
                 HealingPhase.HEALING -> {
@@ -461,7 +461,7 @@ object HealingManager {
                             val hpFull = maxHP - player.health <= 0
                             val capReached = config.maxHeal != -1.0 && state.totalHealedHP >= config.maxHeal
                             if (hpFull || capReached) {
-                                player.sendMessage("<yellow>${if (hpFull) "血量已满" else "已达最大治疗量"}，不再回复血量。".toComponent())
+                                player.sendMessage("<#EFDF8F>${if (hpFull) "血量已满" else "已达最大治疗量"}，不再回复血量。".toComponent())
                                 config.soundCapReached.play(player)
                                 state.hpFullWarned = true
                             }
@@ -486,7 +486,7 @@ object HealingManager {
                             val iiFull = data.internalInjury >= data.maxInternalInjury
                             val capReached = state.totalHealedII >= config.maxIInjury
                             if (iiFull || capReached) {
-                                player.sendMessage("<yellow>${if (iiFull) "内伤已满" else "已达最大内伤治疗量"}，不再回复内伤。".toComponent())
+                                player.sendMessage("<#EFDF8F>${if (iiFull) "内伤已满" else "已达最大内伤治疗量"}，不再回复内伤。".toComponent())
                                 config.soundCapReached.play(player)
                                 state.iiCapWarned = true
                             }
@@ -510,7 +510,7 @@ object HealingManager {
                             val eiFull = data.externalInjury >= data.maxExternalInjury
                             val capReached = state.totalHealedEI >= config.maxEInjury
                             if (eiFull || capReached) {
-                                player.sendMessage("<yellow>${if (eiFull) "外伤已满" else "已达最大外伤治疗量"}，不再回复外伤。".toComponent())
+                                player.sendMessage("<#EFDF8F>${if (eiFull) "外伤已满" else "已达最大外伤治疗量"}，不再回复外伤。".toComponent())
                                 config.soundCapReached.play(player)
                                 state.eiCapWarned = true
                             }
@@ -566,7 +566,7 @@ object HealingManager {
 
                     val curDur = getNbtDurability(item)
                     val durStr = "${curDur.toInt()}/${config.maxDurability.toInt()}"
-                    player.sendActionBar("<aqua>治疗中... 抬头以退出治疗模式 <gray>耐久: $durStr".toComponent())
+                    player.sendActionBar("<#84D1CB>治疗中... 抬头以退出治疗模式 <#A9B4C3>耐久: $durStr".toComponent())
                 }
 
                 HealingPhase.POST -> {
@@ -582,7 +582,7 @@ object HealingManager {
                         PostReason.ITEM_LOST -> "医疗物品耗尽"
                     }
                     val suffix = if (state.postReason == PostReason.COMPLETE) "低头以结束" else "自动结束中"
-                    player.sendActionBar("<yellow>$msg <gray>$suffix <white>${sec}秒".toComponent())
+                    player.sendActionBar("<#EFDF8F>$msg <#A9B4C3>$suffix <#F2F5FA>${sec}秒".toComponent())
                 }
             }
         }
@@ -592,7 +592,7 @@ object HealingManager {
             AttributeManager.removeModifiersByAttribute(uuid, "movement_speed", ModifierSource.HEALING)
             val player = Bukkit.getPlayer(uuid)
             if (player != null) {
-                player.sendActionBar("<green>已退出治疗模式".toComponent())
+                player.sendActionBar("<#8FD4A6>已退出治疗模式".toComponent())
                 state.config.soundEnd.play(player)
             }
         }

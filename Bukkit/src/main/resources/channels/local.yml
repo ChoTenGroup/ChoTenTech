@@ -1,8 +1,8 @@
 # 本地聊天频道（按距离可见）
 key: local
-display-name: "<gray>[<green>本地</green>]</gray>"
+display-name: "<#A9B4C3>[<#8FD4A6>本地</#8FD4A6>]</#A9B4C3>"
 formats:
-  default: "<gray>[<green>本地</green>]</gray> <username><gray>: </gray><message>"
+  default: "<#A9B4C3>[<#8FD4A6>本地</#8FD4A6>]</#A9B4C3> <username><#A9B4C3>: </#A9B4C3><message>"
   console: "[本地] <username>: <message>"
 quick-prefix: ".l"
 # 半径 100 格内可见

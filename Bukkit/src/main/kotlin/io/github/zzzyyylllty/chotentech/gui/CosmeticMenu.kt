@@ -40,10 +40,10 @@ private val typeIcons = mapOf(
 )
 
 private val typeDisplayNames = mapOf(
-    CosmeticSlot.AURA to "<gold>粒子环绕",
-    CosmeticSlot.FOOTSTEP to "<aqua>脚步粒子",
-    CosmeticSlot.KILL_PARTICLE to "<red>击杀粒子",
-    CosmeticSlot.KILL_MESSAGE to "<light_purple>击杀信息"
+    CosmeticSlot.AURA to "<#DFBD7C>粒子环绕",
+    CosmeticSlot.FOOTSTEP to "<#84D1CB>脚步粒子",
+    CosmeticSlot.KILL_PARTICLE to "<#E08A98>击杀粒子",
+    CosmeticSlot.KILL_MESSAGE to "<#CDAEEF>击杀信息"
 )
 
 class CosmeticMenu {
@@ -55,7 +55,7 @@ class CosmeticMenu {
         val slots = CosmeticSlot.entries.toList()
 
         player.openMenu<PageableChest<CosmeticSlot>>(
-            mmJsonUtil.serialize("<white><shift:-16><image:kangelicon:list><shift:-176><aqua><font:minecraft:fusionpixel10>装饰品".toComponent())
+            mmJsonUtil.serialize("<#F2F5FA><shift:-16><image:kangelicon:list><shift:-176><#84D1CB><font:minecraft:fusionpixel10>装饰品".toComponent())
         ) {
             rows(6)
 
@@ -138,7 +138,7 @@ class CosmeticMenu {
         }
 
         player.openMenu<PageableChest<CosmeticConfig>>(
-            mmJsonUtil.serialize("<white><shift:-16><image:kangelicon:list><shift:-176><aqua><font:minecraft:fusionpixel10>$titleKey".toComponent())
+            mmJsonUtil.serialize("<#F2F5FA><shift:-16><image:kangelicon:list><shift:-176><#84D1CB><font:minecraft:fusionpixel10>$titleKey".toComponent())
         ) {
             rows(6)
 
@@ -162,17 +162,17 @@ class CosmeticMenu {
             onClick { event, cosmetic ->
                 val clicker = event.clicker
                 if (cosmetic.permission != null && !clicker.hasPermission(cosmetic.permission)) {
-                    clicker.sendMessage("<red>你没有权限使用此装饰品".toComponent())
+                    clicker.sendMessage("<#E08A98>你没有权限使用此装饰品".toComponent())
                     clicker.playSound(clicker.location, Sound.ENTITY_VILLAGER_NO, 1f, 1f)
                     return@onClick
                 }
                 if (cosmetic.id.isEmpty()) {
                     clicker.getData()?.cosmetics?.remove(cosmetic.slot.name)
-                    clicker.sendMessage("<gray>已卸下装饰".toComponent())
+                    clicker.sendMessage("<#A9B4C3>已卸下装饰".toComponent())
                     clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
                 } else {
                     clicker.getData()?.cosmetics?.put(cosmetic.slot.name, cosmetic.id)
-                    clicker.sendMessage("<green>已装备: <yellow>${cosmetic.name}".toComponent())
+                    clicker.sendMessage("<#8FD4A6>已装备: <#EFDF8F>${cosmetic.name}".toComponent())
                     clicker.playSound(clicker.location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1f, 1f)
                 }
                 resetElementsCache()
@@ -184,7 +184,7 @@ class CosmeticMenu {
                 p.playSound(p.location, Sound.ITEM_BOOK_PAGE_TURN, 1f, 1f)
             }
 
-            set('C', guiItem(XMaterial.COMPASS, "<gold>返回", listOf("<gray>点击返回装饰品主菜单"), model = "kangelitem:void")) {
+            set('C', guiItem(XMaterial.COMPASS, "<#DFBD7C>返回", listOf("<#A9B4C3>点击返回装饰品主菜单"), model = "kangelitem:void")) {
                 clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
                 clicker.closeInventory()
                 open(clicker)
@@ -209,11 +209,11 @@ class CosmeticMenu {
             }
 
             setPreviousPage(7) { _, page ->
-                guiItem(XMaterial.ARROW, "<green>上一页", model = if (page) "kangelitem:previous" else "kangelitem:previous_no")
+                guiItem(XMaterial.ARROW, "<#8FD4A6>上一页", model = if (page) "kangelitem:previous" else "kangelitem:previous_no")
             }
 
             setNextPage(8) { _, page ->
-                guiItem(XMaterial.ARROW, "<green>下一页", model = if (page) "kangelitem:next" else "kangelitem:next_no")
+                guiItem(XMaterial.ARROW, "<#8FD4A6>下一页", model = if (page) "kangelitem:next" else "kangelitem:next_no")
             }
         }
     }
@@ -223,8 +223,8 @@ class CosmeticMenu {
             0 -> {
                 val item = XMaterial.COMPASS.parseItem() ?: ItemStack(Material.COMPASS)
                 val meta = item.itemMeta ?: return item
-                meta.displayName("<aqua><bold>菜单".toComponent())
-                meta.lore(listOf("<!i> <yellow>点击 <green>打开主菜单".toComponent()))
+                meta.displayName("<#84D1CB><bold>菜单".toComponent())
+                meta.lore(listOf("<!i> <#EFDF8F>点击 <#8FD4A6>打开主菜单".toComponent()))
                 meta.itemModel = NamespacedKey.fromString("kangelitem:void")
                 item.setItemMeta(meta)
                 item
@@ -232,16 +232,16 @@ class CosmeticMenu {
             1 -> {
                 val item = XMaterial.BARRIER.parseItem() ?: ItemStack(Material.BARRIER)
                 val meta = item.itemMeta ?: return item
-                meta.displayName("<red><bold>关闭".toComponent())
-                meta.lore(listOf("<!i> <yellow>点击 <red>关闭菜单".toComponent()))
+                meta.displayName("<#E08A98><bold>关闭".toComponent())
+                meta.lore(listOf("<!i> <#EFDF8F>点击 <#E08A98>关闭菜单".toComponent()))
                 item.setItemMeta(meta)
                 item
             }
             else -> {
                 val item = XMaterial.OAK_DOOR.parseItem() ?: ItemStack(Material.OAK_DOOR)
                 val meta = item.itemMeta ?: return item
-                meta.displayName("<gray><bold>返回".toComponent())
-                meta.lore(listOf("<!i> <yellow>点击 <green>返回".toComponent()))
+                meta.displayName("<#A9B4C3><bold>返回".toComponent())
+                meta.lore(listOf("<!i> <#EFDF8F>点击 <#8FD4A6>返回".toComponent()))
                 item.setItemMeta(meta)
                 item
             }
@@ -256,9 +256,9 @@ class CosmeticMenu {
 
         meta.displayName("<bold>$displayName".toComponent())
         meta.lore(listOf(
-            loreInfo("当前", "<yellow>$equippedName").toComponent(),
+            loreInfo("当前", "<#EFDF8F>$equippedName").toComponent(),
             loreSpace().toComponent(),
-            "<!i> <yellow>点击 <green>选择装饰".toComponent()
+            "<!i> <#EFDF8F>点击 <#8FD4A6>选择装饰".toComponent()
         ))
 
         item.setItemMeta(meta)
@@ -271,16 +271,16 @@ class CosmeticMenu {
         val meta = item.itemMeta ?: return item
 
         if (showAll) {
-            meta.displayName("<gold>显示模式: <green>全部装饰".toComponent())
+            meta.displayName("<#DFBD7C>显示模式: <#8FD4A6>全部装饰".toComponent())
             meta.lore(listOf(
-                "<!i><gray>当前显示所有装饰品".toComponent(),
-                "<!i> <yellow>点击 <green>切换为仅显示已解锁".toComponent()
+                "<!i><#A9B4C3>当前显示所有装饰品".toComponent(),
+                "<!i> <#EFDF8F>点击 <#8FD4A6>切换为仅显示已解锁".toComponent()
             ))
         } else {
-            meta.displayName("<gold>显示模式: <gray>仅已解锁".toComponent())
+            meta.displayName("<#DFBD7C>显示模式: <#A9B4C3>仅已解锁".toComponent())
             meta.lore(listOf(
-                "<!i><gray>当前仅显示有权限的装饰品".toComponent(),
-                "<!i> <yellow>点击 <green>切换为显示全部".toComponent()
+                "<!i><#A9B4C3>当前仅显示有权限的装饰品".toComponent(),
+                "<!i> <#EFDF8F>点击 <#8FD4A6>切换为显示全部".toComponent()
             ))
         }
 
@@ -295,12 +295,12 @@ class CosmeticMenu {
         val total = cosmeticConfigs.size
         val equipped = data.cosmetics.size
 
-        meta.displayName("<gold>装饰品进度".toComponent())
+        meta.displayName("<#DFBD7C>装饰品进度".toComponent())
         meta.lore(listOf(
-            loreInfo("已装备", "<green>$equipped <gray>/ <yellow>${CosmeticSlot.entries.size}").toComponent(),
-            loreInfo("总装饰品", "<yellow>$total").toComponent(),
+            loreInfo("已装备", "<#8FD4A6>$equipped <#A9B4C3>/ <#EFDF8F>${CosmeticSlot.entries.size}").toComponent(),
+            loreInfo("总装饰品", "<#EFDF8F>$total").toComponent(),
             loreSpace().toComponent(),
-            "<!i> <yellow>点击 <green>刷新".toComponent()
+            "<!i> <#EFDF8F>点击 <#8FD4A6>刷新".toComponent()
         ))
 
         item.setItemMeta(meta)
@@ -312,20 +312,20 @@ class CosmeticMenu {
         val meta = item.itemMeta ?: return item
 
         val patternDisplay = when (currentPattern) {
-            "scatter" -> "<green>散发"
-            "orbit" -> "<aqua>环绕"
-            "halo" -> "<light_purple>光环"
-            "spiral" -> "<gold>螺旋"
-            "wave" -> "<yellow>波浪"
-            else -> "<gray>默认"
+            "scatter" -> "<#8FD4A6>散发"
+            "orbit" -> "<#84D1CB>环绕"
+            "halo" -> "<#CDAEEF>光环"
+            "spiral" -> "<#DFBD7C>螺旋"
+            "wave" -> "<#EFDF8F>波浪"
+            else -> "<#A9B4C3>默认"
         }
 
-        meta.displayName("<gold>粒子展示: $patternDisplay".toComponent())
+        meta.displayName("<#DFBD7C>粒子展示: $patternDisplay".toComponent())
         meta.lore(listOf(
             loreInfo("当前", "$patternDisplay").toComponent(),
             loreSpace().toComponent(),
-            "<!i> <yellow>点击 <green>切换展示方式".toComponent(),
-            "<!i><gray>散发 → 环绕 → 光环 → 螺旋 → 波浪 → 默认".toComponent()
+            "<!i> <#EFDF8F>点击 <#8FD4A6>切换展示方式".toComponent(),
+            "<!i><#A9B4C3>散发 → 环绕 → 光环 → 螺旋 → 波浪 → 默认".toComponent()
         ))
 
         item.setItemMeta(meta)
@@ -354,12 +354,12 @@ class CosmeticMenu {
         }
 
         val (statusColor, statusText) = if (cosmetic.id.isEmpty()) {
-            if (isActive) "<red>" to "点击卸下"
-            else "<gray>" to "未装备"
+            if (isActive) "<#E08A98>" to "点击卸下"
+            else "<#A9B4C3>" to "未装备"
         } else when {
-            locked -> "<red>" to "暂无权限"
-            isActive -> "<green>" to "已装备"
-            else -> "<gray>" to "点击装备"
+            locked -> "<#E08A98>" to "暂无权限"
+            isActive -> "<#8FD4A6>" to "已装备"
+            else -> "<#A9B4C3>" to "点击装备"
         }
 
         meta.displayName("${statusColor}<bold>${cosmetic.name}".toComponent())
@@ -367,14 +367,14 @@ class CosmeticMenu {
         val lore = mutableListOf<String>()
 
         if (cosmetic.id.isEmpty()) {
-            if (isActive) lore += "<!i> <yellow>点击 <red>卸下当前装备的装饰品"
-            else lore += "<!i><gray>当前未装备任何装饰品"
+            if (isActive) lore += "<!i> <#EFDF8F>点击 <#E08A98>卸下当前装备的装饰品"
+            else lore += "<!i><#A9B4C3>当前未装备任何装饰品"
         } else {
             val slotName = slotDisplayName(cosmetic.slot)
-            lore += loreInfo("类型", "<white>$slotName")
+            lore += loreInfo("类型", "<#F2F5FA>$slotName")
 
             if (!cosmetic.particle.isNullOrBlank()) {
-                lore += loreInfo("粒子", "<white>${cosmetic.particle}")
+                lore += loreInfo("粒子", "<#F2F5FA>${cosmetic.particle}")
             }
             if (!cosmetic.particlePattern.isNullOrBlank()) {
                 val patternName = when (cosmetic.particlePattern) {
@@ -385,23 +385,23 @@ class CosmeticMenu {
                     "wave" -> "波浪"
                     else -> cosmetic.particlePattern
                 }
-                lore += loreInfo("样式", "<white>$patternName")
+                lore += loreInfo("样式", "<#F2F5FA>$patternName")
             }
             if (!cosmetic.messageFormat.isNullOrBlank()) {
-                lore += loreInfo("格式", "<white>${cosmetic.messageFormat}")
+                lore += loreInfo("格式", "<#F2F5FA>${cosmetic.messageFormat}")
             }
             if (cosmetic.particleCount > 0) {
-                lore += loreInfo("数量", "<white>${cosmetic.particleCount}")
+                lore += loreInfo("数量", "<#F2F5FA>${cosmetic.particleCount}")
             }
             if (cosmetic.particleRadius > 0 && cosmetic.particlePattern != null) {
-                lore += loreInfo("半径", "<white>${cosmetic.particleRadius}")
+                lore += loreInfo("半径", "<#F2F5FA>${cosmetic.particleRadius}")
             }
         }
 
         lore += loreSpace()
         lore += when (statusText) {
-            "点击装备" -> "<!i> <yellow>点击 <green>装备"
-            "点击卸下" -> "<!i> <yellow>点击 <red>卸下"
+            "点击装备" -> "<!i> <#EFDF8F>点击 <#8FD4A6>装备"
+            "点击卸下" -> "<!i> <#EFDF8F>点击 <#E08A98>卸下"
             else -> "<!i>${statusColor}${statusText}"
         }
 

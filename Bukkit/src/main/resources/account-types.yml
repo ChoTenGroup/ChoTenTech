@@ -1,7 +1,7 @@
 NORMAL:
   id: NORMAL
   displayName: 普通账号
-  color: <white>
+  color: <#F2F5FA>
   icon: null
   startChar: null
   char: null
@@ -9,7 +9,7 @@ NORMAL:
 ADMIN:
   id: ADMIN
   displayName: 管理员账号
-  color: <red>
+  color: <#E08A98>
   icon: "kangelranks:account_admin_icon"
   startChar: "kangelranks:account_admin_start"
   char: "kangelranks:account_admin_char"

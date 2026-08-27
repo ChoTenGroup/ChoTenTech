@@ -5,8 +5,8 @@ import io.github.zzzyyylllty.chotentech.data.getData
 import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager
 import io.github.zzzyyylllty.chotentech.listener.GameTimeManager
 import io.github.zzzyyylllty.chotentech.manager.AttributeManager
-import io.github.zzzyyylllty.chotentech.quetiapine.data.PlayerDataManager
-import io.github.zzzyyylllty.chotentech.quetiapine.data.QuetiapineDataBridge
+import io.github.zzzyyylllty.chotentech.data.PlayerDataManager
+import io.github.zzzyyylllty.chotentech.data.QuetiapineDataBridge
 import io.github.zzzyyylllty.chotentech.util.guiItem
 import io.github.zzzyyylllty.chotentech.util.loreDash
 import io.github.zzzyyylllty.chotentech.util.loreInfo
@@ -28,12 +28,12 @@ class ProfileInfoGUI(private val target: Player) {
 
     fun open(player: Player) {
         val data = target.getData() ?: run {
-            player.sendMessage("<red>无法获取 ${target.name} 的数据".toComponent())
+            player.sendMessage("<#E08A98>无法获取 ${target.name} 的数据".toComponent())
             return
         }
 
         player.openMenu<Chest>(
-            mmJsonUtil.serialize("<white><shift:-16><image:kangelicon:list><shift:-176><aqua><font:minecraft:fusionpixel10>${target.name} 的档案信息".toComponent())
+            mmJsonUtil.serialize("<#F2F5FA><shift:-16><image:kangelicon:list><shift:-176><#84D1CB><font:minecraft:fusionpixel10>${target.name} 的档案信息".toComponent())
         ) {
             rows(6)
 
@@ -51,7 +51,7 @@ class ProfileInfoGUI(private val target: Player) {
             set('L', XMaterial.BLACK_STAINED_GLASS_PANE) { name = " " }
 
             // === 3 return icons (top-left) ===
-            set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>菜单", listOf("<!i> <yellow>点击 <green>打开菜单"), model = "kangelitem:void")) {
+            set('C', guiItem(XMaterial.COMPASS, "<#84D1CB><bold>菜单", listOf("<!i> <#EFDF8F>点击 <#8FD4A6>打开菜单"), model = "kangelitem:void")) {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "invero menu open menu ${clicker.name}")
                 clicker.closeInventory()
             }
@@ -82,48 +82,48 @@ class ProfileInfoGUI(private val target: Player) {
     // ==================== Item builders ====================
 
     private fun buildCoreStats(data: io.github.zzzyyylllty.chotentech.data.PlayerData): ItemStack {
-        val item = guiItem(XMaterial.IRON_CHESTPLATE, "<aqua><bold>基础属性", emptyList())
+        val item = guiItem(XMaterial.IRON_CHESTPLATE, "<#84D1CB><bold>基础属性", emptyList())
         val meta = item.itemMeta ?: return item
         val lore = mutableListOf<String>()
-        lore += loreInfo("理智", "<white>${"%.1f".format(data.sanity)} <gray>/ <white>${"%.1f".format(data.effectiveMaxSanity)}")
-        lore += loreInfo("压力", "<white>${"%.1f".format(data.stress)}")
-        lore += loreInfo("阴暗", "<white>${"%.1f".format(data.darkness)} <gray>/ <white>${"%.1f".format(data.effectiveMaxDarkness)}")
-        lore += loreInfo("体力", "<white>${"%.1f".format(data.stamina)} <gray>/ <white>${"%.1f".format(data.maxStamina)}")
-        lore += loreInfo("手部体力", "<white>${"%.1f".format(data.handStamina)} <gray>/ <white>${"%.1f".format(data.maxHandStamina)}")
-        lore += loreInfo("饥饿", "<white>${"%.1f".format(data.customHunger)} <gray>/ <white>${"%.1f".format(data.maxCustomHunger)}")
-        lore += loreInfo("饱和度", "<white>${"%.1f".format(data.customSaturation)} <gray>/ <white>${"%.1f".format(data.maxCustomSaturation)}")
+        lore += loreInfo("理智", "<#F2F5FA>${"%.1f".format(data.sanity)} <#A9B4C3>/ <#F2F5FA>${"%.1f".format(data.effectiveMaxSanity)}")
+        lore += loreInfo("压力", "<#F2F5FA>${"%.1f".format(data.stress)}")
+        lore += loreInfo("阴暗", "<#F2F5FA>${"%.1f".format(data.darkness)} <#A9B4C3>/ <#F2F5FA>${"%.1f".format(data.effectiveMaxDarkness)}")
+        lore += loreInfo("体力", "<#F2F5FA>${"%.1f".format(data.stamina)} <#A9B4C3>/ <#F2F5FA>${"%.1f".format(data.maxStamina)}")
+        lore += loreInfo("手部体力", "<#F2F5FA>${"%.1f".format(data.handStamina)} <#A9B4C3>/ <#F2F5FA>${"%.1f".format(data.maxHandStamina)}")
+        lore += loreInfo("饥饿", "<#F2F5FA>${"%.1f".format(data.customHunger)} <#A9B4C3>/ <#F2F5FA>${"%.1f".format(data.maxCustomHunger)}")
+        lore += loreInfo("饱和度", "<#F2F5FA>${"%.1f".format(data.customSaturation)} <#A9B4C3>/ <#F2F5FA>${"%.1f".format(data.maxCustomSaturation)}")
         meta.lore(lore.toComponent())
         item.setItemMeta(meta)
         return item
     }
 
     private fun buildStatus(data: io.github.zzzyyylllty.chotentech.data.PlayerData): ItemStack {
-        val item = guiItem(XMaterial.SHIELD, "<red><bold>状态", emptyList())
+        val item = guiItem(XMaterial.SHIELD, "<#E08A98><bold>状态", emptyList())
         val meta = item.itemMeta ?: return item
         val lore = mutableListOf<String>()
-        lore += loreInfo("外伤", "<white>${"%.1f".format(data.externalInjury)} <gray>/ <white>${"%.1f".format(data.maxExternalInjury)}")
-        lore += loreInfo("外伤恢复", "<white>${"%.1f".format(data.externalInjuryRegen)}/tick")
-        lore += loreInfo("内伤", "<white>${"%.1f".format(data.internalInjury)} <gray>/ <white>${"%.1f".format(data.maxInternalInjury)}")
-        lore += loreInfo("内伤恢复", "<white>${"%.1f".format(data.internalInjuryRegen)}/tick")
+        lore += loreInfo("外伤", "<#F2F5FA>${"%.1f".format(data.externalInjury)} <#A9B4C3>/ <#F2F5FA>${"%.1f".format(data.maxExternalInjury)}")
+        lore += loreInfo("外伤恢复", "<#F2F5FA>${"%.1f".format(data.externalInjuryRegen)}/tick")
+        lore += loreInfo("内伤", "<#F2F5FA>${"%.1f".format(data.internalInjury)} <#A9B4C3>/ <#F2F5FA>${"%.1f".format(data.maxInternalInjury)}")
+        lore += loreInfo("内伤恢复", "<#F2F5FA>${"%.1f".format(data.internalInjuryRegen)}/tick")
         lore += loreSpace()
         lore += loreSection("营养")
-        lore += loreDash("<white>谷物: <green>${"%.1f".format(data.grain)}")
-        lore += loreDash("<white>维生素: <green>${"%.1f".format(data.vitamin)}")
-        lore += loreDash("<white>蛋白质: <green>${"%.1f".format(data.protein)}")
-        lore += loreDash("<white>脂肪: <green>${"%.1f".format(data.fat)}")
+        lore += loreDash("<#F2F5FA>谷物: <#8FD4A6>${"%.1f".format(data.grain)}")
+        lore += loreDash("<#F2F5FA>维生素: <#8FD4A6>${"%.1f".format(data.vitamin)}")
+        lore += loreDash("<#F2F5FA>蛋白质: <#8FD4A6>${"%.1f".format(data.protein)}")
+        lore += loreDash("<#F2F5FA>脂肪: <#8FD4A6>${"%.1f".format(data.fat)}")
         meta.lore(lore.toComponent())
         item.setItemMeta(meta)
         return item
     }
 
     private fun buildCombatAttrs(player: Player): ItemStack {
-        val item = guiItem(XMaterial.DIAMOND_SWORD, "<red><bold>战斗属性", emptyList())
+        val item = guiItem(XMaterial.DIAMOND_SWORD, "<#E08A98><bold>战斗属性", emptyList())
         val meta = item.itemMeta ?: return item
         val lore = mutableListOf<String>()
 
         fun attr(id: String, name: String, unit: String = "", scale: Double = 1.0) {
             val v = AttributeManager.getAttributeValue(player, id) * scale
-            lore += loreInfo(name, "<white>${"%.2f".format(v)}$unit")
+            lore += loreInfo(name, "<#F2F5FA>${"%.2f".format(v)}$unit")
         }
 
         attr("defense", "综合防御")
@@ -149,24 +149,24 @@ class ProfileInfoGUI(private val target: Player) {
     }
 
     private fun buildElementalDefense(player: Player): ItemStack {
-        val item = guiItem(XMaterial.ENCHANTED_BOOK, "<yellow><bold>元素防御", emptyList())
+        val item = guiItem(XMaterial.ENCHANTED_BOOK, "<#EFDF8F><bold>元素防御", emptyList())
         val meta = item.itemMeta ?: return item
         val lore = mutableListOf<String>()
 
         fun def(id: String, name: String, icon: String) {
             val v = AttributeManager.getAttributeValue(player, id)
-            lore += loreInfo(name, "$icon <white>${"%.2f".format(v)}")
+            lore += loreInfo(name, "$icon <#F2F5FA>${"%.2f".format(v)}")
         }
 
-        def("physical_defense", "物理防御", "<#aaaaaa>◆")
-        def("burn_defense", "灼烧防御", "<#ff6600>◆")
-        def("frost_defense", "霜寒防御", "<#66ccff>◆")
-        def("shock_defense", "电击防御", "<#ffff00>◆")
-        def("psychic_defense", "精神防御", "<#cc66ff>◆")
-        def("erosion_defense", "侵蚀防御", "<#66ff66>◆")
-        def("decay_defense", "衰退防御", "<#888888>◆")
+        def("physical_defense", "物理防御", "<#c9c9c9>◆")
+        def("burn_defense", "灼烧防御", "<#cf946e>◆")
+        def("frost_defense", "霜寒防御", "<#bad9e8>◆")
+        def("shock_defense", "电击防御", "<#cfcf6e>◆")
+        def("psychic_defense", "精神防御", "<#d9bae8>◆")
+        def("erosion_defense", "侵蚀防御", "<#bae8ba>◆")
+        def("decay_defense", "衰退防御", "<#a7a7a7>◆")
         lore += loreSpace()
-        lore += loreInfo("防御韧性", "<white>${"%.2f".format(AttributeManager.getAttributeValue(player, "defense_toughness"))}")
+        lore += loreInfo("防御韧性", "<#F2F5FA>${"%.2f".format(AttributeManager.getAttributeValue(player, "defense_toughness"))}")
 
         meta.lore(lore.toComponent())
         item.setItemMeta(meta)
@@ -175,7 +175,7 @@ class ProfileInfoGUI(private val target: Player) {
 
     /** 主等级 — 当前活跃等级 */
     private fun buildMainLevel(player: Player): ItemStack {
-        val item = guiItem(XMaterial.EXPERIENCE_BOTTLE, "<green><bold>主等级", emptyList())
+        val item = guiItem(XMaterial.EXPERIENCE_BOTTLE, "<#8FD4A6><bold>主等级", emptyList())
         val meta = item.itemMeta ?: return item
         val lore = mutableListOf<String>()
 
@@ -194,10 +194,10 @@ class ProfileInfoGUI(private val target: Player) {
             } else {
                 "${"%.0f".format(exp)}"
             }
-            lore += loreInfo(displayName, "<white>$levelDisplay")
-            lore += loreInfo("经验", "<white>$expStr")
+            lore += loreInfo(displayName, "<#F2F5FA>$levelDisplay")
+            lore += loreInfo("经验", "<#F2F5FA>$expStr")
         } else {
-            lore += loreInfo("状态", "<gray>无活跃等级")
+            lore += loreInfo("状态", "<#A9B4C3>无活跃等级")
         }
 
         meta.lore(lore.toComponent())
@@ -206,7 +206,7 @@ class ProfileInfoGUI(private val target: Player) {
     }
 
     /** 单个等级图标 — 用于右侧 L 槽位 */
-    private fun buildLevelIcon(player: Player, id: String, template: io.github.zzzyyylllty.chotentech.quetiapine.data.LevelTemplate): ItemStack {
+    private fun buildLevelIcon(player: Player, id: String, template: io.github.zzzyyylllty.chotentech.data.LevelTemplate): ItemStack {
         val level = QuetiapineDataBridge.getLevel(player, id) ?: 0
         val exp = QuetiapineDataBridge.getExp(player, id)
         val displayName = template.getDefaultName()
@@ -220,19 +220,19 @@ class ProfileInfoGUI(private val target: Player) {
         }
 
         val lore = listOf(
-            loreInfo(displayName, "<white>$levelDisplay"),
-            loreInfo("经验", "<white>$expStr")
+            loreInfo(displayName, "<#F2F5FA>$levelDisplay"),
+            loreInfo("经验", "<#F2F5FA>$expStr")
         )
         val mat = template.gui?.material?.let { matName ->
             try { XMaterial.valueOf(matName) } catch (_: Exception) { null }
         } ?: XMaterial.EXPERIENCE_BOTTLE
         val model = template.gui?.model
-        return guiItem(mat, "<green>$displayName", lore, model = model)
+        return guiItem(mat, "<#8FD4A6>$displayName", lore, model = model)
     }
 
     /** 统计信息① — 时间 & 探索 & 战斗统计 */
     private fun buildStatsPart1(data: io.github.zzzyyylllty.chotentech.data.PlayerData): ItemStack {
-        val item = guiItem(XMaterial.CLOCK, "<yellow><bold>统计信息 I", emptyList())
+        val item = guiItem(XMaterial.CLOCK, "<#EFDF8F><bold>统计信息 I", emptyList())
         val meta = item.itemMeta ?: return item
         val lore = mutableListOf<String>()
 
@@ -245,16 +245,16 @@ class ProfileInfoGUI(private val target: Player) {
         val sHours = sharedSec / 3600
         val sMins = (sharedSec % 3600) / 60
 
-        lore += loreInfo("游戏时间", "<white>$gameTimeStr")
-        lore += loreInfo("游玩时长", "<white>${phours}时 ${pmins}分<dark_gray> | 总计 <white>${sHours}时 ${sMins}分")
+        lore += loreInfo("游戏时间", "<#F2F5FA>$gameTimeStr")
+        lore += loreInfo("游玩时长", "<#F2F5FA>${phours}时 ${pmins}分<#6E7A8C> | 总计 <#F2F5FA>${sHours}时 ${sMins}分")
         lore += loreSpace()
-        lore += loreInfo("已探索层级", "<white>${data.exploreredLevels.size}")
-        lore += loreInfo("已发现基地", "<white>${data.discoveredBases.size}")
-        lore += loreInfo("层级切出", "<white>${data.totalLevelExits}<dark_gray> | 总计 <white>${shared.totalLevelExits}")
-        lore += loreInfo("死亡次数", "<white>${data.totalDeaths}<dark_gray> | 总计 <white>${shared.totalDeaths}")
-        lore += loreInfo("击杀实体", "<white>${data.totalMobKills}<dark_gray> | 总计 <white>${shared.totalMobKills}")
-        lore += loreInfo("击杀玩家", "<white>${data.totalPlayerKills}<dark_gray> | 总计 <white>${shared.totalPlayerKills}")
-        lore += loreInfo("加入次数", "<white>${shared.joinCount}")
+        lore += loreInfo("已探索层级", "<#F2F5FA>${data.exploreredLevels.size}")
+        lore += loreInfo("已发现基地", "<#F2F5FA>${data.discoveredBases.size}")
+        lore += loreInfo("层级切出", "<#F2F5FA>${data.totalLevelExits}<#6E7A8C> | 总计 <#F2F5FA>${shared.totalLevelExits}")
+        lore += loreInfo("死亡次数", "<#F2F5FA>${data.totalDeaths}<#6E7A8C> | 总计 <#F2F5FA>${shared.totalDeaths}")
+        lore += loreInfo("击杀实体", "<#F2F5FA>${data.totalMobKills}<#6E7A8C> | 总计 <#F2F5FA>${shared.totalMobKills}")
+        lore += loreInfo("击杀玩家", "<#F2F5FA>${data.totalPlayerKills}<#6E7A8C> | 总计 <#F2F5FA>${shared.totalPlayerKills}")
+        lore += loreInfo("加入次数", "<#F2F5FA>${shared.joinCount}")
 
         meta.lore(lore.toComponent())
         item.setItemMeta(meta)
@@ -263,17 +263,17 @@ class ProfileInfoGUI(private val target: Player) {
 
     /** 统计信息② — 玩家信息 & 经济 & PVP */
     private fun buildStatsPart2(data: io.github.zzzyyylllty.chotentech.data.PlayerData): ItemStack {
-        val item = guiItem(XMaterial.GOLD_NUGGET, "<yellow><bold>统计信息 II", emptyList())
+        val item = guiItem(XMaterial.GOLD_NUGGET, "<#EFDF8F><bold>统计信息 II", emptyList())
         val meta = item.itemMeta ?: return item
         val lore = mutableListOf<String>()
-        lore += loreInfo("名称", "<white>${data.playerName}")
-        lore += loreInfo("玩家档案", "<white>${data.profileName} <gray>(ID: ${data.profileId})")
-        lore += loreInfo("CID", "<white>${data.cid.id}")
+        lore += loreInfo("名称", "<#F2F5FA>${data.playerName}")
+        lore += loreInfo("玩家档案", "<#F2F5FA>${data.profileName} <#A9B4C3>(ID: ${data.profileId})")
+        lore += loreInfo("CID", "<#F2F5FA>${data.cid.id}")
         lore += loreSpace()
-        lore += loreInfo("积分", "<white>${data.money}")
-        lore += loreInfo("贸易点", "<white>${data.point}")
+        lore += loreInfo("积分", "<#F2F5FA>${data.money}")
+        lore += loreInfo("贸易点", "<#F2F5FA>${data.point}")
         lore += loreSpace()
-        lore += loreInfo("PVP", "${if (data.pvpEnabled) "<green>开启" else "<red>关闭"}")
+        lore += loreInfo("PVP", "${if (data.pvpEnabled) "<#8FD4A6>开启" else "<#E08A98>关闭"}")
 
         meta.lore(lore.toComponent())
         item.setItemMeta(meta)

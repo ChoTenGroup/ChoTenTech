@@ -10,8 +10,8 @@ default:
 
 ender:
   display:
-    current: " <!i><dark_purple>末影行者</dark_purple>"
-    short: " <!i><dark_purple>末影行者</dark_purple>"
+    current: " <!i><#977FB8>末影行者</#977FB8>"
+    short: " <!i><#977FB8>末影行者</#977FB8>"
   name: "末影行者"
   desc: "探索末地的证明。"
   get: "探索末地并完成相关成就。"

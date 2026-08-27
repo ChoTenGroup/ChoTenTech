@@ -121,7 +121,7 @@ object GlobalMarketManager {
             seller.inventory.addItem(item).values.forEach { leftover ->
                 seller.world.dropItem(seller.location, leftover)
             }
-            seller.sendMessage("<green>[全球市场] 已取消上架 <white>${listing.itemType}<green>，物品已返还".toComponent())
+            seller.sendMessage("<#8FD4A6>[全球市场] 已取消上架 <#F2F5FA>${listing.itemType}<#8FD4A6>，物品已返还".toComponent())
         }
         return item
     }
@@ -141,19 +141,19 @@ object GlobalMarketManager {
         val lock = transactionLocks.computeIfAbsent(listingId) { Any() }
         synchronized(lock) {
             try {
-                val listing = allListings.find { it.id == listingId } ?: return PurchaseResult(false, "<red>该商品不存在")
-                if (listing.sold) return PurchaseResult(false, "<red>该商品已售出")
-                if (listing.cancelled) return PurchaseResult(false, "<red>该商品已下架")
-                if (listing.sellerUuid == buyer.uniqueId.toString()) return PurchaseResult(false, "<red>不能购买自己的商品")
+                val listing = allListings.find { it.id == listingId } ?: return PurchaseResult(false, "<#E08A98>该商品不存在")
+                if (listing.sold) return PurchaseResult(false, "<#E08A98>该商品已售出")
+                if (listing.cancelled) return PurchaseResult(false, "<#E08A98>该商品已下架")
+                if (listing.sellerUuid == buyer.uniqueId.toString()) return PurchaseResult(false, "<#E08A98>不能购买自己的商品")
                 if (listing.expireAt > 0 && listing.expireAt <= System.currentTimeMillis()) {
                     listing.cancelled = true
                     saveToDisk()
-                    return PurchaseResult(false, "<red>该商品已过期")
+                    return PurchaseResult(false, "<#E08A98>该商品已过期")
                 }
 
                 // Check affordability
                 if (!CurrencyManager.hasBalance(buyer, listing.currency, listing.price.toLong())) {
-                    return PurchaseResult(false, "<red>${CurrencyManager.displayName(listing.currency)}不足")
+                    return PurchaseResult(false, "<#E08A98>${CurrencyManager.displayName(listing.currency)}不足")
                 }
 
                 // STEP 1: Mark listing as sold on disk first (crash-safe: prevents dupe)
@@ -178,16 +178,16 @@ object GlobalMarketManager {
                     item.amount = listing.itemAmount
                     buyer.inventory.addItem(item).values.forEach { leftover ->
                         buyer.world.dropItem(buyer.location, leftover)
-                        buyer.sendMessage("<yellow>[全球市场] 背包已满，部分物品掉落在地".toComponent())
+                        buyer.sendMessage("<#EFDF8F>[全球市场] 背包已满，部分物品掉落在地".toComponent())
                     }
                 }
 
-                buyer.sendMessage("<green>[全球市场] 购买成功！花费 <white>${listing.price} ${CurrencyManager.displayName(listing.currency)}".toComponent())
-                return PurchaseResult(true, "<green>购买成功")
+                buyer.sendMessage("<#8FD4A6>[全球市场] 购买成功！花费 <#F2F5FA>${listing.price} ${CurrencyManager.displayName(listing.currency)}".toComponent())
+                return PurchaseResult(true, "<#8FD4A6>购买成功")
             } catch (e: Exception) {
                 info("§c[GlobalMarket] Purchase error: ${e.message}")
                 e.printStackTrace()
-                return PurchaseResult(false, "<red>购买失败，请联系管理员")
+                return PurchaseResult(false, "<#E08A98>购买失败，请联系管理员")
             }
         }
     }
@@ -211,7 +211,7 @@ object GlobalMarketManager {
      */
     fun claimProceeds(player: Player): ClaimResult {
         val uuid = player.uniqueId.toString()
-        val balances = pendingBalances[uuid] ?: return ClaimResult(false, "<red>没有待领取的收益")
+        val balances = pendingBalances[uuid] ?: return ClaimResult(false, "<#E08A98>没有待领取的收益")
 
         val amounts = balances.toMap()
         for ((currency, amount) in amounts) {
@@ -283,7 +283,7 @@ object GlobalMarketManager {
                         // Notify seller if online
                         val seller = Bukkit.getPlayer(UUID.fromString(listing.sellerUuid))
                         if (seller != null && seller.isOnline) {
-                            seller.sendMessage("<yellow>[全球市场] 你的商品 <white>${listing.itemType}<yellow> 已过期，请重新上架".toComponent())
+                            seller.sendMessage("<#EFDF8F>[全球市场] 你的商品 <#F2F5FA>${listing.itemType}<#EFDF8F> 已过期，请重新上架".toComponent())
                         }
                     }
                 }

@@ -1,7 +1,7 @@
 physiotherapy:
   display:
     raw: "Physiotherapy"
-    default: "<blue>理疗</blue>"
+    default: "<#94AFE8>理疗</#94AFE8>"
     legacy: "&9理疗"
   level:
     min: 0
@@ -9,7 +9,7 @@ physiotherapy:
     max: 100
     display:
       0:
-        default: "<gray>Lv.%level%</gray>"
+        default: "<#A9B4C3>Lv.%level%</#A9B4C3>"
     exp:
       0:
         type: calculator

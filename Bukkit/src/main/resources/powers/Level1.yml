@@ -6,13 +6,13 @@
       - tell color "&6这个电源已经启动了。"
     onPrepare: 
       - title color "&e&l!" subtitle color "&c&l电源已激活"
-      - command papi inline "broadcast <white>宜居地带颓垣区停车场有未经授权的活动。<yellow>{{ &powername }}</yellow>电源的供电程序将在<green>30秒</green>后开始。" as console
+      - command papi inline "broadcast <#F2F5FA>宜居地带颓垣区停车场有未经授权的活动。<#EFDF8F>{{ &powername }}</#EFDF8F>电源的供电程序将在<#8FD4A6>30秒</#8FD4A6>后开始。" as console
     onStart: 
-      - command papi inline "broadcast <white>宜居地带中<yellow>{{ &powername }}</yellow>电源的供电程序已开始运作。" as console
+      - command papi inline "broadcast <#F2F5FA>宜居地带中<#EFDF8F>{{ &powername }}</#EFDF8F>电源的供电程序已开始运作。" as console
     onClose: 
-      - command papi inline "broadcast <white>宜居地带中<yellow>{{ &powername }}</yellow>电源的供电程序正在停止。" as console
+      - command papi inline "broadcast <#F2F5FA>宜居地带中<#EFDF8F>{{ &powername }}</#EFDF8F>电源的供电程序正在停止。" as console
     onCloseEnd: 
-      - command papi inline "broadcast <white>宜居地带中<yellow>{{ &powername }}</yellow>电源的供电程序已正常关闭。" as console
+      - command papi inline "broadcast <#F2F5FA>宜居地带中<#EFDF8F>{{ &powername }}</#EFDF8F>电源的供电程序已正常关闭。" as console
 
   leverPos:
     world: "Area1"

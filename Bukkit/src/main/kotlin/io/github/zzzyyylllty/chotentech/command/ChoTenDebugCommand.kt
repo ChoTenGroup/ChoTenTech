@@ -117,16 +117,16 @@ object ChoTenDebugCommand {
                                     val player = (sender as? Player?)!!
                                     val firstChunk = Location(player.world, x1, 100.0, z1).chunk
                                     val lastChunk = Location(player.world, x2, 100.0, z2).chunk
-                                    sender.sendComponent("<aqua>开始加载区块，请稍等。")
+                                    sender.sendComponent("<#84D1CB>开始加载区块，请稍等。")
                                     for (chunkX in firstChunk.x..lastChunk.x) {
                                         for (chunkZ in firstChunk.z..lastChunk.z) {
                                             val chunk = player.world.getChunkAt(chunkX, chunkZ)
-                                            sender.sendComponent("<yellow>开始执行 $chunkX $chunkZ")
+                                            sender.sendComponent("<#EFDF8F>开始执行 $chunkX $chunkZ")
                                             when (context["mode"]) {
                                                 "CLEAR" -> DataManager.clearChunkData(chunk)
                                                 "LOG_UNBREAK" -> DataManager.logUnbreakChunkData(chunk)
                                             }
-                                            sender.sendComponent("<green>开始执行 $chunkX $chunkZ 完成。")
+                                            sender.sendComponent("<#8FD4A6>开始执行 $chunkX $chunkZ 完成。")
                                         }
                                     }
                                 }
@@ -174,7 +174,7 @@ object ChoTenDebugCommand {
                         val data = bukkitPlayer?.let { DataManager.getData(it.uniqueId.toString()) }
                         bukkitPlayer?.let {
                             val id = context["id"].toLong()
-                            if (data == null) sender.sendComponent("<red>未找到玩家数据")
+                            if (data == null) sender.sendComponent("<#E08A98>未找到玩家数据")
                             data?.let { playerData -> DataManager.modifyUserID(id, playerData) }
                         }
                     }
@@ -191,7 +191,7 @@ object ChoTenDebugCommand {
                             bukkitPlayer?.let {
                                 val id = context["id"].toLong()
                                 val type = context["type"]
-                                if (data == null) sender.sendComponent("<red>未找到玩家数据")
+                                if (data == null) sender.sendComponent("<#E08A98>未找到玩家数据")
                                 data?.let { playerData -> DataManager.modifyUserIDData(IDData(id, type), playerData) }
                             }
                         }

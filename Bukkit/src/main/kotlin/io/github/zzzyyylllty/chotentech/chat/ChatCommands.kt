@@ -39,41 +39,41 @@ object ChatCommands {
         val data = ChatPlayerDataManager.get(sender)
         val currentKey = data.activeChannel
         val current = ChannelManager.get(currentKey) ?: ChannelManager.defaultChannel()
-        sender.sendComponent("<gold>===== 聊天频道 =====")
-        sender.sendComponent("<gray>当前频道: <yellow>${current?.displayName ?: "无"}")
+        sender.sendComponent("<#DFBD7C>===== 聊天频道 =====")
+        sender.sendComponent("<#A9B4C3>当前频道: <#EFDF8F>${current?.displayName ?: "无"}")
         for (channel in ChannelManager.all()) {
-            val marker = if (channel.key == current?.key) "<green>●" else "<gray>○"
-            val prefix = if (channel.quickPrefix.isNotEmpty()) " <gray>前缀: <white>${channel.quickPrefix}" else ""
-            val perm = if (channel.permission.isNotEmpty() && !sender.hasPermission(channel.permission)) " <red>[无权限]" else ""
-            sender.sendComponent(" $marker <white>${channel.displayName} <gray>(${channel.key})$prefix$perm")
+            val marker = if (channel.key == current?.key) "<#8FD4A6>●" else "<#A9B4C3>○"
+            val prefix = if (channel.quickPrefix.isNotEmpty()) " <#A9B4C3>前缀: <#F2F5FA>${channel.quickPrefix}" else ""
+            val perm = if (channel.permission.isNotEmpty() && !sender.hasPermission(channel.permission)) " <#E08A98>[无权限]" else ""
+            sender.sendComponent(" $marker <#F2F5FA>${channel.displayName} <#A9B4C3>(${channel.key})$prefix$perm")
         }
-        sender.sendComponent("<gray>用法: <white>/ch <频道> <gray>切换 · <white>/ch <频道> <消息> <gray>直接发送")
+        sender.sendComponent("<#A9B4C3>用法: <#F2F5FA>/ch <频道> <#A9B4C3>切换 · <#F2F5FA>/ch <频道> <消息> <#A9B4C3>直接发送")
     }
 
     private fun switch(sender: Player, channelKey: String) {
         val channel = ChannelManager.get(channelKey)
         if (channel == null) {
-            sender.sendComponent("<red>频道 <yellow>$channelKey<red> 不存在。使用 <yellow>/ch <red>查看可用频道。")
+            sender.sendComponent("<#E08A98>频道 <#EFDF8F>$channelKey<#E08A98> 不存在。使用 <#EFDF8F>/ch <#E08A98>查看可用频道。")
             return
         }
         if (channel.party && TeamManager.getTeam(sender.uniqueId) == null) {
-            sender.sendComponent("<red>组队频道需要先加入队伍。")
+            sender.sendComponent("<#E08A98>组队频道需要先加入队伍。")
             return
         }
         if (channel.permission.isNotEmpty() && !sender.hasPermission(channel.permission)) {
-            sender.sendComponent("<red>你没有使用 <yellow>${channel.displayName}<red> 频道的权限。")
+            sender.sendComponent("<#E08A98>你没有使用 <#EFDF8F>${channel.displayName}<#E08A98> 频道的权限。")
             return
         }
         val data = ChatPlayerDataManager.get(sender)
         data.activeChannel = channel.key
         ChatPlayerDataManager.save(sender.uniqueId)
-        sender.sendComponent("<green>已切换到频道 <yellow>${channel.displayName}<green>。")
+        sender.sendComponent("<#8FD4A6>已切换到频道 <#EFDF8F>${channel.displayName}<#8FD4A6>。")
     }
 
     private fun send(sender: Player, channelKey: String, message: String) {
         val channel = ChannelManager.get(channelKey)
         if (channel == null) {
-            sender.sendComponent("<red>频道 <yellow>$channelKey<red> 不存在。")
+            sender.sendComponent("<#E08A98>频道 <#EFDF8F>$channelKey<#E08A98> 不存在。")
             return
         }
         ChatDispatcher.send(sender, channel, message)

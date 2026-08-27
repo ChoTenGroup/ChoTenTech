@@ -78,12 +78,12 @@ object BaseCommand {
     val list = subCommand {
         execute<CommandSender> { sender, _, _ ->
             val bases = BaseManager.baseMap.values
-            sender.sendComponent("<gold>===== 基地列表 (${bases.size}) =====")
+            sender.sendComponent("<#DFBD7C>===== 基地列表 (${bases.size}) =====")
             for ((faction, group) in bases.groupBy { it.faction }) {
-                sender.sendComponent("<${factionColor(faction)}><b>$faction</b> <gray>${group.size}个基地")
+                sender.sendComponent("<${factionColor(faction)}><b>$faction</b> <#A9B4C3>${group.size}个基地")
                 group.forEach { base ->
-                    val status = if (base.enable) "<green>可用" else "<red>不可用"
-                    sender.sendComponent(" <gray>${base.idef} <white>- ${base.name} $status")
+                    val status = if (base.enable) "<#8FD4A6>可用" else "<#E08A98>不可用"
+                    sender.sendComponent(" <#A9B4C3>${base.idef} <#F2F5FA>- ${base.name} $status")
                 }
             }
         }
@@ -92,14 +92,14 @@ object BaseCommand {
                 val faction = context["faction"].uppercase()
                 val bases = BaseManager.getBasesByFaction(faction)
                 if (bases.isEmpty()) {
-                    sender.sendComponent("<red>未找到阵营 $faction 的基地")
+                    sender.sendComponent("<#E08A98>未找到阵营 $faction 的基地")
                     return@execute
                 }
-                sender.sendComponent("<gold>${faction} 基地列表:")
+                sender.sendComponent("<#DFBD7C>${faction} 基地列表:")
                 bases.forEach { base ->
-                    val status = if (base.enable) "<green>可用" else "<red>不可用"
-                    sender.sendComponent(" <${factionColor(faction)}>${base.idef} <white>- ${base.name} $status")
-                    sender.sendComponent("   <gray>区域: ${base.region}")
+                    val status = if (base.enable) "<#8FD4A6>可用" else "<#E08A98>不可用"
+                    sender.sendComponent(" <${factionColor(faction)}>${base.idef} <#F2F5FA>- ${base.name} $status")
+                    sender.sendComponent("   <#A9B4C3>区域: ${base.region}")
                 }
             }
             suggestion<CommandSender> { _, _ ->
@@ -110,9 +110,9 @@ object BaseCommand {
 
     private fun factionColor(faction: String): String {
         return when (faction.uppercase()) {
-            "MEG" -> "#ffdd00"
-            "BNTG" -> "#33ffaa"
-            "UEC" -> "#ff3d00"
+            "MEG" -> "#cfc26e"
+            "BNTG" -> "#94dbbe"
+            "UEC" -> "#cf856e"
             else -> "white"
         }
     }

@@ -23,7 +23,7 @@ class FriendMenu {
     fun open(player: Player) {
         val friends = FriendManager.getFriends(player.uniqueId)
 
-        player.openMenu<PageableChest<UUID>>(mmJsonUtil.serialize("<white><shift:-16><image:kangelicon:list><shift:-176><aqua><font:minecraft:fusionpixel10>好友列表".toComponent())) {
+        player.openMenu<PageableChest<UUID>>(mmJsonUtil.serialize("<#F2F5FA><shift:-16><image:kangelicon:list><shift:-176><#84D1CB><font:minecraft:fusionpixel10>好友列表".toComponent())) {
             rows(6)
 
             map(
@@ -35,7 +35,7 @@ class FriendMenu {
                 "A   R   X"
             )
 
-            set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>返回", listOf("<!i> <yellow>点击 <red>关闭"), model = "kangelitem:void")) {
+            set('C', guiItem(XMaterial.COMPASS, "<#84D1CB><bold>返回", listOf("<!i> <#EFDF8F>点击 <#E08A98>关闭"), model = "kangelitem:void")) {
                 clicker.closeInventory()
             }
 
@@ -45,26 +45,26 @@ class FriendMenu {
 
             // ── Bottom row actions ──
 
-            set('A', guiItem(XMaterial.PAPER, "<green><bold>添加好友", listOf(
-                loreInfo("用法", "<white>/friend add <玩家名>"),
-                loreInfo("说明", "<gray>向玩家发送好友申请")
+            set('A', guiItem(XMaterial.PAPER, "<#8FD4A6><bold>添加好友", listOf(
+                loreInfo("用法", "<#F2F5FA>/friend add <玩家名>"),
+                loreInfo("说明", "<#A9B4C3>向玩家发送好友申请")
             ), model = "kangelitem:void")) {
                 clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
                 clicker.closeInventory()
-                clicker.sendMessage("<green>请输入 <white>/friend add <玩家名> <green>添加好友".toComponent())
+                clicker.sendMessage("<#8FD4A6>请输入 <#F2F5FA>/friend add <玩家名> <#8FD4A6>添加好友".toComponent())
             }
 
-            set('R', guiItem(XMaterial.BOOK, "<yellow><bold>申请列表", listOf(
-                loreInfo("说明", "<gray>查看待处理的好友申请"),
+            set('R', guiItem(XMaterial.BOOK, "<#EFDF8F><bold>申请列表", listOf(
+                loreInfo("说明", "<#A9B4C3>查看待处理的好友申请"),
                 loreSpace(),
-                "<!i> <yellow>左键 <green>同意",
-                "<!i> <yellow>右键 <red>拒绝"
+                "<!i> <#EFDF8F>左键 <#8FD4A6>同意",
+                "<!i> <#EFDF8F>右键 <#E08A98>拒绝"
             ), model = "kangelitem:void")) {
                 clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
                 FriendRequestMenu().open(clicker)
             }
 
-            set('X', guiItem(XMaterial.BARRIER, "<red>关闭", listOf("<!i> <yellow>点击 <red>关闭"), model = "kangelitem:void")) {
+            set('X', guiItem(XMaterial.BARRIER, "<#E08A98>关闭", listOf("<!i> <#EFDF8F>点击 <#E08A98>关闭"), model = "kangelitem:void")) {
                 clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
                 clicker.closeInventory()
             }
@@ -88,11 +88,11 @@ class FriendMenu {
             }
 
             setPreviousPage(7) { _, page ->
-                guiItem(XMaterial.ARROW, "<green>上一页", model = if (page) "kangelitem:previous" else "kangelitem:previous_no")
+                guiItem(XMaterial.ARROW, "<#8FD4A6>上一页", model = if (page) "kangelitem:previous" else "kangelitem:previous_no")
             }
 
             setNextPage(8) { _, page ->
-                guiItem(XMaterial.ARROW, "<green>下一页", model = if (page) "kangelitem:next" else "kangelitem:next_no")
+                guiItem(XMaterial.ARROW, "<#8FD4A6>下一页", model = if (page) "kangelitem:next" else "kangelitem:next_no")
             }
         }
     }
@@ -106,12 +106,12 @@ class FriendMenu {
 
         val item = ItemStack(Material.NAME_TAG)
         val meta = item.itemMeta ?: return item
-        meta.displayName("<gold><b>我的好友".toComponent())
+        meta.displayName("<#DFBD7C><b>我的好友".toComponent())
         meta.lore(listOf(
-            loreInfo("好友", "<white>$total<gray>/<white>$max"),
-            loreInfo("在线", "<green>$online <gray>/ <white>$total"),
+            loreInfo("好友", "<#F2F5FA>$total<#A9B4C3>/<#F2F5FA>$max"),
+            loreInfo("在线", "<#8FD4A6>$online <#A9B4C3>/ <#F2F5FA>$total"),
             loreSpace(),
-            "<!i> <yellow>右键 <red>删除好友"
+            "<!i> <#EFDF8F>右键 <#E08A98>删除好友"
         ).map { it.toComponent() })
         item.setItemMeta(meta)
         return item
@@ -130,15 +130,15 @@ class FriendMenu {
         }
 
         val meta = item.itemMeta ?: return item
-        meta.displayName("${if (online) "<green>" else "<gray>"}$name".toComponent())
+        meta.displayName("${if (online) "<#8FD4A6>" else "<#A9B4C3>"}$name".toComponent())
         val cid = ProfileManager.getSharedData(friendId.toString()).cid.id
         val lore = mutableListOf<String>()
         if (cid != 0L) {
-            lore += loreInfo("CID", "<white>$cid")
+            lore += loreInfo("CID", "<#F2F5FA>$cid")
         }
         lore += loreSpace()
-        lore += loreInfo("状态", if (online) "<green>● 在线" else "<gray>● 离线")
-        lore += "<!i> <yellow>右键 <red>删除好友"
+        lore += loreInfo("状态", if (online) "<#8FD4A6>● 在线" else "<#A9B4C3>● 离线")
+        lore += "<!i> <#EFDF8F>右键 <#E08A98>删除好友"
         meta.lore(lore.map { it.toComponent() })
         item.setItemMeta(meta)
         return item
@@ -150,7 +150,7 @@ class FriendDeleteConfirmMenu(private val friendId: UUID) {
     fun open(player: Player) {
         val name = Bukkit.getOfflinePlayer(friendId).name ?: "未知"
 
-        player.openMenu<taboolib.module.ui.type.Chest>(mmJsonUtil.serialize("<white><shift:-16><image:kangelicon:list><shift:-176><red><font:minecraft:fusionpixel10>删除好友".toComponent())) {
+        player.openMenu<taboolib.module.ui.type.Chest>(mmJsonUtil.serialize("<#F2F5FA><shift:-16><image:kangelicon:list><shift:-176><#E08A98><font:minecraft:fusionpixel10>删除好友".toComponent())) {
             rows(3)
 
             map(
@@ -159,20 +159,20 @@ class FriendDeleteConfirmMenu(private val friendId: UUID) {
                 "         "
             )
 
-            set('X', guiItem(XMaterial.RED_DYE, "<red><b>确认删除", listOf(
-                loreInfo("将删除好友", "<white>$name"),
-                loreInfo("警告", "<red>此操作不可撤销")
+            set('X', guiItem(XMaterial.RED_DYE, "<#E08A98><b>确认删除", listOf(
+                loreInfo("将删除好友", "<#F2F5FA>$name"),
+                loreInfo("警告", "<#E08A98>此操作不可撤销")
             ), model = "kangelitem:void")) {
                 clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
                 if (FriendManager.remove(clicker, friendId)) {
-                    clicker.sendMessage("<red>已删除好友 <yellow>$name".toComponent())
+                    clicker.sendMessage("<#E08A98>已删除好友 <#EFDF8F>$name".toComponent())
                 } else {
-                    clicker.sendMessage("<red>该玩家不是你的好友".toComponent())
+                    clicker.sendMessage("<#E08A98>该玩家不是你的好友".toComponent())
                 }
                 clicker.closeInventory()
             }
 
-            set('Y', guiItem(XMaterial.LIME_DYE, "<green><b>取消", listOf("<!i> <yellow>点击 <green>返回好友列表"), model = "kangelitem:void")) {
+            set('Y', guiItem(XMaterial.LIME_DYE, "<#8FD4A6><b>取消", listOf("<!i> <#EFDF8F>点击 <#8FD4A6>返回好友列表"), model = "kangelitem:void")) {
                 clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
                 clicker.closeInventory()
                 taboolib.common.platform.function.submit(delay = 1) {

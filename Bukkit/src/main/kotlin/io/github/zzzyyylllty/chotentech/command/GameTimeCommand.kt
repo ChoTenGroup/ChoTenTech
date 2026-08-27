@@ -37,17 +37,17 @@ object GameTimeCommand {
                     val player = context.player("user").castSafely<Player>()!!
                     val amount = context["amount"].toLongOrNull()
                     if (amount == null || amount < 1) {
-                        sender.sendComponent("<red>数量必须为正整数")
+                        sender.sendComponent("<#E08A98>数量必须为正整数")
                         return@execute
                     }
                     val data = player.getData() ?: run {
-                        sender.sendComponent("<red>无法获取 ${player.name} 的数据")
+                        sender.sendComponent("<#E08A98>无法获取 ${player.name} 的数据")
                         return@execute
                     }
                     data.gameTimeHours += amount
                     val formatted = GameTimeManager.formatOneLine(data.gameTimeHours)
-                    sender.sendComponent("<green>已将 ${player.name} 的游戏时间快进 $amount 小时")
-                    sender.sendComponent("<green>当前: $formatted")
+                    sender.sendComponent("<#8FD4A6>已将 ${player.name} 的游戏时间快进 $amount 小时")
+                    sender.sendComponent("<#8FD4A6>当前: $formatted")
                 }
                 suggestion<CommandSender>(uncheck = true) { _, _ -> listOf("1", "24", "720", "8760") }
             }
@@ -62,17 +62,17 @@ object GameTimeCommand {
                     val player = context.player("user").castSafely<Player>()!!
                     val amount = context["amount"].toLongOrNull()
                     if (amount == null || amount < 1) {
-                        sender.sendComponent("<red>数量必须为正整数")
+                        sender.sendComponent("<#E08A98>数量必须为正整数")
                         return@execute
                     }
                     val data = player.getData() ?: run {
-                        sender.sendComponent("<red>无法获取 ${player.name} 的数据")
+                        sender.sendComponent("<#E08A98>无法获取 ${player.name} 的数据")
                         return@execute
                     }
                     data.gameTimeHours = maxOf(data.gameTimeHours - amount, 0L)
                     val formatted = GameTimeManager.formatOneLine(data.gameTimeHours)
-                    sender.sendComponent("<green>已将 ${player.name} 的游戏时间倒退 $amount 小时")
-                    sender.sendComponent("<green>当前: $formatted")
+                    sender.sendComponent("<#8FD4A6>已将 ${player.name} 的游戏时间倒退 $amount 小时")
+                    sender.sendComponent("<#8FD4A6>当前: $formatted")
                 }
                 suggestion<CommandSender>(uncheck = true) { _, _ -> listOf("1", "24", "720", "8760") }
             }
@@ -87,17 +87,17 @@ object GameTimeCommand {
                     val player = context.player("user").castSafely<Player>()!!
                     val amount = context["amount"].toLongOrNull()
                     if (amount == null || amount < 0) {
-                        sender.sendComponent("<red>数量必须为非负整数")
+                        sender.sendComponent("<#E08A98>数量必须为非负整数")
                         return@execute
                     }
                     val data = player.getData() ?: run {
-                        sender.sendComponent("<red>无法获取 ${player.name} 的数据")
+                        sender.sendComponent("<#E08A98>无法获取 ${player.name} 的数据")
                         return@execute
                     }
                     data.gameTimeHours = amount
                     val formatted = GameTimeManager.formatOneLine(data.gameTimeHours)
-                    sender.sendComponent("<green>已将 ${player.name} 的游戏时间设为 $amount 小时")
-                    sender.sendComponent("<green>当前: $formatted")
+                    sender.sendComponent("<#8FD4A6>已将 ${player.name} 的游戏时间设为 $amount 小时")
+                    sender.sendComponent("<#8FD4A6>当前: $formatted")
                 }
                 suggestion<CommandSender>(uncheck = true) { _, _ -> listOf("0", "8760", "17520", "26280") }
             }
@@ -110,7 +110,7 @@ object GameTimeCommand {
             execute<CommandSender> { sender, context, _ ->
                 val player = context.player("user").castSafely<Player>()!!
                 val data = player.getData() ?: run {
-                    sender.sendComponent("<red>无法获取 ${player.name} 的数据")
+                    sender.sendComponent("<#E08A98>无法获取 ${player.name} 的数据")
                     return@execute
                 }
                 val hours = data.gameTimeHours
@@ -119,9 +119,9 @@ object GameTimeCommand {
                 val m = GameTimeManager.getMonth(hours)
                 val d = GameTimeManager.getDay(hours)
                 val h = GameTimeManager.getHour(hours)
-                sender.sendComponent("<green>${player.name} 的游戏时间:")
-                sender.sendComponent("<green>  $formatted")
-                sender.sendComponent("<green>  总小时: $hours | 年: $y 月: $m 日: $d 时: $h")
+                sender.sendComponent("<#8FD4A6>${player.name} 的游戏时间:")
+                sender.sendComponent("<#8FD4A6>  $formatted")
+                sender.sendComponent("<#8FD4A6>  总小时: $hours | 年: $y 月: $m 日: $d 时: $h")
             }
         }
     }

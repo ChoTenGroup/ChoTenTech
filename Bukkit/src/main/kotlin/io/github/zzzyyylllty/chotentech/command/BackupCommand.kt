@@ -67,24 +67,24 @@ object BackupCommand {
                 val input = context["filename"]
                 val entry = listBackupFiles().find { it.label == input }
                 if (entry == null) {
-                    sender.sendMessage("<red>未找到备份: $input".toComponent())
+                    sender.sendMessage("<#E08A98>未找到备份: $input".toComponent())
                     return@execute
                 }
                 sender.sendMessage("".toComponent())
-                sender.sendMessage("<gold>┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".toComponent())
-                sender.sendMessage("<gold>┃ <yellow>备份文件信息".toComponent())
-                sender.sendMessage("<gold>┃".toComponent())
-                sender.sendMessage("<gold>┃ <gray>文件: <white>${entry.file.name}".toComponent())
-                sender.sendMessage("<gold>┃ <gray>时间: <white>${
+                sender.sendMessage("<#DFBD7C>┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".toComponent())
+                sender.sendMessage("<#DFBD7C>┃ <#EFDF8F>备份文件信息".toComponent())
+                sender.sendMessage("<#DFBD7C>┃".toComponent())
+                sender.sendMessage("<#DFBD7C>┃ <#A9B4C3>文件: <#F2F5FA>${entry.file.name}".toComponent())
+                sender.sendMessage("<#DFBD7C>┃ <#A9B4C3>时间: <#F2F5FA>${
                     entry.time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
                 }".toComponent())
-                sender.sendMessage("<gold>┃ <gray>大小: <white>${entry.file.length() / 1024} KB".toComponent())
-                sender.sendMessage("<gold>┃".toComponent())
-                sender.sendMessage("<gold>┃ <green>恢复步骤:".toComponent())
-                sender.sendMessage("<gold>┃ <gray>1. 手动解压 ${entry.file.name} 得到同名 .json 文件".toComponent())
-                sender.sendMessage("<gold>┃ <gray>2. 将 .json 文件放入 restore 目录".toComponent())
-                sender.sendMessage("<gold>┃ <gray>3. 执行 <white>/backup restore ${entry.label}".toComponent())
-                sender.sendMessage("<gold>┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".toComponent())
+                sender.sendMessage("<#DFBD7C>┃ <#A9B4C3>大小: <#F2F5FA>${entry.file.length() / 1024} KB".toComponent())
+                sender.sendMessage("<#DFBD7C>┃".toComponent())
+                sender.sendMessage("<#DFBD7C>┃ <#8FD4A6>恢复步骤:".toComponent())
+                sender.sendMessage("<#DFBD7C>┃ <#A9B4C3>1. 手动解压 ${entry.file.name} 得到同名 .json 文件".toComponent())
+                sender.sendMessage("<#DFBD7C>┃ <#A9B4C3>2. 将 .json 文件放入 restore 目录".toComponent())
+                sender.sendMessage("<#DFBD7C>┃ <#A9B4C3>3. 执行 <#F2F5FA>/backup restore ${entry.label}".toComponent())
+                sender.sendMessage("<#DFBD7C>┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".toComponent())
             }
         }
     }
@@ -108,16 +108,16 @@ object BackupCommand {
     private fun listBackups(sender: CommandSender) {
         val entries = listBackupFiles()
         if (entries.isEmpty()) {
-            sender.sendMessage("<red>暂无备份文件".toComponent())
+            sender.sendMessage("<#E08A98>暂无备份文件".toComponent())
             return
         }
 
         sender.sendMessage("".toComponent())
-        sender.sendMessage("<gold>┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".toComponent())
-        sender.sendMessage("<gold>┃ <yellow>玩家数据备份列表</yellow> <gray>(${entries.size} 个)</gray>".toComponent())
-        sender.sendMessage("<gold>┃".toComponent())
-        sender.sendMessage("<gold>┃ <gray>/backup info <文件名> 查看详情与恢复步骤".toComponent())
-        sender.sendMessage("<gold>┃".toComponent())
+        sender.sendMessage("<#DFBD7C>┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".toComponent())
+        sender.sendMessage("<#DFBD7C>┃ <#EFDF8F>玩家数据备份列表</#EFDF8F> <#A9B4C3>(${entries.size} 个)</#A9B4C3>".toComponent())
+        sender.sendMessage("<#DFBD7C>┃".toComponent())
+        sender.sendMessage("<#DFBD7C>┃ <#A9B4C3>/backup info <文件名> 查看详情与恢复步骤".toComponent())
+        sender.sendMessage("<#DFBD7C>┃".toComponent())
 
         entries.forEach { entry ->
             val size = when {
@@ -126,9 +126,9 @@ object BackupCommand {
                 else -> "${"%.1f".format(entry.file.length() / (1024.0 * 1024.0))} MB"
             }
             val timeStr = entry.time.format(DateTimeFormatter.ofPattern("MM-dd HH:mm"))
-            sender.sendMessage("<gold>┃ <white>$timeStr <gray>$size <yellow>${entry.label}".toComponent())
+            sender.sendMessage("<#DFBD7C>┃ <#F2F5FA>$timeStr <#A9B4C3>$size <#EFDF8F>${entry.label}".toComponent())
         }
-        sender.sendMessage("<gold>┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".toComponent())
+        sender.sendMessage("<#DFBD7C>┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".toComponent())
     }
 
     // ==================== 还原 ====================
@@ -136,8 +136,8 @@ object BackupCommand {
     private fun restoreBackup(sender: CommandSender, filename: String, targetName: String?) {
         val file = File(restoreDir, "$filename.json")
         if (!file.exists()) {
-            sender.sendMessage("<red>未找到还原文件: $filename.json".toComponent())
-            sender.sendMessage("<red>请先将解压后的 JSON 文件放入 restore 目录".toComponent())
+            sender.sendMessage("<#E08A98>未找到还原文件: $filename.json".toComponent())
+            sender.sendMessage("<#E08A98>请先将解压后的 JSON 文件放入 restore 目录".toComponent())
             return
         }
 
@@ -148,7 +148,7 @@ object BackupCommand {
             val backupTime = root.get("backupTime")?.asLong ?: 0L
             val playersObj = root.getAsJsonObject("players")
             if (playersObj == null) {
-                sender.sendMessage("<red>备份文件格式错误: 缺少 players 字段".toComponent())
+                sender.sendMessage("<#E08A98>备份文件格式错误: 缺少 players 字段".toComponent())
                 return
             }
 
@@ -161,11 +161,11 @@ object BackupCommand {
 
             val entries = playersObj.entrySet().toList()
             if (entries.isEmpty()) {
-                sender.sendMessage("<red>备份文件中没有玩家数据".toComponent())
+                sender.sendMessage("<#E08A98>备份文件中没有玩家数据".toComponent())
                 return
             }
 
-            sender.sendMessage("<gray>开始从备份 ($timeStr) 恢复数据...".toComponent())
+            sender.sendMessage("<#A9B4C3>开始从备份 ($timeStr) 恢复数据...".toComponent())
 
             var restored = 0
             var skipped = 0
@@ -179,7 +179,7 @@ object BackupCommand {
                 val playerData: PlayerData = try {
                     jsonUtils.fromJson(element, PlayerData::class.java)
                 } catch (e: Exception) {
-                    sender.sendMessage("<red>  跳过 $uuid: 数据解析失败 (${e.message})".toComponent())
+                    sender.sendMessage("<#E08A98>  跳过 $uuid: 数据解析失败 (${e.message})".toComponent())
                     skipped++
                     continue
                 }
@@ -225,22 +225,22 @@ object BackupCommand {
                 }
 
                 restored++
-                sender.sendMessage("<green>  §8[$i]<green>已恢复 <yellow>${playerData.playerName} §8($uuid) §7- profile ${playerData.profileId}".toComponent())
+                sender.sendMessage("<#8FD4A6>  §8[$i]<#8FD4A6>已恢复 <#EFDF8F>${playerData.playerName} §8($uuid) §7- profile ${playerData.profileId}".toComponent())
             }
 
             sender.sendMessage("".toComponent())
-            sender.sendMessage("<green>┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".toComponent())
-            sender.sendMessage("<green>┃ <yellow>还原完成".toComponent())
-            sender.sendMessage("<green>┃ <gray>来源: <white>$timeStr".toComponent())
-            sender.sendMessage("<green>┃ <gray>成功: <green>$restored".toComponent())
-            if (skipped > 0) sender.sendMessage("<green>┃ <gray>跳过: <red>$skipped".toComponent())
-            if (kicked > 0) sender.sendMessage("<green>┃ <gray>踢出: <yellow>$kicked 人".toComponent())
-            sender.sendMessage("<green>┃".toComponent())
-            sender.sendMessage("<green>┃ <gray>被踢出的玩家重新加入后自动加载恢复的数据".toComponent())
-            sender.sendMessage("<green>┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".toComponent())
+            sender.sendMessage("<#8FD4A6>┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".toComponent())
+            sender.sendMessage("<#8FD4A6>┃ <#EFDF8F>还原完成".toComponent())
+            sender.sendMessage("<#8FD4A6>┃ <#A9B4C3>来源: <#F2F5FA>$timeStr".toComponent())
+            sender.sendMessage("<#8FD4A6>┃ <#A9B4C3>成功: <#8FD4A6>$restored".toComponent())
+            if (skipped > 0) sender.sendMessage("<#8FD4A6>┃ <#A9B4C3>跳过: <#E08A98>$skipped".toComponent())
+            if (kicked > 0) sender.sendMessage("<#8FD4A6>┃ <#A9B4C3>踢出: <#EFDF8F>$kicked 人".toComponent())
+            sender.sendMessage("<#8FD4A6>┃".toComponent())
+            sender.sendMessage("<#8FD4A6>┃ <#A9B4C3>被踢出的玩家重新加入后自动加载恢复的数据".toComponent())
+            sender.sendMessage("<#8FD4A6>┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━".toComponent())
 
         } catch (e: Exception) {
-            sender.sendMessage("<red>还原失败: ${e.message}".toComponent())
+            sender.sendMessage("<#E08A98>还原失败: ${e.message}".toComponent())
             e.printStackTrace()
         }
     }

@@ -32,7 +32,7 @@ class ShockHandler : NormalDamageHandler(DamageType.SHOCK) {
             player.addPotionEffect(PotionEffect(PotionEffectType.SLOWNESS, duration * 20, 6))
             try {
                 (player as Audience).sendActionBar(
-                    mmUtil.deserialize("<yellow>⚡ 你被电击禁锢了！".legacyToMiniMessage())
+                    mmUtil.deserialize("<#EFDF8F>⚡ 你被电击禁锢了！".legacyToMiniMessage())
                 )
             } catch (_: Exception) {}
         }

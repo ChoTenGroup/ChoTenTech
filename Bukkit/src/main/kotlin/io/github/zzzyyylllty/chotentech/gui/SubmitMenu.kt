@@ -40,7 +40,7 @@ class SubmitMenu {
     }
 
     private fun openInternal(player: Player, quest: Quest?, task: Task?, npcId: String?) {
-        player.openMenu<Chest>(mmJsonUtil.serialize("<white><shift:-16><image:kangelicon:list><shift:-176><aqua><font:minecraft:fusionpixel10>提交物品".toComponent())) {
+        player.openMenu<Chest>(mmJsonUtil.serialize("<#F2F5FA><shift:-16><image:kangelicon:list><shift:-176><#84D1CB><font:minecraft:fusionpixel10>提交物品".toComponent())) {
             rows(6)
 
             map(
@@ -52,37 +52,37 @@ class SubmitMenu {
                 if (quest != null) " B  S  B " else "    S    "
             )
 
-            set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>菜单", listOf("<!i> <yellow>点击 <green>关闭"), model = "kangelitem:void")) {
+            set('C', guiItem(XMaterial.COMPASS, "<#84D1CB><bold>菜单", listOf("<!i> <#EFDF8F>点击 <#8FD4A6>关闭"), model = "kangelitem:void")) {
                 clicker.closeInventory()
             }
 
 
-            set('X', guiItem(XMaterial.STONE, "<dark_gray>-", listOf("<!i><white><b>|<reset> <!i><gray>这里什么都没有"), model = "kangelitem:void"))
+            set('X', guiItem(XMaterial.STONE, "<#6E7A8C>-", listOf("<!i><#F2F5FA><b>|<reset> <!i><#A9B4C3>这里什么都没有"), model = "kangelitem:void"))
 
             onBuild { _, inv ->
                 if (task != null) {
                     val amount = task.condition["amount"]?.toInt() ?: 1
-                    inv.setItem(4, guiItem(XMaterial.BOOK, "<gold>提交说明", listOf(
+                    inv.setItem(4, guiItem(XMaterial.BOOK, "<#DFBD7C>提交说明", listOf(
                         loreSection("说明"),
-                        "<!i><gray>将需要提交的物品放入中间区域",
-                        "<!i> <yellow>点击 <green>确认提交",
-                        loreInfo("所需数量", "<yellow>$amount")
+                        "<!i><#A9B4C3>将需要提交的物品放入中间区域",
+                        "<!i> <#EFDF8F>点击 <#8FD4A6>确认提交",
+                        loreInfo("所需数量", "<#EFDF8F>$amount")
                     )))
                 } else {
-                    inv.setItem(4, guiItem(XMaterial.BOOK, "<gold>提交说明", listOf(
+                    inv.setItem(4, guiItem(XMaterial.BOOK, "<#DFBD7C>提交说明", listOf(
                         loreSection("说明"),
-                        "<!i><gray>将需要提交的物品放入中间区域",
-                        "<!i> <yellow>点击 <green>确认提交",
-                        loreInfo("NPCID", "<yellow>$npcId")
+                        "<!i><#A9B4C3>将需要提交的物品放入中间区域",
+                        "<!i> <#EFDF8F>点击 <#8FD4A6>确认提交",
+                        loreInfo("NPCID", "<#EFDF8F>$npcId")
                     )))
                 }
             }
 
-            set(49, guiItem(XMaterial.ANVIL, "<gold>■ 确认提交", listOf("<!i> <yellow>点击 <green>提交中间区域的所有物品")))
+            set(49, guiItem(XMaterial.ANVIL, "<#DFBD7C>■ 确认提交", listOf("<!i> <#EFDF8F>点击 <#8FD4A6>提交中间区域的所有物品")))
 
             if (quest != null) {
-                set(45, guiItem(XMaterial.BARRIER, "<red>返回", model = "kangelitem:void"))
-                set(53, guiItem(XMaterial.BARRIER, "<red>返回", model = "kangelitem:void"))
+                set(45, guiItem(XMaterial.BARRIER, "<#E08A98>返回", model = "kangelitem:void"))
+                set(53, guiItem(XMaterial.BARRIER, "<#E08A98>返回", model = "kangelitem:void"))
             }
 
             onClick(lock = false) { event ->
@@ -144,7 +144,7 @@ class SubmitMenu {
         }
 
         if (entries.isEmpty()) {
-            player.sendMessage("<red>没有可提交的物品！".toComponent())
+            player.sendMessage("<#E08A98>没有可提交的物品！".toComponent())
             player.playSound(player.location, Sound.ENTITY_VILLAGER_NO, 1f, 1f)
             return
         }
@@ -154,12 +154,12 @@ class SubmitMenu {
 
         fun done() {
             if (submitted > 0) {
-                player.sendMessage("<green>✔ 成功提交 <yellow>$submitted</yellow> 个物品！".toComponent())
+                player.sendMessage("<#8FD4A6>✔ 成功提交 <#EFDF8F>$submitted</#EFDF8F> 个物品！".toComponent())
                 player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
                 player.closeInventory()
                 QuestMenu().open(player, quest)
             } else {
-                player.sendMessage("<red>没有可提交的物品！".toComponent())
+                player.sendMessage("<#E08A98>没有可提交的物品！".toComponent())
                 player.playSound(player.location, Sound.ENTITY_VILLAGER_NO, 1f, 1f)
             }
         }
@@ -200,7 +200,7 @@ class SubmitMenu {
     private fun processSubmitWithNpc(player: Player, npcId: String, inventory: org.bukkit.inventory.Inventory) {
         val profile = if (player.isChemdahProfileLoaded) player.chemdahProfile else null
         if (profile == null) {
-            player.sendMessage("<red>数据尚未加载完成！".toComponent())
+            player.sendMessage("<#E08A98>数据尚未加载完成！".toComponent())
             return
         }
 
@@ -216,7 +216,7 @@ class SubmitMenu {
         }
 
         if (matches.isEmpty()) {
-            player.sendMessage("<red>没有找到匹配的任务！".toComponent())
+            player.sendMessage("<#E08A98>没有找到匹配的任务！".toComponent())
             player.playSound(player.location, Sound.ENTITY_VILLAGER_NO, 1f, 1f)
             return
         }
@@ -228,7 +228,7 @@ class SubmitMenu {
         }
 
         if (entries.isEmpty()) {
-            player.sendMessage("<red>没有可提交的物品！".toComponent())
+            player.sendMessage("<#E08A98>没有可提交的物品！".toComponent())
             player.playSound(player.location, Sound.ENTITY_VILLAGER_NO, 1f, 1f)
             return
         }
@@ -239,10 +239,10 @@ class SubmitMenu {
 
         fun done() {
             if (totalSubmitted > 0) {
-                player.sendMessage("<green>✔ 成功提交 <yellow>$totalSubmitted</yellow> 个物品！".toComponent())
+                player.sendMessage("<#8FD4A6>✔ 成功提交 <#EFDF8F>$totalSubmitted</#EFDF8F> 个物品！".toComponent())
                 player.playSound(player.location, Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f)
             } else {
-                player.sendMessage("<red>没有符合要求的物品！".toComponent())
+                player.sendMessage("<#E08A98>没有符合要求的物品！".toComponent())
                 player.playSound(player.location, Sound.ENTITY_VILLAGER_NO, 1f, 1f)
             }
         }

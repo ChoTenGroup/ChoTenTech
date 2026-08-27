@@ -43,7 +43,7 @@ class CoolNumberConfirmMenu(
 
         player.openMenu<Chest>(
             mmJsonUtil.serialize(
-                "<black><font:minecraft:fusionpixel10>确认购买".toComponent()
+                "<#2A2F3A><font:minecraft:fusionpixel10>确认购买".toComponent()
             )
         ) {
             rows(6)
@@ -64,7 +64,7 @@ class CoolNumberConfirmMenu(
             set('A', buildInfoItem(player, currentTier))
 
             // ── X (close) row 3, slot 0 ──
-            set('X', guiItem(XMaterial.BARRIER, "<red>关闭")) {
+            set('X', guiItem(XMaterial.BARRIER, "<#E08A98>关闭")) {
                 clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
                 clicker.closeInventory()
                 CoolNumberMenu().open(clicker)
@@ -118,22 +118,22 @@ class CoolNumberConfirmMenu(
 
         meta.displayName("${info.tier.color}<b>${info.number}".toComponent())
         meta.lore(listOf(
-            loreInfo("分数", "<yellow>${info.score}"),
+            loreInfo("分数", "<#EFDF8F>${info.score}"),
             loreInfo("基础等级", "${info.tier.color}${info.tier.displayName}"),
             loreInfo("你的当前等级", "${currentTier.color}${currentTier.displayName}"),
             loreInfo("购买后等级", "${resultingTier.color}${resultingTier.displayName}"),
             loreSpace(),
-            loreInfo("付款方式", "<green>${paymentMethod.displayName}"),
+            loreInfo("付款方式", "<#8FD4A6>${paymentMethod.displayName}"),
             loreSpace(),
-            loreInfo("贸易点价格", "<green>$pointPrice ${if (canAffordPoint) "✓" else "✗"}"),
-            loreInfo("磁带价格", "<aqua>$tapePrice ${if (canAffordTape) "✓" else "✗"}"),
+            loreInfo("贸易点价格", "<#8FD4A6>$pointPrice ${if (canAffordPoint) "✓" else "✗"}"),
+            loreInfo("磁带价格", "<#84D1CB>$tapePrice ${if (canAffordTape) "✓" else "✗"}"),
             loreSpace(),
-            loreInfo("磁带升级", "<aqua>+${CoolNumberManager.TAPE_UPGRADE_COST * tapeUpgradeLevels}"),
+            loreInfo("磁带升级", "<#84D1CB>+${CoolNumberManager.TAPE_UPGRADE_COST * tapeUpgradeLevels}"),
             loreDash("使用 ${tapeUpgradeLevels} 级升级 (已选)"),
             loreSpace(),
-            "<!i><green>W: 切换付款方式",
-            "<!i><green>S: +1888磁带升一级",
-            "<!i><green>V: 确认购买"
+            "<!i><#8FD4A6>W: 切换付款方式",
+            "<!i><#8FD4A6>S: +1888磁带升一级",
+            "<!i><#8FD4A6>V: 确认购买"
         ).toComponent())
         item.setItemMeta(meta)
         return item
@@ -142,16 +142,16 @@ class CoolNumberConfirmMenu(
     private fun buildPaymentToggleItem(): ItemStack {
         val item = XMaterial.GOLD_NUGGET.parseItem() ?: ItemStack(Material.GOLD_NUGGET)
         val meta = item.itemMeta ?: return item
-        meta.displayName("<gold><b>付款方式: ${paymentMethod.displayName}".toComponent())
+        meta.displayName("<#DFBD7C><b>付款方式: ${paymentMethod.displayName}".toComponent())
         meta.lore(listOf(
-            loreInfo("当前", "<green>${paymentMethod.displayName}"),
-            "<!i> <yellow>点击 <green>切换为 <aqua>${
+            loreInfo("当前", "<#8FD4A6>${paymentMethod.displayName}"),
+            "<!i> <#EFDF8F>点击 <#8FD4A6>切换为 <#84D1CB>${
                 if (paymentMethod == PaymentMethod.POINT) PaymentMethod.TAPE.displayName
                 else PaymentMethod.POINT.displayName
             }",
             loreSpace(),
-            loreInfo("贸易点价格", "<green>${info.pointPrice}"),
-            loreInfo("磁带价格", "<aqua>${info.tapePrice + CoolNumberManager.TAPE_UPGRADE_COST * tapeUpgradeLevels}")
+            loreInfo("贸易点价格", "<#8FD4A6>${info.pointPrice}"),
+            loreInfo("磁带价格", "<#84D1CB>${info.tapePrice + CoolNumberManager.TAPE_UPGRADE_COST * tapeUpgradeLevels}")
         ).toComponent())
         item.setItemMeta(meta)
         return item
@@ -164,20 +164,20 @@ class CoolNumberConfirmMenu(
 
         if (canUpgrade) {
             val nextTier = CoolNumberManager.getResultingTier(currentTier, info.score, tapeUpgradeLevels + 1)
-            meta.displayName("<b><aqua>磁带升级 (已选: $tapeUpgradeLevels 级)".toComponent())
+            meta.displayName("<b><#84D1CB>磁带升级 (已选: $tapeUpgradeLevels 级)".toComponent())
             meta.lore(listOf(
-                "<!i><gray>消耗 ${CoolNumberManager.TAPE_UPGRADE_COST} 磁带升一级",
+                "<!i><#A9B4C3>消耗 ${CoolNumberManager.TAPE_UPGRADE_COST} 磁带升一级",
                 loreInfo("当前等级", "${currentTier.color}${currentTier.displayName}"),
                 loreInfo("升级后", "${nextTier.color}${nextTier.displayName}"),
                 loreSpace(),
-                "<!i> <yellow>点击 <green>选择升级"
+                "<!i> <#EFDF8F>点击 <#8FD4A6>选择升级"
             ).toComponent())
         } else {
-            meta.displayName("<b><red>无法升级".toComponent())
+            meta.displayName("<b><#E08A98>无法升级".toComponent())
             meta.lore(listOf(
                 loreSection("说明"),
-                "<!i><gray>当前等级已是黑金及以上",
-                "<!i><gray>无法继续使用磁带升级"
+                "<!i><#A9B4C3>当前等级已是黑金及以上",
+                "<!i><#A9B4C3>无法继续使用磁带升级"
             ).toComponent())
         }
         item.setItemMeta(meta)
@@ -187,12 +187,12 @@ class CoolNumberConfirmMenu(
     private fun buildConfirmItem(): ItemStack {
         val item = XMaterial.LIME_DYE.parseItem() ?: ItemStack(Material.LIME_DYE)
         val meta = item.itemMeta ?: return item
-        meta.displayName("<b><green>确认购买</b>".toComponent())
+        meta.displayName("<b><#8FD4A6>确认购买</b>".toComponent())
         meta.lore(listOf(
             loreInfo("号码", info.number),
-            loreInfo("价格", "<green>${getCurrentPrice()}"),
+            loreInfo("价格", "<#8FD4A6>${getCurrentPrice()}"),
             loreSpace(),
-            "<!i> <yellow>点击 <green>确认购买此靓号"
+            "<!i> <#EFDF8F>点击 <#8FD4A6>确认购买此靓号"
         ).toComponent())
         item.setItemMeta(meta)
         return item

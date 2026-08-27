@@ -73,20 +73,20 @@ object HideoutCommand {
                     sender.sendMessage("§c未找到该玩家的数据！")
                     return@execute
                 }
-                sender.sendComponent("<gold>===== ${context["player"]} 的藏身处 =====")
+                sender.sendComponent("<#DFBD7C>===== ${context["player"]} 的藏身处 =====")
                 for ((baseKey, hideout) in target.hideoutData) {
-                    sender.sendComponent("<gray>基地: <yellow>$baseKey ${if (hideout.unlocked) "<green>已解锁" else "<red>未解锁"}")
-                    sender.sendComponent("<gray>  燃料: <yellow>${"%.1f".format(hideout.fuelAmount)}")
+                    sender.sendComponent("<#A9B4C3>基地: <#EFDF8F>$baseKey ${if (hideout.unlocked) "<#8FD4A6>已解锁" else "<#E08A98>未解锁"}")
+                    sender.sendComponent("<#A9B4C3>  燃料: <#EFDF8F>${"%.1f".format(hideout.fuelAmount)}")
                     if (hideout.moduleLevels.isNotEmpty()) {
-                        sender.sendComponent("<gray>  模块等级:")
+                        sender.sendComponent("<#A9B4C3>  模块等级:")
                         for ((modId, lv) in hideout.moduleLevels) {
                             val mod = HideoutConfig.getModule(modId)
-                            sender.sendComponent("   <gray>- ${mod?.name ?: modId} <yellow>Lv.$lv")
+                            sender.sendComponent("   <#A9B4C3>- ${mod?.name ?: modId} <#EFDF8F>Lv.$lv")
                         }
                     }
                 }
                 if (target.hideoutData.isEmpty()) {
-                    sender.sendComponent("<gray>  无藏身处数据")
+                    sender.sendComponent("<#A9B4C3>  无藏身处数据")
                 }
             }
 
@@ -185,8 +185,8 @@ object HideoutCommand {
         val baseKey = HideoutManager.getCurrentBaseKey(player)
         val hideout = data.hideoutData.getOrPut(baseKey) { HideoutPlayerData() }
         if (!hideout.unlocked) {
-            player.sendComponent("<red>该基地的个人基地尚未解锁！")
-            player.sendComponent("<gray>输入 <white>/hideout unlock<gray> 解锁")
+            player.sendComponent("<#E08A98>该基地的个人基地尚未解锁！")
+            player.sendComponent("<#A9B4C3>输入 <#F2F5FA>/hideout unlock<#A9B4C3> 解锁")
             return
         }
         HideoutMainMenu(baseKey).open(player)

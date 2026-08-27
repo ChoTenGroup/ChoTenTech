@@ -24,7 +24,7 @@ class EndGUI {
         val entries = EndManager.getEntries(player)
 
         player.openMenu<PageableChest<EndManager.EndEntry>>(
-            mmJsonUtil.serialize("<white><shift:-16><image:kangelicon:list><shift:-176><aqua><font:minecraft:fusionpixel10>结档案 [$unlocked/$total]".toComponent())
+            mmJsonUtil.serialize("<#F2F5FA><shift:-16><image:kangelicon:list><shift:-176><#84D1CB><font:minecraft:fusionpixel10>结档案 [$unlocked/$total]".toComponent())
         ) {
             rows(6)
 
@@ -37,7 +37,7 @@ class EndGUI {
                 "         "
             )
 
-            set('C', guiItem(XMaterial.COMPASS, "<aqua><bold>菜单", listOf("<gray>点击打开菜单"), model = "kangelitem:void")) {
+            set('C', guiItem(XMaterial.COMPASS, "<#84D1CB><bold>菜单", listOf("<#A9B4C3>点击打开菜单"), model = "kangelitem:void")) {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "invero menu open menu ${clicker.name}")
                 clicker.closeInventory()
             }
@@ -55,7 +55,7 @@ class EndGUI {
             }
 
             setPreviousPage(7) { _, page ->
-                buildSimpleItem(XMaterial.ARROW, "<dark_aqua><b>上一页").apply {
+                buildSimpleItem(XMaterial.ARROW, "<#5FA8A3><b>上一页").apply {
                     val m = itemMeta ?: return@apply
                     m.itemModel = NamespacedKey.fromString(if (page) "kangelitem:previous" else "kangelitem:previous_no")
                     setItemMeta(m)
@@ -63,7 +63,7 @@ class EndGUI {
             }
 
             setNextPage(8) { _, page ->
-                buildSimpleItem(XMaterial.ARROW, "<dark_aqua><b>下一页").apply {
+                buildSimpleItem(XMaterial.ARROW, "<#5FA8A3><b>下一页").apply {
                     val m = itemMeta ?: return@apply
                     m.itemModel = NamespacedKey.fromString(if (page) "kangelitem:next" else "kangelitem:next_no")
                     setItemMeta(m)
@@ -84,16 +84,16 @@ class EndGUI {
         if (entry.unlocked) {
             meta.displayName("${entry.template.color}<b>✦ ${entry.template.name}".toComponent())
             val lore = mutableListOf<String>()
-            lore += loreInfo("结档ID", "<white>${entry.id}")
+            lore += loreInfo("结档ID", "<#F2F5FA>${entry.id}")
             lore += loreSpace()
-            lore += loreDash("<green>✓ 已解锁")
+            lore += loreDash("<#8FD4A6>✓ 已解锁")
             meta.lore(lore.toComponent())
         } else {
-            meta.displayName("<gray><b>?</b> ???".toComponent())
+            meta.displayName("<#A9B4C3><b>?</b> ???".toComponent())
             val lore = mutableListOf<String>()
-            lore += loreInfo("状态", "<gray>尚未解锁")
+            lore += loreInfo("状态", "<#A9B4C3>尚未解锁")
             lore += loreSpace()
-            lore += loreDash("<red>✗ 未解锁")
+            lore += loreDash("<#E08A98>✗ 未解锁")
             meta.lore(lore.toComponent())
         }
 

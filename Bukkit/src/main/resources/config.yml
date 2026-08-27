@@ -229,9 +229,9 @@ change-arrows:
   # 下降箭头（大号）
   down: "▼"
   # 上升箭头颜色（MiniMessage 颜色格式）
-  up-color: "<#88ff88>"
+  up-color: "<#c6ecc6>"
   # 下降箭头颜色（MiniMessage 颜色格式）
-  down-color: "<#ff8888>"
+  down-color: "<#ecc6c6>"
 
 # 靠近 MythicMobs 实体降低精神配置
 mm-sanity-drain:

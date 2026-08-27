@@ -3,6 +3,12 @@ package io.github.zzzyyylllty.chotentech.util
 import org.bukkit.Bukkit
 
 
+val dependencies = listOf(
+    "adventure",
+    "caffeine",
+    "gson",
+)
+
 object DependencyHelper {
 
     val wg by lazy {

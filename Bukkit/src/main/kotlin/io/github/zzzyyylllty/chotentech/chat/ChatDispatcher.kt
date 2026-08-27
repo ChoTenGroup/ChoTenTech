@@ -32,14 +32,14 @@ object ChatDispatcher {
     fun prepare(player: Player, channel: ChatChannel, text: String): Prepared? {
         // 频道使用权限
         if (channel.permission.isNotEmpty() && !player.hasPermission(channel.permission)) {
-            player.sendComponent("<red>你没有使用 <yellow>${channel.displayName}<red> 频道的权限。")
+            player.sendComponent("<#E08A98>你没有使用 <#EFDF8F>${channel.displayName}<#E08A98> 频道的权限。")
             return null
         }
 
         // 组队频道必须处于队伍中
         val team = if (channel.party) TeamManager.getTeam(player.uniqueId) else null
         if (channel.party && team == null) {
-            player.sendComponent("<red>你不在队伍中，无法使用组队频道。")
+            player.sendComponent("<#E08A98>你不在队伍中，无法使用组队频道。")
             return null
         }
 
@@ -50,7 +50,7 @@ object ChatDispatcher {
             val elapsedSec = (System.currentTimeMillis() - last) / 1000.0
             if (elapsedSec < cooldown) {
                 player.sendComponent(
-                    "<red>频道 <yellow>${channel.displayName}<red> 冷却中，请 <yellow>${"%.1f".format(cooldown - elapsedSec)}<red> 秒后再试。"
+                    "<#E08A98>频道 <#EFDF8F>${channel.displayName}<#E08A98> 冷却中，请 <#EFDF8F>${"%.1f".format(cooldown - elapsedSec)}<#E08A98> 秒后再试。"
                 )
                 return null
             }

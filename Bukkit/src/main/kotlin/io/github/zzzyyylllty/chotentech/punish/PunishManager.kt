@@ -258,8 +258,8 @@ object PunishManager {
             val player = uuid?.let { Bukkit.getPlayer(it) }
             if (player != null && player.isOnline) {
                 when (entry.type) {
-                    PunishType.MUTE -> player.sendComponent("<green>你的禁言处罚已到期，现在可以正常发言了。")
-                    PunishType.AUTH -> player.sendComponent("<green>你的身份验证处罚已到期。")
+                    PunishType.MUTE -> player.sendComponent("<#8FD4A6>你的禁言处罚已到期，现在可以正常发言了。")
+                    PunishType.AUTH -> player.sendComponent("<#8FD4A6>你的身份验证处罚已到期。")
                     else -> {}
                 }
             }
@@ -294,7 +294,7 @@ object PunishManager {
                         for (item in enderLeft) {
                             player.world.dropItem(player.location, item)
                         }
-                        player.sendComponent("<yellow>物品栏已满，部分还原物品已放入末影箱或掉落在地上")
+                        player.sendComponent("<#EFDF8F>物品栏已满，部分还原物品已放入末影箱或掉落在地上")
                     }
                 }
             } catch (_: Exception) {}

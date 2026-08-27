@@ -21,7 +21,7 @@ object EndManager {
     data class EndTemplate(
         val icon: String = "END_STONE",
         val name: String = "结束",
-        val color: String = "<#aaaa99>",
+        val color: String = "<#c3c3bd>",
         val major: String,
         val message: String,
         val postmessage: String,
@@ -56,7 +56,7 @@ object EndManager {
                 ends[key] = EndTemplate(
                     icon = section.getString("icon") ?: "END_STONE",
                     name = section.getString("name") ?: "结束",
-                    color = section.getString("color") ?: "<#aaaa99>",
+                    color = section.getString("color") ?: "<#c3c3bd>",
                     major = section.getString("major") ?: "",
                     message = section.getString("message") ?: "",
                     postmessage = section.getString("postmessage") ?: "",
@@ -76,17 +76,17 @@ object EndManager {
     fun endProfile(player: Player, endId: String = "generic"): Boolean {
         val template = ends[endId] ?: ends["generic"]
         if (template == null) {
-            player.sendComponent("<red>未找到结档信息 (end ID: $endId)")
+            player.sendComponent("<#E08A98>未找到结档信息 (end ID: $endId)")
             return false
         }
 
         val data = player.getData() ?: run {
-            player.sendComponent("<red>无法获取你的档案数据")
+            player.sendComponent("<#E08A98>无法获取你的档案数据")
             return false
         }
 
         if (data.ended) {
-            player.sendComponent("<yellow>你的当前档案已经结档")
+            player.sendComponent("<#EFDF8F>你的当前档案已经结档")
             return false
         }
 
@@ -121,14 +121,14 @@ object EndManager {
 
         // Build and send the end message
         val sb = StringBuilder()
-        sb.append("<white><b>").append(template.major).appendLine()
+        sb.append("<#F2F5FA><b>").append(template.major).appendLine()
         sb.appendLine()
         for (line in template.message.lines()) {
-            sb.appendLine("  <gray>-<aqua> $line")
+            sb.appendLine("  <#A9B4C3>-<#84D1CB> $line")
         }
         sb.appendLine()
         for (line in template.postmessage.lines()) {
-            sb.appendLine("  <gray>-<white> ${line.replace("{profileadded}", template.profileadded.toString())}")
+            sb.appendLine("  <#A9B4C3>-<#F2F5FA> ${line.replace("{profileadded}", template.profileadded.toString())}")
         }
         player.sendComponent(sb.toString())
         return true

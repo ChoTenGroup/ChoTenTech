@@ -1,6 +1,6 @@
 package io.github.zzzyyylllty.chotentech.data
 
-import io.github.zzzyyylllty.chotentech.kether.evalKether
+import io.github.zzzyyylllty.chotentech.function.kether.evalKether
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World

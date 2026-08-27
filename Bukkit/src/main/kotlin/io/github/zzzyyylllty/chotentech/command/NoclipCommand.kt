@@ -29,16 +29,16 @@ object NoclipsCommand {
             val data = player.getData() ?: return@execute
             val activeLevel = data.activeLevel
             val str = StringBuilder()
-            str.appendLine("<white><st>                                                                      <reset>")
-            str.append("<green>${player.name} - 层级 ${activeLevel?.name ?: "???"}")
+            str.appendLine("<#F2F5FA><st>                                                                      <reset>")
+            str.append("<#8FD4A6>${player.name} - 层级 ${activeLevel?.name ?: "???"}")
             activeLevel?.randomNoclip?.let { mode ->
-                str.append(" <dark_gray>[随机: ${mode.name}]")
+                str.append(" <#6E7A8C>[随机: ${mode.name}]")
             }
             str.appendLine()
-            str.appendLine("<white><st>                                                                      <reset>")
+            str.appendLine("<#F2F5FA><st>                                                                      <reset>")
             val noclips = activeLevel?.noclips
             if (noclips.isNullOrEmpty()) {
-                str.appendLine(" <red>未找到任何可用切出点。")
+                str.appendLine(" <#E08A98>未找到任何可用切出点。")
                 str.appendLine()
                 sender.sendStringAsComponent(str.toString())
                 return@execute
@@ -50,28 +50,28 @@ object NoclipsCommand {
             var num = 1
             for (noclip in noclips) {
                 val randomDisabled = noclip.name != null && noclip.name !in enabledNames
-                val autoTag = if (noclip.autoNoclip) " <gray>[自动]" else ""
+                val autoTag = if (noclip.autoNoclip) " <#A9B4C3>[自动]" else ""
                 val condTag = buildConditionTag(noclip)
 
                 if (player.gameMode.isInvulnerable) {
-                    val disabledMark = if (randomDisabled) " <#FF4444>[随机禁用]" else ""
-                    str.appendLine(" <dark_gray>| <#47A036>NOCLIP$num</#47A036> <#CECACA>${noclip.name}</#CECACA> <#FFAA00>→ ${targetLevelDisplay(noclip.targetLevel)}</#FFAA00>$autoTag$disabledMark")
+                    val disabledMark = if (randomDisabled) " <#e0a1a1>[随机禁用]" else ""
+                    str.appendLine(" <#6E7A8C>| <#76a76d>NOCLIP$num</#76a76d> <#dad8d8>${noclip.name}</#dad8d8> <#cfae6e>→ ${targetLevelDisplay(noclip.targetLevel)}</#cfae6e>$autoTag$disabledMark")
                 } else {
                     if (randomDisabled) {
-                        str.appendLine(" <dark_gray>| <#666666>NOCLIP$num</#666666> <#555555>${noclip.name}</#555555> <dark_gray>[随机禁用]<reset>")
+                        str.appendLine(" <#6E7A8C>| <#858585>NOCLIP$num</#858585> <#747474>${noclip.name}</#747474> <#6E7A8C>[随机禁用]<reset>")
                     } else if (exploredLevel?.contains(noclip.name) == true) {
-                        str.appendLine(" <dark_gray>| <#47A036>NOCLIP$num</#47A036> <#CECACA>${noclip.name}</#CECACA> <dark_aqua>→ ${targetLevelDisplay(noclip.targetLevel)}</dark_aqua>$autoTag")
+                        str.appendLine(" <#6E7A8C>| <#76a76d>NOCLIP$num</#76a76d> <#dad8d8>${noclip.name}</#dad8d8> <#5FA8A3>→ ${targetLevelDisplay(noclip.targetLevel)}</#5FA8A3>$autoTag")
                     } else {
-                        str.appendLine(" <dark_gray>| <#47A036>NOCLIP$num</#47A036> <#CECACA>${noclip.name}</#CECACA> <dark_gray>[没有数据]<reset>$autoTag")
+                        str.appendLine(" <#6E7A8C>| <#76a76d>NOCLIP$num</#76a76d> <#dad8d8>${noclip.name}</#dad8d8> <#6E7A8C>[没有数据]<reset>$autoTag")
                     }
                 }
                 if (condTag.isNotEmpty()) {
-                    str.appendLine("   <dark_gray>$condTag")
+                    str.appendLine("   <#6E7A8C>$condTag")
                 }
                 num++
             }
 
-            str.appendLine("<white><st>                                                                      ")
+            str.appendLine("<#F2F5FA><st>                                                                      ")
             sender.sendStringAsComponent(str.toString())
         }
     }

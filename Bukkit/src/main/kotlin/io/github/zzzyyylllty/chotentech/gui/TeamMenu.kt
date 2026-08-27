@@ -24,7 +24,7 @@ class TeamMenu {
 
     fun open(player: Player) {
         val team = TeamManager.getTeam(player.uniqueId) ?: run {
-            player.sendMessage("<red>你不在队伍中".toComponent())
+            player.sendMessage("<#E08A98>你不在队伍中".toComponent())
             return
         }
 
@@ -32,7 +32,7 @@ class TeamMenu {
         val members = team.allMembers.toList()
         val maxMemberSlots = 18  // rows 1-2, 9 cols each
 
-        val titleStr = "<white><shift:-16><image:kangelicon:list><shift:-176><aqua><font:minecraft:fusionpixel10>队伍管理"
+        val titleStr = "<#F2F5FA><shift:-16><image:kangelicon:list><shift:-176><#84D1CB><font:minecraft:fusionpixel10>队伍管理"
 
         player.openMenu<Chest>(mmJsonUtil.serialize(titleStr.toComponent())) {
             rows(6)
@@ -51,7 +51,7 @@ class TeamMenu {
             set(4, bannerItem)
 
             // ── Close button (slot 8) ──
-            set(8, guiItem(XMaterial.BARRIER, "<red>关闭", listOf("<gray>点击关闭"), model = "kangelitem:void"))
+            set(8, guiItem(XMaterial.BARRIER, "<#E08A98>关闭", listOf("<#A9B4C3>点击关闭"), model = "kangelitem:void"))
 
             // ── Member heads (starting slot 9) ──
             for ((i, memberId) in members.withIndex()) {
@@ -76,12 +76,12 @@ class TeamMenu {
                                 // Kick
                                 val target = Bukkit.getPlayer(memberId)
                                 if (target == null) {
-                                    clicker.sendMessage("<red>该玩家已离线".toComponent())
+                                    clicker.sendMessage("<#E08A98>该玩家已离线".toComponent())
                                     return@set
                                 }
                                 if (TeamManager.kick(clicker, target)) {
-                                    clicker.sendMessage("<green>已踢出 <yellow>${target.name}</yellow>".toComponent())
-                                    target.sendMessage("<red>你被队长踢出了队伍".toComponent())
+                                    clicker.sendMessage("<#8FD4A6>已踢出 <#EFDF8F>${target.name}</#EFDF8F>".toComponent())
+                                    target.sendMessage("<#E08A98>你被队长踢出了队伍".toComponent())
                                     clicker.closeInventory()
                                     submit(delay = 1) { open(clicker) }
                                 }
@@ -90,12 +90,12 @@ class TeamMenu {
                                 // Transfer
                                 val target = Bukkit.getPlayer(memberId)
                                 if (target == null) {
-                                    clicker.sendMessage("<red>该玩家已离线，无法移交队长".toComponent())
+                                    clicker.sendMessage("<#E08A98>该玩家已离线，无法移交队长".toComponent())
                                     return@set
                                 }
                                 if (TeamManager.transfer(clicker, target)) {
-                                    clicker.sendMessage("<green>已将队长移交给 <yellow>${target.name}</yellow>".toComponent())
-                                    target.sendMessage("<gold>你已成为队长!".toComponent())
+                                    clicker.sendMessage("<#8FD4A6>已将队长移交给 <#EFDF8F>${target.name}</#EFDF8F>".toComponent())
+                                    target.sendMessage("<#DFBD7C>你已成为队长!".toComponent())
                                     clicker.closeInventory()
                                     submit(delay = 1) { open(clicker) }
                                 }
@@ -111,12 +111,12 @@ class TeamMenu {
             if (isLeader) {
                 val disbandItem = buildActionItem(
                     Material.RED_BANNER,
-                    "<red><b>解散队伍",
+                    "<#E08A98><b>解散队伍",
                     listOf(
-                        "<!i> <yellow>点击 <red>解散队伍",
-                        loreInfo("警告", "<red>此操作不可撤销"),
+                        "<!i> <#EFDF8F>点击 <#E08A98>解散队伍",
+                        loreInfo("警告", "<#E08A98>此操作不可撤销"),
                         loreSpace(),
-                        loreInfo("影响", "<red>所有队员将被移出")
+                        loreInfo("影响", "<#E08A98>所有队员将被移出")
                     )
                 )
                 set(45, disbandItem) {
@@ -125,30 +125,30 @@ class TeamMenu {
                         for (memberId in team.allMembers) {
                             val mp = Bukkit.getPlayer(memberId)
                             if (mp != null && mp.isOnline) {
-                                mp.sendMessage("<red>队伍已被队长解散".toComponent())
+                                mp.sendMessage("<#E08A98>队伍已被队长解散".toComponent())
                             }
                         }
-                        clicker.sendMessage("<green>队伍已解散".toComponent())
+                        clicker.sendMessage("<#8FD4A6>队伍已解散".toComponent())
                         clicker.closeInventory()
                     }
                 }
             } else {
                 val leaveItem = buildActionItem(
                     Material.IRON_DOOR,
-                    "<yellow><b>退出队伍",
+                    "<#EFDF8F><b>退出队伍",
                     listOf(
-                        "<!i> <yellow>点击 <green>退出队伍",
+                        "<!i> <#EFDF8F>点击 <#8FD4A6>退出队伍",
                         loreSpace(),
-                        loreInfo("提醒", "<gray>退出后需重新邀请才能加入")
+                        loreInfo("提醒", "<#A9B4C3>退出后需重新邀请才能加入")
                     )
                 )
                 set(45, leaveItem) {
                     clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
                     if (TeamManager.leave(clicker)) {
-                        clicker.sendMessage("<green>你已退出队伍".toComponent())
+                        clicker.sendMessage("<#8FD4A6>你已退出队伍".toComponent())
                         val mp = Bukkit.getPlayer(team.leader)
                         if (mp != null && mp.isOnline) {
-                            mp.sendMessage("<yellow>${clicker.name} <gray>已退出队伍".toComponent())
+                            mp.sendMessage("<#EFDF8F>${clicker.name} <#A9B4C3>已退出队伍".toComponent())
                         }
                         clicker.closeInventory()
                     }
@@ -159,21 +159,21 @@ class TeamMenu {
             if (isLeader) {
                 val transferItem = buildActionItem(
                     Material.GOLD_INGOT,
-                    "<gold><b>移交队长",
+                    "<#DFBD7C><b>移交队长",
                     listOf(
-                        loreInfo("操作", "<gray>点击队员头像 <gold>右键 <gray>移交队长"),
+                        loreInfo("操作", "<#A9B4C3>点击队员头像 <#DFBD7C>右键 <#A9B4C3>移交队长"),
                         loreSpace(),
-                        loreInfo("需要", "<gray>目标在线")
+                        loreInfo("需要", "<#A9B4C3>目标在线")
                     )
                 )
                 set(49, transferItem) {
                     clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
-                    clicker.sendMessage("<gold>请在成员列表中 <yellow>右键 <gold>点击要移交的队员".toComponent())
+                    clicker.sendMessage("<#DFBD7C>请在成员列表中 <#EFDF8F>右键 <#DFBD7C>点击要移交的队员".toComponent())
                 }
             }
 
             // Slot 53: Close
-            set(53, guiItem(XMaterial.BARRIER, "<red>关闭", listOf("<gray>点击关闭"), model = "kangelitem:void")) {
+            set(53, guiItem(XMaterial.BARRIER, "<#E08A98>关闭", listOf("<#A9B4C3>点击关闭"), model = "kangelitem:void")) {
                 clicker.playSound(clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
                 clicker.closeInventory()
             }
@@ -192,13 +192,13 @@ class TeamMenu {
 
         val item = ItemStack(Material.NAME_TAG)
         val meta = item.itemMeta ?: return item
-        meta.displayName("<gold><b>我的队伍".replacePlaceholder(player).toComponent())
+        meta.displayName("<#DFBD7C><b>我的队伍".replacePlaceholder(player).toComponent())
         val lore = mutableListOf(
-            loreInfo("队长", "<white>${Bukkit.getOfflinePlayer(team.leader).name ?: "未知"}"),
-            loreInfo("成员", "<white>$totalCount<gray>/<white>$maxSize"),
-            loreInfo("在线", "<green>$onlineCount <gray>/ <white>$totalCount"),
+            loreInfo("队长", "<#F2F5FA>${Bukkit.getOfflinePlayer(team.leader).name ?: "未知"}"),
+            loreInfo("成员", "<#F2F5FA>$totalCount<#A9B4C3>/<#F2F5FA>$maxSize"),
+            loreInfo("在线", "<#8FD4A6>$onlineCount <#A9B4C3>/ <#F2F5FA>$totalCount"),
             loreSpace(),
-            loreInfo("队伍伤害减免", "<green>50%")
+            loreInfo("队伍伤害减免", "<#8FD4A6>50%")
         )
         meta.lore(lore.map { it.replacePlaceholder(player).toComponent() })
         item.setItemMeta(meta)
@@ -221,12 +221,12 @@ class TeamMenu {
         }
 
         val meta = item.itemMeta ?: return item
-        val statusColor = if (online) "<green>" else "<gray>"
+        val statusColor = if (online) "<#8FD4A6>" else "<#A9B4C3>"
         meta.displayName("${statusColor}${name}".toComponent())
         val lore = mutableListOf(
-            loreInfo("角色", if (role == "队长") "<gold>队长" else "<white>队员"),
+            loreInfo("角色", if (role == "队长") "<#DFBD7C>队长" else "<#F2F5FA>队员"),
             loreSpace(),
-            loreInfo("状态", if (player != null && player.isOnline) "<green>● 在线" else "<gray>● 离线")
+            loreInfo("状态", if (player != null && player.isOnline) "<#8FD4A6>● 在线" else "<#A9B4C3>● 离线")
         )
 
         meta.lore(lore.map { it.toComponent() })

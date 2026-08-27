@@ -5,7 +5,7 @@ import io.github.zzzyyylllty.chotentech.data.RankConfig
 import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager
 import io.github.zzzyyylllty.chotentech.util.devLog
 import io.github.zzzyyylllty.chotentech.util.toComponent
-import io.github.zzzyyylllty.chotentech.kether.evalKetherBoolean
+import io.github.zzzyyylllty.chotentech.function.kether.evalKetherBoolean
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import taboolib.common.platform.function.getDataFolder
@@ -181,7 +181,7 @@ object RankManager {
                 iterator.remove()
                 changed = true
                 player.sendMessage(
-                    " <#ff6666>你的称号「${rank.name}」因条件不满足已自动撤下。"
+                    " <#e8baba>你的称号「${rank.name}」因条件不满足已自动撤下。"
                         .toComponent()
                 )
                 devLog("[称号] 玩家 ${player.name} 的 ${type} 称号「${rank.name}」条件不满足，已自动撤下")

@@ -40,20 +40,20 @@ object WhManageCommand {
                 val playerName = context["player"]
                 val data = loadPlayerData(playerName)
                 if (data == null) {
-                    sender.sendComponent("<red>玩家 $playerName 不存在或没有数据！")
+                    sender.sendComponent("<#E08A98>玩家 $playerName 不存在或没有数据！")
                     return@execute
                 }
 
-                sender.sendComponent("<gold>===== ${playerName} 仓库一览 =====")
+                sender.sendComponent("<#DFBD7C>===== ${playerName} 仓库一览 =====")
                 for ((baseIdef, contents) in data.warehouseContents) {
                     val baseName = BaseManager.baseMap[baseIdef]?.name ?: baseIdef
-                    sender.sendComponent("<yellow>$baseName ($baseIdef): <gray>${contents.size} 个物品")
+                    sender.sendComponent("<#EFDF8F>$baseName ($baseIdef): <#A9B4C3>${contents.size} 个物品")
                     contents.entries.forEachIndexed { index, (id, _) ->
-                        sender.sendComponent("  <gray>#${index + 1} (ID: $id)")
+                        sender.sendComponent("  <#A9B4C3>#${index + 1} (ID: $id)")
                     }
                 }
                 if (data.warehouseContents.isEmpty()) {
-                    sender.sendComponent("<gray>（空）")
+                    sender.sendComponent("<#A9B4C3>（空）")
                 }
             }
         }
@@ -69,7 +69,7 @@ object WhManageCommand {
                         val baseIdef = context["base"].uppercase()
                         val index = context["index"].toIntOrNull()
                         if (index == null || index < 1) {
-                            sender.sendComponent("<red>索引必须大于 0！")
+                            sender.sendComponent("<#E08A98>索引必须大于 0！")
                             return@execute
                         }
 
@@ -78,9 +78,9 @@ object WhManageCommand {
                             val entry = contents.entries.toList().getOrNull(index - 1)
                             if (entry != null) {
                                 data.warehouseContents[baseIdef]?.remove(entry.key)
-                                sender.sendComponent("<green>已移除 ${playerName} 的 $baseIdef 仓库第 $index 个物品")
+                                sender.sendComponent("<#8FD4A6>已移除 ${playerName} 的 $baseIdef 仓库第 $index 个物品")
                             } else {
-                                sender.sendComponent("<red>索引 $index 超出范围（共 ${contents.size} 个物品）！")
+                                sender.sendComponent("<#E08A98>索引 $index 超出范围（共 ${contents.size} 个物品）！")
                             }
                         }
                     }
@@ -96,7 +96,7 @@ object WhManageCommand {
                 val playerName = context["player"]
                 modifyWarehouse(playerName) { data ->
                     data.warehouseContents.clear()
-                    sender.sendComponent("<green>已清空 ${playerName} 的所有仓库内容")
+                    sender.sendComponent("<#8FD4A6>已清空 ${playerName} 的所有仓库内容")
                 }
             }
             dynamic("base") {
@@ -105,9 +105,9 @@ object WhManageCommand {
                     val baseIdef = context["base"].uppercase()
                     modifyWarehouse(playerName) { data ->
                         if (data.warehouseContents.remove(baseIdef) != null) {
-                            sender.sendComponent("<green>已清空 ${playerName} 的 $baseIdef 仓库")
+                            sender.sendComponent("<#8FD4A6>已清空 ${playerName} 的 $baseIdef 仓库")
                         } else {
-                            sender.sendComponent("<red>该基地没有仓库数据！")
+                            sender.sendComponent("<#E08A98>该基地没有仓库数据！")
                         }
                     }
                 }
@@ -145,18 +145,18 @@ object WhManageCommand {
         if (online != null) {
             val data = online.getData()
             if (data == null) {
-                sender.sendComponent("<red>玩家 $playerName 没有数据！")
+                sender.sendComponent("<#E08A98>玩家 $playerName 没有数据！")
                 return
             }
             if (baseIdef != null) {
                 if (BaseManager.resetBaseWarehouse(online, data, baseIdef)) {
-                    sender.sendComponent("<green>已重置 ${playerName} 的 $baseIdef 仓库(已重新发放初始物资)")
+                    sender.sendComponent("<#8FD4A6>已重置 ${playerName} 的 $baseIdef 仓库(已重新发放初始物资)")
                 } else {
-                    sender.sendComponent("<red>基地 $baseIdef 不存在！")
+                    sender.sendComponent("<#E08A98>基地 $baseIdef 不存在！")
                 }
             } else {
                 BaseManager.resetAllWarehouses(online, data)
-                sender.sendComponent("<green>已重置 ${playerName} 的所有仓库(已重新发放初始物资)")
+                sender.sendComponent("<#8FD4A6>已重置 ${playerName} 的所有仓库(已重新发放初始物资)")
             }
             DataManager.saveData(online)
             return
@@ -164,27 +164,27 @@ object WhManageCommand {
 
         // 离线:读-改-写,无法立即发放,auto-grant 基地(ALP)下次进服自动补发
         val raw = DataManager.getRawDataByName(playerName) ?: run {
-            sender.sendComponent("<red>玩家 $playerName 不存在或没有数据！")
+            sender.sendComponent("<#E08A98>玩家 $playerName 不存在或没有数据！")
             return
         }
         val data = try {
             jsonUtils.fromJson(raw, PlayerData::class.java)
         } catch (_: Exception) {
-            sender.sendComponent("<red>玩家 $playerName 数据解析失败！")
+            sender.sendComponent("<#E08A98>玩家 $playerName 数据解析失败！")
             return
         } ?: run {
-            sender.sendComponent("<red>玩家 $playerName 数据为空！")
+            sender.sendComponent("<#E08A98>玩家 $playerName 数据为空！")
             return
         }
         if (baseIdef != null) {
             if (BaseManager.resetBaseWarehouse(null, data, baseIdef)) {
-                sender.sendComponent("<green>已重置 ${playerName} 的 $baseIdef 仓库(auto-grant 基地下次进服自动补发)")
+                sender.sendComponent("<#8FD4A6>已重置 ${playerName} 的 $baseIdef 仓库(auto-grant 基地下次进服自动补发)")
             } else {
-                sender.sendComponent("<red>基地 $baseIdef 不存在！")
+                sender.sendComponent("<#E08A98>基地 $baseIdef 不存在！")
             }
         } else {
             BaseManager.resetAllWarehouses(null, data)
-            sender.sendComponent("<green>已重置 ${playerName} 的所有仓库(auto-grant 基地下次进服自动补发)")
+            sender.sendComponent("<#8FD4A6>已重置 ${playerName} 的所有仓库(auto-grant 基地下次进服自动补发)")
         }
         val json = jsonUtils.toJson(data, PlayerData::class.java)
         DataManager.saveUserDataRow(UserDataRow().also {
@@ -220,23 +220,23 @@ object WhManageCommand {
                 action(data)
                 DataManager.saveData(online)
             } else {
-                ChoTenTech.consoleSender.sendComponent("<red>玩家 $playerName 没有数据！")
+                ChoTenTech.consoleSender.sendComponent("<#E08A98>玩家 $playerName 没有数据！")
             }
             return
         }
 
         // 离线玩家：从数据库读取 -> 修改 -> 写回
         val raw = DataManager.getRawDataByName(playerName) ?: run {
-            ChoTenTech.consoleSender.sendComponent("<red>玩家 $playerName 不存在或没有数据！")
+            ChoTenTech.consoleSender.sendComponent("<#E08A98>玩家 $playerName 不存在或没有数据！")
             return
         }
         val data = try {
             jsonUtils.fromJson(raw, PlayerData::class.java)
         } catch (_: Exception) {
-            ChoTenTech.consoleSender.sendComponent("<red>玩家 $playerName 数据解析失败！")
+            ChoTenTech.consoleSender.sendComponent("<#E08A98>玩家 $playerName 数据解析失败！")
             return
         } ?: run {
-            ChoTenTech.consoleSender.sendComponent("<red>玩家 $playerName 数据为空！")
+            ChoTenTech.consoleSender.sendComponent("<#E08A98>玩家 $playerName 数据为空！")
             return
         }
 

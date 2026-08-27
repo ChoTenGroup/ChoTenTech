@@ -28,7 +28,7 @@ object BackSpawnCommand {
             if (loc != null) {
                 player.teleportAsync(loc)
             } else {
-                player.sendMessage("<red>你没有设置存档点".toComponent())
+                player.sendMessage("<#E08A98>你没有设置存档点".toComponent())
             }
         }
     }

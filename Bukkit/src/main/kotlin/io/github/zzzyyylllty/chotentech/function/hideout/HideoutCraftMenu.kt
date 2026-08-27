@@ -20,7 +20,7 @@ class HideoutCraftMenu(private val baseKey: String) {
         val hideout = data.hideoutData[baseKey] ?: return
         val craftLevel = hideout.getModuleLevel("crafting_station")
         if (craftLevel <= 0) {
-            player.sendComponent("<red>合成站未建造！")
+            player.sendComponent("<#E08A98>合成站未建造！")
             return
         }
 
@@ -28,7 +28,7 @@ class HideoutCraftMenu(private val baseKey: String) {
             .filter { craftLevel >= it.minLevel }
 
         player.openMenu<PageableChest<HideoutRecipe>>(
-            mmJsonUtil.serialize("<white><shift:-16><image:kangelicon:list><shift:-176><aqua><font:minecraft:fusionpixel10>合成站 - 配方".toComponent())
+            mmJsonUtil.serialize("<#F2F5FA><shift:-16><image:kangelicon:list><shift:-176><#84D1CB><font:minecraft:fusionpixel10>合成站 - 配方".toComponent())
         ) {
             rows(6)
             map(
@@ -50,11 +50,11 @@ class HideoutCraftMenu(private val baseKey: String) {
             onClick { event, recipe ->
                 event.isCancelled = true
                 if (hideout.fuelAmount <= 0) {
-                    event.clicker.sendComponent("<red>发电机未运行！")
+                    event.clicker.sendComponent("<#E08A98>发电机未运行！")
                     return@onClick
                 }
                 if (hideout.craftingQueues.any { it.recipeId == recipe.id }) {
-                    event.clicker.sendComponent("<red>该配方已在合成中！")
+                    event.clicker.sendComponent("<#E08A98>该配方已在合成中！")
                     return@onClick
                 }
                 event.clicker.closeInventory()
@@ -67,8 +67,8 @@ class HideoutCraftMenu(private val baseKey: String) {
 
             set('C', ItemStack(Material.COMPASS).apply {
                 editMeta { m ->
-                    m.displayName("<b><aqua>返回".toComponent())
-                    m.lore(listOf("<gray>返回基地总览".toComponent()))
+                    m.displayName("<b><#84D1CB>返回".toComponent())
+                    m.lore(listOf("<#A9B4C3>返回基地总览".toComponent()))
                     m.itemModel = NamespacedKey.fromString("kangelitem:void")
                 }
             }) {
@@ -87,7 +87,7 @@ class HideoutCraftMenu(private val baseKey: String) {
             setPreviousPage(7) { _, page ->
                 ItemStack(Material.ARROW).apply {
                     editMeta { m ->
-                        m.displayName("<aqua><b>上一页".toComponent())
+                        m.displayName("<#84D1CB><b>上一页".toComponent())
                         m.itemModel = NamespacedKey.fromString(if (page) "kangelitem:previous" else "kangelitem:previous_no")
                     }
                 }
@@ -96,7 +96,7 @@ class HideoutCraftMenu(private val baseKey: String) {
             setNextPage(8) { _, page ->
                 ItemStack(Material.ARROW).apply {
                     editMeta { m ->
-                        m.displayName("<aqua><b>下一页".toComponent())
+                        m.displayName("<#84D1CB><b>下一页".toComponent())
                         m.itemModel = NamespacedKey.fromString(if (page) "kangelitem:next" else "kangelitem:next_no")
                     }
                 }
@@ -113,29 +113,29 @@ class HideoutCraftMenu(private val baseKey: String) {
             val firstOut = recipe.outputs.firstOrNull()
             val outName = firstOut?.sertralineId?.let { ItemNameHelper.getDisplayName(it) }
                 ?: firstOut?.material ?: recipe.id
-            m.displayName("<gold>合成 $outName <gray>x${firstOut?.amount ?: 1}".toComponent())
+            m.displayName("<#DFBD7C>合成 $outName <#A9B4C3>x${firstOut?.amount ?: 1}".toComponent())
             val queued = hideout.craftingQueues.any { it.recipeId == recipe.id }
             val running = hideout.fuelAmount > 0
 
             val lore = mutableListOf<Component>()
-            lore += "<!i><gray>合成时间: <yellow>${recipe.craftTime} 秒".toComponent()
-            if (recipe.usageCost > 0) lore += "<!i><gray>额外能耗: <yellow>${recipe.usageCost}/s".toComponent()
+            lore += "<!i><#A9B4C3>合成时间: <#EFDF8F>${recipe.craftTime} 秒".toComponent()
+            if (recipe.usageCost > 0) lore += "<!i><#A9B4C3>额外能耗: <#EFDF8F>${recipe.usageCost}/s".toComponent()
             lore += Component.empty()
-            lore += "<!i><gray>材料:".toComponent()
+            lore += "<!i><#A9B4C3>材料:".toComponent()
             for (input in recipe.inputs) {
                 val inName = input.sertralineId?.let { ItemNameHelper.getDisplayName(it) } ?: input.material
-                lore += "<!i> <gray>- <white>$inName <gray>x${input.amount}".toComponent()
+                lore += "<!i> <#A9B4C3>- <#F2F5FA>$inName <#A9B4C3>x${input.amount}".toComponent()
             }
-            lore += "<!i><gray>产出:".toComponent()
+            lore += "<!i><#A9B4C3>产出:".toComponent()
             for (out in recipe.outputs) {
                 val outLabel = out.sertralineId?.let { ItemNameHelper.getDisplayName(it) } ?: out.material
-                lore += "<!i> <gray>- <white>$outLabel <gray>x${out.amount}".toComponent()
+                lore += "<!i> <#A9B4C3>- <#F2F5FA>$outLabel <#A9B4C3>x${out.amount}".toComponent()
             }
             lore += Component.empty()
             when {
-                queued -> lore += "<!i><green>✓ 已在合成队列中".toComponent()
-                !running -> lore += "<!i><red>✗ 发电机未运行".toComponent()
-                else -> lore += "<!i><gray>点击开始合成".toComponent()
+                queued -> lore += "<!i><#8FD4A6>✓ 已在合成队列中".toComponent()
+                !running -> lore += "<!i><#E08A98>✗ 发电机未运行".toComponent()
+                else -> lore += "<!i><#A9B4C3>点击开始合成".toComponent()
             }
             m.lore(lore)
         }
@@ -146,17 +146,17 @@ class HideoutCraftMenu(private val baseKey: String) {
         hideout: HideoutPlayerData
     ): ItemStack = ItemStack(Material.CLOCK).apply {
         editMeta { m ->
-            m.displayName("<gold>合成队列".toComponent())
+            m.displayName("<#DFBD7C>合成队列".toComponent())
             val lore = mutableListOf<Component>()
             if (hideout.craftingQueues.isEmpty()) {
-                lore += "<!i><gray>队列为空".toComponent()
+                lore += "<!i><#A9B4C3>队列为空".toComponent()
             } else {
                 for (q in hideout.craftingQueues) {
                     val recipe = HideoutConfig.getRecipe(q.recipeId)
                     val firstOut = recipe?.outputs?.firstOrNull()
                     val qName = firstOut?.sertralineId?.let { ItemNameHelper.getDisplayName(it) }
                         ?: firstOut?.material ?: q.recipeId
-                    lore += "<!i><gray>- <yellow>$qName <gray>剩余 ${q.remainingTime} 秒".toComponent()
+                    lore += "<!i><#A9B4C3>- <#EFDF8F>$qName <#A9B4C3>剩余 ${q.remainingTime} 秒".toComponent()
                 }
             }
             m.lore(lore)
