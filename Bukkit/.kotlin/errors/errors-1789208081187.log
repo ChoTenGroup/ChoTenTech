@@ -1,0 +1,29 @@
+kotlin version: 2.2.0
+error message: The daemon has terminated unexpectedly on startup attempt #1 with exit code: 1. The daemon process output:
+    ... (11 more lines)
+    12. 	at java.base/java.lang.ClassLoader.defineClass(ClassLoader.java:1027)
+    13. 	at java.base/java.security.SecureClassLoader.defineClass(SecureClassLoader.java:150)
+    14. 	at java.base/jdk.internal.loader.BuiltinClassLoader.defineClass(BuiltinClassLoader.java:862)
+    15. 	at java.base/jdk.internal.loader.BuiltinClassLoader.findClassOnClassPathOrNull(BuiltinClassLoader.java:760)
+    16. 	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClassOrNull(BuiltinClassLoader.java:681)
+    17. 	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:639)
+    18. 	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:188)
+    19. 	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:526)
+    20. 	at org.jetbrains.kotlin.daemon.KotlinCompileDaemonBase.mainImpl(KotlinCompileDaemon.kt:100)
+    21. 	at org.jetbrains.kotlin.daemon.KotlinCompileDaemon.main(KotlinCompileDaemon.kt:187)
+The daemon didn't produce the message "Kotlin compile daemon is ready" during startup.
+
+error message: The daemon has terminated unexpectedly on startup attempt #2 with exit code: -1073741571. The daemon process output:
+    ... (2 more lines)
+    3. #
+    4. #  Internal Error (jvmciRuntime.cpp:1010), pid=27076, tid=44228
+    5. #  fatal error: Fatal error in JVMCI shared library JavaVM[2] owned by JVMCI runtime 1
+    6. #
+    7. # JRE version: Java(TM) SE Runtime Environment Oracle GraalVM 21.0.10+8.1 (21.0.10+8) (build 21.0.10+8-LTS-jvmci-23.1-b84)
+    8. # Java VM: Java HotSpot(TM) 64-Bit Server VM Oracle GraalVM 21.0.10+8.1 (21.0.10+8-LTS-jvmci-23.1-b84, mixed mode, sharing, tiered, jvmci, jvmci compiler, compressed oops, compressed class ptrs, parallel gc, windows-amd64)
+    9. # No core dump will be written. Minidumps are not enabled by default on client versions of Windows
+    10. #
+    11. # An error report file with more information is saved as:
+    12. # C:\Users\Administrator\AppData\Local\kotlin\daemon\hs_err_pid27076.log
+The daemon didn't produce the message "Kotlin compile daemon is ready" during startup.
+

@@ -3,6 +3,8 @@ package io.github.zzzyyylllty.chotentech.listener
 import io.github.zzzyyylllty.chotentech.data.NutritionManager
 import io.github.zzzyyylllty.chotentech.data.getConsumableConfig
 import io.github.zzzyyylllty.chotentech.data.getData
+import io.github.zzzyyylllty.chotentech.function.bleedout.BleedoutManager
+import io.github.zzzyyylllty.chotentech.util.toComponent
 import io.github.zzzyyylllty.sertraline.Sertraline
 import io.github.zzzyyylllty.sertraline.item.rebuildDisplay
 import io.papermc.paper.datacomponent.DataComponentTypes
@@ -32,6 +34,15 @@ fun onPlayerEat(event: PlayerItemConsumeEvent) {
     // ===== Check for "restore" compound in ItemTag =====
     val restoreTag = tag?.get("restore")?.asCompound()
     if (restoreTag != null) {
+        // 倒地状态禁止使用医疗物品（按 ID 前缀兜底识别医疗物品）
+        val restoreSertralineId = Sertraline.api().getId(item)?.lowercase()
+        val isMedical = restoreSertralineId != null &&
+            io.github.zzzyyylllty.chotentech.function.SkillManager.medicalItemPrefixes.any { restoreSertralineId.contains(it) }
+        if (isMedical && BleedoutManager.isDowned(player.uniqueId)) {
+            event.isCancelled = true
+            player.sendActionBar("<#E08A98>倒地状态无法使用医疗物品".toComponent())
+            return
+        }
         // 先确定 replacement:医疗物品绝不残留玻璃瓶(原版会把整格按饮品替换成瓶子)
         // 带耐久的医疗物品同样走耐久扣减:单个扣耐久留在手上,堆叠分出一个扣过耐久的
         event.replacement = applyDurability(item, player)
@@ -85,6 +96,12 @@ fun onPlayerEat(event: PlayerItemConsumeEvent) {
     if (sertralineId != null) {
         val consumable = getConsumableConfig(sertralineId)
         if (consumable != null) {
+            // 倒地状态禁止使用医疗物品
+            if (consumable.medical && BleedoutManager.isDowned(player.uniqueId)) {
+                event.isCancelled = true
+                player.sendActionBar("<#E08A98>倒地状态无法使用医疗物品".toComponent())
+                return
+            }
             consumable.apply(player)
 
             // restore 分支已经处理过耐久,这里不重复扣减

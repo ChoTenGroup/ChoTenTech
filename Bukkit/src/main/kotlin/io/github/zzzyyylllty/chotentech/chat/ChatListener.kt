@@ -1,5 +1,6 @@
 package io.github.zzzyyylllty.chotentech.chat
 
+import ink.ptms.chemdah.taboolib.common.platform.DelayTo
 import io.github.zzzyyylllty.chotentech.player.sendComponent
 import io.github.zzzyyylllty.chotentech.punish.PunishManager
 import io.github.zzzyyylllty.chotentech.util.devLog
@@ -9,6 +10,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
 import org.bukkit.Bukkit
 import org.bukkit.command.ConsoleCommandSender
+import taboolib.common.LifeCycle
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.SubscribeEvent
 
@@ -20,7 +22,9 @@ import taboolib.common.platform.event.SubscribeEvent
 object ChatListener {
 
     // HIGHEST：服务器上可能还有其他聊天插件先格式化消息，最后执行以覆盖它们
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    
+
+@SubscribeEvent(priority = EventPriority.HIGHEST)
     fun onAsyncChat(event: AsyncChatEvent) {
         val player = event.player
         if (event.isCancelled) return

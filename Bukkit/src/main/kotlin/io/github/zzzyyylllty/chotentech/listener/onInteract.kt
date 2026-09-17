@@ -25,6 +25,8 @@ import kotlin.collections.get
 
 private val waterCooldowns = ConcurrentHashMap<String, Long>()
 
+
+
 @SubscribeEvent(priority = EventPriority.HIGHEST)
 fun onPlayerInteractWithDisabledBlocks(event: PlayerInteractEvent) {
 
@@ -33,7 +35,7 @@ fun onPlayerInteractWithDisabledBlocks(event: PlayerInteractEvent) {
 
     if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) return
 
-    if (block.contains("CANDLE") || block.contains("POT") || block == "CAULDRON"  || block == "CAKE" || block.contains("COPPER") || block.contains("SIGN") || block == "CHISELED_BOOKSHELF" || block == "LODESTONE") {
+    if (block.contains("CANDLE") || block.contains("POT") || block == "CAULDRON"  || block == "CAKE" || (block.contains("COPPER") && block.contains("BLOCK")) || block.contains("SIGN") || block == "CHISELED_BOOKSHELF" || block == "LODESTONE") {
         event.isCancelled = true
     }
 

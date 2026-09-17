@@ -1,6 +1,7 @@
 package io.github.zzzyyylllty.chotentech.listener
 
 import io.github.zzzyyylllty.chotentech.data.getHealConfigFromYaml
+import io.github.zzzyyylllty.chotentech.function.bleedout.BleedoutManager
 import io.github.zzzyyylllty.chotentech.function.HealingManager
 import io.github.zzzyyylllty.chotentech.function.HealingPhase
 import io.github.zzzyyylllty.chotentech.function.PostReason
@@ -41,6 +42,12 @@ fun onUseMedicalItem(event: PlayerInteractEvent) {
     val config = getHealConfigFromYaml(sertralineId, durability, maxDurability) ?: return
 
     event.isCancelled = true
+
+    // 倒地状态禁止使用医疗物品
+    if (BleedoutManager.isDowned(player.uniqueId)) {
+        player.sendActionBar("<#E08A98>倒地状态无法使用医疗物品".toComponent())
+        return
+    }
 
     // Pitch check: looking too far up = can't enter healing
     if (player.pitch < -80f) {
@@ -106,6 +113,8 @@ fun onHealingAttacked(event: EntityDamageByEntityEvent) {
         HealingManager.cancel(player, PostReason.CANCELLED)
     }
 }
+
+
 
 @SubscribeEvent(priority = EventPriority.MONITOR, ignoreCancelled = true)
 fun onHealingFallDamage(event: EntityDamageEvent) {

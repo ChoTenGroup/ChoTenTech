@@ -22,6 +22,8 @@ private val ALLOWED_CE_BLOCKS = setOf(
     "kangelblocks:glass",
 )
 
+
+
 @SubscribeEvent(priority = EventPriority.LOWEST)
 fun onPlayerPlaceBlock(event: BlockPlaceEvent) {
     val player = event.player
@@ -48,6 +50,8 @@ fun onPlayerPlaceBlock(event: BlockPlaceEvent) {
     event.isCancelled = true
     player.sendComponent("<#E08A98>不允许放置这个方块!")
 }
+
+
 
 @SubscribeEvent(priority = EventPriority.LOWEST)
 fun onPlayerBreakBlock(event: BlockBreakEvent) {

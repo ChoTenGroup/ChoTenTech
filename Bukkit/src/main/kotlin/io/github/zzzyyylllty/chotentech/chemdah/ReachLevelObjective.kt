@@ -41,7 +41,7 @@ object ReachLevelObjective : ObjectiveCountableI<NoclipEvent>() {
     }
 }
 
-@Awake(LifeCycle.ENABLE)
+@Awake(LifeCycle.ACTIVE)
 fun registerReachLevelObjective() {
     ReachLevelObjective.register()
 }

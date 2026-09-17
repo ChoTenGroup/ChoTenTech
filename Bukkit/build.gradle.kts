@@ -30,6 +30,7 @@ taboolib {
             // 可选依赖.
             // name("XXX").optional(true)
         }
+        load("STARTUP")
     }
     env {
         repoTabooLib = "https://repo.tabooproject.org/repository/releases"
@@ -175,8 +176,8 @@ dependencies {
     compileOnly("de.oliver:FancyHolograms:2.9.1")
     compileOnly("ink.ptms.chemdah:api:1.1.34")
     compileOnly("net.luckperms:api:5.4")
-    compileOnly("net.momirealms:craft-engine-core:0.0.65") // 将 "{version}" 替换为插件稳定版本
-    compileOnly("net.momirealms:craft-engine-bukkit:0.0.65") // 例如 0.0.60
+    compileOnly("net.momirealms:craft-engine-core:26.8.1") // 将 "{version}" 替换为插件稳定版本
+    compileOnly("net.momirealms:craft-engine-bukkit:26.8.1") // 例如 0.0.60
     implementation("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT") { isTransitive = false }
     implementation("net.kyori:adventure-text-serializer-legacy:4.19.0")
     implementation("net.kyori:adventure-text-serializer-gson:4.19.0")

@@ -62,7 +62,6 @@
 ========== 攻击类型属性 ==========
 
   ranged_damage                  | 远程伤害              | 自定义                           | 默认: 0.0
-  ranged_attack_damage           | 远程攻击伤害          | 自定义                           | 默认: 0.0 [百分比]
   magic_attack_damage            | 魔法攻击伤害          | 自定义                           | 默认: 0.0 [百分比]
   magic_damage                   | 魔法伤害              | 自定义                           | 默认: 0.0
   fire_attack_damage             | 火焰攻击伤害          | 自定义                           | 默认: 0.0 [百分比]

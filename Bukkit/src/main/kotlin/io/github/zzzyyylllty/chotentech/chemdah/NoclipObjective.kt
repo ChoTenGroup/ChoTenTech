@@ -38,7 +38,7 @@ object NoclipObjective : ObjectiveCountableI<NoclipEvent>() {
     }
 }
 
-@Awake(LifeCycle.ENABLE)
+@Awake(LifeCycle.ACTIVE)
 fun registerNoclipObjective(){
     NoclipObjective.register()
 }

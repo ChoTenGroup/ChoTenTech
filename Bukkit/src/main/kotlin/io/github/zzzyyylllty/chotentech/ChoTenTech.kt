@@ -37,9 +37,9 @@ import io.github.zzzyyylllty.chotentech.damage.DamageTypeRegistry
 import io.github.zzzyyylllty.chotentech.manager.AttributeManager
 import io.github.zzzyyylllty.chotentech.load.loadAchievementFiles
 import io.github.zzzyyylllty.chotentech.load.loadAccountTypes
-import io.github.zzzyyylllty.chotentech.data.conflictConfigs
+import io.github.zzzyyylllty.chotentech.data.interfereConfigs
 import io.github.zzzyyylllty.chotentech.data.cosmeticConfigs
-import io.github.zzzyyylllty.chotentech.data.loadConflictFiles
+import io.github.zzzyyylllty.chotentech.data.loadInterfereFiles
 import io.github.zzzyyylllty.chotentech.data.loadCosmeticFiles
 import io.github.zzzyyylllty.chotentech.listener.initCosmeticEffects
 import io.github.zzzyyylllty.chotentech.load.loadLevelFiles
@@ -59,6 +59,8 @@ import io.github.zzzyyylllty.chotentech.listener.releaseRegenBlocks
 import io.github.zzzyyylllty.chotentech.logger.*
 import io.github.zzzyyylllty.chotentech.util.QuetiapineLocalDependencyHelper
 import io.github.zzzyyylllty.chotentech.util.dependencies
+import io.github.zzzyyylllty.chotentech.worldgeneration.Level0Generator
+import io.github.zzzyyylllty.chotentech.worldgeneration.Level1Generator
 import io.github.zzzyyylllty.sertraline.Sertraline
 import net.momirealms.craftengine.core.world.ChunkPos
 import org.bukkit.Bukkit
@@ -162,7 +164,9 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
         info("Enable")
         Language.enableSimpleComponent = true
 
-        reloadCustomConfig()
+        // 注意：配置/等级文件的加载已延后到 onActive()（LifeCycle.ACTIVE）。
+        // ENABLE 阶段（尤其在世界正在创建时）可能一个世界都还没加载好，
+        // 而 levels 里的位置解析需要世界已经存在。
 
         // Initialize chat system
         io.github.zzzyyylllty.chotentech.chat.TabooFilter.reload(filterConfig)
@@ -265,8 +269,12 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
     }
 
     override fun onActive() {
+        // ACTIVE 阶段在服务器启动完成之后触发，此时世界已经加载好，
+        // 所以在这里同步加载配置/等级文件，避免 ENABLE 阶段「没有任何世界」把加载打断。
+        reloadCustomConfig(async = false)
+
         autoLoadChunk()
-        loadConflictFiles()
+        loadInterfereFiles()
         loadCosmeticFiles()
         initCosmeticEffects()
     }
@@ -348,9 +356,9 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
             PunishManager.reloadConfig()
             SecurityManager.reload()
             EndManager.init()
-            conflictConfigs.clear()
+            interfereConfigs.clear()
             cosmeticConfigs.clear()
-            loadConflictFiles()
+            loadInterfereFiles()
             loadCosmeticFiles()
             reloadAchievements()
             ProjectileManager.loadProjectileFiles()
@@ -375,14 +383,13 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
         loadAchievementFiles()
     }
 
-    override fun getDefaultWorldGenerator(
-        p0: String?,
-        p1: String?
-    ): ChunkGenerator? {
-        TODO("Not yet implemented")
+    override fun getDefaultWorldGenerator(worldName: String?, name: String?): ChunkGenerator? {
+        return when (worldName) {
+            "level0inf" -> Level0Generator()
+            "level1inf" -> Level1Generator()
+            else -> null
+        }
     }
-
-
 }
 
 

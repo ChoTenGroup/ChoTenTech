@@ -28,7 +28,7 @@ object TakeWaterObjective : ObjectiveCountableI<TakeWaterEvent>() {
     }
 }
 
-@Awake(LifeCycle.ENABLE)
+@Awake(LifeCycle.ACTIVE)
 fun registerTakeWater() {
     TakeWaterObjective.register()
 }

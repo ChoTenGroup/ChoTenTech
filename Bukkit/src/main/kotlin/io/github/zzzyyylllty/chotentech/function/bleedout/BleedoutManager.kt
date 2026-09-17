@@ -107,6 +107,11 @@ object BleedoutManager {
         player.allowFlight = false
         player.isFlying = false
 
+        // 倒地限制：中断进行中的治疗
+        io.github.zzzyyylllty.chotentech.function.HealingManager.cancel(
+            player, io.github.zzzyyylllty.chotentech.function.PostReason.CANCELLED
+        )
+
         player.showTitle(net.kyori.adventure.title.Title.title(
             "<#E08A98>⛔ 倒地".toComponent(),
             "<#A9B4C3>等待队友救援或流血而死...".toComponent()
@@ -395,7 +400,9 @@ object BleedoutManager {
     // ---- Event handlers ----
 
     /** Intercept lethal damage → enter bleedout instead of dying */
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    
+
+@SubscribeEvent(priority = EventPriority.HIGHEST)
     fun onFatalDamage(event: EntityDamageEvent) {
         if (event.entity !is Player) return
         if (event.isCancelled) return
@@ -438,7 +445,9 @@ object BleedoutManager {
     }
 
     /** Allow downed players to crawl slowly anywhere */
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    
+
+@SubscribeEvent(priority = EventPriority.HIGHEST)
     fun onDownedMove(event: PlayerMoveEvent) {
         if (event.isCancelled) return
         val state = downedPlayers[event.player.uniqueId] ?: return

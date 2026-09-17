@@ -7,7 +7,7 @@ import io.github.zzzyyylllty.chotentech.manager.AttributeManager
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
 import io.github.zzzyyylllty.chotentech.data.HUDManager
 import io.github.zzzyyylllty.chotentech.data.ResultLevel
-import io.github.zzzyyylllty.chotentech.data.conflictConfigs
+import io.github.zzzyyylllty.chotentech.data.interfereConfigs
 import io.github.zzzyyylllty.chotentech.data.getData
 import io.github.zzzyyylllty.chotentech.function.ReputationManager
 import io.github.zzzyyylllty.chotentech.player.sendComponent
@@ -279,13 +279,13 @@ object ChoTenDataCommand {
     }
 
     @CommandBody
-    val conflict = subCommand {
+    val interfere = subCommand {
         player("user") {
-            dynamic("conflictId") {
+            dynamic("interfereId") {
                 dynamic("level") {
                     execute<CommandSender> { sender, context, _ ->
                         val player = context.player("user").castSafely<Player>()!!
-                        val conflictId = context["conflictId"]
+                        val interfereId = context["interfereId"]
                         val levelName = context["level"].uppercase()
                         val level = runCatching { ResultLevel.valueOf(levelName) }.getOrNull()
                         if (level == null) {
@@ -293,12 +293,12 @@ object ChoTenDataCommand {
                             sender.sendComponent("<#E08A98>未知结果等级，可用: $names")
                             return@execute
                         }
-                        val config = conflictConfigs[conflictId]
+                        val config = interfereConfigs[interfereId]
                         if (config == null) {
-                            sender.sendComponent("<#E08A98>未找到冲突事件: $conflictId")
+                            sender.sendComponent("<#E08A98>未找到干扰事件: $interfereId")
                             return@execute
                         }
-                        val changes = ReputationManager.applyConflictReputation(player, conflictId, level)
+                        val changes = ReputationManager.applyInterfereReputation(player, interfereId, level)
                         if (changes.isEmpty()) {
                             sender.sendComponent("<#E08A98>该结果等级未配置声望变化")
                             return@execute
@@ -314,7 +314,7 @@ object ChoTenDataCommand {
                 }
             }
             suggestion<CommandSender> { _, _ ->
-                conflictConfigs.keys.toList()
+                interfereConfigs.keys.toList()
             }
         }
     }

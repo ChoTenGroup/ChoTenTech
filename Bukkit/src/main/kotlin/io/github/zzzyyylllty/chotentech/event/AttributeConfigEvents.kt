@@ -2,6 +2,8 @@ package io.github.zzzyyylllty.chotentech.event
 
 import io.github.zzzyyylllty.chotentech.data.AttributeType
 import io.github.zzzyyylllty.chotentech.data.RegistrationSource
+import taboolib.common.LifeCycle
+import taboolib.common.platform.DelayTo
 import taboolib.platform.type.BukkitProxyEvent
 
 class ChoTenAttributeReloadEvent() : BukkitProxyEvent()
@@ -11,6 +13,7 @@ class ChoTenAttributeReloadEvent() : BukkitProxyEvent()
  * your custom utils.
  * DO NOT USE clear, re-set or directly modify it, OR OTHER SENSITIVE FUNCTIONS.
  * */
+
 class ChoTenAttributeCustomScriptDataLoadEvent(
     var defaultData: LinkedHashMap<String, Any?>
 ) : BukkitProxyEvent()
@@ -19,6 +22,7 @@ class ChoTenAttributeCustomScriptDataLoadEvent(
  * 属性注册事件，当一个新属性被注册时触发。
  * 其他插件可监听此事件，在属性注册时执行自定义逻辑。
  */
+
 class ChoTenAttributeRegisterEvent(
     val attributeType: AttributeType,
     val source: RegistrationSource

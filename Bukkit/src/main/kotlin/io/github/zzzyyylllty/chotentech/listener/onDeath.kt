@@ -32,7 +32,7 @@ private val DEFAULT_SPAWN by lazy {
     Bukkit.getWorld("Area0")?.let { Location(it, -6.0, 14.0, 9.0) }
 }
 
-private val REGEX = Regex.fromLiteral("<insert.+?>")
+private val REGEX = Regex("<insert.+?>")
 
 @SubscribeEvent
 fun onPlayerDeath(event: PlayerDeathEvent) {

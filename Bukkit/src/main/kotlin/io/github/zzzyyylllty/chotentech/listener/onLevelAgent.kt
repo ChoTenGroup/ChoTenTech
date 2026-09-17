@@ -6,6 +6,8 @@ import io.github.zzzyyylllty.chotentech.util.minimessage.mmUtil
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.SubscribeEvent
 
+
+
 @SubscribeEvent(EventPriority.MONITOR)
 fun onLevelUpgrade(e: QuetiapineLevelUpgradeEvent) {
     val player = e.player

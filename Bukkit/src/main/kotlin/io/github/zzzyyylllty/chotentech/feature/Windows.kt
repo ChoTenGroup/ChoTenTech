@@ -70,10 +70,12 @@ fun checkWindows() {
                         ChoTenDataHelper(player).removeSanity(30.0)
                         player.playSound(player.location, Sound.BLOCK_SCULK_SHRIEKER_SHRIEK, 1f, 0.5f)
                         if (isFirstTimeLookWindow.contains(player.uniqueId.toString())) {
-                            if (player.health > 2) player.damage(player.health * 0.5)
+                            if (player.health > 2) player.damage(player.health * 0.4)
                             isFirstTimeLookWindow += player.uniqueId.toString()
                         } else {
-                            player.addPotionEffect(PotionEffect(PotionEffectType.INSTANT_DAMAGE, 1000, 12))
+                            if (player.health > 30) player.damage(player.health * 0.4) else {
+                                player.addPotionEffect(PotionEffect(PotionEffectType.INSTANT_DAMAGE, 1000, 12))
+                            }
                         }
                     }
                 } else {

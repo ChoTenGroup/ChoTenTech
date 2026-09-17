@@ -33,6 +33,8 @@ private data class InjuryRatios(
 )
 
 /** 安全世界/基地内无敌 —— 玩家在 safe-worlds 或 base- 区域中免疫所有伤害 */
+
+
 @SubscribeEvent(priority = EventPriority.HIGH)
 fun onBaseInvincible(event: EntityDamageEvent) {
     if (event.entity !is Player) return
@@ -173,6 +175,8 @@ private fun getSanityLoss(cause: EntityDamageEvent.DamageCause): Double = when (
     else -> 0.1
 }
 
+
+
 @SubscribeEvent(priority = EventPriority.LOW)
 fun onFallSneakProtect(event: EntityDamageEvent) {
     if (event.entity !is Player) return
@@ -187,6 +191,8 @@ fun onFallSneakProtect(event: EntityDamageEvent) {
 }
 
 /** 负重增加摔落伤害：20KG起算，每超过1KG +0.2x */
+
+
 @SubscribeEvent(priority = EventPriority.LOW)
 fun onWeightFallDamage(event: EntityDamageEvent) {
     if (event.entity !is Player) return
@@ -199,6 +205,8 @@ fun onWeightFallDamage(event: EntityDamageEvent) {
     val multiplier = 1.0 + (weight - 20.0) * 0.2
     event.damage *= multiplier
 }
+
+
 
 @SubscribeEvent(priority = EventPriority.NORMAL)
 fun onPlayerDamage(event: EntityDamageEvent) {

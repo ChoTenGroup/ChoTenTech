@@ -174,7 +174,6 @@ object AttributeManager {
             AttributeType("block_defense_percent", "格挡防御百分比", null, 0.0, isPercentage = true),
             // 新增攻击类型属性
             AttributeType("ranged_damage", "远程伤害", null, 0.0, isPercentage = false),
-            AttributeType("ranged_attack_damage", "远程攻击伤害", null, 0.0, isPercentage = true),
             AttributeType("magic_attack_damage", "魔法攻击伤害", null, 0.0, isPercentage = true),
             AttributeType("magic_damage", "魔法伤害", null, 0.0, isPercentage = false),
             AttributeType("fire_attack_damage", "火焰攻击伤害", null, 0.0, isPercentage = true),

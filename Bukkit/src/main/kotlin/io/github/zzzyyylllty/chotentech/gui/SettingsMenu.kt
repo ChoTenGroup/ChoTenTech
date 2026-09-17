@@ -67,7 +67,7 @@ class SettingsMenu {
                         if (s.getBoolean(def.id)) {
                             clicker.sendComponent("<#E08A98>⚔ PVP模式已<#B46572>开启</#B46572>")
                         } else {
-                            clicker.sendComponent("<#8FD4A6>☮ PVP模式已<#6EA982>关闭</#6EA982>")
+                            clicker.sendComponent("<#8FF4C6>☮ PVP模式已<#6EA982>关闭</#6EA982>")
                         }
                         playClick(sid)
                     }
@@ -116,7 +116,7 @@ class SettingsMenu {
                 }
             }
 
-            set('C', guiItem(XMaterial.COMPASS, "<#84D1CB><bold>菜单", listOf("<!i> <#EFDF8F>点击 <#8FD4A6>打开菜单"), model = "kangelitem:void")) {
+            set('C', guiItem(XMaterial.COMPASS, "<#84D1CB><bold>菜单", listOf("<!i> <#EFDF8F>点击 <#8FF4C6>打开菜单"), model = "kangelitem:void")) {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "invero menu open menu ${clicker.name}")
                 clicker.closeInventory()
             }
@@ -179,7 +179,7 @@ class SettingsMenu {
         val displayStatus = if (def.type == SettingType.CYCLE) {
             "<#EFDF8F>[$currentLabel]"
         } else {
-            val statusColor = if (enabled) "<#8FD4A6>" else "<#E08A98>"
+            val statusColor = if (enabled) "<#8FF4C6>" else "<#E08A98>"
             "${statusColor}[${if (enabled) "已开启" else "已关闭"}]"
         }
 
@@ -197,13 +197,13 @@ class SettingsMenu {
         if (def.type == SettingType.CYCLE) {
             lore += loreSection("选项")
             def.options.forEach { (value, label) ->
-                val color = if (value == currentValue) "<#8FD4A6>" else "<#A9B4C3>"
+                val color = if (value == currentValue) "<#8FF4C6>" else "<#8994A3>"
                 lore += loreDash("$color$label")
             }
             lore += loreSpace()
-            lore += loreInfo("当前值", "<#8FD4A6>$currentLabel")
+            lore += loreInfo("当前值", "<#8FF4C6>$currentLabel")
         } else {
-            lore += "<!i> <#EFDF8F>点击 <#8FD4A6>${if (enabled) "关闭" else "开启"}"
+            lore += "<!i> <#EFDF8F>点击 <#F6F486>${if (enabled) "关闭" else "开启"}"
         }
         lore += loreInfo("ID", "<#6E7A8C>${def.id}")
 

@@ -82,7 +82,7 @@ object ChoTenAttributeDebugCommand {
 
         // 远程
         add("ranged",
-            "ranged_damage", "ranged_attack_damage", "ranged_extra_damage",
+            "ranged_damage", "ranged_extra_damage",
             "ranged_damage_reduction", "bow_extra_damage", "crossbow_extra_damage",
             "bow_damage_reduction", "crossbow_damage_reduction"
         )

@@ -399,6 +399,15 @@ class GiftPackMenu {
     // ── Item helpers (mirrors ShopMenu logic) ──
 
     private fun resolveItem(player: Player, itemId: String): ItemStack? {
+        // sertraline:xxx 直接走 Sertraline API 构建
+        if (itemId.startsWith("sertraline:")) {
+            try {
+                val result = io.github.zzzyyylllty.sertraline.Sertraline.api().buildItem(
+                    itemId.removePrefix("sertraline:"), player
+                )
+                if (result != null && !result.type.isAir) return result
+            } catch (_: Exception) { /* fall through */ }
+        }
         if (itemId.contains(":")) {
             val parts = itemId.split(":", limit = 2)
             if (parts.size == 2) {

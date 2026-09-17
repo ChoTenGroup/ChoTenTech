@@ -21,10 +21,10 @@ object ReputationManager {
         data.reputation[faction] = current + amount
     }
 
-    /** 追加一条信誉记录；conflictId=null 且 level=null 表示杂项扣除途径 */
-    fun addRecord(player: Player, conflictId: String?, faction: String, level: ResultLevel?, change: Long) {
+    /** 追加一条信誉记录；interfereId=null 且 level=null 表示杂项扣除途径 */
+    fun addRecord(player: Player, interfereId: String?, faction: String, level: ResultLevel?, change: Long) {
         val data = playerDataMap[player.uniqueId.toString()] ?: return
-        data.reputationRecords.add(ReputationRecord(conflictId, faction, level?.name, change, System.currentTimeMillis()))
+        data.reputationRecords.add(ReputationRecord(interfereId, faction, level?.name, change, System.currentTimeMillis()))
     }
 
     fun getAffection(player: Player, npcId: String): Long {
@@ -47,11 +47,11 @@ object ReputationManager {
     )
 
     /**
-     * Apply reputation changes from completing a conflict at a given result level.
+     * Apply reputation changes from completing a interfere at a given result level.
      * Returns the list of changes applied.
      */
-    fun applyConflictReputation(player: Player, conflictId: String, level: ResultLevel): List<ReputationChange> {
-        val config = conflictConfigs[conflictId] ?: return emptyList()
+    fun applyInterfereReputation(player: Player, interfereId: String, level: ResultLevel): List<ReputationChange> {
+        val config = interfereConfigs[interfereId] ?: return emptyList()
         val score = config.scores[level] ?: return emptyList()
 
         val data = playerDataMap[player.uniqueId.toString()] ?: return emptyList()
@@ -61,7 +61,7 @@ object ReputationManager {
             val current = data.reputation.getOrDefault(faction, 0L)
             data.reputation[faction] = current + change
             changes.add(ReputationChange(faction, change))
-            addRecord(player, conflictId, faction, level, change)
+            addRecord(player, interfereId, faction, level, change)
         }
 
         return changes
@@ -70,12 +70,12 @@ object ReputationManager {
     /**
      * Generate a formatted reputation report message for a player.
      */
-    fun formatReputationReport(player: Player, conflictName: String, level: ResultLevel, changes: List<ReputationChange>): String {
+    fun formatReputationReport(player: Player, interfereName: String, level: ResultLevel, changes: List<ReputationChange>): String {
         val sb = StringBuilder()
         val data = playerDataMap[player.uniqueId.toString()] ?: return ""
         val levelDisplay = "${level.displayColor}${level.displayName}"
 
-        sb.appendLine("<#DFBD7C>===== 冲突: ${conflictName} - $levelDisplay <#DFBD7C>=====")
+        sb.appendLine("<#DFBD7C>===== 干扰: ${interfereName} - $levelDisplay <#DFBD7C>=====")
         for (change in changes) {
             val current = data.reputation.getOrDefault(change.faction, 0L)
             val prev = current - change.change

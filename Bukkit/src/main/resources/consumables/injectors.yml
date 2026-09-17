@@ -1,6 +1,7 @@
 adrenaline_injector:
   id: "adrenaline_injector"
   instant: true
+  medical: true
   effects:
     - effect: sound
       sound: ENTITY_PLAYER_LEVELUP
@@ -51,6 +52,7 @@ empty_injector:
 etg_injector:
   id: "etg_injector"
   instant: true
+  medical: true
   effects:
     - effect: sound
       sound: BLOCK_NOTE_BLOCK_CHIME
@@ -80,6 +82,7 @@ etg_injector:
 fast_stamina_injector:
   id: "fast_stamina_injector"
   instant: true
+  medical: true
   effects:
     - effect: sound
       sound: ENTITY_EXPERIENCE_ORB_PICKUP
@@ -127,6 +130,7 @@ fast_stamina_injector:
 fast_strength_injector:
   id: "fast_strength_injector"
   instant: true
+  medical: true
   effects:
     - effect: sound
       sound: ENTITY_EXPERIENCE_ORB_PICKUP
@@ -162,6 +166,7 @@ fast_strength_injector:
 flower_of_fire_injector:
   id: "flower_of_fire_injector"
   instant: true
+  medical: true
   effects:
     - effect: sound
       sound: ITEM_FIRECHARGE_USE
@@ -191,6 +196,7 @@ flower_of_fire_injector:
 golden_apple_injector:
   id: "golden_apple_injector"
   instant: true
+  medical: true
   effects:
     - effect: sound
       sound: ENTITY_PLAYER_LEVELUP
@@ -218,6 +224,7 @@ golden_apple_injector:
 inocentia_injector:
   id: "inocentia_injector"
   instant: true
+  medical: true
   effects:
     - effect: sound
       sound: BLOCK_BEACON_ACTIVATE
@@ -256,6 +263,7 @@ inocentia_injector:
 rainbow_injector:
   id: "rainbow_injector"
   instant: true
+  medical: true
   effects:
     - effect: sound
       sound: ENTITY_FIREWORK_ROCKET_TWINKLE
@@ -319,6 +327,7 @@ rainbow_injector:
 transfer_stamina_injector:
   id: "transfer_stamina_injector"
   instant: true
+  medical: true
   effects:
     - effect: sound
       sound: BLOCK_NOTE_BLOCK_DIDGERIDOO
@@ -362,6 +371,7 @@ transfer_stamina_injector:
 zako_healer_injector:
   id: "zako_healer_injector"
   instant: true
+  medical: true
   effects:
     - effect: sound
       sound: BLOCK_NOTE_BLOCK_CHIME
@@ -393,6 +403,7 @@ zako_healer_injector:
 mule_injector:
   id: "mule_injector"
   instant: true
+  medical: true
   effects:
     - effect: sound
       sound: ENTITY_ITEM_BREAK

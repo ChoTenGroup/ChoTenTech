@@ -1,7 +1,10 @@
 package io.github.zzzyyylllty.chotentech.event
 
 import org.bukkit.entity.Player
+import taboolib.common.LifeCycle
+import taboolib.common.platform.DelayTo
 import taboolib.platform.type.BukkitProxyEvent
+
 
 
 class QuetiapineGetLevelEvent(
@@ -11,11 +14,13 @@ class QuetiapineGetLevelEvent(
 ) : BukkitProxyEvent()
 
 
+
 class QuetiapineAddExpEvent(
     val levelName: String,
     var exp: Double,
     val player: Player,
 ) : BukkitProxyEvent()
+
 
 
 class QuetiapineRemoveExpEvent(
@@ -25,11 +30,13 @@ class QuetiapineRemoveExpEvent(
 ) : BukkitProxyEvent()
 
 
+
 class QuetiapineSetExpEvent(
     val levelName: String,
     var exp: Double,
     val player: Player,
 ) : BukkitProxyEvent()
+
 
 
 class QuetiapineAddLevelEvent(
@@ -39,11 +46,13 @@ class QuetiapineAddLevelEvent(
 ) : BukkitProxyEvent()
 
 
+
 class QuetiapineRemoveLevelEvent(
     val levelName: String,
     var removeAmount: Long,
     val player: Player,
 ) : BukkitProxyEvent()
+
 
 
 class QuetiapineSetLevelEvent(
@@ -52,10 +61,12 @@ class QuetiapineSetLevelEvent(
     val player: Player,
 ) : BukkitProxyEvent()
 
+
 class QuetiapineResetLevelEvent(
     val levelName: String,
     val player: Player,
 ) : BukkitProxyEvent()
+
 
 class QuetiapineLevelUpgradeEvent(
     val levelName: String,
