@@ -14,18 +14,31 @@ import taboolib.platform.compat.replacePlaceholder
  *
  * 安全约定：
  * 1. 玩家消息内容（<message>）绝不经过 PAPI / 自定义占位符解析，仅按以下规则渲染：
- *    - 有 chotentech.chat.color 权限：strict MiniMessage 解析（允许颜色格式），并剥离 click/hover 事件；
- *    - 无权限：标签转义为纯文本。
+ *    - 有 chotentech.chat.color 权限：lenient MiniMessage 解析（允许颜色格式），并剥离 click/hover 事件；
+ *    - 无权限：所有 MiniMessage 标签原样显示，消息为纯文本。
  * 2. PAPI 占位符（%xxx%）只会在格式字符串（管理员配置）上解析，解析顺序在消息注入之前。
  */
 object ChatFormatter {
 
     private const val COLOR_PERMISSION = "chotentech.chat.color"
 
-    /** 仅用于解析玩家消息：strict 模式 + 递归剥离点击/悬浮/插入事件，杜绝交互注入 */
+    /**
+     * 用于解析玩家消息：lenient 模式 + 递归剥离交互事件。
+     *
+     * lenient（宽松）模式下未注册的标签作为纯文本显示，不会抛异常，
+     * 既避免了 strict 模式对未知标签/无效转义的 ParsingException，
+     * 也完全不再需要 escapeTags——后者会引入 `\<`、`\[` 等可见反斜杠。
+     */
     private val messageMiniMessage: MiniMessage by lazy {
         MiniMessage.builder()
-            .strict(true)
+            .postProcessor { component -> stripInteractions(component) }
+            .build()
+    }
+
+    /** 无颜色权限玩家的解析器：不注册任何格式标签，输入内容全部按纯文本显示 */
+    private val plainMiniMessage: MiniMessage by lazy {
+        MiniMessage.builder()
+            .tags(TagResolver.empty())
             .postProcessor { component -> stripInteractions(component) }
             .build()
     }
@@ -45,18 +58,18 @@ object ChatFormatter {
         }
     }
 
-    /** 解析玩家消息为组件。绝不解析任何占位符。 */
+    /**
+     * 解析玩家消息为组件。绝不解析任何占位符。
+     *
+     * - 有颜色权限：lenient 解析（标签正常渲染），剥离交互事件；
+     * - 无颜色权限：TagResolver.empty() 使所有标签原样显示，消息为纯文本。
+     *
+     * 不再使用 strict + escapeTags 组合——后者会引入可见的 `\<` / `\[` 反斜杠。
+     */
     fun parseMessage(player: Player, text: String): Component {
         if (text.isBlank()) return Component.empty()
-        return if (player.hasPermission(COLOR_PERMISSION)) {
-            try {
-                messageMiniMessage.deserialize(text)
-            } catch (e: Exception) {
-                Component.text(messageMiniMessage.escapeTags(text))
-            }
-        } else {
-            Component.text(messageMiniMessage.escapeTags(text))
-        }
+        val mm = if (player.hasPermission(COLOR_PERMISSION)) messageMiniMessage else plainMiniMessage
+        return mm.deserialize(text)
     }
 
     /**

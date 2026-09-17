@@ -32,7 +32,7 @@ object NoclipEnterObjective : ObjectiveCountableI<NoclipEnterEvent>() {
     }
 }
 
-@Awake(LifeCycle.ENABLE)
+@Awake(LifeCycle.ACTIVE)
 fun registerNoclipEnterObjective() {
     NoclipEnterObjective.register()
 }

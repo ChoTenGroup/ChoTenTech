@@ -105,7 +105,6 @@ Attribute_block_chance_Name: 格挡概率
 Attribute_block_defense_Name: 格挡防御
 Attribute_block_defense_percent_Name: 格挡防御百分比
 Attribute_ranged_damage_Name: 远程伤害
-Attribute_ranged_attack_damage_Name: 远程攻击伤害
 Attribute_magic_attack_damage_Name: 魔法攻击伤害
 Attribute_magic_damage_Name: 魔法伤害
 Attribute_fire_attack_damage_Name: 火焰攻击伤害
@@ -192,7 +191,6 @@ Attribute_block_chance_Description: 格挡几率
 Attribute_block_defense_Description: 格挡时减免伤害
 Attribute_block_defense_percent_Description: 格挡时减免伤害百分比
 Attribute_ranged_damage_Description: 远程伤害
-Attribute_ranged_attack_damage_Description: 远程攻击伤害加成
 Attribute_magic_attack_damage_Description: 魔法攻击伤害加成
 Attribute_magic_damage_Description: 魔法伤害
 Attribute_fire_attack_damage_Description: 火焰攻击伤害加成

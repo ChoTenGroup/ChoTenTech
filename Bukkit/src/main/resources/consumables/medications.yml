@@ -1,5 +1,6 @@
 6ch_vaseline:
   id: "6ch_vaseline"
+  medical: true
   effects:
     - effect: status_effect
       status_effect: pain_relief
@@ -11,6 +12,7 @@
 
 antibiotic:
   id: "antibiotic"
+  medical: true
   effects:
     - effect: status_effect
       status_effect: immunity
@@ -26,6 +28,7 @@ antibiotic:
 
 zaped:
   id: "zaped"
+  medical: true
   effects:
     - effect: sanity_by_darkness
       thresholds: "19:12;39:4;59:2;:1"
@@ -43,6 +46,7 @@ zaped:
 
 epsilon_pills:
   id: "epsilon_pills"
+  medical: true
   effects:
     - effect: potion
       potion: BLINDNESS
@@ -67,6 +71,7 @@ epsilon_pills:
 
 painkiller_pills:
   id: "painkiller_pills"
+  medical: true
   effects:
     - effect: status_effect
       status_effect: pain_relief
@@ -81,6 +86,7 @@ painkiller_pills:
 
 almond_bandage:
   id: "almond_bandage"
+  medical: true
   effects:
     - effect: health
       mode: add
@@ -95,6 +101,7 @@ almond_bandage:
 
 sterile_bandage:
   id: "sterile_bandage"
+  medical: true
   effects:
     - effect: health
       mode: add
@@ -106,6 +113,7 @@ sterile_bandage:
 
 bandage:
   id: "bandage"
+  medical: true
   effects:
     - effect: health
       mode: add
@@ -132,6 +140,7 @@ sanity_salt:
 
 sql_pills_purple:
   id: "sql_pills_purple"
+  medical: true
   effects:
     - effect: status_effect
       status_effect: pain_relief
@@ -153,6 +162,7 @@ sql_pills_purple:
 
 sql_pills_aqua:
   id: "sql_pills_aqua"
+  medical: true
   effects:
     - effect: status_effect
       status_effect: pain_relief

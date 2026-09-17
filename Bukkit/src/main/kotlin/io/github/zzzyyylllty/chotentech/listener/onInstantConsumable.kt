@@ -1,6 +1,8 @@
 package io.github.zzzyyylllty.chotentech.listener
 
 import io.github.zzzyyylllty.chotentech.data.getConsumableConfig
+import io.github.zzzyyylllty.chotentech.function.bleedout.BleedoutManager
+import io.github.zzzyyylllty.chotentech.util.toComponent
 import io.github.zzzyyylllty.sertraline.Sertraline
 import io.github.zzzyyylllty.sertraline.item.rebuildDisplay
 import kotlin.math.floor
@@ -27,6 +29,12 @@ fun onInstantConsumableInteract(event: PlayerInteractEvent) {
     if (!consumable.instant) return
 
     event.isCancelled = true
+
+    // 倒地状态禁止使用医疗物品
+    if (consumable.medical && BleedoutManager.isDowned(player.uniqueId)) {
+        player.sendActionBar("<#E08A98>倒地状态无法使用医疗物品".toComponent())
+        return
+    }
 
     consumable.apply(player)
 

@@ -105,7 +105,7 @@ data class PlayerData (
     var affectionMarks: MutableMap<String, MutableSet<String>> = mutableMapOf(),
     // faction id -> reputation value (e.g. MEG, BNTG, UEC)
     var reputation: MutableMap<String, Long> = mutableMapOf(),
-    // 信誉记录（conflictId=null 表示杂项扣除途径），按时间先后追加
+    // 信誉记录（interfereId=null 表示杂项扣除途径），按时间先后追加
     var reputationRecords: MutableList<ReputationRecord> = mutableListOf(),
     // Shared field — cosmetic slot -> cosmetic id (synced from SharedData)
     var cosmetics: MutableMap<String, String> = mutableMapOf(),
@@ -259,9 +259,11 @@ data class PlayerData (
     }
 }
 
-/** 单条信誉变化记录；conflictId=null 表示杂项扣除途径，level 为 ResultLevel.name 或 null */
+/** 单条信誉变化记录；interfereId=null 表示杂项扣除途径，level 为 ResultLevel.name 或 null */
 data class ReputationRecord(
-    val conflictId: String?,
+    // 旧存档 JSON 键为 conflictId，用 @SerializedName 保持兼容
+    @com.google.gson.annotations.SerializedName("conflictId")
+    val interfereId: String?,
     val faction: String,
     val level: String?,
     val change: Long,

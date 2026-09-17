@@ -62,10 +62,7 @@ object AttackListener {
 
         // 远程伤害加成
         if (attackTypes.contains(AttackType.RANGED)) {
-            // 新旧属性取最大值
-            val rangedBonusNew = AttributeManager.getAttributeValue(player, "ranged_extra_damage")
-            val rangedBonusOld = AttributeManager.getAttributeValue(player, "ranged_attack_damage")
-            val rangedBonus = maxOf(rangedBonusNew, rangedBonusOld)
+            val rangedBonus = AttributeManager.getAttributeValue(player, "ranged_extra_damage")
             if (rangedBonus != 0.0) {
                 damage *= (1.0 + rangedBonus).coerceAtLeast(0.0)
             }
@@ -184,7 +181,9 @@ object AttackListener {
     /**
      * 处理实体伤害事件，应用攻击类型属性加成
      */
-    @SubscribeEvent(priority = EventPriority.HIGH)
+    
+
+@SubscribeEvent(priority = EventPriority.HIGH)
     fun onEntityDamageByEntity(event: EntityDamageByEntityEvent) {
         val damager = event.damager
         val victim = event.entity
@@ -210,6 +209,17 @@ object AttackListener {
                           event.cause.name.contains("MELTING", ignoreCase = true)
         if (isFireDamage) {
             attackTypes.add(AttackType.FIRE)
+        }
+
+        // 2.2 远程攻击：用 ranged_damage 属性替换原版基础伤害，同时保留蓄力机制
+        if (attackTypes.contains(AttackType.RANGED) && damager is AbstractArrow) {
+            val rangedDamage = AttributeManager.getAttributeValue(attacker, "ranged_damage")
+            if (rangedDamage > 0) {
+                val chargeRatio = getChargeRatio(damager)
+                val newBaseDamage = rangedDamage * chargeRatio
+                event.damage = newBaseDamage
+                modifiedDamage = newBaseDamage
+            }
         }
 
         // 3. 计算伤害加成（攻击者）
@@ -274,15 +284,7 @@ object AttackListener {
             }
         }
 
-        // 6. 应用固定值远程伤害（弓/弩的基础伤害）
-        if (attackTypes.contains(AttackType.RANGED)) {
-            val rangedDamage = AttributeManager.getAttributeValue(attacker, "ranged_damage")
-            if (rangedDamage > 0) {
-                modifiedDamage += rangedDamage
-            }
-        }
-
-        // 7. 应用固定值魔法伤害
+        // 6. 应用固定值魔法伤害
         val magicDamage = AttributeManager.getAttributeValue(attacker, "magic_damage")
         if (magicDamage > 0) {
             modifiedDamage += magicDamage
@@ -291,7 +293,7 @@ object AttackListener {
         // 确保伤害不为负数
         modifiedDamage = modifiedDamage.coerceAtLeast(0.0)
 
-        // 8. 防御/穿透计算
+        // 7. 防御/穿透计算
         // 仅对弹射物攻击应用（含弩箭等），读取CrossbowManager中已注册的箭矢数据
         if (damager is AbstractArrow) {
             val arrowData = CrossbowManager.getFlyingArrowData(damager.uniqueId)
@@ -376,6 +378,16 @@ object AttackListener {
         if (modifiedDamage != originalDamage) {
             event.damage = modifiedDamage
         }
+    }
+
+    /**
+     * 计算箭矢蓄力比例（0.0 ~ 1.0）
+     * 基于箭矢飞行速度：原版满蓄弓射出的箭矢速度约为 3.0
+     * 弩箭通常满蓄发射，速度固定，因此比例自然为 1.0
+     */
+    private fun getChargeRatio(arrow: AbstractArrow): Double {
+        val velocity = arrow.velocity.length()
+        return (velocity / 3.0).coerceIn(0.0, 1.0)
     }
 
     /**

@@ -13,12 +13,14 @@ import io.github.zzzyyylllty.chotentech.function.kether.evalKetherBoolean
 import org.bukkit.inventory.ItemStack
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
+import taboolib.common.platform.DelayTo
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.platform.util.isNotAir
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.component1
 import kotlin.collections.component2
+
 
 @SubscribeEvent(EventPriority.MONITOR, ignoreCancelled = true)
 fun test(e: SubmitItemEvent) {
@@ -103,7 +105,7 @@ object SubmitItemObjective : ObjectiveCountableI<SubmitItemEvent>() {
     }
 }
 
-@Awake(LifeCycle.ENABLE)
+@Awake(LifeCycle.ACTIVE)
 fun registerSubmitItemObjective(){
     SubmitItemObjective.register()
 }

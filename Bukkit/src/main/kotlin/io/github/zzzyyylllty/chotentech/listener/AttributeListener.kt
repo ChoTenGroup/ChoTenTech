@@ -43,7 +43,9 @@ object AttributeListener {
     }
 
     /** isdenymove >= 1.0 时仅拦截 XZ 平面移动(无法行走/转向),y 轴(跳跃/下落)与纯转头放行 */
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    
+
+@SubscribeEvent(priority = EventPriority.HIGHEST)
     fun onMove(e: PlayerMoveEvent) {
         if (e.isCancelled) return
         val player = e.player

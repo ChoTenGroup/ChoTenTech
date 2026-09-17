@@ -1,7 +1,7 @@
 package io.github.zzzyyylllty.chotentech.data
 
 import net.momirealms.craftengine.bukkit.api.CraftEngineImages
-import net.momirealms.craftengine.core.font.BitmapImage
+import net.momirealms.craftengine.core.font.Image
 import net.momirealms.craftengine.core.util.Key
 import taboolib.common.util.length
 
@@ -36,9 +36,12 @@ data class IDData(
 ){
 }
 
-fun BitmapImage?.toRawStr(): String? {
+fun Image?.toRawStr(): String? {
     if (this == null) return ""
-    val row = rows()
-    val column = columns()
-    return String(Character.toChars(codepointAt(row, column)))
+    // 取左上角字符作为图标；坐标越界会抛 IndexOutOfBoundsException，兜底返回 null
+    return try {
+        String(Character.toChars(codepointAt(0, 0)))
+    } catch (_: IndexOutOfBoundsException) {
+        null
+    }
 }

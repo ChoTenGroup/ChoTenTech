@@ -24,7 +24,7 @@ import javax.script.SimpleBindings
 
 var defaultData = LinkedHashMap<String, Any?>()
 
-@Awake(LifeCycle.ENABLE)
+@Awake(LifeCycle.ACTIVE)
 fun registerExternalData() {
     defaultData.putAll(
         linkedMapOf(

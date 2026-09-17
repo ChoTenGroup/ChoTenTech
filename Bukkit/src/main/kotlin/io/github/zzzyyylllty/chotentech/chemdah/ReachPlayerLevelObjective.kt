@@ -41,7 +41,7 @@ object ReachPlayerLevelObjective : ObjectiveCountableI<QuetiapineSetLevelEvent>(
     }
 }
 
-@Awake(LifeCycle.ENABLE)
+@Awake(LifeCycle.ACTIVE)
 fun registerReachPlayerLevelObjective() {
     ReachPlayerLevelObjective.register()
 }

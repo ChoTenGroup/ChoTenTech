@@ -92,7 +92,9 @@ object CustomDamageListener {
 
     // ==================== 主监听器 ====================
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
+    
+
+@SubscribeEvent(priority = EventPriority.LOWEST)
     fun onEntityDamageByEntity(event: EntityDamageByEntityEvent) {
         if (!enabled) return
         if (event.isCancelled) return
@@ -103,7 +105,9 @@ object CustomDamageListener {
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
+    
+
+@SubscribeEvent(priority = EventPriority.LOWEST)
     fun onNonEntityDamage(event: EntityDamageEvent) {
         if (!enabled) return
         if (event.isCancelled) return
@@ -116,7 +120,9 @@ object CustomDamageListener {
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.MONITOR)
+    
+
+@SubscribeEvent(priority = EventPriority.MONITOR)
     fun onEntityDamageCleanup(event: EntityDamageEvent) {
         if (!enabled) return
         event.removeDamageTypeTag()

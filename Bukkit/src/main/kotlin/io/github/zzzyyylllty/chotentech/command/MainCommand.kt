@@ -66,7 +66,7 @@ object MainCommand {
 //    @CommandBody
 //    val coolnumber = CoolNumberCommand
     @CommandBody
-    val conflict = ConflictCommand
+    val interfere = InterfereCommand
     @CommandBody
     val pvp = PvpCommand
     @CommandBody

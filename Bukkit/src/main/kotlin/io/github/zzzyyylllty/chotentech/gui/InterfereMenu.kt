@@ -1,12 +1,12 @@
 package io.github.zzzyyylllty.chotentech.gui
 
-import io.github.zzzyyylllty.chotentech.data.ConflictConfig
-import io.github.zzzyyylllty.chotentech.data.ConflictScore
+import io.github.zzzyyylllty.chotentech.data.InterfereConfig
+import io.github.zzzyyylllty.chotentech.data.InterfereScore
 import io.github.zzzyyylllty.chotentech.data.ResultLevel
-import io.github.zzzyyylllty.chotentech.data.conflictConfigs
-import io.github.zzzyyylllty.chotentech.function.ActiveConflict
-import io.github.zzzyyylllty.chotentech.function.ConflictManager
-import io.github.zzzyyylllty.chotentech.function.ConflictStatus
+import io.github.zzzyyylllty.chotentech.data.interfereConfigs
+import io.github.zzzyyylllty.chotentech.function.ActiveInterfere
+import io.github.zzzyyylllty.chotentech.function.InterfereManager
+import io.github.zzzyyylllty.chotentech.function.InterfereStatus
 import io.github.zzzyyylllty.chotentech.util.minimessage.mmJsonUtil
 import io.github.zzzyyylllty.chotentech.util.toComponent
 import org.bukkit.Material
@@ -23,28 +23,28 @@ import io.github.zzzyyylllty.chotentech.util.loreInfo
 import io.github.zzzyyylllty.chotentech.util.loreSection
 import io.github.zzzyyylllty.chotentech.util.loreSpace
 
-class ConflictMenu {
+class InterfereMenu {
 
     private val statusModelIndex = mapOf(
-        ConflictStatus.PENDING to 0,
-        ConflictStatus.ACTIVE to 1,
-        ConflictStatus.FINISHED to 2
+        InterfereStatus.PENDING to 0,
+        InterfereStatus.ACTIVE to 1,
+        InterfereStatus.FINISHED to 2
     )
 
     fun open(player: Player, showAll: Boolean = false) {
-        val conflicts = if (showAll) {
-            ConflictManager.getAllConflicts()
+        val interferes = if (showAll) {
+            InterfereManager.getAllInterferes()
         } else {
-            ConflictManager.getActiveConflicts()
+            InterfereManager.getActiveInterferes()
         }
 
-        if (conflicts.isEmpty()) {
-            player.sendMessage("<#A9B4C3>当前没有冲突".toComponent())
+        if (interferes.isEmpty()) {
+            player.sendMessage("<#A9B4C3>当前没有干扰".toComponent())
             return
         }
 
-        player.openMenu<PageableChest<ActiveConflict>>(
-            mmJsonUtil.serialize("<#F2F5FA><shift:-16><image:kangelicon:list><shift:-176><#84D1CB><font:minecraft:fusionpixel10>冲突列表 [${conflicts.size}]".toComponent())
+        player.openMenu<PageableChest<ActiveInterfere>>(
+            mmJsonUtil.serialize("<#F2F5FA><shift:-16><image:kangelicon:list><shift:-176><#84D1CB><font:minecraft:fusionpixel10>干扰列表 [${interferes.size}]".toComponent())
         ) {
             rows(6)
 
@@ -59,17 +59,17 @@ class ConflictMenu {
 
             slotsBy('@')
 
-            elements { conflicts }
+            elements { interferes }
 
-            onGenerate { _, conflict, _, _ ->
-                buildConflictItem(conflict)
+            onGenerate { _, interfere, _, _ ->
+                buildInterfereItem(interfere)
             }
 
-            onClick { event, conflict ->
+            onClick { event, interfere ->
                 event.clicker.playSound(event.clicker.location, Sound.UI_BUTTON_CLICK, 1f, 1f)
-                val config = conflictConfigs[conflict.configId]
+                val config = interfereConfigs[interfere.configId]
                 if (config != null) {
-                    openDetail(event.clicker, conflict, config)
+                    openDetail(event.clicker, interfere, config)
                 }
             }
 
@@ -96,9 +96,18 @@ class ConflictMenu {
         }
     }
 
-    private fun openDetail(player: Player, conflict: ActiveConflict, config: ConflictConfig) {
-        player.openMenu<PageableChest<Map.Entry<ResultLevel, ConflictScore>>>(
-            mmJsonUtil.serialize("<#F2F5FA><shift:-16><image:kangelicon:list><shift:-176><#84D1CB><font:minecraft:fusionpixel10>${conflict.playerName} - ${config.name}".toComponent())
+    /** 供干涉事务面板跳转:按配置 ID 打开该玩家对应实例的结果详情,无进行中实例时返回 false */
+    fun openDetail(player: Player, configId: String): Boolean {
+        val interfere = InterfereManager.getInterfere(player.uniqueId.toString()) ?: return false
+        if (interfere.configId != configId) return false
+        val config = interfereConfigs[configId] ?: return false
+        openDetail(player, interfere, config)
+        return true
+    }
+
+    private fun openDetail(player: Player, interfere: ActiveInterfere, config: InterfereConfig) {
+        player.openMenu<PageableChest<Map.Entry<ResultLevel, InterfereScore>>>(
+            mmJsonUtil.serialize("<#F2F5FA><shift:-16><image:kangelicon:list><shift:-176><#84D1CB><font:minecraft:fusionpixel10>${interfere.playerName} - ${config.name}".toComponent())
         ) {
             rows(6)
 
@@ -138,38 +147,38 @@ class ConflictMenu {
         }
     }
 
-    private fun buildConflictItem(conflict: ActiveConflict): ItemStack {
+    private fun buildInterfereItem(interfere: ActiveInterfere): ItemStack {
         val item = XMaterial.KNOWLEDGE_BOOK.parseItem() ?: ItemStack(Material.BOOK)
         val meta = item.itemMeta ?: return item
 
-        val modelNum = statusModelIndex[conflict.status] ?: 0
+        val modelNum = statusModelIndex[interfere.status] ?: 0
         meta.itemModel = NamespacedKey.fromString("kangelicon:conflict_$modelNum")
 
-        val statusText = when (conflict.status) {
-            ConflictStatus.PENDING -> "<#EFDF8F>未开始"
-            ConflictStatus.ACTIVE -> "<#84D1CB>进行中"
-            ConflictStatus.FINISHED -> "<#A9B4C3>已完成"
+        val statusText = when (interfere.status) {
+            InterfereStatus.PENDING -> "<#EFDF8F>未开始"
+            InterfereStatus.ACTIVE -> "<#84D1CB>进行中"
+            InterfereStatus.FINISHED -> "<#A9B4C3>已完成"
         }
 
-        meta.displayName("<#DFBD7C>${conflict.playerName} <#A9B4C3>- ${conflict.name}".toComponent())
+        meta.displayName("<#DFBD7C>${interfere.playerName} <#A9B4C3>- ${interfere.name}".toComponent())
 
         val lore = mutableListOf<String>()
         lore += loreInfo("状态", statusText)
-        if (conflict.factionLevels.isNotEmpty()) {
+        if (interfere.factionLevels.isNotEmpty()) {
             lore += loreSection("阵营等级")
-            for ((faction, level) in conflict.factionLevels) {
+            for ((faction, level) in interfere.factionLevels) {
                 lore += loreDash("<#A9B4C3>$faction: ${level.displayColor}${level.displayName}")
             }
             lore += loreSpace()
         } else {
-            val noLevelText = when (conflict.status) {
-                ConflictStatus.PENDING -> "<#EFDF8F>未开始"
-                ConflictStatus.ACTIVE -> "<#84D1CB>进行中"
+            val noLevelText = when (interfere.status) {
+                InterfereStatus.PENDING -> "<#EFDF8F>未开始"
+                InterfereStatus.ACTIVE -> "<#84D1CB>进行中"
                 else -> "<#A9B4C3>无结果"
             }
             lore += loreInfo("结果", "<#DFBD7C>$noLevelText")
         }
-        lore += loreInfo("配置ID", "<#F2F5FA>${conflict.configId}")
+        lore += loreInfo("配置ID", "<#F2F5FA>${interfere.configId}")
         lore += loreSpace()
         lore += "<!i> <#EFDF8F>点击 <#8FD4A6>查看结果详情"
 
@@ -178,7 +187,7 @@ class ConflictMenu {
         return item
     }
 
-    private fun buildResultItem(level: ResultLevel, score: ConflictScore): ItemStack {
+    private fun buildResultItem(level: ResultLevel, score: InterfereScore): ItemStack {
         val item = XMaterial.PAPER.parseItem() ?: ItemStack(Material.PAPER)
         val meta = item.itemMeta ?: return item
 

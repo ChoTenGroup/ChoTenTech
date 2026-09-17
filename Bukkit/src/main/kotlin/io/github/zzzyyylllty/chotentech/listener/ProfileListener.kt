@@ -95,7 +95,9 @@ object ProfileListener {
     }
 
     /** Block X/Z movement while pending, open GUI on first move */
-    @SubscribeEvent(priority = EventPriority.NORMAL)
+    
+
+@SubscribeEvent(priority = EventPriority.NORMAL)
     fun onHoldPending(event: PlayerMoveEvent) {
         val player = event.player
         val uuid = player.uniqueId.toString()
@@ -188,7 +190,9 @@ object ProfileListener {
     }
 
     /** 强制选择期间禁止与世界的交互:排队的陈旧交互包不再打开其他菜单盖掉选择界面 */
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    
+
+@SubscribeEvent(priority = EventPriority.HIGHEST)
     fun onHoldInteract(event: PlayerInteractEvent) {
         val player = event.player
         val pending = pendingSelection[player.uniqueId.toString()] ?: return
@@ -225,7 +229,9 @@ object ProfileListener {
     }
 
     /** Handle chat input for profile creation/deletion */
-    @SubscribeEvent(priority = EventPriority.LOWEST)
+    
+
+@SubscribeEvent(priority = EventPriority.LOWEST)
     fun onPlayerChat(event: AsyncPlayerChatEvent) {
         val player = event.player
         val uuid = player.uniqueId.toString()

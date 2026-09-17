@@ -28,7 +28,9 @@ object CrossbowListener {
 
     // ============ 箭矢夹GUI ============
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    
+
+@SubscribeEvent(priority = EventPriority.HIGHEST)
     fun onPlayerInteract(event: PlayerInteractEvent) {
         val action = event.action
         if (action != org.bukkit.event.block.Action.RIGHT_CLICK_AIR &&
@@ -53,7 +55,9 @@ object CrossbowListener {
 
     // ============ 弩发射箭矢 ============
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    
+
+@SubscribeEvent(priority = EventPriority.HIGHEST)
     fun onProjectileLaunch(event: ProjectileLaunchEvent) {
         if (event.isCancelled) return
 

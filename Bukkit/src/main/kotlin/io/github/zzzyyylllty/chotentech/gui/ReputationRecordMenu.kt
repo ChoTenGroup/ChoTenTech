@@ -2,7 +2,7 @@ package io.github.zzzyyylllty.chotentech.gui
 
 import io.github.zzzyyylllty.chotentech.data.ReputationRecord
 import io.github.zzzyyylllty.chotentech.data.ResultLevel
-import io.github.zzzyyylllty.chotentech.data.conflictConfigs
+import io.github.zzzyyylllty.chotentech.data.interfereConfigs
 import io.github.zzzyyylllty.chotentech.data.getData
 import io.github.zzzyyylllty.chotentech.function.BaseManager.FactionInfo
 import io.github.zzzyyylllty.chotentech.util.guiItem
@@ -92,7 +92,7 @@ class ReputationRecordMenu(private val faction: FactionInfo) {
             )
 
             set('X', guiItem(XMaterial.GRAY_DYE, "<#A9B4C3>暂无信誉记录", listOf(
-                loreInfo("说明", "<#A9B4C3>参与冲突或管理员操作后会出现记录")
+                loreInfo("说明", "<#A9B4C3>参与干扰或管理员操作后会出现记录")
             ), model = "kangelitem:void"))
 
             set('Y', guiItem(XMaterial.COMPASS, "<#84D1CB><bold>返回", listOf("<!i> <#EFDF8F>点击 <#8FD4A6>返回组织界面"), model = "kangelitem:void")) {
@@ -103,7 +103,7 @@ class ReputationRecordMenu(private val faction: FactionInfo) {
     }
 
     private fun buildRecordItem(record: ReputationRecord): ItemStack {
-        val config = record.conflictId?.let { conflictConfigs[it] }
+        val config = record.interfereId?.let { interfereConfigs[it] }
 
         val item = config?.icon?.let { matName ->
             runCatching { XMaterial.valueOf(matName.uppercase()) }.getOrNull()?.parseItem()
@@ -123,7 +123,7 @@ class ReputationRecordMenu(private val faction: FactionInfo) {
         val prefix = if (record.change >= 0) "+" else ""
         val changeColor = if (record.change >= 0) "<#8FD4A6>" else "<#E08A98>"
         lore += loreInfo("信誉", "$changeColor$prefix${record.change}")
-        if (record.conflictId == null) {
+        if (record.interfereId == null) {
             lore += loreInfo("原因", "<#A9B4C3>杂项扣除")
         }
         lore += loreSpace()

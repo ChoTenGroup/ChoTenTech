@@ -28,12 +28,13 @@ import taboolib.module.chat.colored
 import taboolib.module.configuration.Configuration
 import java.util.concurrent.CompletableFuture
 
-@SubscribeEvent
-fun test(e: ConversationEvents.Pre) {
-    if (FloodgateApi.getInstance().isFloodgatePlayer(e.session.player.uniqueId)) {
-        e.conversation.option.theme = "skyline"
-    }
-}
+
+//@SubscribeEvent
+//fun listenBedrockConversationEvent(e: ConversationEvents.Pre) {
+//    if (FloodgateApi.getInstance().isFloodgatePlayer(e.session.player.uniqueId)) {
+//        e.conversation.option.theme = "skyline"
+//    }
+//}
 
 /**
  * Chemdah

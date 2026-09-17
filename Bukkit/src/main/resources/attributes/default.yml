@@ -207,7 +207,6 @@
 
 # ===== 攻击类型属性 (新增内置属性，无需在此定义) =====
 # 以下属性已通过代码注册，此处仅作为参考
-# ranged_attack_damage: 远程攻击伤害加成 (百分比)
 # magic_attack_damage: 魔法攻击伤害加成 (百分比)
 # fire_attack_damage: 火焰攻击伤害加成 (百分比)
 # fire_attack_chance: 火焰攻击几率 (百分比，使攻击有一定几率附加火焰效果)

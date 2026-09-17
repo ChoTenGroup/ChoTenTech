@@ -5,6 +5,7 @@ import io.github.zzzyyylllty.chotentech.gui.AllQuestMenu
 import io.github.zzzyyylllty.chotentech.gui.CosmeticMenu
 import io.github.zzzyyylllty.chotentech.gui.FriendMenu
 import io.github.zzzyyylllty.chotentech.gui.LevelBrowseMenu
+import io.github.zzzyyylllty.chotentech.gui.MainMenu
 import io.github.zzzyyylllty.chotentech.gui.OrganizationMenu
 import io.github.zzzyyylllty.chotentech.gui.ProfileInfoGUI
 import io.github.zzzyyylllty.chotentech.gui.ProfileSelectionGUI
@@ -43,19 +44,10 @@ object ChoTenUICommand {
         playerArg("设置") { SettingsMenu().open(it) }
     }
 
-//    @CommandBody
-//    val menu = subCommand {
-//        player("target") {
-//            execute<CommandSender> { sender, context, _ ->
-//                val target = context.player("target").castSafely<Player>() ?: return@execute
-//                val viewer = if (sender is Player) sender else target
-//                ProfileInfoGUI(target).open(viewer)
-//                if (sender != viewer) {
-//                    sender.sendComponent("<#8FD4A6>已为 ${target.name} 打开玩家菜单")
-//                }
-//            }
-//        }
-//    }
+    @CommandBody
+    val menu = subCommand {
+        playerArg("主菜单") { MainMenu().open(it) }
+    }
 
     @CommandBody
     val quests = subCommand {

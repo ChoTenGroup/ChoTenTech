@@ -1104,6 +1104,7 @@ object ShopMenu : Listener {
                     }
                     lore.add("")
                     lore.add("<!i><#A9B4C3>点击切换")
+                    lore.add("<!i><#A9B4C3>点击切换")
                     meta.lore(lore.map { it.replacePlaceholder(player).toComponent() })
                     NamespacedKey.fromString("kangelitem:void")?.let { meta.itemModel = it }
                     buyStack.setItemMeta(meta)
@@ -1433,6 +1434,14 @@ object ShopMenu : Listener {
     }
 
     private fun resolveItem(player: Player, itemId: String): ItemStack? {
+        // sertraline:xxx 直接走 Sertraline API 构建
+        if (itemId.startsWith("sertraline:")) {
+            try {
+                val result = Sertraline.api().buildItem(itemId.removePrefix("sertraline:"), player)
+                if (result != null && !result.type.isAir) return result
+            } catch (_: Exception) { /* fall through */ }
+        }
+
         // Try ExternalItemHelper (ItemBridge) for plugin:name format
         if (itemId.contains(":")) {
             val parts = itemId.split(":", limit = 2)

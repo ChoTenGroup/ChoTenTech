@@ -76,6 +76,7 @@ data class ConsumableConfig(
     val id: String,
     val effects: List<ConsumableEffect>,
     val instant: Boolean = false,
+    val medical: Boolean = false,
 ) {
     fun apply(player: Player) {
         val helper = ChoTenDataHelper(player)
@@ -472,7 +473,8 @@ private fun loadConsumableFile(file: File) {
 
             if (effects.isNotEmpty()) {
                 val instant = sec.getBoolean("instant", false)
-                consumableConfigs[id] = ConsumableConfig(id, effects, instant)
+                val medical = sec.getBoolean("medical", false)
+                consumableConfigs[id] = ConsumableConfig(id, effects, instant, medical)
             }
         }
     } catch (e: Exception) {

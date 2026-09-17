@@ -93,10 +93,10 @@ object SkillManager {
     internal val lastJumpY = ConcurrentHashMap<UUID, Double>()
     private val lastFallLocation = ConcurrentHashMap<UUID, Double>()
 
-    // 已知医疗物品 ID 前缀列表（用于理疗经验检测）
-    private val medicalItemPrefixes = listOf(
+    // 已知医疗物品 ID 前缀列表（用于理疗经验检测及倒地禁用医疗物品）
+    val medicalItemPrefixes = listOf(
         "bandage", "medkit", "pill", "pills", "vaseline",
-        "antibiotic", "zaped", "splint", "surgical"
+        "antibiotic", "zaped", "splint", "surgical", "injector"
     )
 
     // ==================== 初始化 ====================
@@ -376,6 +376,8 @@ data class FishingLootEntry(
 )
 
 /** 采矿经验 — 破坏方块(MONITOR：事件最终态，被其他插件取消则不给经验) */
+
+
 @SubscribeEvent(EventPriority.MONITOR, ignoreCancelled = true)
 fun onBlockBreakForMining(event: BlockBreakEvent) {
     val player = event.player
@@ -389,6 +391,8 @@ fun onBlockBreakForMining(event: BlockBreakEvent) {
 }
 
 /** 力量经验 — 近战伤害（MONITOR：事件最终态，忽略已取消事件） */
+
+
 @SubscribeEvent(EventPriority.MONITOR, ignoreCancelled = true)
 fun onEntityDamageForStrength(event: EntityDamageByEntityEvent) {
     val player = event.damager as? Player ?: return
@@ -405,6 +409,8 @@ fun onEntityDamageForStrength(event: EntityDamageByEntityEvent) {
 }
 
 /** 耐力经验 — 承受伤害(MONITOR：事件最终态，忽略已取消事件) */
+
+
 @SubscribeEvent(EventPriority.MONITOR, ignoreCancelled = true)
 fun onEntityDamageForEndurance(event: EntityDamageEvent) {
     val player = event.entity as? Player ?: return
@@ -419,6 +425,8 @@ fun onEntityDamageForEndurance(event: EntityDamageEvent) {
 }
 
 /** 健康经验 — 生命恢复(MONITOR：事件最终态，忽略已取消事件) */
+
+
 @SubscribeEvent(EventPriority.MONITOR, ignoreCancelled = true)
 fun onEntityRegainHealth(event: EntityRegainHealthEvent) {
     val player = event.entity as? Player ?: return
@@ -430,6 +438,8 @@ fun onEntityRegainHealth(event: EntityRegainHealthEvent) {
 }
 
 /** 智力经验 — 附魔(MONITOR：事件最终态，忽略已取消事件) */
+
+
 @SubscribeEvent(EventPriority.MONITOR, ignoreCancelled = true)
 fun onEnchantForIntelligence(event: EnchantItemEvent) {
     val player = event.enchanter
@@ -441,6 +451,8 @@ fun onEnchantForIntelligence(event: EnchantItemEvent) {
 }
 
 /** 智力经验 — 合成(MONITOR：事件最终态，忽略已取消事件) */
+
+
 @SubscribeEvent(EventPriority.MONITOR, ignoreCancelled = true)
 fun onCraftForIntelligence(event: CraftItemEvent) {
     val player = event.whoClicked as? Player ?: return
@@ -452,6 +464,8 @@ fun onCraftForIntelligence(event: CraftItemEvent) {
 }
 
 /** 智力经验 — 酿造(MONITOR：事件最终态，忽略已取消事件) */
+
+
 @SubscribeEvent(EventPriority.MONITOR, ignoreCancelled = true)
 fun onBrewForIntelligence(event: BrewEvent) {
     // 酿造完成后给所有附近玩家加经验
@@ -470,6 +484,8 @@ fun onBrewForIntelligence(event: BrewEvent) {
 }
 
 /** 投掷经验 — 投射物命中(MONITOR：事件最终态，忽略已取消事件) */
+
+
 @SubscribeEvent(EventPriority.MONITOR, ignoreCancelled = true)
 fun onProjectileHitForThrowing(event: ProjectileHitEvent) {
     val shooter = event.entity.shooter as? Player ?: return
@@ -515,6 +531,8 @@ fun onProjectileLaunchForAccuracy(event: ProjectileLaunchEvent) {
 }
 
 /** 钓鱼经验 — 钓到鱼/实体，使用战利品表覆盖掉落(MONITOR：事件最终态，忽略已取消事件) */
+
+
 @SubscribeEvent(EventPriority.MONITOR, ignoreCancelled = true)
 fun onFishForFishing(event: PlayerFishEvent) {
     val player = event.player

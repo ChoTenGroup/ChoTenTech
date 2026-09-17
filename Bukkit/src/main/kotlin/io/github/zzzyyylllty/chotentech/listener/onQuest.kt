@@ -65,6 +65,7 @@ fun onQuestAccept(e: QuestEvents.Accept.Post) {
     if (ProfileManager.getSharedData(player.uniqueId.toString()).settings.getBoolean("autoTrackQuest")) {
         profile.trackQuest = quest.template
     }
+    quest.profile.trackQuest
 }
 
 

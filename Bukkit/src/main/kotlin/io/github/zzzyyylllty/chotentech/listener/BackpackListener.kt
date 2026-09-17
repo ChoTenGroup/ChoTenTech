@@ -38,7 +38,9 @@ object BackpackListener {
     }
 
     /** 禁止将背包物品放入展示框等实体，防止刷物 */
-    @SubscribeEvent(priority = EventPriority.NORMAL)
+    
+
+@SubscribeEvent(priority = EventPriority.NORMAL)
     fun onPlayerInteractEntity(event: PlayerInteractEntityEvent) {
         if (event.hand != EquipmentSlot.HAND) return
         val entity = event.rightClicked
@@ -52,7 +54,9 @@ object BackpackListener {
         player.sendMessage("§c已禁止与本实体互动以防止刷物")
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    
+
+@SubscribeEvent(priority = EventPriority.HIGHEST)
     fun onPlayerInteract(event: PlayerInteractEvent) {
         if (event.hand != EquipmentSlot.HAND) return
         if (event.action != Action.RIGHT_CLICK_AIR && event.action != Action.RIGHT_CLICK_BLOCK) return
@@ -94,7 +98,9 @@ object BackpackListener {
     }
 
     /** 玩家退出时清理其所有活跃背包会话 */
-    @SubscribeEvent(priority = EventPriority.MONITOR)
+    
+
+@SubscribeEvent(priority = EventPriority.MONITOR)
     fun onPlayerQuit(event: PlayerQuitEvent) {
         removePlayerSessions(event.player.uniqueId)
     }

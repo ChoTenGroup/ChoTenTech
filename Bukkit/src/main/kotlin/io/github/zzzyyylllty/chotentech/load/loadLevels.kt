@@ -303,7 +303,11 @@ private fun parseDropbagCondition(raw: Map<*, *>): DropbagCondition {
 }
 
 private fun parseLocation(parts: List<String>): Location {
-    val world = Bukkit.getWorld(parts[0]) ?: Bukkit.getWorlds().first()
+    // parts 可能为空；Bukkit.getWorlds() 也可能为空（启动早期）。
+    // 两者都不要再抛 NoSuchElementException 打断加载。
+    val fallback = Bukkit.getWorlds().firstOrNull()
+    val world = parts.firstOrNull()?.let { Bukkit.getWorld(it) } ?: fallback
+        ?: error("没有任何已加载的世界，无法解析位置: ${parts.joinToString(" ")}")
     val x = parts.getOrElse(1) { "0" }.toDouble()
     val y = parts.getOrElse(2) { "0" }.toDouble()
     val z = parts.getOrElse(3) { "0" }.toDouble()

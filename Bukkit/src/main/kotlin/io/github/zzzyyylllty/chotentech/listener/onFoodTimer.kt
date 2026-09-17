@@ -27,7 +27,7 @@ private const val NO_STAMINA_MSG = "<#E08A98>耐力不足，请稍作休息..."
 private const val MARSHMALLOW_DEATH_MSG = "<#E08A98>因摄入过量油腻棉花糖而死亡"
 // 体力低于此比例禁止疾跑。取消疾跑事件不会向客户端回发同步包,只拦截事件会导致客户端本地保持疾跑而服务端不扣体力(无限疾跑),
 // 因此必须配合饥饿值同步(<=6 时原版客户端无法疾跑)从源头禁止
-private const val LOW_STAMINA_RATIO = 0.15
+private const val LOW_STAMINA_RATIO = 0.0
 
 private val lastLocations = ConcurrentHashMap<String, Location>()
 private val pressureTickCounters = ConcurrentHashMap<String, Int>()

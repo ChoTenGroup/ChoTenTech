@@ -220,7 +220,7 @@ object MCAdapter : BlockAdapter {
     }
 }
 
-@Awake(LifeCycle.ENABLE)
+@Awake(LifeCycle.ACTIVE)
 fun registerNativeBlockAdapters() {
     if (DependencyHelper.ce) blockAdapters["craftengine"] = CEAdapter
     blockAdapters["minecraft"] = MCAdapter

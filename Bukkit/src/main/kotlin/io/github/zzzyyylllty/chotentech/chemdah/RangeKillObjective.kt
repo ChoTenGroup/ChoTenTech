@@ -40,7 +40,7 @@ object MMobRangedDeath : ObjectiveCountableI<MobDeathEvent>() {
     }
 }
 
-@Awake(LifeCycle.ENABLE)
+@Awake(LifeCycle.ACTIVE)
 fun registerMMobRangedDeath(){
     MMobRangedDeath.register()
 }

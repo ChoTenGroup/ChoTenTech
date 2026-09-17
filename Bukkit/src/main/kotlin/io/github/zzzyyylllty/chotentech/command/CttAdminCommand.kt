@@ -19,6 +19,7 @@ import io.github.zzzyyylllty.chotentech.data.PlayerDataManager
 import io.github.zzzyyylllty.chotentech.util.devLog
 import io.github.zzzyyylllty.chotentech.util.jsonUtils
 import io.github.zzzyyylllty.chotentech.util.toComponent
+import io.github.zzzyyylllty.chotentech.worldgeneration.WorldGenDemo
 import org.bukkit.Bukkit
 import org.bukkit.Chunk
 import org.bukkit.Material
@@ -227,6 +228,39 @@ object CttAdminCommand {
                 // 全库补偿为异步任务:遍历所有档案 + 更新 DB,避免阻塞主线程
                 submitAsync {
                     expRefill(sender)
+                }
+            }
+        }
+    }
+
+    @CommandBody
+    val debug = subCommand {
+        literal("worldgen") {
+            dynamic("type") {
+                execute<CommandSender> { sender, context, _ ->
+                    val player = sender as? Player
+                    if (player == null) {
+                        sender.sendComponent("<#E08A98>该指令只能由玩家执行")
+                        return@execute
+                    }
+                    val type = context["type"].lowercase()
+                    if (type !in WorldGenDemo.availableTypes) {
+                        player.sendComponent("<#E08A98>未知的 demo 类型 <#EFDF8F>${context["type"]} <#A9B4C3>(可用: ${WorldGenDemo.availableTypes.joinToString(", ")})")
+                        return@execute
+                    }
+                    // 以玩家脚下方块为起点（相对 y=0 对齐玩家脚下方块）
+                    val loc = player.location
+                    val result = WorldGenDemo.generateDemo(
+                        player.world,
+                        loc.blockX,
+                        loc.blockY - 1,
+                        loc.blockZ,
+                        type
+                    )
+                    player.sendComponent("<#8FD4A6>$result")
+                }
+                suggestion<CommandSender> { _, _ ->
+                    WorldGenDemo.availableTypes
                 }
             }
         }
