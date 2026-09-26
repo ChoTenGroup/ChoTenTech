@@ -380,25 +380,14 @@ object ShopMenu : Listener {
         updateDynamicSlots(player, shop, layout)
     }
 
-    /** Directly update all element ('I') slots in the open inventory */
+    /** Directly update all element ('I') slots in the open inventory.
+     * 必须走 getFilteredItems: 早先这里直接取 shop.items 全量列表, 于是每次点击选择商品
+     * (onClick) 或右键清空选择后, 界面上被过滤掉的商品会被重新画回来 ——
+     * 购买模式下会同时出现"仅出售"的商品, 出售模式下会同时出现"仅购买"的商品,
+     * 并且被条件/物品/购买力筛选隐藏的商品也会复活、格位与商品错位。
+     */
     private fun refreshItemSlots(player: Player, shop: ShopConfig, layout: List<String>, session: PlayerShopSession) {
-        val inv = player.openInventory.topInventory
-        val items = shop.items.values.toList()
-        val iSlots = getISlotIndices(layout)
-        val startIndex = session.currentPage * iSlots.size
-
-        for ((offset, slot) in iSlots.withIndex()) {
-            val idx = startIndex + offset
-            val entry = items.getOrNull(idx)
-            if (entry != null) {
-                inv.setItem(slot, buildShopItem(player, entry, session.isSelected(entry.key), shop))
-            } else {
-                inv.setItem(slot, ItemStack(Material.AIR))
-            }
-        }
-
-        // Also refresh confirm/knowledge buttons
-        updateDynamicSlots(player, shop, layout)
+        refreshFilteredSlots(player, shop, layout, session)
     }
 
     /** Get all indices for a given layout character */

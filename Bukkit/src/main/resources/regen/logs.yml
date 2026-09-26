@@ -6,6 +6,9 @@ oak_log:
   category: WOOD
   items:
     - item: oak_log
+    - item: sertraline:stick
+      amount: 'random 1 to 2'
+      condition: 'check random 1 to 2 == 1'
 
 spruce_log:
   block: spruce_log
@@ -14,6 +17,9 @@ spruce_log:
   category: WOOD
   items:
     - item: spruce_log
+    - item: sertraline:stick
+      amount: 'random 1 to 2'
+      condition: 'check random 1 to 2 == 1'
 
 birch_log:
   block: birch_log
@@ -22,6 +28,9 @@ birch_log:
   category: WOOD
   items:
     - item: birch_log
+    - item: sertraline:stick
+      amount: 'random 1 to 2'
+      condition: 'check random 1 to 2 == 1'
 
 jungle_log:
   block: jungle_log
@@ -30,6 +39,9 @@ jungle_log:
   category: WOOD
   items:
     - item: jungle_log
+    - item: sertraline:stick
+      amount: 'random 1 to 2'
+      condition: 'check random 1 to 2 == 1'
 
 acacia_log:
   block: acacia_log
@@ -38,6 +50,9 @@ acacia_log:
   category: WOOD
   items:
     - item: acacia_log
+    - item: sertraline:stick
+      amount: 'random 1 to 2'
+      condition: 'check random 1 to 2 == 1'
 
 dark_oak_log:
   block: dark_oak_log
@@ -46,6 +61,9 @@ dark_oak_log:
   category: WOOD
   items:
     - item: dark_oak_log
+    - item: sertraline:stick
+      amount: 'random 1 to 2'
+      condition: 'check random 1 to 2 == 1'
 
 mangrove_log:
   block: mangrove_log
@@ -54,6 +72,9 @@ mangrove_log:
   category: WOOD
   items:
     - item: mangrove_log
+    - item: sertraline:stick
+      amount: 'random 1 to 2'
+      condition: 'check random 1 to 2 == 1'
 
 cherry_log:
   block: cherry_log
@@ -62,6 +83,9 @@ cherry_log:
   category: WOOD
   items:
     - item: cherry_log
+    - item: sertraline:stick
+      amount: 'random 1 to 2'
+      condition: 'check random 1 to 2 == 1'
 
 crimson_stem:
   block: crimson_stem
@@ -70,6 +94,9 @@ crimson_stem:
   category: WOOD
   items:
     - item: crimson_stem
+    - item: sertraline:stick
+      amount: 'random 1 to 2'
+      condition: 'check random 1 to 2 == 1'
 
 warped_stem:
   block: warped_stem
@@ -78,3 +105,6 @@ warped_stem:
   category: WOOD
   items:
     - item: warped_stem
+    - item: sertraline:stick
+      amount: 'random 1 to 2'
+      condition: 'check random 1 to 2 == 1'

@@ -3,7 +3,7 @@ wheat:
   block: wheat
   crop: wheat
   period: 60
-  temp-block: farmland
+  temp-block: air
   items:
     - item: wheat
       amount: 1
@@ -14,7 +14,7 @@ carrot:
   block: carrots
   crop: carrots
   period: 60
-  temp-block: farmland
+  temp-block: air
   items:
     - item: carrot
       amount: 1
@@ -23,7 +23,7 @@ potato:
   block: potatoes
   crop: potatoes
   period: 60
-  temp-block: farmland
+  temp-block: air
   items:
     - item: potato
       amount: 1

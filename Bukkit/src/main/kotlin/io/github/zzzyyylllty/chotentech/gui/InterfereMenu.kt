@@ -96,10 +96,12 @@ class InterfereMenu {
         }
     }
 
-    /** 供干涉事务面板跳转:按配置 ID 打开该玩家对应实例的结果详情,无进行中实例时返回 false */
+    /** 供干涉事务面板跳转:按配置 ID 打开该玩家最新的对应实例结果详情,没有时返回 false */
     fun openDetail(player: Player, configId: String): Boolean {
-        val interfere = InterfereManager.getInterfere(player.uniqueId.toString()) ?: return false
-        if (interfere.configId != configId) return false
+        val interfere = InterfereManager.getInterferes(player.uniqueId.toString())
+            .filter { it.configId == configId }
+            .maxByOrNull { it.startTime }
+            ?: return false
         val config = interfereConfigs[configId] ?: return false
         openDetail(player, interfere, config)
         return true
@@ -152,7 +154,7 @@ class InterfereMenu {
         val meta = item.itemMeta ?: return item
 
         val modelNum = statusModelIndex[interfere.status] ?: 0
-        meta.itemModel = NamespacedKey.fromString("kangelicon:conflict_$modelNum")
+        meta.itemModel = NamespacedKey.fromString("kangelicon:interfere_$modelNum")
 
         val statusText = when (interfere.status) {
             InterfereStatus.PENDING -> "<#EFDF8F>未开始"
@@ -179,6 +181,7 @@ class InterfereMenu {
             lore += loreInfo("结果", "<#DFBD7C>$noLevelText")
         }
         lore += loreInfo("配置ID", "<#F2F5FA>${interfere.configId}")
+        lore += loreInfo("实例ID", "<#6E7A8C>${interfere.instanceId}")
         lore += loreSpace()
         lore += "<!i> <#EFDF8F>点击 <#8FD4A6>查看结果详情"
 

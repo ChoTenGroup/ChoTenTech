@@ -27,6 +27,8 @@ import taboolib.common.platform.command.subCommand
 )
 object InterfereCommand {
 
+    private val LEVEL_SUGGESTIONS = listOf("FULL_SUCCESS", "SUCCESS", "NEUTRAL", "FAIL", "FULL_FAIL")
+
     @CommandBody
     val main = mainCommand {
         createModernHelper()
@@ -49,8 +51,8 @@ object InterfereCommand {
                         return@execute
                     }
                     sender.sendComponent("<#8FD4A6>已为 <#EFDF8F>${target.name}</#EFDF8F> 创建干扰: ${config.name}")
-                    sender.sendComponent("<#A9B4C3>实例ID: ${interfere.instanceId} | 状态: ${interfere.status}")
-                    sender.sendComponent("<#A9B4C3>使用 /interfere activate ${target.name} 将其激活")
+                    sender.sendComponent("<#A9B4C3>实例ID: <#F2F5FA>${interfere.instanceId} <#A9B4C3>| 状态: ${interfere.status}")
+                    sender.sendComponent("<#A9B4C3>使用 /interfere activate ${interfere.instanceId} 将其激活")
                 }
                 suggestion<CommandSender> { _, _ ->
                     interfereConfigs.keys.toList()
@@ -61,18 +63,22 @@ object InterfereCommand {
 
     @CommandBody
     val activate = subCommand {
-        player("target") {
+        dynamic("instanceId") {
+            suggestion<CommandSender> { _, _ ->
+                InterfereManager.getActiveInterferes().map { it.instanceId }
+            }
             execute<CommandSender> { sender, context, _ ->
-                val target = context.player("target").castSafely<Player>()!!
-                val uuid = target.uniqueId.toString()
-                if (InterfereManager.activateInterfere(uuid)) {
-                    val c = InterfereManager.getInterfere(uuid)
-                    sender.sendComponent("<#8FD4A6>已激活 <#EFDF8F>${target.name}</#EFDF8F> 的干扰")
-                    if (c != null) {
-                        sender.sendComponent("<#A9B4C3>配置: ${c.name} | 状态: ${c.status}")
-                    }
+                val instanceId = context["instanceId"]
+                val interfere = InterfereManager.getInterfere(instanceId)
+                if (interfere == null) {
+                    sender.sendComponent("<#E08A98>未找到干涉实例: $instanceId")
+                    return@execute
+                }
+                if (InterfereManager.activateInterfere(instanceId)) {
+                    sender.sendComponent("<#8FD4A6>已激活 <#EFDF8F>${interfere.playerName}</#EFDF8F> 的干涉: ${interfere.name}")
+                    sender.sendComponent("<#A9B4C3>实例ID: <#F2F5FA>${interfere.instanceId} <#A9B4C3>| 状态: <#84D1CB>进行中")
                 } else {
-                    sender.sendComponent("<#E08A98>无法激活 ${target.name} 的干扰，可能不存在或已开始")
+                    sender.sendComponent("<#E08A98>无法激活 $instanceId，可能已开始或已结束")
                 }
             }
         }
@@ -80,38 +86,40 @@ object InterfereCommand {
 
     @CommandBody
     val setlevel = subCommand {
-        player("target") {
+        dynamic("instanceId") {
+            suggestion<CommandSender> { _, _ ->
+                InterfereManager.getActiveInterferes().map { it.instanceId }
+            }
             dynamic("faction") {
-                suggestion<CommandSender> { sender, context ->
-                    val target = context.player("target").castSafely<Player>()
-                    if (target != null) {
-                        val interfere = InterfereManager.getInterfere(target.uniqueId.toString())
-                        val config = interfere?.let { interfereConfigs[it.configId] }
-                        config?.scores?.flatMap { it.value.changes.keys }?.distinct() ?: emptyList()
-                    } else {
-                        interfereConfigs.values.flatMap { it.scores.flatMap { e -> e.value.changes.keys } }.distinct()
-                    }
+                suggestion<CommandSender> { _, context ->
+                    val interfere = InterfereManager.getInterfere(context["instanceId"])
+                    val config = interfere?.let { interfereConfigs[it.configId] }
+                    config?.scores?.flatMap { it.value.changes.keys }?.distinct()
+                        ?: interfereConfigs.values.flatMap { c -> c.scores.flatMap { e -> e.value.changes.keys } }.distinct()
                 }
                 dynamic("level") {
                     execute<CommandSender> { sender, context, _ ->
-                        val target = context.player("target").castSafely<Player>()!!
+                        val instanceId = context["instanceId"]
                         val faction = context["faction"]
-                        val levelName = context["level"].uppercase()
-                        val level = runCatching { ResultLevel.valueOf(levelName) }.getOrNull()
+                        val level = runCatching { ResultLevel.valueOf(context["level"].uppercase()) }.getOrNull()
                         if (level == null) {
                             val names = ResultLevel.entries.joinToString(" ") { "${it.displayName}(${it.name})" }
                             sender.sendComponent("<#E08A98>未知结果等级，可用: $names")
                             return@execute
                         }
-                        val uuid = target.uniqueId.toString()
-                        if (InterfereManager.setFactionLevel(uuid, faction, level)) {
-                            sender.sendComponent("<#8FD4A6>已将 <#EFDF8F>${target.name}</#EFDF8F> 的阵营 <#84D1CB>$faction</#84D1CB> 结果设为 ${level.displayColor}${level.displayName}")
+                        val interfere = InterfereManager.getInterfere(instanceId)
+                        if (interfere == null) {
+                            sender.sendComponent("<#E08A98>未找到干涉实例: $instanceId")
+                            return@execute
+                        }
+                        if (InterfereManager.setFactionLevel(instanceId, faction, level)) {
+                            sender.sendComponent("<#8FD4A6>已将 <#EFDF8F>${interfere.playerName}</#EFDF8F> 的阵营 <#84D1CB>$faction</#84D1CB> 结果设为 ${level.displayColor}${level.displayName}")
                         } else {
-                            sender.sendComponent("<#E08A98>设定失败，${target.name} 没有进行中的干扰")
+                            sender.sendComponent("<#E08A98>设定失败，干涉实例已结束")
                         }
                     }
                     suggestion<CommandSender> { _, _ ->
-                        listOf("FULL_SUCCESS", "SUCCESS", "NEUTRAL", "FAIL", "FULL_FAIL")
+                        LEVEL_SUGGESTIONS
                     }
                 }
             }
@@ -120,18 +128,28 @@ object InterfereCommand {
 
     @CommandBody
     val end = subCommand {
-        player("target") {
+        dynamic("instanceId") {
+            suggestion<CommandSender> { _, _ ->
+                InterfereManager.getActiveInterferes().map { it.instanceId }
+            }
             execute<CommandSender> { sender, context, _ ->
-                val target = context.player("target").castSafely<Player>()!!
-                val uuid = target.uniqueId.toString()
-                val changes = InterfereManager.endInterfere(uuid)
-                if (changes == null) {
-                    sender.sendComponent("<#E08A98>无法结束 ${target.name} 的干扰，可能不存在、已结束、或未设置结果等级")
+                val instanceId = context["instanceId"]
+                val before = InterfereManager.getInterfere(instanceId)
+                if (before == null) {
+                    sender.sendComponent("<#E08A98>未找到干涉实例: $instanceId")
                     return@execute
                 }
-                val c = InterfereManager.getInterfere(uuid)
-                val factionDisplay = c?.factionLevels?.entries?.joinToString("<#A9B4C3>, ") { (f, l) -> "${l.displayColor}$f:${l.displayName}" } ?: "<#A9B4C3>无结果等级"
-                sender.sendComponent("<#8FD4A6><#EFDF8F>${target.name}</#EFDF8F> 的干扰已结束: ${c?.name ?: ""}")
+                if (before.status == InterfereStatus.FINISHED) {
+                    sender.sendComponent("<#E08A98>$instanceId 已经结束了")
+                    return@execute
+                }
+                val changes = InterfereManager.endInterfere(instanceId) ?: run {
+                    sender.sendComponent("<#E08A98>结算失败，$instanceId 仍未结束（需玩家在线、已设置结果等级且配置存在）")
+                    return@execute
+                }
+                val c = InterfereManager.getInterfere(instanceId) ?: before
+                val factionDisplay = c.factionLevels.entries.joinToString("<#A9B4C3>, ") { (f, l) -> "${l.displayColor}$f:${l.displayName}" }
+                sender.sendComponent("<#8FD4A6><#EFDF8F>${c.playerName}</#EFDF8F> 的干涉已结束: ${c.name}")
                 sender.sendComponent("<#A9B4C3>结果: $factionDisplay")
                 sender.sendComponent("<#DFBD7C>声望变更:")
                 for (change in changes) {
@@ -145,14 +163,21 @@ object InterfereCommand {
 
     @CommandBody
     val cancel = subCommand {
-        player("target") {
+        dynamic("instanceId") {
+            suggestion<CommandSender> { _, _ ->
+                InterfereManager.getActiveInterferes().map { it.instanceId }
+            }
             execute<CommandSender> { sender, context, _ ->
-                val target = context.player("target").castSafely<Player>()!!
-                val uuid = target.uniqueId.toString()
-                if (InterfereManager.cancelInterfere(uuid)) {
-                    sender.sendComponent("<#E08A98>已取消 <#EFDF8F>${target.name}</#EFDF8F> 的干扰，不应用声望变更")
+                val instanceId = context["instanceId"]
+                val interfere = InterfereManager.getInterfere(instanceId)
+                if (interfere == null) {
+                    sender.sendComponent("<#E08A98>未找到干涉实例: $instanceId")
+                    return@execute
+                }
+                if (InterfereManager.cancelInterfere(instanceId)) {
+                    sender.sendComponent("<#E08A98>已取消 <#EFDF8F>${interfere.playerName}</#EFDF8F> 的干涉 ${interfere.name}，不应用声望变更")
                 } else {
-                    sender.sendComponent("<#E08A98>无法取消 ${target.name} 的干扰，可能不存在或已结束")
+                    sender.sendComponent("<#E08A98>无法取消 $instanceId，可能已结束")
                 }
             }
         }
@@ -161,39 +186,27 @@ object InterfereCommand {
     @CommandBody
     val list = subCommand {
         execute<CommandSender> { sender, _, _ ->
-            val active = InterfereManager.getActiveInterferes()
-            if (active.isEmpty()) {
-                sender.sendComponent("<#A9B4C3>当前没有正在进行的干扰")
-                return@execute
-            }
-            sender.sendComponent("<#DFBD7C>=== 正在进行的干扰 (${active.size}) ===")
-            for (c in active) {
-                val levelStr = if (c.factionLevels.isNotEmpty()) {
-                    c.factionLevels.entries.joinToString("<#A9B4C3>, ") { (f, l) -> "${l.displayColor}$f:${l.displayName}" }
-                } else when (c.status) {
-                    InterfereStatus.PENDING -> "<#EFDF8F>未开始"
-                    InterfereStatus.ACTIVE -> "<#84D1CB>进行中"
-                    else -> "<#A9B4C3>无结果"
-                }
-                val statusColor = when (c.status) {
-                    InterfereStatus.PENDING -> "<#EFDF8F>"
-                    InterfereStatus.ACTIVE -> "<#84D1CB>"
-                    else -> "<#A9B4C3>"
-                }
-                sender.sendComponent("<#EFDF8F>${c.playerName} <#A9B4C3>| <#8FD4A6>${c.name} <#A9B4C3>| ${statusColor}${c.status} <#A9B4C3>| $levelStr")
+            sendList(sender, null, null)
+        }
+        player("target") {
+            execute<CommandSender> { sender, context, _ ->
+                val target = context.player("target").castSafely<Player>()!!
+                sendList(sender, target.uniqueId.toString(), target.name)
             }
         }
     }
 
     @CommandBody
     val info = subCommand {
-        player("target") {
+        dynamic("instanceId") {
+            suggestion<CommandSender> { _, _ ->
+                InterfereManager.getAllInterferes().map { it.instanceId }
+            }
             execute<CommandSender> { sender, context, _ ->
-                val target = context.player("target").castSafely<Player>()!!
-                val uuid = target.uniqueId.toString()
-                val c = InterfereManager.getInterfere(uuid)
+                val instanceId = context["instanceId"]
+                val c = InterfereManager.getInterfere(instanceId)
                 if (c == null) {
-                    sender.sendComponent("<#E08A98>${target.name} 没有进行中的干扰")
+                    sender.sendComponent("<#E08A98>未找到干涉实例: $instanceId")
                     return@execute
                 }
                 sender.sendComponent("<#DFBD7C>=== 干扰信息: ${c.instanceId} ===")
@@ -263,13 +276,44 @@ object InterfereCommand {
                         }
                     }
                     suggestion<CommandSender> { _, _ ->
-                        listOf("FULL_SUCCESS", "SUCCESS", "NEUTRAL", "FAIL", "FULL_FAIL")
+                        LEVEL_SUGGESTIONS
                     }
                 }
             }
             suggestion<CommandSender> { _, _ ->
                 interfereConfigs.keys.toList()
             }
+        }
+    }
+
+    /** 列出未结束的干涉实例；[filterUuid] 非空时只列出该玩家的 */
+    private fun sendList(sender: CommandSender, filterUuid: String?, filterName: String?) {
+        val active = if (filterUuid != null) {
+            InterfereManager.getActiveInterferes(filterUuid)
+        } else {
+            InterfereManager.getActiveInterferes()
+        }
+        val who = filterName?.let { "$it 的" } ?: ""
+        if (active.isEmpty()) {
+            sender.sendComponent("<#A9B4C3>当前没有${who}正在进行的干扰")
+            return
+        }
+        sender.sendComponent("<#DFBD7C>=== ${who}正在进行的干扰 (${active.size}) ===")
+        for (c in active) {
+            val levelStr = if (c.factionLevels.isNotEmpty()) {
+                c.factionLevels.entries.joinToString("<#A9B4C3>, ") { (f, l) -> "${l.displayColor}$f:${l.displayName}" }
+            } else when (c.status) {
+                InterfereStatus.PENDING -> "<#EFDF8F>未开始"
+                InterfereStatus.ACTIVE -> "<#84D1CB>进行中"
+                else -> "<#A9B4C3>无结果"
+            }
+            val statusColor = when (c.status) {
+                InterfereStatus.PENDING -> "<#EFDF8F>"
+                InterfereStatus.ACTIVE -> "<#84D1CB>"
+                else -> "<#A9B4C3>"
+            }
+            sender.sendComponent("<#EFDF8F>${c.playerName} <#A9B4C3>| <#8FD4A6>${c.name} <#A9B4C3>| ${statusColor}${c.status} <#A9B4C3>| $levelStr")
+            sender.sendComponent("<#6E7A8C>  ${c.instanceId}")
         }
     }
 }

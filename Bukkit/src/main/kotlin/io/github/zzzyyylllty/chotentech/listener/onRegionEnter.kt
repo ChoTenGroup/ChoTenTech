@@ -5,13 +5,13 @@ import com.sk89q.worldguard.WorldGuard
 import io.github.zzzyyylllty.chotentech.ChoTenTech
 import io.github.zzzyyylllty.chotentech.ChoTenTech.levelsList
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerRegions
+import io.github.zzzyyylllty.chotentech.data.Base
 import io.github.zzzyyylllty.chotentech.data.ChoTenDataHelper
-import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager
 import io.github.zzzyyylllty.chotentech.function.BaseManager
 import io.github.zzzyyylllty.chotentech.function.player.transferLevelTask
 import io.github.zzzyyylllty.chotentech.gui.BaseSavePointMenu
-import io.github.zzzyyylllty.chotentech.load.getRegion
 import io.github.zzzyyylllty.chotentech.util.toComponent
+import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import taboolib.common.LifeCycle.LOAD
@@ -50,50 +50,52 @@ fun onPlayerMove(event: PlayerMoveEvent) {
     val enteredRegions = currentRegions - previousRegions
     if (enteredRegions.isNotEmpty()) {
         submitAsync {
+            // 基地进入标题优先：先提交基地动画并算出它占用多少 tick，
+            // 层级进入标题（打字机 HUD/标题/聊天消息）整体后移，避免两者同时播放
+            var baseTitleTicks = 0L
             for (region in enteredRegions) {
                 try {
-                    // 层级标题序列结束时刻(tick);基地标题延后到该时刻后发送,保证优先显示
-                    var levelTitleEndTicks = 0L
-                    val level = levelsList[region]
-                    if (level != null) {
-                        transferLevelTask(player, level)
-                        ChoTenDataHelper(player).updateLevel()
-                        val length = if (level.number == null) "Enigmatic Level".length else "Level ${level.number}".length
-                        when (ProfileManager.getSharedData(player.uniqueId.toString()).settings.get("levelTitleMode")) {
-                            // 动画 + 最终标题:最终标题在 5*(length+4) tick 发送,展示 1s+5s+2s
-                            "on" -> levelTitleEndTicks = 5L * (length + 4) + 170
-                            // 仅最终标题:立即发送,展示 8s
-                            "no_animation" -> levelTitleEndTicks = 170L
-                            // 关闭:无层级标题
-                            else -> levelTitleEndTicks = 0L
-                        }
-                    }
                     // 检测基地区域
-                    if (region.startsWith("base-")) {
-                        val base = BaseManager.getBaseByRegion(region)
-                        if (base != null) {
-                            BaseManager.discoverBase(player, base.idef)
-                            // 每次进入都显示;Minecraft 标题机制最后发送者优先,故延迟到层级标题结束后再播放进入动画
-                            submit(delay = levelTitleEndTicks) {
-                                if (!player.isOnline) return@submit
-                                playBaseEnterTitle(player, base)
-                            }
-                        }
+                    if (!region.startsWith("base-")) continue
+                    val base = BaseManager.getBaseByRegion(region) ?: continue
+                    BaseManager.discoverBase(player, base.idef)
+                    // 每次进入都显示
+                    submit {
+                        if (!player.isOnline) return@submit
+                        playBaseEnterTitle(player, base)
                     }
-                    // 检测存档点区域
-                    val saveBase = BaseManager.baseMap.values.firstOrNull { it.savePointRegion == region }
-                    if (saveBase != null) {
-                        val cooldownKey = "${player.uniqueId}:${saveBase.idef}"
-                        val lastShown = savePointCooldown[cooldownKey]
-                        if (lastShown == null || System.currentTimeMillis() - lastShown > 30000) {
-                            savePointCooldown[cooldownKey] = System.currentTimeMillis()
-                            submit {
-                                BaseSavePointMenu(saveBase).open(player)
-                            }
+                    baseTitleTicks = maxOf(baseTitleTicks, baseEnterTitleTicks(base))
+                } catch (e: Exception) {
+                    // 单个区域的检测失败不影响其他区域
+                    e.printStackTrace()
+                }
+            }
+
+            // 检测层级区域：数据立即更新，只有标题/提示序列延后到基地标题之后
+            for (region in enteredRegions) {
+                try {
+                    val level = levelsList[region] ?: continue
+                    transferLevelTask(player, level, baseTitleTicks)
+                    ChoTenDataHelper(player).updateLevel()
+                } catch (e: Exception) {
+                    // 单个区域的检测失败不影响其他区域
+                    e.printStackTrace()
+                }
+            }
+
+            // 检测存档点区域
+            for (region in enteredRegions) {
+                try {
+                    val saveBase = BaseManager.baseMap.values.firstOrNull { it.savePointRegion == region } ?: continue
+                    val cooldownKey = "${player.uniqueId}:${saveBase.idef}"
+                    val lastShown = savePointCooldown[cooldownKey]
+                    if (lastShown == null || System.currentTimeMillis() - lastShown > 30000) {
+                        savePointCooldown[cooldownKey] = System.currentTimeMillis()
+                        submit {
+                            BaseSavePointMenu(saveBase).open(player)
                         }
                     }
                 } catch (e: Exception) {
-                    // 单个区域的检测失败不影响其他区域(如 updateLevel 异常时基地标题仍要显示)
                     e.printStackTrace()
                 }
             }
@@ -116,12 +118,20 @@ fun onPlayerMove(event: PlayerMoveEvent) {
 private val savePointCooldown = ConcurrentHashMap<String, Long>()
 
 /**
+ * 基地进入标题动画占用的 tick 数，用于把层级进入标题排到它后面。
+ * 对应 [playBaseEnterTitle]：逐帧阶段 period=2、共 (8 + 名称长度*2 + 3) 帧；
+ * 之后 +4 tick 发送最终标题，最终标题展示 500+2000+500 ms（60 tick）；末尾留 5 tick 余量。
+ */
+private fun baseEnterTitleTicks(base: Base): Long =
+    2L * (8 + base.name.length * 2 + 3) + 4L + 60L + 5L
+
+/**
  * 基地进入标题动画:
  * 1. 名称占位显示为灰色乱码(<obfuscated> 抖动 "1" 串,等效 §k)
  * 2. 逐字替换为绿色基地名称(已解码部分为绿色,未解码部分保持乱码抖动)
  * 3. 全部解码完成后,显示最终蓝色名称 + 介绍副标题
  */
-private fun playBaseEnterTitle(player: org.bukkit.entity.Player, base: io.github.zzzyyylllty.chotentech.data.Base) {
+private fun playBaseEnterTitle(player: Player, base: Base) {
     val name = base.name
     val length = name.length
 

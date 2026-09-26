@@ -27,18 +27,18 @@ private data class FakePluginInstance(
     val enabled: Boolean = true,
 ) {
     fun generateFakeLore(): String {
-        val version = "Version: <#8FD4A6>$version</#8FD4A6><br>"
-        val description = description?.let { "Description: <#8FD4A6>$it</#8FD4A6><br>" }
-        val website = website?.let { "Website: <#8FD4A6>$it</#8FD4A6><br>" }
+        val version = "Version: <green>$version</green><br>"
+        val description = description?.let { "Description: <green>$it</green><br>" }
+        val website = website?.let { "Website: <green>$it</green><br>" }
         val author = when (authors.size) {
             0 -> null // 空列表，返回空字符串
-            1 -> "Author: <#8FD4A6>${authors.first()}</#8FD4A6><br>" // 只有一个作者
-            2 -> "Authors: <#8FD4A6>${authors.first()}</#8FD4A6> and <#8FD4A6>${authors.last()}</#8FD4A6><br>" // 两个作者，用 " and " 连接
+            1 -> "Author: <green>${authors.first()}</green><br>" // 只有一个作者
+            2 -> "Authors: <green>${authors.first()}</green> and <green>${authors.last()}</green><br>" // 两个作者，用 " and " 连接
             else -> { // 三个或更多作者
                 // 获取除最后一个作者之外的所有作者，并用 ", " 连接
-                val allButLast = authors.dropLast(1).joinToString(", ") { "<#8FD4A6>$it</#8FD4A6>" }
+                val allButLast = authors.dropLast(1).joinToString(", ") { "<green>$it</green>" }
                 // 获取最后一个作者
-                val lastAuthor = "<#8FD4A6>${authors.last()}</#8FD4A6>"
+                val lastAuthor = "<green>${authors.last()}</green>"
                 // 组合成最终字符串
                 "Authors: $allButLast and $lastAuthor<br>"
             }
@@ -48,18 +48,18 @@ private data class FakePluginInstance(
 
     }
     fun generateFakeVersionLore(): List<Component> {
-        val list = mutableListOf("<#8FD4A6>$name</#8FD4A6> version <#8FD4A6>$version</#8FD4A6>")
+        val list = mutableListOf("<green>$name</green> version <green>$version</green>")
         if (description != null) list.add(description)
-        if (website != null) list.add("Website: <#8FD4A6>$website</#8FD4A6>")
+        if (website != null) list.add("Website: <green>$website</green>")
         if (authors.isNotEmpty()) when (authors.size) {
             0 -> null // 空列表，返回空字符串
-            1 -> "Author: <#8FD4A6>${authors.first()}</#8FD4A6>" // 只有一个作者
-            2 -> "Authors: <#8FD4A6>${authors.first()}</#8FD4A6> and <#8FD4A6>${authors.last()}</#8FD4A6>" // 两个作者，用 " and " 连接
+            1 -> "Author: <green>${authors.first()}</green>" // 只有一个作者
+            2 -> "Authors: <green>${authors.first()}</green> and <green>${authors.last()}</green>" // 两个作者，用 " and " 连接
             else -> { // 三个或更多作者
                 // 获取除最后一个作者之外的所有作者，并用 ", " 连接
-                val allButLast = authors.dropLast(1).joinToString(", ") { "<#8FD4A6>$it</#8FD4A6>" }
+                val allButLast = authors.dropLast(1).joinToString(", ") { "<green>$it</green>" }
                 // 获取最后一个作者
-                val lastAuthor = "<#8FD4A6>${authors.last()}</#8FD4A6>"
+                val lastAuthor = "<green>${authors.last()}</green>"
                 // 组合成最终字符串
                 "Authors: $allButLast and $lastAuthor"
             }
@@ -86,8 +86,8 @@ private val fakePluginsMessage: List<Component> by lazy {
     val INFO_COLOR = TextColor.color(52, 159, 218)
     val SERVER_PLUGIN_INFO = Component.text("ℹ What is a server plugin?", INFO_COLOR)
         .append("""
-            <#F2F5FA>
-            <#F2F5FA>Server plugins can add new behavior to your server!
+            <white>
+            <white>Server plugins can add new behavior to your server!
             You can find new plugins on Paper's plugin repository, Hangar.
             
             https://hangar.papermc.io/
@@ -96,13 +96,13 @@ private val fakePluginsMessage: List<Component> by lazy {
     val INFO_ICON_SERVER_PLUGIN = INFO_ICON_START.hoverEvent(SERVER_PLUGIN_INFO).clickEvent(ClickEvent.openUrl("https://docs.papermc.io/paper/adding-plugins"))
     val list = mutableListOf<Component>()
     list.add(Component.text().append(INFO_ICON_SERVER_PLUGIN).append(Component.text("Server Plugins (${paperPlugins.size + bukkitPlugins.size + leavesPlugins.size}):")).build())
-    list.add("<#86c0b1>Leaves Plugins (${leavesPlugins.size}):</#86c0b1>".toComponent())
+    list.add("<#37D1AB>Leaves Plugins (${leavesPlugins.size}):</#37D1AB>".toComponent())
     list.add(generatePluginsList(leavesPlugins))
-    list.add("<#4e99c2>Paper Plugins (${paperPlugins.size}):</#4e99c2>".toComponent())
+    list.add("<#0288D1>Paper Plugins (${paperPlugins.size}):</#0288D1>".toComponent())
     list.add(generatePluginsList(paperPlugins))
-    list.add("<#c99b67>Bukkit Plugins (${bukkitPlugins.size}):</#c99b67>".toComponent())
+    list.add("<#ED8106>Bukkit Plugins (${bukkitPlugins.size}):</#ED8106>".toComponent())
     list.add(generatePluginsList(bukkitPlugins))
-    list.add("<#A9B4C3>Fake Plugins List - Powered by ChoTenGroup".toComponent())
+    list.add("<gray>Fake Plugins List - Powered by ChoTenGroup".toComponent())
     list
 }
 
@@ -120,7 +120,7 @@ private fun generatePluginsList(plugins: List<FakePluginInstance>): Component {
     plugins.forEach {
         pluginsText += it.generateFakeLore()
     }
-    return "<#6E7A8C> - </#6E7A8C>$pluginsText".removeSuffix(", ").toComponent()
+    return "<dark_gray> - </dark_gray>$pluginsText".removeSuffix(", ").toComponent()
 }
 
 @SubscribeEvent
@@ -150,9 +150,9 @@ fun fakeCommandListener(e: PlayerCommandPreprocessEvent) {
                 } else {
                     e.isCancelled = true
                     listOf(
-                        "<#F2F5FA>This server is running <#EFDF8F>ChoTenLeaf</#EFDF8F> version 1.21.4-514-ver/1.21.4@20ff718 (2025-07-18T01:20:36Z) (Implementing API Version 11.45.14-R1.919810-SNAPSHOT) (Git: rain505 on ver/11.45.14)".toComponent(),
-                        "<#E08A98>* Error obtaining version infomation".toComponent(),
-                        "<#A9B4C3><i>Previous version: Minestom-114514 (MC: 11.45.14)".toComponent()
+                        "<white>This server is running <yellow>ChoTenLeaf</yellow> version 1.21.4-514-ver/1.21.4@20ff718 (2025-07-18T01:20:36Z) (Implementing API Version 11.45.14-R1.919810-SNAPSHOT) (Git: rain505 on ver/11.45.14)".toComponent(),
+                        "<red>* Error obtaining version infomation".toComponent(),
+                        "<gray><i>Previous version: Minestom-114514 (MC: 11.45.14)".toComponent()
                     )
                 }
             }

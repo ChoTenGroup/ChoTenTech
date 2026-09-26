@@ -105,8 +105,10 @@ data class PlayerData (
     var affectionMarks: MutableMap<String, MutableSet<String>> = mutableMapOf(),
     // faction id -> reputation value (e.g. MEG, BNTG, UEC)
     var reputation: MutableMap<String, Long> = mutableMapOf(),
-    // 信誉记录（interfereId=null 表示杂项扣除途径），按时间先后追加
-    var reputationRecords: MutableList<ReputationRecord> = mutableListOf(),
+    // 杂项信誉记录（一次操作一条，按时间先后追加）
+    var miscReputationRecords: MutableList<MiscReputationRecord> = mutableListOf(),
+    // 干涉信誉记录：干涉配置ID -> 该干涉的历史结算记录（按时间先后追加）
+    var interfereReputationRecords: MutableMap<String, MutableList<InterfereReputationRecord>> = mutableMapOf(),
     // Shared field — cosmetic slot -> cosmetic id (synced from SharedData)
     var cosmetics: MutableMap<String, String> = mutableMapOf(),
 
@@ -202,7 +204,8 @@ data class PlayerData (
         if (affection == null) affection = mutableMapOf()
         if (affectionMarks == null) affectionMarks = mutableMapOf()
         if (reputation == null) reputation = mutableMapOf()
-        if (reputationRecords == null) reputationRecords = mutableListOf()
+        if (miscReputationRecords == null) miscReputationRecords = mutableListOf()
+        if (interfereReputationRecords == null) interfereReputationRecords = mutableMapOf()
         if (cosmetics == null) cosmetics = mutableMapOf()
         if (unlockedNoclips == null) unlockedNoclips = mutableSetOf()
         if (unlockedShopItems == null) unlockedShopItems = mutableSetOf()
@@ -259,15 +262,30 @@ data class PlayerData (
     }
 }
 
-/** 单条信誉变化记录；interfereId=null 表示杂项扣除途径，level 为 ResultLevel.name 或 null */
-data class ReputationRecord(
-    // 旧存档 JSON 键为 conflictId，用 @SerializedName 保持兼容
-    @com.google.gson.annotations.SerializedName("conflictId")
-    val interfereId: String?,
-    val faction: String,
-    val level: String?,
-    val change: Long,
-    val time: Long
+/**
+ * 一次信誉记录中某个阵营的变化。
+ * [type] 为 ResultLevel.name（如 SUCCESS），杂项途径为 null；[change] 为实际变动值（可正可负）。
+ */
+data class ReputationChangeEntry(
+    val type: String? = null,
+    val change: Long = 0L
+)
+
+/** 一次杂项信誉变动（add/remove/set 等途径），一次操作一条记录，[change] 内含涉及的阵营 */
+data class MiscReputationRecord(
+    val time: Long = System.currentTimeMillis(),
+    val change: MutableMap<String, ReputationChangeEntry> = mutableMapOf()
+)
+
+/**
+ * 一次干涉结算记录。[change] 内含该次结算涉及的所有阵营
+ * （例如 MEG=+50、UEC=-50 同属一条记录，而不是拆成多条）。
+ */
+data class InterfereReputationRecord(
+    /** 结算对应的干涉实例ID，便于追溯是哪一次；旧数据可能为 null */
+    val instanceId: String? = null,
+    val time: Long = System.currentTimeMillis(),
+    val change: MutableMap<String, ReputationChangeEntry> = mutableMapOf()
 )
 
 data class PlayerStatusEffect(
