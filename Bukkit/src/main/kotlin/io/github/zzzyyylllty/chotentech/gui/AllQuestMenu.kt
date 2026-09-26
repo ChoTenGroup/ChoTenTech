@@ -69,7 +69,7 @@ class AllQuestMenu {
                     val lore = mutableListOf<String>()
                     lore += "<!i> "
                     cui?.npcID?.let {
-                        lore += "<!i><#F2F5FA><b>|<reset> <!i><#84D1CB>任务来自 <#DFBD7C>$it"
+                        lore += "<!i><#F2F5FA><b>|<reset> <!i><#84D1CB>任务来自 <#DFBD7C>${it.joinToString { ", " }}"
                         lore += "<!i> "
                     }
                     lore += "<!i><#F2F5FA><b>|<reset> <!i><#84D1CB>进程"

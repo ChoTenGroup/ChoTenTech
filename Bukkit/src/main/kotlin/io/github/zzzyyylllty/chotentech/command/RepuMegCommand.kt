@@ -42,7 +42,7 @@ object RepuMegCommand {
                         return@execute
                     }
                     ReputationManager.addReputation(player, FACTION, amount)
-                    ReputationManager.addRecord(player, null, FACTION, null, amount)
+                    ReputationManager.addMiscRecord(player, FACTION, amount)
                     sender.sendComponent("<#8FD4A6>已给予 ${player.name} $amount MEG声望 $REASON")
                     player.sendComponent("<#DFBD7C>MEG声望 <#8FD4A6>+$amount $REASON")
                 }
@@ -63,7 +63,7 @@ object RepuMegCommand {
                         return@execute
                     }
                     ReputationManager.addReputation(player, FACTION, amount)
-                    ReputationManager.addRecord(player, null, FACTION, null, amount)
+                    ReputationManager.addMiscRecord(player, FACTION, amount)
                     sender.sendComponent("<#8FD4A6>已给予 ${player.name} $amount MEG声望 $REASON")
                     player.sendComponent("<#DFBD7C>MEG声望 <#8FD4A6>+$amount $REASON")
                 }
@@ -88,7 +88,7 @@ object RepuMegCommand {
                         return@execute
                     }
                     ReputationManager.addReputation(player, FACTION, -amount)
-                    ReputationManager.addRecord(player, null, FACTION, null, -amount)
+                    ReputationManager.addMiscRecord(player, FACTION, -amount)
                     sender.sendComponent("<#8FD4A6>已从 ${player.name} 扣除 $amount MEG声望 $REASON")
                     player.sendComponent("<#DFBD7C>MEG声望 <#E08A98>-$amount $REASON")
                 }
@@ -113,7 +113,7 @@ object RepuMegCommand {
                         return@execute
                     }
                     ReputationManager.addReputation(player, FACTION, -amount)
-                    ReputationManager.addRecord(player, null, FACTION, null, -amount)
+                    ReputationManager.addMiscRecord(player, FACTION, -amount)
                     sender.sendComponent("<#8FD4A6>已从 ${player.name} 扣除 $amount MEG声望 $REASON")
                     player.sendComponent("<#DFBD7C>MEG声望 <#E08A98>-$amount $REASON")
                 }
@@ -136,7 +136,7 @@ object RepuMegCommand {
                     val delta = amount - ReputationManager.getReputation(player, FACTION)
                     ReputationManager.setReputation(player, FACTION, amount)
                     if (delta != 0L) {
-                        ReputationManager.addRecord(player, null, FACTION, null, delta)
+                        ReputationManager.addMiscRecord(player, FACTION, delta)
                     }
                     sender.sendComponent("<#8FD4A6>已将 ${player.name} 的MEG声望设为 $amount")
                 }

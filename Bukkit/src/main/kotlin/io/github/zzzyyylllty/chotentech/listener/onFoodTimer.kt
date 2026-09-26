@@ -12,6 +12,7 @@ import org.bukkit.GameMode
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.event.entity.FoodLevelChangeEvent
+import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerToggleSprintEvent
 import org.bukkit.potion.PotionEffectType
 import taboolib.common.LifeCycle
@@ -24,14 +25,20 @@ import java.util.concurrent.ConcurrentHashMap
 
 private val mm = mmUtil
 private const val NO_STAMINA_MSG = "<#E08A98>耐力不足，请稍作休息..."
+private const val STAMINA_RECOVERED_MSG = "<#8FD4A6>体力已恢复，可以继续奔跑"
 private const val MARSHMALLOW_DEATH_MSG = "<#E08A98>因摄入过量油腻棉花糖而死亡"
-// 体力低于此比例禁止疾跑。取消疾跑事件不会向客户端回发同步包,只拦截事件会导致客户端本地保持疾跑而服务端不扣体力(无限疾跑),
+// 体力低于 SPRINT_LOCK_RATIO 时禁止疾跑,直至体力回到 SPRINT_UNLOCK_RATIO 以上才解锁(迟滞区间,避免在阈值附近反复上锁/解锁)。
+// 取消疾跑事件不会向客户端回发同步包,只拦截事件会导致客户端本地保持疾跑而服务端不扣体力(无限疾跑),
 // 因此必须配合饥饿值同步(<=6 时原版客户端无法疾跑)从源头禁止
-private const val LOW_STAMINA_RATIO = 0.0
+private const val SPRINT_LOCK_RATIO = 0.15
+private const val SPRINT_UNLOCK_RATIO = 0.85
 
 private val lastLocations = ConcurrentHashMap<String, Location>()
 private val pressureTickCounters = ConcurrentHashMap<String, Int>()
 private val lastSprintEndTime = ConcurrentHashMap<String, Long>()
+
+/** 低体力疾跑锁: 存在该 uuid = 体力曾低于 15%,禁止疾跑; 体力回到 85% 以上解除 */
+private val sprintLocked = ConcurrentHashMap<String, Boolean>()
 private var nutritionDecayCounter = 0
 private var marshmallowDecayCounter = 0
 private var chocoDecayCounter = 0
@@ -109,11 +116,16 @@ fun foodTimer() {
                 player.foodLevel = 20
                 player.saturation = 5f
                 player.exhaustion = 0f
+                // 基地/安全世界为无限体力:满体力直接解除疾跑锁
+                updateSprintLock(player, data, uuid)
                 continue
             }
 
             // === 体力/手部体力:消耗与恢复 ===
             applyStaminaTick(player, data, uuid)
+
+            // === 低体力疾跑锁:低于 15% 上锁,回到 85% 以上解锁 ===
+            updateSprintLock(player, data, uuid)
 
             // === Injury regen (from attribute system) ===
             data.externalInjury = minOf(data.externalInjury + data.externalInjuryRegen, data.maxExternalInjury)
@@ -192,10 +204,9 @@ fun foodTimer() {
             }
 
             // === Vanilla food level sync ===
-            // 体力低于阈值时饥饿值同步为 5:原版客户端饥饿 <=6 时无法疾跑,从源头禁止低体力疾跑
-            val stamThreshold = data.maxStamina * LOW_STAMINA_RATIO
+            // 体力被锁(<15%)或饥饿过低时饥饿值同步为 5:原版客户端饥饿 <=6 时无法疾跑,从源头禁止低体力疾跑
             val hungerThreshold = data.maxCustomHunger * 0.1
-            if (data.customHunger > hungerThreshold && data.stamina >= stamThreshold) {
+            if (data.customHunger > hungerThreshold && !isSprintLocked(uuid)) {
                 player.foodLevel = 16
                 player.saturation = 0f
                 player.exhaustion = 0f
@@ -230,11 +241,6 @@ private fun applyStaminaTick(player: Player, data: PlayerData, uuid: String) {
         val weightMult = io.github.zzzyyylllty.chotentech.function.WeightManager.getCachedWeight(player.uniqueId)
             ?.let { w -> if (w > 20) 1.0 + (w - 20) * 0.025 else 1.0 } ?: 1.0
         data.stamina = maxOf(data.stamina - 1.0 * weightMult, 0.0)
-        // 体力低于阈值立即强制停止:若只靠事件拦截,客户端会保持本地疾跑且服务端不扣体力(无限疾跑)
-        if (data.stamina < data.maxStamina * LOW_STAMINA_RATIO) {
-            player.isSprinting = false
-            (player as Audience).sendActionBar(mm.deserialize(NO_STAMINA_MSG))
-        }
     } else {
         // 奔跑结束后 5 秒（100 tick）才开始恢复
         val sprintEndTime = lastSprintEndTime[uuid]
@@ -256,6 +262,29 @@ private fun applyStaminaTick(player: Player, data: PlayerData, uuid: String) {
     // === Jump consumption (airborne, not sprinting) ===
     if (!player.isOnGround && !player.isSprinting) {
         data.stamina = maxOf(data.stamina - 0.5, 0.0)
+    }
+}
+
+/** 该玩家当前是否处于低体力疾跑锁(禁止疾跑)状态 */
+private fun isSprintLocked(uuid: String): Boolean = sprintLocked[uuid] == true
+
+/**
+ * 低体力疾跑锁:体力低于 15% 时上锁并立即停止正在进行的疾跑;
+ * 解锁条件为体力回到 85% 以上(迟滞区间,避免在 15% 附近反复上锁/解锁)。
+ */
+private fun updateSprintLock(player: Player, data: PlayerData, uuid: String) {
+    if (isSprintLocked(uuid)) {
+        if (data.stamina >= data.maxStamina * SPRINT_UNLOCK_RATIO) {
+            sprintLocked.remove(uuid)
+            (player as Audience).sendActionBar(mm.deserialize(STAMINA_RECOVERED_MSG))
+        }
+        return
+    }
+    if (data.stamina < data.maxStamina * SPRINT_LOCK_RATIO) {
+        sprintLocked[uuid] = true
+        // 若服务端仍在疾跑状态则立即复位,避免客户端本地保持疾跑导致无限疾跑
+        player.isSprinting = false
+        (player as Audience).sendActionBar(mm.deserialize(NO_STAMINA_MSG))
     }
 }
 
@@ -287,13 +316,29 @@ fun onPlayerToggleSprint(event: PlayerToggleSprintEvent) {
     if (!event.isSprinting) return
     val player = event.player
     if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) return
-    val data = playerDataMap[player.uniqueId.toString()] ?: return
-    if (data.stamina < data.maxStamina * LOW_STAMINA_RATIO) {
+    // 安全世界/基地内为无限体力,不受疾跑锁限制
+    if (isSafeWorld(player) || isInBaseRegion(player)) return
+    val uuid = player.uniqueId.toString()
+    val data = playerDataMap[uuid] ?: return
+    // 已上锁时拦截;若事件先于定时器发生(体力已低于阈值)则一并拦截并补上锁
+    if (isSprintLocked(uuid) || data.stamina < data.maxStamina * SPRINT_LOCK_RATIO) {
+        val newlyLocked = !isSprintLocked(uuid)
+        sprintLocked[uuid] = true
         event.isCancelled = true
         // 若服务端仍在疾跑状态则立即复位并同步给客户端(数据实体写回,不触发事件)
         player.isSprinting = false
-        (player as Audience).sendActionBar(mm.deserialize(NO_STAMINA_MSG))
+        // 仅在刚上锁时提示,避免客户端反复尝试疾跑导致刷屏
+        if (newlyLocked) (player as Audience).sendActionBar(mm.deserialize(NO_STAMINA_MSG))
     }
+}
+
+/** 退出时清理疾跑锁与相关缓存,避免重进后沿用上一局的锁状态 */
+@SubscribeEvent
+fun onQuitClearStaminaState(event: PlayerQuitEvent) {
+    val uuid = event.player.uniqueId.toString()
+    sprintLocked.remove(uuid)
+    lastSprintEndTime.remove(uuid)
+    lastLocations.remove(uuid)
 }
 
 @Awake(LifeCycle.DISABLE)
@@ -303,4 +348,5 @@ fun cancelFoodTimers() {
     lastLocations.clear()
     pressureTickCounters.clear()
     lastSprintEndTime.clear()
+    sprintLocked.clear()
 }

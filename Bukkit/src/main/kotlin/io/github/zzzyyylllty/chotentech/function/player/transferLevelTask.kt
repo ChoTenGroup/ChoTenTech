@@ -17,6 +17,8 @@ import java.time.Duration
 fun transferLevelTask(
     player: Player,
     level: Level,
+    /** 标题/打字机 HUD/层级聊天消息整体后移的 tick 数（例如进入基地时要先播完基地进入标题） */
+    titleDelayTicks: Long = 0L,
 ) {
 
     submit{
@@ -37,13 +39,17 @@ fun transferLevelTask(
         HUDManager(player).removeHUD("levelname")
 
         if (titleMode == "on") {
-            for (time in 1..length) {
-                title = preparetitle.take(time)
-                val hud = "<#A9B4C3>$title<#6E7A8C>_"
-                HUDManager(player).addHUD("levelname", hud, 0.25)
+            // 打字机 HUD 与下面的标题逐字动画是同一套节奏，一起后移
+            submit(delay = titleDelayTicks) {
+                if (!player.isOnline) return@submit
+                for (time in 1..length) {
+                    title = preparetitle.take(time)
+                    val hud = "<#A9B4C3>$title<#6E7A8C>_"
+                    HUDManager(player).addHUD("levelname", hud, 0.25)
+                }
             }
 
-            submit(period = 5, delay = 0) {
+            submit(period = 5, delay = titleDelayTicks) {
                 if (looptime >= length) {
                     cancel()
                 } else {
@@ -60,7 +66,7 @@ fun transferLevelTask(
         }
 
         if (titleMode != "off") {
-            val titleDelay = if (titleMode == "on") 5L * (length + 4) else 0L
+            val titleDelay = titleDelayTicks + if (titleMode == "on") 5L * (length + 4) else 0L
             submit(delay = titleDelay) {
                 player.playSound(player.location, Sound.BLOCK_ENCHANTMENT_TABLE_USE, 5.0f, 1.3f)
 
@@ -72,7 +78,7 @@ fun transferLevelTask(
             }
         }
 
-        submit(delay = 5L * (length + 12)) {
+        submit(delay = titleDelayTicks + 5L * (length + 12)) {
             val setting = ProfileManager.getSharedData(player.uniqueId.toString()).settings.get("levelChatMessage")
             if (setting == "true") {
                 val levelTag = if (number != null) "<gradient:#cfbf6e:#cfac6e>Level $number</gradient>" else "<#5FA8A3>Enigmatic Level</#5FA8A3>"
