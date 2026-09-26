@@ -7,8 +7,6 @@ wheat:
   items:
     - item: wheat
       amount: 1
-    - item: wheat
-      amount: 1
 
 carrot:
   block: carrots
