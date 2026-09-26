@@ -6,7 +6,7 @@ wheat:
   temp-block: air
   items:
     - item: wheat
-      amount: 1
+      amount: 2
 
 carrot:
   block: carrots
