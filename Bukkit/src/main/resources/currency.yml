@@ -1,5 +1,5 @@
 # 货币配置。type:
-#   PLUGIN - 插件自带经济（PlayerData 字段，存数据库），id 对应 money/point/tape/goldentape
+#   PLUGIN - 插件自带经济（PlayerData 字段，存数据库），id 对应 money/point/tape/ltoken/ptoken
 #   PAPI   - 其他插件占位符 + Kether 脚本扣除（papi + actions.remove）
 money:
   type: PLUGIN
@@ -10,6 +10,9 @@ point:
 tape:
   type: PLUGIN
   display-name: "磁带"
-goldentape:
+ltoken:
   type: PLUGIN
-  display-name: "金磁带"
+  display-name: "免费Token"
+ptoken:
+  type: PLUGIN
+  display-name: "付费Token"

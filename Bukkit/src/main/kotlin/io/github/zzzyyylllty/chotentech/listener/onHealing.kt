@@ -1,10 +1,12 @@
 package io.github.zzzyyylllty.chotentech.listener
 
 import io.github.zzzyyylllty.chotentech.data.getHealConfigFromYaml
+import io.github.zzzyyylllty.chotentech.data.getSurgeryConfig
 import io.github.zzzyyylllty.chotentech.function.bleedout.BleedoutManager
 import io.github.zzzyyylllty.chotentech.function.HealingManager
 import io.github.zzzyyylllty.chotentech.function.HealingPhase
 import io.github.zzzyyylllty.chotentech.function.PostReason
+import io.github.zzzyyylllty.chotentech.function.surgery.SurgeryManager
 import io.github.zzzyyylllty.chotentech.util.toComponent
 import io.github.zzzyyylllty.sertraline.Sertraline
 import org.bukkit.GameMode
@@ -33,6 +35,19 @@ fun onUseMedicalItem(event: PlayerInteractEvent) {
     val sertralineId = Sertraline.api().getId(item) ?: return
     val tag = item.getItemTag() ?: return
     val sData = tag["sertraline_data"]?.asCompound() ?: return
+
+    // 手术刀走独立流程：能够恢复损毁部位，且 per 阶段不可取消/移动/跳跃。
+    val surgery = getSurgeryConfig(sertralineId)
+    if (surgery != null) {
+        event.isCancelled = true
+        if (BleedoutManager.isDowned(player.uniqueId)) {
+            player.sendActionBar("<#E08A98>倒地状态无法进行手术".toComponent())
+            return
+        }
+        SurgeryManager.open(player, surgery, item)
+        return
+    }
+
     val durability = sData["durability"]?.let {
         it.asDouble() ?: it.asString()?.toDoubleOrNull()
     } ?: return
@@ -131,7 +146,12 @@ fun onHealingFallDamage(event: EntityDamageEvent) {
 @SubscribeEvent
 fun onHealingSwitchItem(event: PlayerItemHeldEvent) {
     val player = event.player
-    if (!HealingManager.isInHealingOrPost(player.uniqueId)) return
+    if (!HealingManager.isInHealingOrPost(player.uniqueId) &&
+        !SurgeryManager.isInSurgeryOrPost(player.uniqueId)) return
     event.isCancelled = true
-    player.sendActionBar("<#E08A98>治疗中，无法切换物品".toComponent())
+    // 手术中途换手会直接让手术刀离手，这里一并拦掉。
+    player.sendActionBar(
+        if (SurgeryManager.isInSurgeryOrPost(player.uniqueId)) "<#E08A98>手术中，无法切换物品".toComponent()
+        else "<#E08A98>治疗中，无法切换物品".toComponent()
+    )
 }

@@ -11,6 +11,7 @@ import io.github.zzzyyylllty.chotentech.gui.ProfileInfoGUI
 import io.github.zzzyyylllty.chotentech.gui.ProfileSelectionGUI
 import io.github.zzzyyylllty.chotentech.gui.RankSelectionMenu
 import io.github.zzzyyylllty.chotentech.gui.SettingsMenu
+import io.github.zzzyyylllty.chotentech.gui.SubscriptionMenu
 import io.github.zzzyyylllty.chotentech.gui.TeamMenu
 import io.github.zzzyyylllty.chotentech.player.sendComponent
 import org.bukkit.command.CommandSender
@@ -92,6 +93,11 @@ object ChoTenUICommand {
     @CommandBody
     val org = subCommand {
         playerArg("组织") { OrganizationMenu().open(it) }
+    }
+
+    @CommandBody
+    val subscribe = subCommand {
+        playerArg("订阅") { SubscriptionMenu().open(it) }
     }
 
     /** 为子命令生成两个分支:/cttui <子命令> 打开自己的界面,/cttui <子命令> <玩家> 为目标玩家打开 */

@@ -394,6 +394,7 @@ object DataManager {
         hideoutData = hideoutData ?: linkedMapOf(),
         stationQueues = stationQueues ?: linkedMapOf(),
         statusEffects = statusEffects ?: mutableListOf(),
+        bodyHealth = (bodyHealth ?: PlayerBodyHealth()).normalize(),
         affection = affection ?: mutableMapOf(),
         reputation = reputation ?: mutableMapOf(),
         unlockedNoclips = unlockedNoclips ?: mutableSetOf(),
@@ -637,6 +638,8 @@ object DataManager {
             submit {
                 // 登录流程完成标记:此后才允许档案选择/传送,加载期发送的传送包会被客户端的陈旧位置包拉回
                 io.github.zzzyyylllty.chotentech.listener.ProfileListener.markLoginComplete(player.uniqueId.toString())
+                // 每日登录奖励:订阅生效且当天未领取时自动发放(档案/共享数据此时已就绪)
+                io.github.zzzyyylllty.chotentech.function.subscription.SubscriptionManager.onDailyLogin(player)
                 sendLoadingTips(player, "完成.")
                 player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, SoundCategory.MASTER, 1f, 1.7f)
                 player.showTitle(
@@ -909,64 +912,40 @@ class ChoTenDataHelper(val player: Player) {
         return data.activeLevel
     }
 
-    // 状态效果便捷方法 (线程安全, 可异步调用)
+    // 肢体状态效果接口：与 Bukkit 玩家状态一样，请在主线程修改。
 
     fun addStatusEffect(type: String, level: Int, durationMs: Long) {
-        val existing = data.statusEffects.firstOrNull { it.type == type }
-        if (existing != null) {
-            if (level > existing.level) {
-                data.statusEffects.remove(existing)
-                data.statusEffects.add(PlayerStatusEffect(type, level, durationMs))
-            } else {
-                existing.remainingDuration = maxOf(existing.remainingDuration, durationMs)
-            }
-        } else {
-            data.statusEffects.add(PlayerStatusEffect(type, level, durationMs))
-        }
+        if (type == FRACTURE) {
+            listOf("LLEG", "RLEG").forEach { addBodyStatusEffect(it, type, level, durationMs) }
+        } else addBodyStatusEffect("HEAD", type, level, durationMs)
     }
+
+    fun addBodyStatusEffect(part: String, type: String, level: Int = 1, durationMs: Long = Long.MAX_VALUE): Boolean {
+        return data.bodyHealth.applyEffect(part, type, level, durationMs)
+    }
+
+    fun removeBodyStatusEffect(part: String, type: String): Boolean = data.bodyHealth.removeEffect(part, type)
+    fun bandageBodyPart(part: String): Boolean = data.bodyHealth.bandage(part)
 
     fun removeStatusEffect(type: String) {
         data.statusEffects.removeAll { it.type == type }
+        data.bodyHealth.parts.values.forEach { it.effects.remove(type) }
     }
-
-    fun hasStatusEffect(type: String): Boolean {
-        return data.statusEffects.any { it.type == type }
-    }
-
-    fun getStatusEffectLevel(type: String): Int {
-        return data.statusEffects.firstOrNull { it.type == type }?.level ?: 0
-    }
-
+    fun hasStatusEffect(type: String): Boolean = data.bodyHealth.hasEffect(type) || data.statusEffects.any { it.type == type }
+    fun getStatusEffectLevel(type: String): Int = (data.bodyHealth.parts.values.flatMap { it.effects.values } + data.statusEffects)
+        .filter { it.type == type }.maxOfOrNull { it.level } ?: 0
     fun clearAllStatusEffects() {
         data.statusEffects.clear()
+        data.bodyHealth.parts.values.forEach { it.effects.clear() }
     }
-
-    // 外伤
-    fun addExternalInjury(amount: Double) {
-        data.externalInjury = minOf(data.externalInjury + amount, data.maxExternalInjury)
-    }
-    fun removeExternalInjury(amount: Double) {
-        data.externalInjury = maxOf(data.externalInjury - amount, 0.0)
-    }
-    fun setExternalInjury(amount: Double) {
-        data.externalInjury = amount.coerceIn(0.0, data.maxExternalInjury)
-    }
-    fun resetExternalInjury() {
-        data.externalInjury = data.maxExternalInjury
-    }
-
-    // 内伤
-    fun addInternalInjury(amount: Double) {
-        data.internalInjury = minOf(data.internalInjury + amount, data.maxInternalInjury)
-    }
-    fun removeInternalInjury(amount: Double) {
-        data.internalInjury = maxOf(data.internalInjury - amount, 0.0)
-    }
-    fun setInternalInjury(amount: Double) {
-        data.internalInjury = amount.coerceIn(0.0, data.maxInternalInjury)
-    }
-    fun resetInternalInjury() {
-        data.internalInjury = data.maxInternalInjury
+    fun addWater(amount: Double) { setWater(data.bodyHealth.water + amount) }
+    fun setWater(amount: Double) {
+        data.bodyHealth.water = amount.coerceIn(0.0, data.bodyHealth.maxWater)
+        if (data.bodyHealth.water > 0) {
+            data.bodyHealth.dehydrationTicks = 0
+            removeStatusEffect(DEHYDRATION)
+            removeStatusEffect(SEVERE_DEHYDRATION)
+        }
     }
 
     // === 食物（自定义饥饿值/饱和度） ===
@@ -1022,13 +1001,21 @@ class ChoTenDataHelper(val player: Player) {
     }
 
     // === 手部体力 ===
+    // 全部走 HandStamina：它会顺带刷新「最后一次消耗时间」，
+    // 这样「5 秒后才开始按 5%/秒 回复」的规则对命令 / 脚本改值同样成立。
 
     fun addHandStamina(amount: Double) {
-        data.handStamina = minOf(maxOf(data.handStamina + amount, 0.0), data.maxHandStamina)
+        if (amount >= 0.0) {
+            data.handStamina = minOf(data.handStamina + amount, data.maxHandStamina)
+        } else {
+            player()?.let { HandStamina.spend(it, data, -amount) }
+                ?: run { data.handStamina = maxOf(data.handStamina + amount, 0.0) }
+        }
     }
 
     fun setHandStamina(amount: Double) {
-        data.handStamina = amount.coerceIn(0.0, data.maxHandStamina)
+        val p = player()
+        if (p != null) HandStamina.set(p, data, amount) else data.handStamina = amount.coerceIn(0.0, data.maxHandStamina)
     }
 
     fun resetHandStamina() {
@@ -1038,6 +1025,10 @@ class ChoTenDataHelper(val player: Player) {
     fun fullHandStamina() {
         data.handStamina = data.maxHandStamina
     }
+
+    /** 这条数据对应的在线玩家（不在线就返回 null，改值走裸赋值）。 */
+    private fun player(): org.bukkit.entity.Player? =
+        runCatching { org.bukkit.Bukkit.getPlayer(java.util.UUID.fromString(data.uuid)) }.getOrNull()
 
     fun addConsumption(amount: Double) {
         data.consumption = (data.consumption + amount).coerceIn(0.0, 100.0)

@@ -92,10 +92,6 @@ Attribute_sanity_regeneration_Name: 精神回复
 Attribute_max_darkness_Name: 阴暗上限
 Attribute_max_custom_hunger_Name: 饱食度上限
 Attribute_max_custom_saturation_Name: 饱和度上限
-Attribute_external_injury_Name: 外伤
-Attribute_internal_injury_Name: 内伤
-Attribute_external_injury_regen_Name: 外伤恢复
-Attribute_internal_injury_regen_Name: 内伤恢复
 Attribute_defense_Name: 综合防御
 Attribute_crit_chance_Name: 暴击率
 Attribute_crit_damage_Name: 暴击伤害
@@ -178,10 +174,6 @@ Attribute_sanity_regeneration_Description: 每秒精神回复量
 Attribute_max_darkness_Description: 最大阴暗值
 Attribute_max_custom_hunger_Description: 最大饱食度
 Attribute_max_custom_saturation_Description: 最大饱和度
-Attribute_external_injury_Description: 当前外伤值
-Attribute_internal_injury_Description: 当前内伤值
-Attribute_external_injury_regen_Description: 每秒外伤恢复量
-Attribute_internal_injury_regen_Description: 每秒内伤恢复量
 Attribute_defense_Description: 综合防御力
 Attribute_crit_chance_Description: 暴击几率
 Attribute_crit_damage_Description: 暴击伤害倍率

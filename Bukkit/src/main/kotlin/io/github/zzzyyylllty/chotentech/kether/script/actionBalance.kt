@@ -44,7 +44,8 @@ private fun setBalance(data: io.github.zzzyyylllty.chotentech.data.PlayerData, t
         "money" -> data.money = value
         "point" -> data.point = value
         "tape" -> data.tape = value
-        "goldentape" -> data.goldentape = value
+        "ltoken" -> data.ltoken = value
+        "ptoken" -> data.ptoken = value
         else -> error("Unknown balance type: $type")
     }
 }
@@ -54,7 +55,8 @@ private fun addBalance(data: io.github.zzzyyylllty.chotentech.data.PlayerData, t
         "money" -> data.money += amount
         "point" -> data.point += amount
         "tape" -> data.tape += amount
-        "goldentape" -> data.goldentape += amount
+        "ltoken" -> data.ltoken += amount
+        "ptoken" -> data.ptoken += amount
         else -> error("Unknown balance type: $type")
     }
 }
@@ -64,7 +66,8 @@ private fun removeBalance(data: io.github.zzzyyylllty.chotentech.data.PlayerData
         "money" -> data.money = maxOf(data.money - amount, 0L)
         "point" -> data.point = maxOf(data.point - amount, 0L)
         "tape" -> data.tape = maxOf(data.tape - amount, 0L)
-        "goldentape" -> data.goldentape = maxOf(data.goldentape - amount, 0L)
+        "ltoken" -> data.ltoken = maxOf(data.ltoken - amount, 0L)
+        "ptoken" -> data.ptoken = maxOf(data.ptoken - amount, 0L)
         else -> error("Unknown balance type: $type")
     }
 }
@@ -74,7 +77,8 @@ private fun getBalance(data: io.github.zzzyyylllty.chotentech.data.PlayerData, t
         "money" -> data.money
         "point" -> data.point
         "tape" -> data.tape
-        "goldentape" -> data.goldentape
+        "ltoken" -> data.ltoken
+        "ptoken" -> data.ptoken
         else -> error("Unknown balance type: $type")
     }
 }
@@ -84,7 +88,8 @@ private fun resetBalance(data: io.github.zzzyyylllty.chotentech.data.PlayerData,
         "money" -> data.money = 0L
         "point" -> data.point = 0L
         "tape" -> data.tape = 0L
-        "goldentape" -> data.goldentape = 0L
+        "ltoken" -> data.ltoken = 0L
+        "ptoken" -> data.ptoken = 0L
         else -> error("Unknown balance type: $type")
     }
 }

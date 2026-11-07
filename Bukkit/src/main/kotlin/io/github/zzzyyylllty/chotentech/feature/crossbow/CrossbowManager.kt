@@ -3,48 +3,27 @@ package io.github.zzzyyylllty.chotentech.feature.crossbow
 import io.github.zzzyyylllty.chotentech.ChoTenTech
 import io.github.zzzyyylllty.chotentech.data.AttributeSlot
 import io.github.zzzyyylllty.chotentech.manager.AttributeManager
-import io.github.zzzyyylllty.chotentech.util.minimessage.mmUtil
-import io.github.zzzyyylllty.chotentech.util.minimessage.legacyToMiniMessage
-import io.github.zzzyyylllty.sertraline.Sertraline
-import net.kyori.adventure.audience.Audience
-import org.bukkit.Bukkit
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.Damageable
-import taboolib.common.platform.function.getDataFolder
-import taboolib.common.platform.function.releaseResourceFolder
-import taboolib.common.platform.function.submit
-import taboolib.module.configuration.Configuration
-import taboolib.module.nms.ItemTag
 import taboolib.module.nms.getItemTag
-import taboolib.module.nms.setItemTag
-import java.io.File
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * 箭矢配置（从 YAML 加载）
+ * 飞行中箭矢的数据（原版弓 / 弩使用）。
+ *
+ * P2 之后**产生方**已经不是本插件（旧的「箭矢夹 + arrows/ 配置」体系已整体删除，
+ * 弩改走 Sertraline `gun` 物品 + [io.github.zzzyyylllty.chotentech.feature.gun.GunShoot] 自研弹道）。
+ * 本数据类与 [CrossbowManager.registerFlyingArrow] 作为**公开 API 保留**：
+ * [io.github.zzzyyylllty.chotentech.listener.AttackListener] 仍在用它做
+ * 「原版箭矢穿透 → 护甲额外耐久损耗」的结算，P5 的 `ArmorManager` 接手之前不能动。
  */
 data class ArrowData(
     val velocity: Double,
     val damage: Double,
     val penetrate: Double
-)
-
-/**
- * 弹匣配置（从 mags/ 加载）
- */
-data class MagazineData(
-    val id: String,
-    val capacity: Int = 18
-)
-
-/**
- * 弩配置（从 crossbows/ 加载，预留扩展）
- */
-data class CrossbowData(
-    val id: String
 )
 
 /**
@@ -57,203 +36,45 @@ data class PenetrationResult(
 )
 
 /**
- * 弩箭机制管理器
- * 负责：箭矢/弹匣/弩配置注册、弹匣 ID 存储、飞行中箭矢追踪
+ * 弩箭机制的**残留管理层**（P2 瘦身后）。
+ *
+ * ### P2 删掉的部分
+ * 旧弩/弹匣体系（`arrows/` `mags/` `crossbows/` 三套 YAML 配置、`cmag` NBT、
+ * 箭矢夹 GUI、低头装填/抬头检视、原版弩发射拦截）已整体迁移到新的枪械系统，
+ * 对应成员全部移除：`ArrowData` 之外的 `MagazineData` / `CrossbowData`、
+ * `arrowConfigs` / `magazineConfigs` / `crossbowConfigs` 与三个 `load*Configs()`、
+ * `isArrowItem` / `getArrowDataFromItem` / `isArrowMagazine` / `getMagazineCapacity`、
+ * `getMagazineContents` / `setMagazineContents` / `getFirstArrow` / `consumeFirstArrow`、
+ * `loadArrowFromInventory` / `buildArrowItem` / `getFillPercent` / `getFillLevelText` /
+ * `getTopArrowName` / `sendMagazineStatus` / `sendMagazineHint`（含它们专用的 `sendActionBar`）。
+ *
+ * ### 保留的部分（**一个签名都不能改**）
+ * [AttackListener][io.github.zzzyyylllty.chotentech.listener.AttackListener] 仍然依赖：
+ * `getFlyingArrowData` / `removeFlyingArrow` / `getEntityDefense` / `calculatePenetration` /
+ * `applyExtraDurabilityDamage` / `isHighDurabilityEnabled` / `getHighDurabilityRatio` /
+ * `applyHighDurabilityDamage` / `PenetrationResult`，以及它们内部用到的
+ * `collectDefenseBySlot` / `invalidateDefenseCache` / `damageItem` / `readDefenseFromArmor` / 槽位映射。
+ * 这一段是「原版弓弩的穿透与护甲耐久」逻辑，P5 的 `ArmorManager` 落地之前必须继续工作。
+ *
+ * ### 废弃但保留的配置键（**不要**去改 `config.yml`，那是 GBK 历史文件）
+ * - `crossbow-mechanism.penetration-durability-ratio`：穿透溢出 → 额外耐久的系数，
+ *   仍由 `AttackListener` 直接读取（[getPenetrationDurabilityRatio] 是它的取值封装）。
+ * - `high-durability-mode.enabled` / `high-durability-mode.ratio`：高耐久模式开关与系数。
+ * - `crossbow-mechanism.*` 里的其它键（旧弩机制）**已废弃**，代码不再读取。
+ * 这些键目前实际落在 `attribute-config.yml`（`ChoTenTech.config` 合并加载）；`config.yml` 里没有对应节点，
+ * 所以两个开关默认都是关闭状态。
  */
 object CrossbowManager {
 
-    // ==================== Config Registries ====================
-
-    private val arrowConfigs = ConcurrentHashMap<String, ArrowData>()
-    private val magazineConfigs = ConcurrentHashMap<String, MagazineData>()
-    private val crossbowConfigs = ConcurrentHashMap<String, CrossbowData>()
-
-    fun getArrowData(id: String): ArrowData? = arrowConfigs[id]
-    fun hasArrow(id: String): Boolean = arrowConfigs.containsKey(id)
-
-    fun getMagazineConfig(id: String): MagazineData? = magazineConfigs[id]
-    fun isKnownMagazine(id: String): Boolean = magazineConfigs.containsKey(id)
-
-    fun getCrossbowConfig(id: String): CrossbowData? = crossbowConfigs[id]
-
-    // ==================== Config Loading ====================
-
-    /**
-     * 从 arrows/ 目录加载箭矢 YAML 配置
-     */
-    fun loadArrowConfigs() {
-        arrowConfigs.clear()
-        val dir = File(getDataFolder(), "arrows")
-        if (!dir.exists()) releaseResourceFolder("arrows")
-
-        val files = dir.listFiles { f -> f.extension in listOf("yml", "yaml") } ?: return
-        for (file in files) {
-            try {
-                val config = Configuration.loadFromFile(file)
-                for (key in config.getKeys(false)) {
-                    val sec = config.getConfigurationSection(key) ?: continue
-                    val id = sec.getString("id") ?: continue
-                    arrowConfigs[id] = ArrowData(
-                        velocity = sec.getDouble("velocity", 1.0),
-                        damage = sec.getDouble("damage", 10.0),
-                        penetrate = sec.getDouble("penetrate", 1.0)
-                    )
-                }
-            } catch (_: Exception) { }
-        }
-    }
-
-    /**
-     * 从 mags/ 目录加载弹匣 YAML 配置
-     */
-    fun loadMagazineConfigs() {
-        magazineConfigs.clear()
-        val dir = File(getDataFolder(), "mags")
-        if (!dir.exists()) releaseResourceFolder("mags")
-
-        val files = dir.listFiles { f -> f.extension in listOf("yml", "yaml") } ?: return
-        for (file in files) {
-            try {
-                val config = Configuration.loadFromFile(file)
-                for (key in config.getKeys(false)) {
-                    val sec = config.getConfigurationSection(key) ?: continue
-                    val id = sec.getString("id") ?: continue
-                    magazineConfigs[id] = MagazineData(
-                        id = id,
-                        capacity = sec.getInt("capacity", 18)
-                    )
-                }
-            } catch (_: Exception) { }
-        }
-    }
-
-    /**
-     * 从 crossbows/ 目录加载弩 YAML 配置（预留）
-     */
-    fun loadCrossbowConfigs() {
-        crossbowConfigs.clear()
-        val dir = File(getDataFolder(), "crossbows")
-        if (!dir.exists()) releaseResourceFolder("crossbows")
-
-        val files = dir.listFiles { f -> f.extension in listOf("yml", "yaml") } ?: return
-        for (file in files) {
-            try {
-                val config = Configuration.loadFromFile(file)
-                for (key in config.getKeys(false)) {
-                    val sec = config.getConfigurationSection(key) ?: continue
-                    val id = sec.getString("id") ?: continue
-                    crossbowConfigs[id] = CrossbowData(id = id)
-                }
-            } catch (_: Exception) { }
-        }
-    }
-
-    // ============ Detection ============
-
-    /**
-     * 通过 sertraline_id 检测物品是否为可装填箭矢
-     */
-    fun isArrowItem(item: ItemStack?): Boolean {
-        if (item == null || item.type.isAir || item.amount <= 0) return false
-        val id = Sertraline.api().getId(item) ?: return false
-        return arrowConfigs.containsKey(id)
-    }
-
-    /**
-     * 从物品读取箭矢数据（通过 sertraline_id 查配置）
-     */
-    fun getArrowDataFromItem(item: ItemStack): ArrowData? {
-        val id = Sertraline.api().getId(item) ?: return null
-        return arrowConfigs[id]
-    }
-
-    /**
-     * 检测物品是否为弹匣：优先 sertraline_id，其次 cmag NBT（兼容旧物品）
-     */
-    fun isArrowMagazine(item: ItemStack?): Boolean {
-        if (item == null || item.type.isAir || item.amount <= 0) return false
-        val id = Sertraline.api().getId(item)
-        if (id != null && magazineConfigs.containsKey(id)) return true
-        return try {
-            item.getItemTag()["cmag"] != null
-        } catch (_: Exception) {
-            false
-        }
-    }
-
-    /**
-     * 获取弹匣容量：优先查找配置，否则默认 18
-     */
-    fun getMagazineCapacity(magazine: ItemStack): Int {
-        val id = Sertraline.api().getId(magazine)
-        if (id != null) {
-            val magData = magazineConfigs[id]
-            if (magData != null) return magData.capacity
-        }
-        return 18
-    }
-
-    // ============ Magazine NBT (ID-based) ============
-
-    /**
-     * 读取弹匣中的箭矢 ID 列表（按填装顺序）
-     */
-    fun getMagazineContents(magazine: ItemStack): List<String> {
-        if (!isArrowMagazine(magazine)) return emptyList()
-        return try {
-            val tag = magazine.getItemTag()
-            val cmag = tag["cmag"]?.asCompound() ?: return emptyList()
-            val filledStr = cmag["filled"]?.asString() ?: return emptyList()
-            filledStr.split(",").filter { it.isNotEmpty() }
-        } catch (_: Exception) {
-            emptyList()
-        }
-    }
-
-    /**
-     * 获取弹匣里第一支箭的 ID
-     */
-    fun getFirstArrow(magazine: ItemStack): String? {
-        return getMagazineContents(magazine).firstOrNull()
-    }
-
-    /**
-     * 消耗第一支箭（移除 ID），返回新物品
-     */
-    fun consumeFirstArrow(magazine: ItemStack): ItemStack {
-        val ids = getMagazineContents(magazine).toMutableList()
-        if (ids.isEmpty()) return magazine
-        ids.removeAt(0)
-        return saveMagazineIds(magazine, ids)
-    }
-
-    /**
-     * 设置弹匣内容物（存入箭矢 ID 列表）
-     */
-    fun setMagazineContents(magazine: ItemStack, arrowIds: List<String>): ItemStack {
-        return saveMagazineIds(magazine, arrowIds)
-    }
-
-    /**
-     * 将箭矢 ID 列表写入弹匣 NBT，保留其他 NBT
-     */
-    private fun saveMagazineIds(magazine: ItemStack, ids: List<String>): ItemStack {
-        val result = magazine.clone().apply { amount = 1 }
-        val existingTag = result.getItemTag()
-        val newTag = ItemTag()
-        for (entry in existingTag.entries) {
-            if (entry.key != "cmag") {
-                newTag[entry.key] = entry.value
-            }
-        }
-        val filledStr = ids.joinToString(",")
-        newTag.putDeep("cmag.filled", filledStr)
-        return newTag.saveTo(result)
-    }
-
     // ============ 飞行中箭矢追踪 ============
 
-    /** 飞行中的箭矢 UUID -> 箭矢数据 */
+    /**
+     * 飞行中的箭矢 UUID -> 箭矢数据。
+     *
+     * 写入方目前只有 [registerFlyingArrow] 的调用方（P2 之后本插件内部暂无调用点，
+     * 旧弩装填系统是唯一写入方）。**读取方** `AttackListener` 仍在用，所以注册表与清理
+     * 逻辑（[FlyingArrowListener]）一并保留，避免有人重新注册后 map 泄漏。
+     */
     private val flyingArrows = ConcurrentHashMap<UUID, ArrowData>()
 
     fun registerFlyingArrow(entityId: UUID, data: ArrowData) {
@@ -271,6 +92,9 @@ object CrossbowManager {
     fun clearFlyingArrows() {
         flyingArrows.clear()
     }
+
+    /** 当前登记的飞行箭矢数量（调试用）。 */
+    fun flyingArrowCount(): Int = flyingArrows.size
 
     // ============ 生物防御计算 ============
 
@@ -303,14 +127,17 @@ object CrossbowManager {
         }
     }
 
+    /** `high-durability-mode.enabled`（保留键，默认关闭）。 */
     fun isHighDurabilityEnabled(): Boolean {
         return ChoTenTech.config.getBoolean("high-durability-mode.enabled", false)
     }
 
+    /** `high-durability-mode.ratio`（保留键，默认 1.0）。 */
     fun getHighDurabilityRatio(): Double {
         return ChoTenTech.config.getDouble("high-durability-mode.ratio", 1.0)
     }
 
+    /** `crossbow-mechanism.penetration-durability-ratio`（保留键，默认 1.0）。 */
     fun getPenetrationDurabilityRatio(): Double {
         return ChoTenTech.config.getDouble("crossbow-mechanism.penetration-durability-ratio", 1.0)
     }
@@ -471,100 +298,5 @@ object CrossbowManager {
                 damageItem(armor, dmg)
             }
         }
-    }
-
-    // ============ 弹匣容量与装填 ============
-
-    /**
-     * 从玩家背包中寻找箭矢并装入弹匣（1发）
-     * 通过 sertraline_id 识别箭矢
-     */
-    fun loadArrowFromInventory(player: Player, magazineSlot: Int): Boolean {
-        val magazine = when {
-            magazineSlot in 0..35 -> player.inventory.getItem(magazineSlot)
-            magazineSlot == 40 -> player.inventory.itemInOffHand
-            else -> return false
-        } ?: return false
-
-        if (!isArrowMagazine(magazine)) return false
-
-        val contents = getMagazineContents(magazine)
-        val capacity = getMagazineCapacity(magazine)
-        if (contents.size >= capacity) {
-            sendActionBar(player, "<#EFDF8F>弹匣已满")
-            return false
-        }
-
-        for (i in 0 until 36) {
-            if (i == magazineSlot) continue
-            val item = player.inventory.getItem(i) ?: continue
-            val arrowId = Sertraline.api().getId(item) ?: continue
-            if (!arrowConfigs.containsKey(arrowId)) continue
-
-            val newContents = contents + arrowId
-            val newMag = setMagazineContents(magazine, newContents)
-            player.inventory.setItem(magazineSlot, newMag)
-
-            item.amount -= 1
-            if (item.amount <= 0) {
-                player.inventory.setItem(i, null)
-            }
-            player.updateInventory()
-            return true
-        }
-
-        sendActionBar(player, "<#E08A98>没有可装填的箭矢")
-        return false
-    }
-
-    // ============ 工具方法 ============
-
-    fun buildArrowItem(arrowId: String, player: Player): ItemStack? {
-        return Sertraline.api().buildItem(arrowId, player)
-    }
-
-    fun getFillPercent(arrowIds: List<String>, capacity: Int): Double {
-        if (arrowIds.isEmpty()) return 0.0
-        return arrowIds.size.toDouble() / capacity.toDouble()
-    }
-
-    fun getFillLevelText(percent: Double): String {
-        return when {
-            percent <= 0.0 -> "<#E08A98>空</#E08A98>"
-            percent <= 0.25 -> "<#DFBD7C>较少</#DFBD7C>"
-            percent <= 0.50 -> "<#EFDF8F>近一半</#EFDF8F>"
-            percent <= 0.75 -> "<#8FD4A6>较多</#8FD4A6>"
-            percent < 1.0 -> "<#6EA982>几乎全满</#6EA982>"
-            else -> "<#8FD4A6>满弹</#8FD4A6>"
-        }
-    }
-
-    fun getTopArrowName(player: Player, arrowIds: List<String>): String {
-        val first = arrowIds.firstOrNull() ?: return "空"
-        val item = Sertraline.api().buildItem(first, player)
-        if (item != null) {
-            val meta = item.itemMeta
-            if (meta != null && meta.hasDisplayName()) return meta.displayName
-        }
-        return first
-    }
-
-    fun sendMagazineStatus(player: Player, magazine: ItemStack) {
-        val arrowIds = getMagazineContents(magazine)
-        val capacity = getMagazineCapacity(magazine)
-        val percent = getFillPercent(arrowIds, capacity)
-        val topArrow = getTopArrowName(player, arrowIds)
-        val fillText = getFillLevelText(percent)
-        sendActionBar(player, "<#EFDF8F>$topArrow<#F2F5FA>箭 <#A9B4C3>|</#A9B4C3> $fillText")
-    }
-
-    fun sendMagazineHint(player: Player) {
-        sendActionBar(player, "<#EFDF8F>低头以装入箭矢，抬头以检视弹匣")
-    }
-
-    fun sendActionBar(player: Player, message: String) {
-        try {
-            (player as Audience).sendActionBar(mmUtil.deserialize(message.legacyToMiniMessage()))
-        } catch (_: Exception) {}
     }
 }

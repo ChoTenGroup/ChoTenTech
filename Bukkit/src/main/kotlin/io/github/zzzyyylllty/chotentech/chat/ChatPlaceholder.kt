@@ -16,11 +16,19 @@ object ChatPlaceholder {
     private val resolvers = linkedMapOf<String, (Player) -> String>()
 
     init {
-        // [item] — 主手物品显示名（空手则替换为空串）
+        // [item] — 主手物品显示名（空手 / 无权限则替换为空串）
         register("item") { player ->
+            if (!player.hasPermission("chotentech.showitem")) return@register ""
             val item = player.inventory.itemInMainHand
             if (item.type.isAir) return@register ""
-            mmUtil.serialize(item.displayName())
+            // 剥离 minecraft:attribute_modifiers 组件：adventure displayName 遇到该组件
+            // （尤其含 DataComponentValue.Removed 的 "!" 隐藏标记）会序列化失败/显示为空。
+            // 参照 Sertraline 的做法用 EmbianComponent 移除后再序列化；失败兜底为空串。
+            val clean = runCatching {
+                io.github.zzzyyylllty.embiancomponent.EmbianComponent.SafetyComponentSetter
+                    .removeComponent(item, "minecraft:attribute_modifiers")
+            }.getOrNull() ?: item
+            mmUtil.serialize(clean.displayName())
         }
     }
 

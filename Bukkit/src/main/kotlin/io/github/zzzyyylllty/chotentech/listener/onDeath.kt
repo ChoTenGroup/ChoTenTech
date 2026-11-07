@@ -4,7 +4,6 @@ import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
 import io.github.zzzyyylllty.chotentech.data.ChoTenDataHelper
 import io.github.zzzyyylllty.chotentech.data.NutritionManager
 import io.github.zzzyyylllty.chotentech.data.cancelConsumableTasks
-import io.github.zzzyyylllty.chotentech.feature.crossbow.CrossbowManager
 import io.github.zzzyyylllty.chotentech.feature.isFirstTimeLookWindow
 import io.github.zzzyyylllty.chotentech.feature.steampipe.SteamPipeManager
 import io.github.zzzyyylllty.chotentech.feature.windowDamagedPlayers
@@ -57,8 +56,7 @@ fun onPlayerDeath(event: PlayerDeathEvent) {
     // 重置状态
     ChoTenDataHelper(player).resetSanity()
     ChoTenDataHelper(player).resetDarkness()
-    ChoTenDataHelper(player).resetExternalInjury()
-    ChoTenDataHelper(player).resetInternalInjury()
+    io.github.zzzyyylllty.chotentech.function.body.BodyHealthManager.reset(player)
 
     // 清除原版掉落，使用自定义死亡掉落系统
     event.drops.clear()

@@ -1,0 +1,44 @@
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by net.rubygrapefruit.platform.internal.NativeLibraryLoader in an unnamed module (file:/C:/Users/Administrator/.gradle/wrapper/dists/gradle-9.4.1-bin/arn2x92ynaizyzdaamcbpbhtj/gradle-9.4.1/lib/native-platform-0.22-milestone-29.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+> Task :checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :processResources UP-TO-DATE
+> Task :processTestResources NO-SOURCE
+
+> Task :compileKotlin
+w: file:///E:/ChoTenTechbk/Bukkit/src/main/kotlin/io/github/zzzyyylllty/chotentech/feature/gun/GunListener.kt:108:19 'var isCancelled: Boolean' is deprecated. Deprecated in Java.
+w: file:///E:/ChoTenTechbk/Bukkit/src/main/kotlin/io/github/zzzyyylllty/chotentech/feature/gun/GunListener.kt:155:36 'var isCancelled: Boolean' is deprecated. Deprecated in Java.
+w: file:///E:/ChoTenTechbk/Bukkit/src/main/kotlin/io/github/zzzyyylllty/chotentech/feature/gun/GunListener.kt:360:29 'class PlayerPickupItemEvent : PlayerEvent, Cancellable' is deprecated. Deprecated in Java.
+w: file:///E:/ChoTenTechbk/Bukkit/src/main/kotlin/io/github/zzzyyylllty/chotentech/feature/gun/GunShoot.kt:428:60 'constructor(p0: Plugin, p1: Any?): FixedMetadataValue' is deprecated. Deprecated in Java.
+w: file:///E:/ChoTenTechbk/Bukkit/src/main/kotlin/io/github/zzzyyylllty/chotentech/feature/gun/GunShoot.kt:429:66 'constructor(p0: Plugin, p1: Any?): FixedMetadataValue' is deprecated. Deprecated in Java.
+w: file:///E:/ChoTenTechbk/Bukkit/src/main/kotlin/io/github/zzzyyylllty/chotentech/feature/gun/GunShoot.kt:566:21 'val isOnGround: Boolean' is deprecated. Deprecated in Java.
+w: file:///E:/ChoTenTechbk/Bukkit/src/main/kotlin/io/github/zzzyyylllty/chotentech/feature/gun/GunShoot.kt:604:60 'var maxHealth: Double' is deprecated. Deprecated in Java.
+
+> Task :compileJava NO-SOURCE
+> Task :classes UP-TO-DATE
+> Task :jar
+
+> Task :taboolibMainTask
+[taboolibMainTask] 1275 classes, 353 resources | ASM: 263ms (16 threads), Write: 596ms, Total: 860ms
+
+> Task :assemble
+> Task :compileTestKotlin
+> Task :compileTestJava NO-SOURCE
+> Task :testClasses UP-TO-DATE
+> Task :test
+> Task :check
+> Task :build
+
+[Incubating] Problems report is available at: file:///E:/ChoTenTechbk/Bukkit/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.4.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 5s
+6 actionable tasks: 5 executed, 1 up-to-date
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.4.1/userguide/configuration_cache_enabling.html

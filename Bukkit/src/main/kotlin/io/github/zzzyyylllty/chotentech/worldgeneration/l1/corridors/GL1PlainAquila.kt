@@ -270,7 +270,7 @@ class GL1PlainAquila(
             val chainZ = 3 + rand.nextInt(10)
             for (y in 1..7) {
                 if (chunkData.getType(chainX, y, chainZ) == Material.AIR) {
-                    chunkData.setBlock(chainX, y, chainZ, Material.CHAIN)
+                    chunkData.setBlock(chainX, y, chainZ, Material.IRON_CHAIN)
                 }
             }
         }

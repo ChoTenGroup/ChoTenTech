@@ -59,6 +59,11 @@ class TTLCache<K, V>(private val ttlMillis: Long) {
 
         @Awake(LifeCycle.ENABLE)
         fun startSweeper() {
+            // 插件重载（/tql reload 等）会重新走 ENABLE：先清掉上一代
+            // 实例的引用，否则旧类加载器创建的 TTLCache 对象会通过这个
+            // 静态列表被跨代强引用，导致整个旧插件类加载器无法回收
+            // （热重载场景下的类加载器泄漏）。
+            instances.clear()
             task = submitAsync(period = SWEEP_PERIOD_TICKS) {
                 for (cache in instances) cache.sweep()
             }
@@ -68,6 +73,9 @@ class TTLCache<K, V>(private val ttlMillis: Long) {
         fun stopSweeper() {
             task?.cancel()
             task = null
+            // 同上：禁用时断开静态持有链。sweep 停了之后残留条目
+            // 会随实例本身一起被 GC，无需保留引用。
+            instances.clear()
         }
     }
 

@@ -17,6 +17,16 @@ private object WhisperUtil {
 
     val cooldowns = ConcurrentHashMap<UUID, Long>()
 
+    /**
+     * 玩家退出时清掉其私聊冷却记录。
+     * 此前无清理路径：每个进过服务器并私聊过的玩家都在这里
+     * 留下一个 Long 条目，长期运行下无界增长。冷却对已离线玩家
+     * 无意义，直接移除。由 ChoTenTech 的玩家退出监听调用。
+     */
+    fun clearCooldowns(playerUuid: UUID) {
+        cooldowns.remove(playerUuid)
+    }
+
     fun format(key: String, def: String): String =
         ChoTenTech.chatSettings.getString("whisper.$key", def) ?: def
 
@@ -217,4 +227,12 @@ object IgnoreListCommand {
             }
         }
     }
+}
+
+/**
+ * 文件内桥接：WhisperUtil 是 private object，ChatListener 无法直接引用，
+ * 通过这个顶层函数转发玩家退出时的冷却清理。
+ */
+internal fun clearWhisperCooldowns(playerUuid: UUID) {
+    WhisperUtil.clearCooldowns(playerUuid)
 }

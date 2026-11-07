@@ -1401,8 +1401,13 @@ object ShopMenu : Listener {
                 if (req.value.isBlank()) return true
                 try {
                     val profile = ChemdahAPI.playerProfile[player.name] ?: return false
-                    val quest = profile.getQuests().firstOrNull { it.id == req.value }
-                    quest != null && quest.isCompleted
+                    // Chemdah 的 getQuests() 只返回"进行中"的任务:任务完成(交付)后会从玩家档案的
+                    // questMap 注销, 完成记录只写在持久数据 quest.complete.<id> 上。
+                    // 因此必须先查 isQuestCompleted(等价于 getQuestCompletedDate(id) > 0),
+                    // 否则已完成的任务会被永远判定为"未完成"。
+                    // 再进行中的任务若目标已全部达标记为 isCompleted, 一并视为满足(兼容交付前的一瞬)。
+                    profile.isQuestCompleted(req.value) ||
+                        profile.getQuests().any { it.id == req.value && it.isCompleted }
                 } catch (_: Exception) {
                     false
                 }

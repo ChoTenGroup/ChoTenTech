@@ -74,11 +74,20 @@ object ChatFormatter {
 
     /**
      * 构建完整聊天组件与控制台行。
-     * @param filteredMessage 已通过敏感词过滤的消息文本
-     * @return (玩家收到的组件, 控制台纯文本行)
+     * @param filteredMessage 已通过敏感词过滤、且提及已替换为 [@token] 标记的消息文本
+     * @param mentions 提及解析结果（null 或无命中时与原行为一致）
+     * @return (默认查看者组件, 控制台纯文本行)
      */
-    fun build(sender: Player, channel: ChatChannel, filteredMessage: String, teamName: String?): Pair<Component, String> {
-        val messageComponent = parseMessage(sender, filteredMessage)
+    fun build(
+        sender: Player,
+        channel: ChatChannel,
+        filteredMessage: String,
+        teamName: String?,
+        mentions: ChatMention.Result? = null,
+    ): Pair<Component, String> {
+        // 默认组件用发送者自身视角生成（发送者永远“命中”自己发起的提及，用于兜底）；
+        // 实际投递时按每个查看者调用 buildForViewer 重新渲染消息部分。
+        val messageComponent = ChatMention.render(sender, sender, filteredMessage)
         val component = buildWithTags(
             formatStr = channel.formatFor(sender),
             player = sender,
@@ -95,6 +104,8 @@ object ChatFormatter {
             .replace("<username>", sender.name)
             .replace("<display_name>", sender.name)
             .replace("<message>", filteredMessage)
+            // 控制台行还原提及原文（[@token] → @token）；必须在 <message> 注入之后（标记在消息文本里）
+            .replace(Regex("\\[@([A-Za-z0-9_:\\*]+)]")) { "@${it.groupValues[1]}" }
             .replace("<channel>", channel.displayName)
             .replace("<team_name>", teamName ?: "无")
             .replacePlaceholder(sender)
@@ -102,6 +113,23 @@ object ChatFormatter {
 
         return component to consoleLine
     }
+
+    /**
+     * 按查看者重新渲染整条聊天消息：格式串部分与 [build] 相同，
+     * 消息部分经 [ChatMention.render] 按查看者对提及分色（文本段按发送者颜色权限解析）。
+     * 供 Prepared.componentFor（ChatRenderer / 分组投递）调用。
+     */
+    fun buildForViewer(viewer: Player, prepared: ChatDispatcher.Prepared): Component = buildWithTags(
+        formatStr = prepared.channel.formatFor(prepared.sender),
+        player = prepared.sender,
+        messageComponent = ChatMention.render(prepared.sender, viewer, prepared.messageText),
+        tags = mapOf(
+            "username" to Component.text(prepared.sender.name),
+            "display_name" to prepared.sender.displayName(),
+            "channel" to mmUtil.deserialize(prepared.channel.displayName),
+            "team_name" to Component.text(prepared.teamName ?: "无"),
+        ),
+    )
 
     /**
      * 通用格式渲染：PAPI 只解析格式串本身；<message> 与 tags 中的自定义标签注入预解析组件。

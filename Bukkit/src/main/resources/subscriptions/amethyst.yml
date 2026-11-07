@@ -1,0 +1,37 @@
+# 紫水晶订阅
+# 一个文件即一个订阅，订阅 id 取文件名（amethyst）：
+#   也可写成「一个文件多段」的形式：顶层键为 id，段内为下列字段。
+#
+# Token 说明：
+#   L = 免费 Token（LToken）   P = 付费 Token（PToken）
+#   付费 Token 一般只能通过直购获得；Token 获取加成默认给免费 Token（timed: L）。
+#
+# 加成池（6h / week）语义：
+#   订阅本身不发放 6h / 每周的固定奖励。
+#   订阅生效期间，玩家从其他途径获得的对应 Token 会按池余量翻倍：
+#     bonus = min(本次获得量, 6h池余量, 每周池余量)，实发 = 本次获得量 + bonus，两个池各扣 bonus。
+#   两个池都是滚动窗口：自窗口开始满 6 小时 / 7 天后回满。
+
+display-name: "紫水晶订阅"
+color: "#DC96FF"
+color-dark: "#AC06eF"
+icon: AMETHYST_SHARD
+
+# 立即获得：仅首次购买发放一次，续费只延长到期时间
+instant: 50000P
+
+# 每日登录：自动发放（按服务器自然日判定，当天未领取时发放）
+daily-login: [10000L, 10000P]
+
+# Token 获取加成池容量
+6h: 20000
+week: 400000
+
+# 加成池货币：L = 翻倍免费 Token 收入（默认）；P = 翻倍付费 Token 收入
+timed: L
+
+# 购买时长 -> 售价（单位：磁带 tape）
+pricing:
+  30d: 270
+  90d: 570
+  360d: 1770

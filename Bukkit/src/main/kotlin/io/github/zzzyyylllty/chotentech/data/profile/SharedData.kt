@@ -5,7 +5,8 @@ import io.github.zzzyyylllty.chotentech.data.IDData
 
 /**
  * Shared data that persists across all profiles for a player.
- * - tape, goldentape: premium currencies
+ * - tape, ltoken, ptoken: premium / universal currencies
+ * - subscriptions: 订阅状态（含 6h / 周 加成池）
  * - achievements: account-wide achievement progress
  * - cosmetics: account-wide cosmetic unlocks/equips
  * - cid: shared cool ID across all profiles
@@ -13,7 +14,9 @@ import io.github.zzzyyylllty.chotentech.data.IDData
 data class SharedData(
     var activeProfileId: String = "1",
     var tape: Long = 0L,
-    var goldentape: Long = 0L,
+    var ltoken: Long = 0L,   // 免费Token
+    var ptoken: Long = 0L,   // 付费Token
+    var subscriptions: MutableMap<String, SubscriptionData> = mutableMapOf(),
     var achievements: LinkedHashMap<String, AchievementProgress> = linkedMapOf(),
     var cosmetics: MutableMap<String, String> = mutableMapOf(),
     // Cross-profile statistics
@@ -54,6 +57,7 @@ data class SharedData(
         if (cosmetics == null) cosmetics = mutableMapOf()
         if (meta == null) meta = mutableMapOf()
         if (unlockedEnds == null) unlockedEnds = mutableSetOf()
+        if (subscriptions == null) subscriptions = mutableMapOf()
         if (settings == null) settings = PlayerSettings()
         if (friends == null) friends = mutableSetOf()
         return this

@@ -93,7 +93,7 @@ class AllQuestMenu {
                         lore += "<!i> "
                     }
                     cui?.description?.let {
-                        lore += "<!i><#F2F5FA><b>|<reset> <!i><#84D1CB>介绍"
+                        lore += "<!i><#F2F5FA><b>|<reset> <!i><#84D1CB>消息介绍"
                         it.forEach {
                             lore += "<!i><#d3c9be>$it"
                         }
@@ -106,6 +106,7 @@ class AllQuestMenu {
                         }
                         lore += "<!i> "
                     }
+                    if (cui?.restartOnDeath == true) lore += "<!i><#ff8585> 死亡后重置任务进度"
                     lore += "<!i><#F2F5FA><b>|<reset> <i>${providerText(cui)}"
                     lore += "<!i><#EFDF8F>点击 <#8FD4A6>打开详细菜单"
                     lore += "<!i><#EFDF8F>右键 <#8FD4A6>追踪任务"

@@ -14,8 +14,8 @@ import io.github.zzzyyylllty.chotentech.data.SurvivalDifficulty
 import io.github.zzzyyylllty.chotentech.punish.PunishManager
 import io.github.zzzyyylllty.chotentech.security.SecurityManager
 import io.github.zzzyyylllty.chotentech.security.SecurityListener
+import io.github.zzzyyylllty.chotentech.feature.gun.item.GunItemProcessors
 import io.github.zzzyyylllty.chotentech.feature.keydoor.KeyDoorManager
-import io.github.zzzyyylllty.chotentech.feature.crossbow.CrossbowManager
 import io.github.zzzyyylllty.chotentech.feature.projectile.ProjectileManager
 import io.github.zzzyyylllty.chotentech.feature.signpass.SignPassManager
 import io.github.zzzyyylllty.chotentech.feature.steampipe.SteamPipeManager
@@ -32,6 +32,7 @@ import io.github.zzzyyylllty.chotentech.data.backpack.BackpackConfig
 import io.github.zzzyyylllty.chotentech.listener.BackpackListener
 import io.github.zzzyyylllty.chotentech.data.cancelAllConsumableTasks
 import io.github.zzzyyylllty.chotentech.data.loadMedkitConfig
+import io.github.zzzyyylllty.chotentech.data.loadSurgeryConfig
 import io.github.zzzyyylllty.chotentech.data.loadConsumableConfigs
 import io.github.zzzyyylllty.chotentech.damage.DamageTypeRegistry
 import io.github.zzzyyylllty.chotentech.manager.AttributeManager
@@ -158,6 +159,7 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
     var devMode = true
 
     override fun onEnable() {
+        GunItemProcessors.register()
 
         enableRawTitleInVanillaInventory()
 
@@ -224,10 +226,40 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
 
         // Register LuckPerms profile context calculator
         io.github.zzzyyylllty.chotentech.hook.ProfileContextCalculator.register()
+
+        // Initialize gun system P1 (射击闭环): 独立配置 + 1 tick 运行循环
+        io.github.zzzyyylllty.chotentech.feature.gun.GunSettings.load()
+        // ⚠️ 必须显式引用这些监听器对象：
+        // taboolib 的 @SubscribeEvent 是**类被加载时**注册的，没有被任何地方引用到的 object
+        // 永远不会注册 —— 现象就是「按 Q / 左右键完全没反应」，而 tick 循环（显式 start）照常跑，
+        // 所以 HUD、耐久、NBT 看起来都正常，只有输入全死。
+        io.github.zzzyyylllty.chotentech.feature.gun.GunListener
+        io.github.zzzyyylllty.chotentech.feature.gun.GunMenuListener
+        io.github.zzzyyylllty.chotentech.feature.gun.GunDamage
+        io.github.zzzyyylllty.chotentech.feature.crossbow.FlyingArrowListener
+        info(
+            "[Gun] 输入监听已装载: GunListener(交互/丢弃/换手/切栏/攻击) " +
+                "GunMenuListener(菜单事件) GunDamage(伤害) FlyingArrowListener(弩箭)"
+        )
+        io.github.zzzyyylllty.chotentech.feature.gun.GunPacketInput.register()
+        // 瞄准缩放（FOV）：拦截 / 改写服务端 Abilities 包，没有 packetevents 时自动降级
+        io.github.zzzyyylllty.chotentech.feature.gun.GunZoom.register()
+        io.github.zzzyyylllty.chotentech.feature.gun.GunStateManager.start()
     }
 
     override fun onDisable() {
         info("Disable")
+        // 枪械系统先停循环再清弹道：tick 任务里会推进子弹，先停避免关服期间继续跑
+        io.github.zzzyyylllty.chotentech.feature.gun.GunStateManager.stop()
+        io.github.zzzyyylllty.chotentech.feature.gun.GunZoom.shutdown()
+        io.github.zzzyyylllty.chotentech.feature.gun.GunPacketInput.shutdown()
+        io.github.zzzyyylllty.chotentech.feature.gun.GunBallistics.clear()
+        // 枪械系统 P2：关掉所有还开着的枪械 / 弹匣菜单（close 会顺带结束压弹/退弹模式、
+        // 停掉读条与批量循环），并清空读条登记表与拾取提示节流缓存。
+        // 弹匣的实际拾取冷却不在这里：时间戳写在物品 NBT 上、用世界 tick 比较，天然自过期。
+        io.github.zzzyyylllty.chotentech.feature.gun.GunMenuListener.shutdown()
+        io.github.zzzyyylllty.chotentech.feature.gun.GunAction.cancelAll()
+        io.github.zzzyyylllty.chotentech.feature.gun.GunListener.clearCaches()
         DamageTypeRegistry.shutdown()
         ProjectileManager.cleanupAll()
         SteamPipeManager.cleanup()
@@ -266,6 +298,37 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
         regenTemplatesByBlock.clear()
         regenTemplates.clear()
         levels.clear()
+        // 此前 onDisable 漏掉的五个静态容器：它们只在 reloadCustomConfig
+        // （/tql reload）里被清，而热重载不一定走那条路径——直接
+        // /tql unload → load 就会把这几块静态内存跨代带下去，
+        // 既是泄漏，也可能让旧数据污染新会话。
+        sdClassList.clear()
+        levelsList.clear()
+        accountTypesList.clear()
+        ketherScriptCache.clear()
+        jsScriptCache.clear()
+
+        // ULS 客户端菜单的静态状态。
+        //
+        // 这四个 clear() 一直存在但**从来没有调用方**——插件被禁用时
+        // 它们全部泄漏。这个服务器跑在 TabooLib 下、会热重载，
+        // 所以「禁用」不是进程的终点：残留的 openMenus / 动作注册 /
+        // 经典轨布局会跨过一次重载活下来，然后和新的那套状态打架，
+        // 表现为「reload 之后某些玩家一直看到旧菜单」。
+        //
+        // 顺序有讲究：先让所有玩家从菜单里退出去（close 会走
+        // 经典轨的回收路径），再清动作表，最后清玩家表。
+        io.github.zzzyyylllty.chotentech.client.menu.ULSMenuManager.clear()
+        io.github.zzzyyylllty.chotentech.client.menu.ULSMenuActionRegistry.clear()
+        io.github.zzzyyylllty.chotentech.client.menu.ULSMenuClassicRail.clear()
+        io.github.zzzyyylllty.chotentech.client.ULSClientManager.clear()
+
+        // 枪械系统 P0（GunRegistry）只有静态配置缓存：纯 ConcurrentHashMap 的
+        // 解析结果，随类加载器一起卸载即可，这里**不需要**显式清理，
+        // 所以 GunRegistry 目前也刻意没有 clear() 方法。
+        // 注意：一旦后续阶段加入按玩家维护的枪械运行时状态（弹匣内容索引、开火任务、
+        // 后坐力/过热状态等），必须回到这里补上对应的清理，否则热重载会跨代泄漏。
+        // （届时形如：io.github.zzzyyylllty.chotentech.feature.gun.GunRegistry.clear()）
     }
 
     override fun onActive() {
@@ -350,6 +413,9 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
             val stationDir = File(getDataFolder(), "stations")
             if (!stationDir.exists()) releaseResourceFolder("stations")
             StationManager.loadAll()
+            val subscriptionDir = File(getDataFolder(), "subscriptions")
+            if (!subscriptionDir.exists()) releaseResourceFolder("subscriptions")
+            io.github.zzzyyylllty.chotentech.function.subscription.SubscriptionManager.loadAll()
             ItemNameHelper.load()
             CurrencyUtil.load(currencyConfig)
             RankManager.load()
@@ -362,15 +428,23 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
             loadCosmeticFiles()
             reloadAchievements()
             ProjectileManager.loadProjectileFiles()
-            CrossbowManager.loadArrowConfigs()
-            CrossbowManager.loadMagazineConfigs()
-            CrossbowManager.loadCrossbowConfigs()
+            // 旧弩/弹匣体系（arrows/ mags/ crossbows/ 三套 YAML）已在 P2 整体删除：
+            // 弩改走 Sertraline 的 `gun` 物品 + GunRegistry / GunAction，不再有独立配置目录需要加载。
+            // 示例定义属于 ChoTenTech 自己的资源；通过 Sertraline 的公开单文件解析 API
+            // 触发原生物品处理器与所有 ItemLoadEvent 扩展，再重建强类型枪械快照。
+            io.github.zzzyyylllty.chotentech.feature.gun.GunExampleItems.load()
+            io.github.zzzyyylllty.chotentech.feature.gun.GunRegistry.reload()
+            // 处理器可能在 Sertraline 重载时被清空，这里再确认一次（幂等）
+            GunItemProcessors.register()
+            // 枪械机制配置（独立文件 gun-mechanism.yml）跟着一起重载
+            io.github.zzzyyylllty.chotentech.feature.gun.GunSettings.load()
             SteamPipeManager.loadConfig()
             KeyDoorManager.loadConfig()
             io.github.zzzyyylllty.chotentech.feature.keydoor.KeyDoorSertralineManager.loadConfig()
             SignPassManager.loadConfig()
             io.github.zzzyyylllty.chotentech.feature.trap.TrapManager.loadConfig()
             loadMedkitConfig()
+            loadSurgeryConfig()
             loadConsumableConfigs()
             io.github.zzzyyylllty.chotentech.shop.ShopManager.loadAll()
             io.github.zzzyyylllty.chotentech.shop.GiftPackManager.loadAll()
@@ -401,6 +475,11 @@ fun isSafeWorld(player: Player): Boolean =
 fun loadSDClassFile() {
 
     val config = YamlConfiguration.loadConfiguration(File(getDataFolder(), "sdclass.yml"))
+
+    // 每次加载前先清空：sdClassList 是全局静态 LinkedHashMap，
+    // 此前 loadSDClass 只 put 不 clear，多次 reload 时旧条目会
+    // 累积且不会随配置删除而消失（陈旧数据污染 + 内存增长）。
+    sdClassList.clear()
 
     for (iroot in config.getKeys(false)) {
         config.getConfigurationSection(iroot)?.let { loadSDClass(iroot,it) }

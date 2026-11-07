@@ -2,6 +2,7 @@ package io.github.zzzyyylllty.chotentech.command
 
 import io.github.zzzyyylllty.chotentech.ChoTenTech.reloadCustomConfig
 import io.github.zzzyyylllty.chotentech.command.ChoTenAttributeMainCommand
+import io.github.zzzyyylllty.chotentech.feature.gun.GunDebugCommand
 import io.github.zzzyyylllty.chotentech.player.sendComponent
 import org.bukkit.command.CommandSender
 import taboolib.common.platform.ProxyCommandSender
@@ -83,6 +84,9 @@ object MainCommand {
     val settings = SettingsCommand
     @CommandBody
     val profile = ProfileAdminCommand
+    // 枪械系统 P0 调试入口：/ctt gun info | /ctt gun give（实现见 feature/gun/GunDebugCommand.kt）
+    @CommandBody(permission = "chotentech.command.gun", description = "枪械系统调试指令")
+    val gun = GunDebugCommand
 
 }
 

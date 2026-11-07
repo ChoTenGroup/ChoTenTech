@@ -91,23 +91,30 @@ object ExamplePapiHook : PlaceholderExpansion {
                 val max = data.effectiveMaxDarkness
                 return (current/max*100).toString()
             }
-            "externalinjury" -> return (round((player?.getData()?.externalInjury ?: 0.0)*100)/100).toString()
-            "maxexternalinjury" -> return (round((player?.getData()?.maxExternalInjury ?: 0.0)*100)/100).toString()
-            "externalinjurypercent" -> {
-                val data = player?.getData() ?: return "100"
-                val current = data.externalInjury
-                val max = data.maxExternalInjury
-                if (max <= 0) return "100"
-                return (current/max*100).toString()
+            "toughness" -> {
+                val body = player?.getData()?.bodyHealth ?: return "0"
+                val partId = list.getOrNull(1)?.uppercase()
+                if (partId == null) return body.toughnessPercentage.toString()
+                val part = body.parts[partId] ?: return "0"
+                return (if (list.getOrNull(2)?.lowercase() == "max") part.maxToughness else part.toughness).toString()
             }
-            "internalinjury" -> return (round((player?.getData()?.internalInjury ?: 0.0)*100)/100).toString()
-            "maxinternalinjury" -> return (round((player?.getData()?.maxInternalInjury ?: 0.0)*100)/100).toString()
-            "internalinjurypercent" -> {
-                val data = player?.getData() ?: return "100"
-                val current = data.internalInjury
-                val max = data.maxInternalInjury
-                if (max <= 0) return "100"
-                return (current/max*100).toString()
+            "water" -> {
+                val body = player?.getData()?.bodyHealth ?: return "0"
+                return when (list.getOrNull(1)?.lowercase()) {
+                    "max" -> body.maxWater.toString()
+                    "percent" -> (body.water / body.maxWater.coerceAtLeast(.001) * 100).toString()
+                    else -> body.water.toString()
+                }
+            }
+            "blackfilter" -> return (player?.getData()?.bodyHealth?.filterValue ?: 0.0).toString()
+            "bodyeffects" -> {
+                val data = player?.getData() ?: return ""
+                val id = list.getOrNull(1)?.uppercase() ?: "HEAD"
+                val part = data.bodyHealth.parts[id] ?: return ""
+                val effects = part.effects.values.toList() + (if (id == "HEAD") data.allStatusEffects else emptyList())
+                val labels = effects.map { STATUS_EFFECT_DISPLAY[it.type] ?: it.type }.toMutableList()
+                if (id == "HEAD") labels += player.activePotionEffects.map { VANILLA_EFFECT_DISPLAY[it.type] ?: it.type.key.value() }
+                return labels.distinct().joinToString(", ")
             }
             "formatted" -> return player?.let { "%${args.removePrefix("formatted_")}%".replacePlaceholder(it).numberFormat() } ?: "1"
             "hunger" -> return player?.let { floor(getPercentHunger(it)).toString() } ?: "100"
@@ -265,14 +272,14 @@ object ExamplePapiHook : PlaceholderExpansion {
                     null, "display" -> {
                         if (player == null) return ""
                         val data = player.getData() ?: return ""
-                        val customEffects = data.statusEffects
+                        val customEffects = data.allStatusEffects
 
                         val coveredVanilla = customEffects.flatMap {
                             CUSTOM_COVERED_VANILLA[it.type] ?: emptySet()
                         }.toSet()
 
                         val groupedCustom = customEffects
-                            .groupBy { it.type }
+                            .groupBy { effect -> (data.bodyHealth.parts.values.firstOrNull { it.effects.values.any { stored -> stored === effect } }?.id ?: "HEAD") to effect.type }
                             .mapValues { (_, list) -> list.maxBy { it.level } }
                             .values
 
@@ -290,11 +297,11 @@ object ExamplePapiHook : PlaceholderExpansion {
                             val color = EFFECT_COLOR[effect.type] ?: "<#F2F5FA>"
                             val levelStr = if (effect.level > 1) " ${effect.level.toRoman()}" else ""
                             val timeStr = if (effect.remainingDuration >= 1000) "${effect.remainingDuration / 1000}s" else ""
-                            parts += "$color$name$levelStr${if (timeStr.isNotEmpty()) " <#c9c9c9>$timeStr" else ""}"
+                            parts += "${BodyParts.names[data.bodyHealth.parts.values.firstOrNull { it.effects.values.any { stored -> stored === effect } }?.id ?: "HEAD"]}: $color$name$levelStr${if (timeStr.isNotEmpty()) " <#c9c9c9>$timeStr" else ""}"
                         }
 
                         if (hasMalnutrition) {
-                            parts += "<#cfae6e>营养不良"
+                            parts += "头部: <#cfae6e>营养不良"
                         }
 
                         for (effect in activeVanilla) {
@@ -302,7 +309,7 @@ object ExamplePapiHook : PlaceholderExpansion {
                             val color = VANILLA_EFFECT_COLOR[effect.type] ?: "<#F2F5FA>"
                             val levelStr = if (effect.amplifier > 0) " ${(effect.amplifier + 1).toRoman()}" else ""
                             val timeStr = if (effect.duration >= 20) "${effect.duration / 20}s" else ""
-                            parts += "$color$name$levelStr${if (timeStr.isNotEmpty()) " $timeStr" else ""}"
+                            parts += "头部: $color$name$levelStr${if (timeStr.isNotEmpty()) " $timeStr" else ""}"
                         }
 
                         parts.joinToString(", ")
@@ -310,14 +317,14 @@ object ExamplePapiHook : PlaceholderExpansion {
                     "multiline" -> {
                         if (player == null) return ""
                         val data = player.getData() ?: return ""
-                        val customEffects = data.statusEffects
+                        val customEffects = data.allStatusEffects
 
                         val coveredVanilla = customEffects.flatMap {
                             CUSTOM_COVERED_VANILLA[it.type] ?: emptySet()
                         }.toSet()
 
                         val groupedCustom = customEffects
-                            .groupBy { it.type }
+                            .groupBy { effect -> (data.bodyHealth.parts.values.firstOrNull { it.effects.values.any { stored -> stored === effect } }?.id ?: "HEAD") to effect.type }
                             .mapValues { (_, list) -> list.maxBy { it.level } }
                             .values
 
@@ -335,11 +342,11 @@ object ExamplePapiHook : PlaceholderExpansion {
                             val color = EFFECT_COLOR[effect.type] ?: "<#F2F5FA>"
                             val levelStr = if (effect.level > 1) " ${effect.level.toRoman()}" else ""
                             val timeStr = if (effect.remainingDuration >= 1000) "${effect.remainingDuration / 1000}s" else ""
-                            parts += "$color$name$levelStr${if (timeStr.isNotEmpty()) " <#c9c9c9>$timeStr" else ""}"
+                            parts += "${BodyParts.names[data.bodyHealth.parts.values.firstOrNull { it.effects.values.any { stored -> stored === effect } }?.id ?: "HEAD"]}: $color$name$levelStr${if (timeStr.isNotEmpty()) " <#c9c9c9>$timeStr" else ""}"
                         }
 
                         if (hasMalnutrition) {
-                            parts += "<#cfae6e>营养不良"
+                            parts += "头部: <#cfae6e>营养不良"
                         }
 
                         for (effect in activeVanilla) {
@@ -347,20 +354,20 @@ object ExamplePapiHook : PlaceholderExpansion {
                             val color = VANILLA_EFFECT_COLOR[effect.type] ?: "<#F2F5FA>"
                             val levelStr = if (effect.amplifier > 0) " ${(effect.amplifier + 1).toRoman()}" else ""
                             val timeStr = if (effect.duration >= 20) "${effect.duration / 20}s" else ""
-                            parts += "$color$name$levelStr${if (timeStr.isNotEmpty()) " $timeStr" else ""}"
+                            parts += "头部: $color$name$levelStr${if (timeStr.isNotEmpty()) " $timeStr" else ""}"
                         }
 
                         parts.joinToString("\n")
                     }
                     "list" -> {
-                        player?.getData()?.statusEffects?.joinToString(", ") {
+                        player?.getData()?.allStatusEffects?.joinToString(", ") {
                             "${it.type}:${it.level}(${it.remainingDuration / 1000}s)"
                         } ?: ""
                     }
-                    "has" -> (player?.getData()?.statusEffects?.any { it.type == type } == true).toString()
-                    "level" -> player?.getData()?.statusEffects?.firstOrNull { it.type == type }?.level?.toString() ?: "0"
+                    "has" -> (player?.getData()?.allStatusEffects?.any { it.type == type } == true).toString()
+                    "level" -> player?.getData()?.allStatusEffects?.filter { it.type == type }?.maxOfOrNull { it.level }?.toString() ?: "0"
                     "time" -> {
-                        val remaining = player?.getData()?.statusEffects?.firstOrNull { it.type == type }?.remainingDuration ?: 0L
+                        val remaining = player?.getData()?.allStatusEffects?.firstOrNull { it.type == type }?.remainingDuration ?: 0L
                         (remaining / 1000).toString()
                     }
                     else -> "Error"
@@ -424,9 +431,17 @@ object ExamplePapiHook : PlaceholderExpansion {
                 if (player == null) return "0"
                 return CurrencyManager.getBalance(player, "tape").toString()
             }
-            "goldentape" -> {
+            "ltoken" -> {
                 if (player == null) return "0"
-                return CurrencyManager.getBalance(player, "goldentape").toString()
+                return CurrencyManager.getBalance(player, "ltoken").toString()
+            }
+            "ptoken" -> {
+                if (player == null) return "0"
+                return CurrencyManager.getBalance(player, "ptoken").toString()
+            }
+            "tokentotal" -> {
+                if (player == null) return "0"
+                return CurrencyManager.getTokenTotal(player).toString()
             }
             "profilename" -> return player?.getData()?.profileName ?: ""
             "profileid" -> return player?.getData()?.profileId ?: ""
@@ -504,8 +519,6 @@ object ExamplePapiHook : PlaceholderExpansion {
                 val sub = list.getOrNull(1)?.lowercase() ?: return "Error"
                 return when (sub) {
                     "sanity" -> formatStatDisplay(player, data.sanity, data.effectiveMaxSanity, 90.0, 30.0, 10.0) + " " + ChangeTracker.getArrows(player.uniqueId, "sanity")
-                    "internalinjury" -> formatStatDisplay(player, data.internalInjury, data.maxInternalInjury, 99.0, 75.0, 50.0) + " " + ChangeTracker.getArrows(player.uniqueId, "internalinjury")
-                    "externalinjury" -> formatStatDisplay(player, data.externalInjury, data.maxExternalInjury, 99.0, 75.0, 50.0) + " " + ChangeTracker.getArrows(player.uniqueId, "externalinjury")
                     "health" -> formatHealthDisplay(player)
                     "food" -> formatFoodDisplay(player) + " " + ChangeTracker.getArrows(player.uniqueId, "food")
                     else -> "Error"
@@ -770,7 +783,11 @@ private val STATUS_EFFECT_DISPLAY = mapOf(
     PAIN_RELIEF to "止痛",
     HOUND_VIRUS to "猎犬病毒",
     IMMUNITY to "免疫",
-    STAMINA_REGEN to "体力恢复"
+    STAMINA_REGEN to "体力恢复",
+    PENETRATION to "贯穿", DIZZINESS to "晕眩", SHOCK_SEQUELA to "休克后遗症",
+    MINOR_BLEED to "小出血", MAJOR_BLEED to "大出血", WOUND to "创口",
+    TINNITUS to "耳鸣", BLACKOUT to "眼部发黑", TREMOR to "颤动",
+    DEHYDRATION to "脱水", SEVERE_DEHYDRATION to "严重脱水", FLASH to "闪光"
 )
 
 /** 自定义状态效果颜色 */

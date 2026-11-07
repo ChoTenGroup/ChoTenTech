@@ -1,0 +1,109 @@
+# 12 号霰弹枪示例：重点演示 ammo.pellets（一次开火多颗弹丸，每颗独立散布）
+# 鹿弹 pellets=8：damage 是单颗弹丸伤害，全中约 8×9=72；独头弹 pellets=1 单发高伤
+
+sg_12_pump:
+  itemdef:
+    name: "12 号泵动霰弹枪"
+    desc: '近距离面杀伤。泵动射速慢，弹药消耗按「发」计，不按弹丸计。'
+    material: IRON_HOE
+    unbreakable: true
+    stack: 1
+  model:
+    general: "kangelweapon:sg_12"
+    aiming: "kangelweapon:sg_12_aim"
+    shoot: "kangelweapon:sg_12_fire"
+    reload: "kangelweapon:sg_12_reload"
+    bolt: "kangelweapon:sg_12_reload"
+    jammed: "kangelweapon:sg_12_jammed"
+    blocked: "kangelweapon:sg_12_lower"
+  gun:
+    caliber: 12g
+    auto: false
+    category: shotgun
+    gunType: SG12
+    addonSlots: [MUZZLE, SIGHT, STOCK]
+    usage:
+      reload: 3.2
+      reloadFast: 2.4
+      removeMag: 1.0
+      bolt: 1.1
+      inspectChamber: 1.5
+      inspectMag: 3.0
+      insertAmmo: 1.4
+      removeAmmo: 0.9
+      fix: 4
+      fireMode: 0.2
+      draw: 0.9
+      zoom: 1.6
+    attributes:
+      machineEfficiency: 74
+      accuracy: 55
+      bulletSpeed: 35
+      fireRate: 50
+      barrelLength: 2.2
+      range: 20
+      recoilV: 22
+      recoilH: 6
+      durability: 1800
+    recoil:
+      1: 1
+      3: 1.4
+      5: 1.1
+    shake:
+      0: 0
+      2: 1.2
+      5: -0.8
+
+mag_sg_12_tube:
+  itemdef:
+    name: "12 号 5 发管状弹仓"
+    desc: "管状弹仓，逐发压弹。"
+    material: PAPER
+  model:
+    general: "kangelweapon:mag_sg_tube"
+  mag:
+    caliber: 12g
+    capacity: 5
+    machineEfficiency: 0
+    loadingSpeed: 1
+    ammoInspectionAccuracy: 1
+    ammoInspectionTime: 1.5
+    allowFastReload: 0
+
+ammo_12g_buck:
+  itemdef:
+    name: "12 号鹿弹"
+    desc: "8 颗弹丸，每颗独立散布；damage 为单颗伤害。"
+    material: PAPER
+    stack: 64
+  model:
+    general: "kangelweapon:ammo_12g_buck"
+  ammo:
+    caliber: 12g
+    pellets: 8
+    penetration: 12
+    damage: 9
+    armorDamage: 4
+    accuracy: -6
+    recoil: 90
+    stuckChance: 2
+    critChance: 5
+
+ammo_12g_slug:
+  itemdef:
+    name: "12 号独头弹"
+    desc: "单颗高伤，中距离仍可用。"
+    material: PAPER
+    stack: 64
+  model:
+    general: "kangelweapon:ammo_12g_slug"
+  ammo:
+    caliber: 12g
+    pellets: 1
+    penetration: 35
+    damage: 68
+    armorDamage: 22
+    accuracy: 4
+    recoil: 100
+    stuckChance: 3
+    critChance: 10

@@ -1,0 +1,71 @@
+# 护甲示例：defense 防护数值 / defenseLevel 与子弹 penetration 对抗
+# part 显式声明覆盖部位；speed / machineEfficiency 为百分数修正（负=减速/更慢）
+# material 决定耐久损耗、维修材料与防护等级加成（DIAMOND/IRON/STEEL/LEATHER）
+
+armor_steel_helmet:
+  itemdef:
+    name: "钢制战术头盔"
+    desc: "只保护头部；破碎后不再提供任何防护与属性修正。"
+    material: IRON_HELMET
+    unbreakable: true
+  model:
+    general: "kangelweapon:armor_steel_helmet"
+  armor:
+    defense: 18
+    defenseLevel: 55
+    speed: -2
+    machineEfficiency: -3
+    material: STEEL
+    part: [HEAD]
+    durability: 320
+
+armor_ceramic_vest:
+  itemdef:
+    name: "陶瓷复合胸甲"
+    desc: "覆盖胸腹与手臂，不保护头部与腿部。"
+    material: DIAMOND_CHESTPLATE
+    unbreakable: true
+  model:
+    general: "kangelweapon:armor_ceramic_vest"
+  armor:
+    defense: 46
+    defenseLevel: 72
+    speed: -8
+    machineEfficiency: -10
+    material: DIAMOND
+    part: [BODY, STOMACH, ARMS]
+    durability: 560
+
+armor_tactical_leggings:
+  itemdef:
+    name: "战术护腿"
+    desc: "覆盖腿部与腹部。"
+    material: IRON_LEGGINGS
+    unbreakable: true
+  model:
+    general: "kangelweapon:armor_tactical_leggings"
+  armor:
+    defense: 24
+    defenseLevel: 48
+    speed: -5
+    machineEfficiency: -4
+    material: IRON
+    part: [LEGS, STOMACH]
+    durability: 420
+
+armor_light_boots:
+  itemdef:
+    name: "轻型作战靴"
+    desc: "皮质，轻便但防护等级较低。"
+    material: LEATHER_BOOTS
+    unbreakable: true
+  model:
+    general: "kangelweapon:armor_light_boots"
+  armor:
+    defense: 8
+    defenseLevel: 22
+    speed: 0
+    machineEfficiency: 0
+    material: LEATHER
+    part: [LEGS]
+    durability: 240

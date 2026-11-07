@@ -1,6 +1,9 @@
 package io.github.zzzyyylllty.chotentech.function.bleedout
 
 import io.github.zzzyyylllty.chotentech.ChoTenTech.config
+import io.github.zzzyyylllty.chotentech.data.getData
+import io.github.zzzyyylllty.chotentech.data.SHOCK_SEQUELA
+import io.github.zzzyyylllty.chotentech.function.body.BodyHealthManager
 import io.github.zzzyyylllty.chotentech.data.AttributeModifier
 import io.github.zzzyyylllty.chotentech.data.AttributeSlot
 import io.github.zzzyyylllty.chotentech.data.ModifierSource
@@ -59,18 +62,60 @@ object BleedoutManager {
 
     data class DownState(
         var bleedoutTicks: Int,
-        val maxBleedoutTicks: Int,
+        var maxBleedoutTicks: Int,
         var beingRevivedBy: UUID? = null,
         var revivalTicks: Int = 0,
         val revivalMaxTicks: Int,
         val downLocation: Location,
-        var giveUpTicks: Int = 0
+        var giveUpTicks: Int = 0,
+        var phase: String = "DOWNED",
+        val body: io.github.zzzyyylllty.chotentech.data.PlayerBodyHealth? = null
     )
 
-    fun isDowned(uuid: UUID): Boolean = downedPlayers.containsKey(uuid)
+    fun isDowned(uuid: UUID): Boolean = Bukkit.getPlayer(uuid)?.getData()?.bodyHealth?.downPhase != null
     fun getDownState(uuid: UUID): DownState? = downedPlayers[uuid]
+    fun isShocked(uuid: UUID): Boolean = Bukkit.getPlayer(uuid)?.getData()?.bodyHealth?.downPhase == "SHOCK"
+
+    fun forceDeath(player: Player) {
+        pendingDeath.add(player.uniqueId)
+        cleanupState(player.uniqueId)
+        player.health = 0.0
+        pendingDeath.remove(player.uniqueId)
+    }
+
+    private fun enterShock(player: Player, state: DownState) {
+        state.phase = "SHOCK"
+        state.maxBleedoutTicks = config.getInt("bleedout.shock-duration", 120).coerceAtLeast(1) * 2
+        state.bleedoutTicks = state.maxBleedoutTicks
+        player.velocity = org.bukkit.util.Vector()
+        player.getData()?.bodyHealth?.let { it.downPhase = "SHOCK"; it.downTicks = state.bleedoutTicks }
+        player.sendMessage("<#E08A98>你已进入休克，无法移动。等待救援或按住Shift放弃。".toComponent())
+    }
+
+    /**
+     * 调试用：直接推入休克阶段。未倒地时先补一次 [enterBleedout]，使状态机与计时器保持一致。
+     * 正常流程不应调用这里——倒地在计时结束后由 tick 自然转入休克。
+     */
+    fun debugEnterShock(player: Player): Boolean {
+        if (!downedPlayers.containsKey(player.uniqueId)) enterBleedout(player)
+        val state = downedPlayers[player.uniqueId] ?: return false
+        enterShock(player, state)
+        return true
+    }
+
+    fun damageDowned(player: Player) {
+        val state = downedPlayers[player.uniqueId] ?: return
+        if (state.phase == "SHOCK") return
+        if (state.beingRevivedBy != null) cancelRevival(player.uniqueId, "目标再次受伤，救援中断")
+        if (config.getBoolean("bleedout.damage-accelerates-bleedout", true)) {
+            state.bleedoutTicks -= config.getInt("bleedout.damage-penalty", 10).coerceAtLeast(0) * 2
+            if (state.bleedoutTicks <= 0) enterShock(player, state)
+        }
+    }
+
 
     fun enterBleedout(player: Player) {
+        if (!config.getBoolean("bleedout.enabled", true)) { forceDeath(player); return }
         val uuid = player.uniqueId
         if (downedPlayers.containsKey(uuid) || pendingDeath.contains(uuid)) return
 
@@ -79,8 +124,8 @@ object BleedoutManager {
             player.leaveVehicle()
         }
 
-        val duration = config.getInt("bleedout.duration", 60)
-        val revivalTime = config.getInt("bleedout.revival-time", 15)
+        val duration = config.getInt("bleedout.duration", 60).coerceAtLeast(1)
+        val revivalTime = config.getInt("bleedout.revival-time", 5).coerceAtLeast(1)
 
         // Slow movement to a crawl (configurable %, default -70%)
         val slowPct = config.getDouble("bleedout.crawl-speed-penalty", 0.7).coerceIn(0.0, 1.0)
@@ -98,12 +143,14 @@ object BleedoutManager {
             bleedoutTicks = duration * 2,
             maxBleedoutTicks = duration * 2,
             revivalMaxTicks = revivalTime * 2,
-            downLocation = player.location.clone()
+            downLocation = player.location.clone(),
+            body = player.getData()?.bodyHealth
         )
 
+        player.getData()?.bodyHealth?.let { it.downPhase = "DOWNED"; it.downTicks = duration * 2 }
         setDownedPose(player, true)
 
-        player.health = 1.0
+        player.health = minOf(1.0, player.getAttribute(org.bukkit.attribute.Attribute.MAX_HEALTH)?.value ?: 20.0)
         player.allowFlight = false
         player.isFlying = false
 
@@ -127,13 +174,13 @@ object BleedoutManager {
             reviver.sendActionBar("<#EFDF8F>该玩家正在被其他人救援中".toComponent())
             return
         }
-        if (reviver == downed) {
+        if (reviver == downed || isDowned(reviver.uniqueId)) {
             reviver.sendActionBar("<#E08A98>你不能救援自己！".toComponent())
             return
         }
         state.beingRevivedBy = reviver.uniqueId
         state.revivalTicks = 0
-        state.bleedoutTicks = state.maxBleedoutTicks // 重置倒地倒计时并暂停
+        // 救援时暂停剩余倒计时，不重置，避免反复救援延长休克
         state.giveUpTicks = 0
         reviver.sendMessage("<#8FD4A6>✦ 开始救援 ${downed.name}... 请保持靠近。".toComponent())
         downed.sendMessage("<#8FD4A6>✦ ${reviver.name} 正在救援你...".toComponent())
@@ -155,10 +202,16 @@ object BleedoutManager {
         val player = Bukkit.getPlayer(uuid) ?: return
 
         cleanupState(uuid)
+        if (state.phase == "SHOCK") {
+            player.getData()?.bodyHealth?.let {
+                it.applyEffect("HEAD", SHOCK_SEQUELA)
+                BodyHealthManager.syncPenalties(player, it)
+            }
+        }
 
         val pct = config.getDouble("bleedout.revive-health", 0.2)
         val maxHp = player.getAttribute(org.bukkit.attribute.Attribute.MAX_HEALTH)?.value ?: 20.0
-        player.health = (maxHp * pct).coerceAtLeast(1.0)
+        player.health = (maxHp * pct).coerceIn(minOf(1.0, maxHp), maxHp)
 
         player.showTitle(net.kyori.adventure.title.Title.title(
             "<#8FD4A6>✅ 已复苏".toComponent(),
@@ -179,10 +232,16 @@ object BleedoutManager {
         val reviverUuid = state.beingRevivedBy
 
         cleanupState(uuid)
+        if (state.phase == "SHOCK") {
+            player.getData()?.bodyHealth?.let {
+                it.applyEffect("HEAD", SHOCK_SEQUELA)
+                BodyHealthManager.syncPenalties(player, it)
+            }
+        }
 
         val pct = config.getDouble("bleedout.revive-health", 0.2)
         val maxHp = player.getAttribute(org.bukkit.attribute.Attribute.MAX_HEALTH)?.value ?: 20.0
-        player.health = (maxHp * pct).coerceAtLeast(1.0)
+        player.health = (maxHp * pct).coerceIn(minOf(1.0, maxHp), maxHp)
 
         player.showTitle(net.kyori.adventure.title.Title.title(
             "<#8FD4A6>✅ 已复苏".toComponent(),
@@ -214,8 +273,9 @@ object BleedoutManager {
         }
     }
 
-    private fun cleanupState(uuid: UUID) {
-        downedPlayers.remove(uuid)
+    private fun cleanupState(uuid: UUID, clearPersisted: Boolean = true) {
+        val removed = downedPlayers.remove(uuid)
+        if (clearPersisted) removed?.body?.let { it.downPhase = null; it.downTicks = 0 }
         AttributeManager.removeModifierByUuid(uuid, BLEEDOUT_SPEED_MOD_UUID)
         removeBossBar(uuid)
         Bukkit.getPlayer(uuid)?.let { setDownedPose(it, false) }
@@ -255,10 +315,24 @@ object BleedoutManager {
     }
 
     private fun tick() {
+        for (player in Bukkit.getOnlinePlayers()) {
+            val oldState = downedPlayers[player.uniqueId]
+            if (oldState != null && oldState.body !== player.getData()?.bodyHealth) cleanupState(player.uniqueId, false)
+            if (player.isDead || downedPlayers.containsKey(player.uniqueId)) continue
+            val body = player.getData()?.bodyHealth ?: continue
+            if (body.downPhase == null) continue
+            val phase = body.downPhase!!
+            val remaining = body.downTicks
+            enterBleedout(player)
+            downedPlayers[player.uniqueId]?.let { state ->
+                if (phase == "SHOCK") enterShock(player, state)
+                state.bleedoutTicks = remaining.coerceAtLeast(1)
+            }
+        }
         val toRemove = mutableListOf<UUID>()
 
         for ((uuid, state) in downedPlayers) {
-            val player = Bukkit.getPlayer(uuid) ?: run { toRemove.add(uuid); continue }
+            val player = Bukkit.getPlayer(uuid) ?: continue
 
             // --- 放弃（长按Shift 5s） ---
             if (player.isSneaking) {
@@ -278,7 +352,7 @@ object BleedoutManager {
                 val reviver = Bukkit.getPlayer(reviverId)
                 when {
                     reviver == null || !reviver.isOnline -> cancelRevival(uuid, "救援者已离开")
-                    reviver.location.distanceSquared(player.location) > 4.0 -> cancelRevival(uuid, "救援者距离过远")
+                    reviver.world != player.world || reviver.location.distanceSquared(player.location) > 4.0 -> cancelRevival(uuid, "救援者距离过远")
                     else -> {
                         state.revivalTicks++
                         if (state.revivalTicks >= state.revivalMaxTicks) {
@@ -294,11 +368,14 @@ object BleedoutManager {
             if (state.beingRevivedBy == null) {
                 state.bleedoutTicks--
                 if (state.bleedoutTicks <= 0) {
-                    expireBleedout(uuid)
-                    toRemove.add(uuid)
-                    continue
+                    if (state.phase == "SHOCK") {
+                        expireBleedout(uuid)
+                        toRemove.add(uuid)
+                        continue
+                    } else enterShock(player, state)
                 }
             }
+            player.getData()?.bodyHealth?.let { it.downPhase = state.phase; it.downTicks = state.bleedoutTicks }
 
             // --- 进度条（BossBar） ---
             var bar = bleedoutBossBars[uuid]
@@ -318,12 +395,14 @@ object BleedoutManager {
                 bar.color(BossBar.Color.GREEN)
             } else {
                 val pct = state.bleedoutTicks * 100 / state.maxBleedoutTicks
-                bar.name("<#E08A98>🩸 失血中... $pct%".toComponent())
+                bar.name("<#E08A98>🩸 ${if (state.phase == "SHOCK") "休克中" else "倒地中"}... $pct%".toComponent())
                 bar.progress((state.bleedoutTicks.toFloat() / state.maxBleedoutTicks).coerceIn(0f, 1f))
                 bar.color(BossBar.Color.RED)
             }
 
             // --- ActionBar ---
+            val phaseName = if (state.phase == "SHOCK") "休克中" else "倒地中"
+            val nextPhase = if (state.phase == "SHOCK") "死亡" else "进入休克"
             val sec = state.bleedoutTicks / 2
             when {
                 state.giveUpTicks > 0 -> {
@@ -333,10 +412,10 @@ object BleedoutManager {
                 state.beingRevivedBy != null -> {
                     val name = Bukkit.getOfflinePlayer(state.beingRevivedBy!!).name ?: "未知"
                     val pct = state.revivalTicks * 100 / state.revivalMaxTicks
-                    player.sendActionBar("<#E08A98>⛔ 倒地中 <#A9B4C3>| <#8FD4A6>$name <#A9B4C3>救援中 $pct%".toComponent())
+                    player.sendActionBar("<#E08A98>⛔ $phaseName <#A9B4C3>| <#8FD4A6>$name <#A9B4C3>救援中 $pct%".toComponent())
                 }
                 else -> {
-                    player.sendActionBar("<#E08A98>⛔ 倒地中 <#A9B4C3>| <#F2F5FA>${sec}秒 <#A9B4C3>后失血死亡  <#6E7A8C>[Shift放弃]".toComponent())
+                    player.sendActionBar("<#E08A98>⛔ $phaseName <#A9B4C3>| <#F2F5FA>${sec}秒 <#A9B4C3>后$nextPhase  <#6E7A8C>[Shift放弃]".toComponent())
                 }
             }
         }
@@ -406,38 +485,24 @@ object BleedoutManager {
     fun onFatalDamage(event: EntityDamageEvent) {
         if (event.entity !is Player) return
         if (event.isCancelled) return
-        if (!config.getBoolean("bleedout.enabled", true)) return
-
         val player = event.entity as Player
         val uuid = player.uniqueId
         if (player.gameMode == GameMode.CREATIVE || player.gameMode == GameMode.SPECTATOR) return
-        if (event.finalDamage <= 0.0) return
-
-        // Bypass bleedout for certain damage causes (void, poison, wither, kill command)
-        if (event.cause == EntityDamageEvent.DamageCause.VOID
-            || event.cause == EntityDamageEvent.DamageCause.POISON
-            || event.cause == EntityDamageEvent.DamageCause.WITHER
-            || event.cause == EntityDamageEvent.DamageCause.KILL) return
-
-        // Player is about to die from bleedout expiry — let death proceed
         if (pendingDeath.contains(uuid)) return
-
-        // Already downed — cancel damage, optionally accelerate bleedout
+        if (isShocked(uuid)) { event.isCancelled = true; return }
+        BodyHealthManager.mitigate(event, player)
+        if (event.finalDamage <= 0.0) return
         val state = downedPlayers[uuid]
         if (state != null) {
             event.isCancelled = true
-            // 倒地者对玩家攻击免疫:来自玩家的伤害不加速失血、不中断救援
-            if (!isPlayerInflicted(event) && config.getBoolean("bleedout.damage-accelerates-bleedout", true)) {
-                val penalty = config.getInt("bleedout.damage-penalty", 10) * 2
-                state.bleedoutTicks = maxOf(state.bleedoutTicks - penalty, 0)
-                if (state.beingRevivedBy != null) cancelRevival(uuid, "目标再次受伤，救援中断")
-                if (state.bleedoutTicks <= 0) expireBleedout(uuid)
-            }
+            damageDowned(player)
             return
         }
+        if (!config.getBoolean("bleedout.enabled", true)) return
+        if (event.cause == EntityDamageEvent.DamageCause.VOID || event.cause == EntityDamageEvent.DamageCause.KILL) return
 
-        // Check if damage would kill (account for absorption hearts)
-        val effectiveHp = player.health + player.absorptionAmount
+        // finalDamage has already deducted absorption; do not count those hearts twice.
+        val effectiveHp = player.health
         if (effectiveHp - event.finalDamage <= 0.0) {
             event.isCancelled = true
             enterBleedout(player)
@@ -451,11 +516,10 @@ object BleedoutManager {
     fun onDownedMove(event: PlayerMoveEvent) {
         if (event.isCancelled) return
         val state = downedPlayers[event.player.uniqueId] ?: return
-        // Allow looking around without position change
-        if (event.from.blockX == event.to.blockX
-            && event.from.blockY == event.to.blockY
-            && event.from.blockZ == event.to.blockZ) return
-        // Movement is restricted by speed modifier only — no radius limit
+        if (state.phase == "SHOCK" && event.hasExplicitlyChangedPosition()) {
+            event.to = event.from.clone().apply { yaw = event.to.yaw; pitch = event.to.pitch }
+            event.player.velocity = org.bukkit.util.Vector()
+        }
     }
 
     /** Right-click a downed player to start revival */
@@ -476,7 +540,9 @@ object BleedoutManager {
     @SubscribeEvent
     fun onPlayerQuitClear(event: PlayerQuitEvent) {
         val uuid = event.player.uniqueId
-        downedPlayers.remove(uuid)
+        downedPlayers.remove(uuid)?.let { state ->
+            event.player.getData()?.bodyHealth?.let { it.downPhase = state.phase; it.downTicks = state.bleedoutTicks }
+        }
         AttributeManager.removeModifierByUuid(uuid, BLEEDOUT_SPEED_MOD_UUID)
         removeBossBar(uuid)
         pendingDeath.remove(uuid)
@@ -504,6 +570,7 @@ object BleedoutManager {
     fun onDeathCleanup(event: PlayerDeathEvent) {
         val uuid = event.player.uniqueId
         downedPlayers.remove(uuid)
+        Bukkit.getPlayer(uuid)?.getData()?.bodyHealth?.let { it.downPhase = null; it.downTicks = 0 }
         AttributeManager.removeModifierByUuid(uuid, BLEEDOUT_SPEED_MOD_UUID)
         removeBossBar(uuid)
         setDownedPose(event.player, false)

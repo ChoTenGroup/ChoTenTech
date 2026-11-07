@@ -527,8 +527,6 @@ object ProjectileManager {
                 "fragment" -> {
                     val fragmentCount = effect.amount.coerceAtLeast(1)
                     val physicalDmg = effect.damage["physical"] ?: 0.0
-                    val externalInjuryDmg = effect.damage["externalInjury"] ?: 0.0
-                    val internalInjuryDmg = effect.damage["internalInjury"] ?: 0.0
 
                     devLog("[破片] 爆炸于 ${location.blockX},${location.blockY},${location.blockZ} world=${location.world.name} range=${effect.range} count=$fragmentCount thrower=${thrower.name} at ${thrower.location.blockX},${thrower.location.blockY},${thrower.location.blockZ}")
 
@@ -565,8 +563,6 @@ object ProjectileManager {
                             }
                             if (entity is Player) {
                                 val pData = ChoTenTech.playerDataMap[entity.uniqueId.toString()] ?: continue
-                                if (externalInjuryDmg > 0) pData.externalInjury = maxOf(0.0, pData.externalInjury - externalInjuryDmg * totalMult)
-                                if (internalInjuryDmg > 0) pData.internalInjury = maxOf(0.0, pData.internalInjury - internalInjuryDmg * totalMult)
                             }
                             forcedHit.add(entity)
                             devLog("[破片] 强制命中 ${entity.name} dist=${"%.1f".format(distance)} 强制率=${"%.0f".format(forcePct*100)}% falloff=$mult totalMult=$totalMult")
@@ -609,8 +605,6 @@ object ProjectileManager {
                             }
                             if (entity is Player) {
                                 val pData = ChoTenTech.playerDataMap[entity.uniqueId.toString()] ?: continue
-                                if (externalInjuryDmg > 0) pData.externalInjury = maxOf(0.0, pData.externalInjury - externalInjuryDmg * mult)
-                                if (internalInjuryDmg > 0) pData.internalInjury = maxOf(0.0, pData.internalInjury - internalInjuryDmg * mult)
                             }
                             devLog("[破片] 命中 ${entity.name} dist=${"%.2f".format(distance)} falloff=$mult")
                         }

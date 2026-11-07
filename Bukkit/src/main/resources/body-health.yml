@@ -1,0 +1,38 @@
+# Environmental damage weights are normalized; unmapped causes default to BODY.
+damage-distribution:
+  DROWNING: {HEAD: 1}
+  SUFFOCATION: {HEAD: 1}
+  FALL: {LLEG: 1, RLEG: 1}
+  HOT_FLOOR: {LLEG: 1, RLEG: 1}
+  BLOCK_EXPLOSION: {HEAD: 1, BODY: 1, STOMACH: 1, LARM: 1, RARM: 1, LLEG: 1, RLEG: 1}
+  ENTITY_EXPLOSION: {HEAD: 1, BODY: 1, STOMACH: 1, LARM: 1, RARM: 1, LLEG: 1, RLEG: 1}
+  FIRE: {HEAD: 1, BODY: 1, STOMACH: 1, LARM: 1, RARM: 1, LLEG: 1, RLEG: 1}
+  FIRE_TICK: {HEAD: 1, BODY: 1, STOMACH: 1, LARM: 1, RARM: 1, LLEG: 1, RLEG: 1}
+  LAVA: {BODY: 2, STOMACH: 1, LARM: 1, RARM: 1, LLEG: 2, RLEG: 2}
+  FREEZE: {HEAD: 1, BODY: 1, STOMACH: 1, LARM: 1, RARM: 1, LLEG: 1, RLEG: 1}
+bypass-causes: [VOID, WORLD_BORDER, KILL, SUICIDE, STARVATION, POISON, WITHER, MAGIC]
+water:
+  walk-consumption: 0.5
+  sprint-consumption: 1.0
+wound:
+  jump-bleed-chance: 0.10
+  sprint-bleed-chance: 0.05
+pain:
+  leg-speed-penalty: 0.10
+  arm-aim-cost: 0.10
+  arm-accuracy-penalty: 0.10
+filter:
+  cycle-ticks: 100
+  delay-min-ticks: 20
+  delay-max-ticks: 120
+tremor:
+  chance: 0.25
+  degrees: 0.6
+dizziness:
+  radius: 4
+  blocks: 12
+tinnitus:
+  sound: minecraft:block.note_block.bit
+  interval-ticks: 20
+  volume: 0.5
+  pitch: 1.8

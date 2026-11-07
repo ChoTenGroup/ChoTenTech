@@ -1,0 +1,201 @@
+# 栓动狙击枪 + 猎弩示例
+# 狙击：低射速、高弹速、远射程；弩：category: crossbow，走与枪完全相同的弹匣/弹道体系
+
+sr_762_bolt:
+  itemdef:
+    name: "SR-7.62 栓动狙击枪"
+    desc: "栓动单发，高穿深、远射程。"
+    material: IRON_HOE
+    unbreakable: true
+    stack: 1
+  model:
+    general: "kangelweapon:sr_762"
+    aiming: "kangelweapon:sr_762_aim"
+    shoot: "kangelweapon:sr_762_fire"
+    reload: "kangelweapon:sr_762_reload"
+    bolt: "kangelweapon:sr_762_bolt"
+    jammed: "kangelweapon:sr_762_jammed"
+    blocked: "kangelweapon:sr_762_lower"
+  gun:
+    caliber: 7.62
+    auto: false
+    category: sniper
+    gunType: SR762
+    addonSlots: [MUZZLE, SIGHT, STOCK]
+    usage:
+      reload: 3.4
+      reloadFast: 2.6
+      removeMag: 1.0
+      bolt: 1.4
+      inspectChamber: 1.6
+      inspectMag: 3.5
+      insertAmmo: 1.1
+      removeAmmo: 0.7
+      fix: 5
+      fireMode: 0.2
+      draw: 1.1
+      zoom: 4.0
+    attributes:
+      machineEfficiency: 66
+      accuracy: 94
+      bulletSpeed: 90
+      fireRate: 40
+      barrelLength: 4.2
+      range: 128
+      recoilV: 26
+      recoilH: 4
+      durability: 2200
+    recoil:
+      1: 1
+      2: 0.8
+      5: 0.6
+    shake:
+      0: 0
+      2: 0.4
+      5: 0
+
+mag_sr_762_5:
+  itemdef:
+    name: "SR 7.62 5 发弹匣"
+    desc: "狙击弹匣，支持精确检视。"
+    material: PAPER
+  model:
+    general: "kangelweapon:mag_sr_5"
+  mag:
+    caliber: 7.62
+    capacity: 5
+    machineEfficiency: 0
+    loadingSpeed: 0
+    ammoInspectionAccuracy: 1
+    ammoInspectionTime: 2
+    allowFastReload: 1
+
+ammo_762_ap:
+  itemdef:
+    name: "7.62 AP 狙击穿甲弹"
+    desc: "高穿甲、高护甲损耗。"
+    material: PAPER
+    stack: 64
+  model:
+    general: "kangelweapon:ammo_762_ap"
+  ammo:
+    caliber: 7.62
+    penetration: 95
+    damage: 82
+    armorDamage: 55
+    accuracy: 3
+    recoil: 80
+    stuckChance: 2
+    critChance: 12
+
+addon_sr_scope8x:
+  itemdef:
+    name: "8 倍狙击瞄具"
+    desc: "ADS 散布再除以 8。"
+    material: PAPER
+  model:
+    general: "kangelweapon:addon_scope8x"
+  addon:
+    slot: SIGHT
+    gunType: SR762
+    zoom: 8.0
+    attributes:
+      accuracy: 3
+      machineEfficiency: -4
+
+crossbow_hunting:
+  itemdef:
+    name: "猎弩"
+    desc: "使用弩箭袋与弩箭，机制与枪械一致。"
+    material: IRON_HOE
+    unbreakable: true
+    stack: 1
+  model:
+    general: "kangelweapon:crossbow_hunting"
+  gun:
+    caliber: bolt
+    auto: false
+    category: crossbow
+    gunType: CROSSBOW
+    addonSlots: [SIGHT, STOCK]
+    usage:
+      reload: 2.8
+      reloadFast: 2.0
+      removeMag: 0.9
+      bolt: 1.2
+      inspectChamber: 1.4
+      inspectMag: 3.0
+      insertAmmo: 1.2
+      removeAmmo: 0.8
+      fix: 3
+      fireMode: 0.2
+      draw: 0.8
+      zoom: 2.0
+    attributes:
+      machineEfficiency: 80
+      accuracy: 80
+      bulletSpeed: 25
+      fireRate: 30
+      barrelLength: 1.0
+      range: 40
+      recoilV: 8
+      recoilH: 2
+      durability: 1200
+    recoil:
+      1: 1
+      3: 0.7
+    shake:
+      0: 0
+      3: 0
+
+mag_crossbow_quiver:
+  itemdef:
+    name: "弩箭袋"
+    desc: "6 支弩箭。"
+    material: PAPER
+  model:
+    general: "kangelweapon:crossbow_quiver"
+  mag:
+    caliber: bolt
+    capacity: 6
+    machineEfficiency: 0
+    loadingSpeed: 1
+    ammoInspectionAccuracy: 1
+    ammoInspectionTime: 1.5
+    allowFastReload: 0
+
+ammo_bolt_standard:
+  itemdef:
+    name: "标准弩箭"
+    desc: "通用弩箭。"
+    material: ARROW
+    stack: 64
+  model:
+    general: "kangelweapon:bolt_standard"
+  ammo:
+    caliber: bolt
+    penetration: 30
+    damage: 34
+    armorDamage: 12
+    accuracy: 0
+    recoil: 30
+    stuckChance: 1
+    critChance: 8
+
+ammo_bolt_bodkin:
+  itemdef:
+    name: "破甲弩箭"
+    desc: "针对护甲目标。"
+    material: ARROW
+    stack: 64
+  model:
+    general: "kangelweapon:bolt_bodkin"
+  ammo:
+    caliber: bolt
+    penetration: 70
+    damage: 28
+    armorDamage: 30
+    accuracy: 1
+    recoil: 35
+    stuckChance: 2
+    critChance: 6

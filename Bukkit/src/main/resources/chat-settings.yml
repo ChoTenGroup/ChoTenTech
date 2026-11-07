@@ -6,3 +6,11 @@ whisper:
   receive: "<#A9B4C3>[私聊 ← <#F2F5FA><sender></#F2F5FA>]</#A9B4C3> <message>"
   # 私聊冷却（秒）；-1 无冷却。持有 chotentech.chat.cooldown.whisper.bypass 权限可绕过
   cooldown: 1.0
+# @ 提及设置
+mention:
+  # 被提及玩家收到的提醒消息（MiniMessage）；{sender} 为发起提及的玩家名
+  notify-message: "<#EFDF8F>{sender} <#A9B4C3>在聊天中提到了你！"
+  # 被提及提醒音效（留空禁用）；格式 namespace:key，如 minecraft:entity.experience_orb_pickup
+  notify-sound: "minecraft:entity.experience_orb_pickup"
+  # 提醒音效音调
+  notify-sound-pitch: 1.5

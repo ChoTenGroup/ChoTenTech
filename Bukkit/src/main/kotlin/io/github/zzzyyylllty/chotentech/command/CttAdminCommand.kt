@@ -7,6 +7,7 @@ import io.github.zzzyyylllty.chotentech.ChoTenTech.playerRegions
 import io.github.zzzyyylllty.chotentech.data.PlayerData
 import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager
 import io.github.zzzyyylllty.chotentech.function.BaseManager
+import io.github.zzzyyylllty.chotentech.function.CurrencyManager
 import io.github.zzzyyylllty.chotentech.function.RankManager
 import io.github.zzzyyylllty.chotentech.function.bleedout.BleedoutManager
 import io.github.zzzyyylllty.chotentech.function.savepoint.SaveIdMigrator
@@ -14,8 +15,10 @@ import io.github.zzzyyylllty.chotentech.function.savepoint.SavePoint
 import io.github.zzzyyylllty.chotentech.function.savepoint.SavePointConfig
 import io.github.zzzyyylllty.chotentech.function.savepoint.SavePointManager
 import io.github.zzzyyylllty.chotentech.function.savepoint.SavePointType
+import io.github.zzzyyylllty.chotentech.function.subscription.SubscriptionManager
 import io.github.zzzyyylllty.chotentech.player.sendComponent
 import io.github.zzzyyylllty.chotentech.data.PlayerDataManager
+import io.github.zzzyyylllty.chotentech.shop.ShopManager
 import io.github.zzzyyylllty.chotentech.util.devLog
 import io.github.zzzyyylllty.chotentech.util.jsonUtils
 import io.github.zzzyyylllty.chotentech.util.toComponent
@@ -264,6 +267,211 @@ object CttAdminCommand {
                 }
             }
         }
+    }
+
+    // ==================== Token / 订阅 管理 ====================
+
+    /** /cttadmin token give|take|info <player> [ltoken|ptoken|token] [amount] */
+    @CommandBody
+    val token = subCommand {
+        literal("give") {
+            player("target") {
+                dynamic("type") {
+                    dynamic("amount") {
+                        execute<CommandSender> { sender, context, _ ->
+                            val target = context.player("target").castSafely<Player>()
+                            if (target == null) {
+                                sender.sendComponent("<#E08A98>目标玩家不在线")
+                                return@execute
+                            }
+                            val type = normalizeTokenType(context["type"])
+                            if (type == null) {
+                                sender.sendComponent("<#E08A98>未知货币 <#EFDF8F>${context["type"]} <#A9B4C3>(可用: ltoken, ptoken, token)")
+                                return@execute
+                            }
+                            val amount = context["amount"].toLongOrNull()
+                            if (amount == null || amount <= 0L) {
+                                sender.sendComponent("<#E08A98>数量必须是正整数")
+                                return@execute
+                            }
+                            // token = 通用发放:优先补免费 Token(与扣费顺序相反,发放入免费侧更符合"免费优先"的收益预期)
+                            val currency = if (type == "token") CurrencyManager.LTOKEN else type
+                            CurrencyManager.addBalance(target, currency, amount)
+                            sender.sendComponent("<#8FD4A6>已给予 <#EFDF8F>${target.name} <#F2F5FA>$amount <#8FD4A6>${CurrencyManager.displayName(currency)}")
+                            target.sendComponent("<#8FD4A6>管理员发放了 <#F2F5FA>$amount <#8FD4A6>${CurrencyManager.displayName(currency)}")
+                        }
+                        suggestion<CommandSender> { _, _ ->
+                            listOf("100", "1000", "10000", "50000", "100000")
+                        }
+                    }
+                    suggestion<CommandSender> { _, _ ->
+                        listOf(CurrencyManager.LTOKEN, CurrencyManager.PTOKEN, "token")
+                    }
+                }
+            }
+        }
+        literal("take") {
+            player("target") {
+                dynamic("type") {
+                    dynamic("amount") {
+                        execute<CommandSender> { sender, context, _ ->
+                            val target = context.player("target").castSafely<Player>()
+                            if (target == null) {
+                                sender.sendComponent("<#E08A98>目标玩家不在线")
+                                return@execute
+                            }
+                            val type = normalizeTokenType(context["type"])
+                            if (type == null) {
+                                sender.sendComponent("<#E08A98>未知货币 <#EFDF8F>${context["type"]} <#A9B4C3>(可用: ltoken, ptoken, token)")
+                                return@execute
+                            }
+                            val amount = context["amount"].toLongOrNull()
+                            if (amount == null || amount <= 0L) {
+                                sender.sendComponent("<#E08A98>数量必须是正整数")
+                                return@execute
+                            }
+                            // token = 通用扣费:优先消耗免费 Token
+                            val ok = if (type == "token") {
+                                CurrencyManager.removeToken(target, amount)
+                            } else {
+                                CurrencyManager.removeBalance(target, type, amount)
+                            }
+                            if (!ok) {
+                                sender.sendComponent("<#E08A98>${target.name} 的 ${if (type == "token") "Token" else CurrencyManager.displayName(type)} 不足")
+                                return@execute
+                            }
+                            sender.sendComponent("<#8FD4A6>已扣除 <#EFDF8F>${target.name} <#F2F5FA>$amount ${if (type == "token") "Token" else CurrencyManager.displayName(type)}")
+                            target.sendComponent("<#E08A98>管理员扣除了你 <#F2F5FA>$amount ${if (type == "token") "Token" else CurrencyManager.displayName(type)}")
+                        }
+                        suggestion<CommandSender> { _, _ ->
+                            listOf("100", "1000", "10000", "50000", "100000")
+                        }
+                    }
+                    suggestion<CommandSender> { _, _ ->
+                        listOf(CurrencyManager.LTOKEN, CurrencyManager.PTOKEN, "token")
+                    }
+                }
+            }
+        }
+        literal("info") {
+            player("target") {
+                execute<CommandSender> { sender, context, _ ->
+                    val target = context.player("target").castSafely<Player>()
+                    if (target == null) {
+                        sender.sendComponent("<#E08A98>目标玩家不在线")
+                        return@execute
+                    }
+                    sender.sendComponent(
+                        "<#84D1CB>${target.name} <#A9B4C3>| <#8FD4A6>免费Token: <#F2F5FA>${CurrencyManager.getBalance(target, CurrencyManager.LTOKEN)}" +
+                            " <#A9B4C3>| <#FFD166>付费Token: <#F2F5FA>${CurrencyManager.getBalance(target, CurrencyManager.PTOKEN)}" +
+                            " <#A9B4C3>| <#DFBD7C>磁带: <#F2F5FA>${CurrencyManager.getBalance(target, "tape")}"
+                    )
+                }
+                suggestion<CommandSender> { _, _ ->
+                    Bukkit.getOnlinePlayers().map { it.name }
+                }
+            }
+        }
+    }
+
+    /** /cttadmin subscription give|take|info <player> [id] [30d|90d|...] */
+    @CommandBody
+    val subscription = subCommand {
+        literal("give") {
+            player("target") {
+                dynamic("id") {
+                    dynamic("duration") {
+                        execute<CommandSender> { sender, context, _ ->
+                            val target = context.player("target").castSafely<Player>()
+                            if (target == null) {
+                                sender.sendComponent("<#E08A98>目标玩家不在线")
+                                return@execute
+                            }
+                            val def = SubscriptionManager.get(context["id"])
+                            if (def == null) {
+                                sender.sendComponent("<#E08A98>未知订阅 <#EFDF8F>${context["id"]} <#A9B4C3>(可用: ${SubscriptionManager.ids().joinToString(", ")})")
+                                return@execute
+                            }
+                            val durationMs = ShopManager.parseDuration(context["duration"])
+                            if (durationMs <= 0L) {
+                                sender.sendComponent("<#E08A98>时长格式不正确 <#EFDF8F>${context["duration"]} <#A9B4C3>(形如 30d / 12h)")
+                                return@execute
+                            }
+                            SubscriptionManager.grant(target, def.id, durationMs)
+                            sender.sendComponent(
+                                "<#8FD4A6>已为 <#EFDF8F>${target.name} <#8FD4A6>开通/续费 <${def.color}>${def.displayName} " +
+                                    "<#A9B4C3>(+${SubscriptionManager.formatDuration(durationMs)})"
+                            )
+                        }
+                        suggestion<CommandSender> { _, context ->
+                            SubscriptionManager.get(context["id"])?.pricing?.map { it.key } ?: listOf("30d", "90d", "360d")
+                        }
+                    }
+                }
+                suggestion<CommandSender> { _, _ ->
+                    SubscriptionManager.ids()
+                }
+            }
+        }
+        literal("take") {
+            player("target") {
+                dynamic("id") {
+                    execute<CommandSender> { sender, context, _ ->
+                        val target = context.player("target").castSafely<Player>()
+                        if (target == null) {
+                            sender.sendComponent("<#E08A98>目标玩家不在线")
+                            return@execute
+                        }
+                        if (!SubscriptionManager.removeSubscription(target, context["id"])) {
+                            sender.sendComponent("<#E08A98>${target.name} 没有订阅 <#EFDF8F>${context["id"]}")
+                            return@execute
+                        }
+                        sender.sendComponent("<#8FD4A6>已移除 <#EFDF8F>${target.name} <#8FD4A6>的订阅 <#EFDF8F>${context["id"]}")
+                    }
+                    suggestion<CommandSender> { _, _ ->
+                        SubscriptionManager.ids()
+                    }
+                }
+            }
+        }
+        literal("info") {
+            player("target") {
+                execute<CommandSender> { sender, context, _ ->
+                    val target = context.player("target").castSafely<Player>()
+                    if (target == null) {
+                        sender.sendComponent("<#E08A98>目标玩家不在线")
+                        return@execute
+                    }
+                    val owned = SubscriptionManager.owned(target.uniqueId.toString())
+                    if (owned.isEmpty()) {
+                        sender.sendComponent("<#A9B4C3>${target.name} 当前没有任何订阅")
+                        return@execute
+                    }
+                    val now = System.currentTimeMillis()
+                    sender.sendComponent("<#84D1CB>${target.name} <#A9B4C3>的订阅 (${owned.size})")
+                    for ((def, data) in owned) {
+                        val state = if (data.isActive(now)) "<#8FD4A6>生效中" else "<#E08A98>已过期"
+                        sender.sendComponent(
+                            "  <${def.color}>${def.displayName} <#A9B4C3>| $state" +
+                                " <#A9B4C3>| 到期: <#EFDF8F>${SubscriptionManager.formatTime(data.expireTime)}" +
+                                " <#A9B4C3>| 6h池: <#F2F5FA>${SubscriptionManager.sixHourRemaining(def, data, now)}<#6E7A8C>/${def.sixHourBonus}" +
+                                " <#A9B4C3>| 周池: <#F2F5FA>${SubscriptionManager.weekRemaining(def, data, now)}<#6E7A8C>/${def.weekBonus}"
+                        )
+                    }
+                }
+                suggestion<CommandSender> { _, _ ->
+                    Bukkit.getOnlinePlayers().map { it.name }
+                }
+            }
+        }
+    }
+
+    /** 统一货币别名:l/ltoken/free -> ltoken，p/ptoken/paid -> ptoken，token -> 通用(先免费后付费) */
+    private fun normalizeTokenType(raw: String): String? = when (raw.trim().lowercase()) {
+        "l", "ltoken", "free", "lt" -> CurrencyManager.LTOKEN
+        "p", "ptoken", "paid", "pt" -> CurrencyManager.PTOKEN
+        "token", "tokens" -> "token"
+        else -> null
     }
 
     private val rankTypeNameMap = mapOf(

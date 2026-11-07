@@ -44,7 +44,7 @@ data class StationCondition(
 /** 单个消耗项:货币 或 物品 */
 data class StationCost(
     val type: CostType,
-    val currency: String? = null,   // CURRENCY 时: money/point/tape/goldentape
+    val currency: String? = null,   // CURRENCY 时: money/point/tape/ltoken/ptoken
     val item: String? = null,       // ITEM 时: "sertraline:iron_ingot" 或材质名 "IRON_INGOT"
     val amount: Long = 1,
 )

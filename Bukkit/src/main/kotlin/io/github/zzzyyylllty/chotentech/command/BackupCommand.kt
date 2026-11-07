@@ -134,7 +134,24 @@ object BackupCommand {
     // ==================== 还原 ====================
 
     private fun restoreBackup(sender: CommandSender, filename: String, targetName: String?) {
+        // ===== 安全检查 1: 路径穿越 =====
+        // filename 来自命令参数，直接拼接 File(restoreDir, "$filename.json")
+        // 时 "../../xxx" 之类的输入会让 File 解析到 restore 目录之外，
+        // 借此读取/还原服务器上任意 *.json 文件。白名单校验：只允许
+        // 字母、数字、点、下划线、连字符；".." 序列单独显式拒绝。
+        if (filename.isEmpty() || filename.contains("..") ||
+            !filename.matches(Regex("[A-Za-z0-9._\\-]+"))
+        ) {
+            sender.sendMessage("<#E08A98>非法文件名: 只允许字母、数字、点、下划线、连字符".toComponent())
+            return
+        }
+
         val file = File(restoreDir, "$filename.json")
+        // 二次保险：规范化路径必须仍位于 restoreDir 之内
+        if (!file.canonicalPath.startsWith(restoreDir.canonicalPath + File.separator)) {
+            sender.sendMessage("<#E08A98>非法文件名: 路径越界".toComponent())
+            return
+        }
         if (!file.exists()) {
             sender.sendMessage("<#E08A98>未找到还原文件: $filename.json".toComponent())
             sender.sendMessage("<#E08A98>请先将解压后的 JSON 文件放入 restore 目录".toComponent())
@@ -142,6 +159,16 @@ object BackupCommand {
         }
 
         try {
+            // 大小上限：readText() 会把整个文件读进内存，restore 目录里
+            // 一个误放/被替换的超大文件会直接打爆服务器堆。
+            // 备份 JSON 的实际上限远低于 64 MiB，这里纯属滥用兜底。
+            val maxRestoreBytes = 64L * 1024 * 1024
+            if (file.length() > maxRestoreBytes) {
+                sender.sendMessage(
+                    "<#E08A98>还原文件过大 (${file.length() / 1024 / 1024} MB)，超过 64 MB 上限".toComponent()
+                )
+                return
+            }
             val json = file.readText(Charsets.UTF_8)
             val root = jsonUtils.fromJson(json, com.google.gson.JsonObject::class.java)
 
@@ -162,6 +189,14 @@ object BackupCommand {
             val entries = playersObj.entrySet().toList()
             if (entries.isEmpty()) {
                 sender.sendMessage("<#E08A98>备份文件中没有玩家数据".toComponent())
+                return
+            }
+            // 玩家条目上限：备份文件内容不可信（管理员可能从外部
+            // 拿到任意构造的 JSON），一个巨大 players 对象会让
+            // toList() + 逐条 fromJson + 数据库写入在主线程上跑
+            // 极长时间（卡服）。正常服务器的玩家量远达不到这个数。
+            if (entries.size > 100_000) {
+                sender.sendMessage("<#E08A98>备份玩家条目过多 (${entries.size})，拒绝还原".toComponent())
                 return
             }
 
@@ -207,7 +242,8 @@ object BackupCommand {
                 // 写入数据库: 共享数据
                 val shared = ProfileManager.getSharedData(uuid)
                 shared.tape = playerData.tape
-                shared.goldentape = playerData.goldentape
+                shared.ltoken = playerData.ltoken
+                shared.ptoken = playerData.ptoken
                 shared.achievements = playerData.achievements
                 shared.cosmetics = playerData.cosmetics
                 ProfileManager.saveSharedData(uuid)

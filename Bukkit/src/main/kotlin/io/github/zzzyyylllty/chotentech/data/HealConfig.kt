@@ -35,57 +35,31 @@ data class HealSound(
 data class HealConfig(
     val durability: Double,
     val maxDurability: Double,
-    val preTime: Double,         // seconds before first heal, default 2
-    val perTime: Double,         // seconds between heals, default 1
-    val postTime: Double,        // seconds of endlag, default 2
-    val maxHeal: Double,
-    val healSpeed: Double,
-    val healRate: Double,
-    val iinjurySpeed: Double,
-    val iinjuryRate: Double,
-    val einjurySpeed: Double,
-    val einjuryRate: Double,
-    val maxIInjury: Double,
-    val maxEInjury: Double,
-    val costFood: Double,
-    val costSan: Double,
-    val slow: Double,
-    val cancelHeal: Set<String>,
-    val fractureCost: Double = 0.0,
-    val soundPre: HealSound,
-    val soundStart: HealSound,
-    val soundHeal: HealSound,
-    val soundComplete: HealSound,
-    val soundCancel: HealSound,
-    val soundExhaust: HealSound,
-    val soundEnd: HealSound,
-    val soundAlreadyFull: HealSound,
-    val soundCapReached: HealSound
-)
-
-val DEFAULT_CANCEL_CONDITIONS = setOf("walk", "sprint", "jump", "attack", "fall")
-
-// ==================== Medkit YAML Config ====================
-
-private val medkitConfigs = ConcurrentHashMap<String, MedkitYamlConfig>()
-
-data class MedkitYamlConfig(
-    val maxheal: Double,
-    val healspeed: Double,
-    val healrate: Double,
-    val iinjuryspeed: Double,
-    val einjuryspeed: Double,
-    val iinjuryrate: Double,
-    val einjuryrate: Double,
-    val maxiinjury: Double,
-    val maxeinjury: Double,
     val preTime: Double,
     val perTime: Double,
     val postTime: Double,
+    val maxHeal: Double,
+    val healSpeed: Double,
+    val healRate: Double,
     val costFood: Double,
     val costSan: Double,
-    val fractureCost: Double = 0.0
+    val hpLeast: Double = -1.0,
+    val removeDebuff: Map<String, Double> = emptyMap(),
+    val slow: Double = 50.0,
+    val cancelHeal: Set<String> = DEFAULT_CANCEL_CONDITIONS,
+    val soundPre: HealSound = HealSound.DEFAULT_PRE,
+    val soundStart: HealSound = HealSound.DEFAULT_START,
+    val soundHeal: HealSound = HealSound.DEFAULT_HEAL,
+    val soundComplete: HealSound = HealSound.DEFAULT_COMPLETE,
+    val soundCancel: HealSound = HealSound.DEFAULT_CANCEL,
+    val soundExhaust: HealSound = HealSound.DEFAULT_EXHAUST,
+    val soundEnd: HealSound = HealSound.DEFAULT_END,
+    val soundAlreadyFull: HealSound = HealSound.DEFAULT_ALREADY_FULL,
+    val soundCapReached: HealSound = HealSound.DEFAULT_CAP_REACHED
 )
+
+val DEFAULT_CANCEL_CONDITIONS = setOf("walk", "sprint", "jump", "attack", "fall")
+private val medkitConfigs = ConcurrentHashMap<String, HealConfig>()
 
 fun loadMedkitConfig() {
     medkitConfigs.clear()
@@ -93,61 +67,23 @@ fun loadMedkitConfig() {
     if (!file.exists()) return
     val config = Configuration.loadFromFile(file)
     for (key in config.getKeys(false)) {
-        try {
-            val sec = config.getConfigurationSection(key) ?: continue
-            val time = sec.getConfigurationSection("time")
-            val cost = sec.getConfigurationSection("cost")
-            medkitConfigs[key] = MedkitYamlConfig(
-                maxheal = sec.getDouble("maxheal", 0.0),
-                healspeed = sec.getDouble("healspeed", 0.0),
-                healrate = sec.getDouble("healrate", 1.0),
-                iinjuryspeed = sec.getDouble("iinjuryspeed", 0.0),
-                einjuryspeed = sec.getDouble("einjuryspeed", 0.0),
-                iinjuryrate = sec.getDouble("iinjuryrate", 1.0),
-                einjuryrate = sec.getDouble("einjuryrate", 1.0),
-                maxiinjury = sec.getDouble("maxiinjury", 0.0),
-                maxeinjury = sec.getDouble("maxeinjury", 0.0),
-                preTime = time?.getDouble("pre") ?: 2.0,
-                perTime = time?.getDouble("per") ?: 1.0,
-                postTime = time?.getDouble("post") ?: 2.0,
-                costFood = cost?.getDouble("food") ?: 0.0,
-                costSan = cost?.getDouble("san") ?: 0.0,
-                fractureCost = sec.getDouble("fracturecost", 0.0)
-            )
-        } catch (_: Exception) { /* skip */ }
+        val sec = config.getConfigurationSection(key) ?: continue
+        val removals = sec.getConfigurationSection("removedebuff")
+        medkitConfigs[key] = HealConfig(
+            durability = 0.0, maxDurability = 0.0,
+            preTime = sec.getDouble("time.pre", 2.0).coerceAtLeast(0.0),
+            perTime = sec.getDouble("time.per", 1.0).coerceAtLeast(.05),
+            postTime = sec.getDouble("time.post", 2.0).coerceAtLeast(0.0),
+            maxHeal = sec.getDouble("maxheal", 0.0).coerceAtLeast(0.0),
+            healSpeed = sec.getDouble("healspeed", 0.0).coerceAtLeast(0.0),
+            healRate = sec.getDouble("healrate", 1.0).coerceAtLeast(0.0),
+            costFood = sec.getDouble("cost.food", 0.0).coerceAtLeast(0.0),
+            costSan = sec.getDouble("cost.san", 0.0).coerceAtLeast(0.0),
+            hpLeast = sec.getDouble("hpleast", -1.0),
+            removeDebuff = removals?.getKeys(false)?.associateWith { removals.getDouble(it).coerceAtLeast(0.0) } ?: emptyMap()
+        )
     }
 }
 
-fun getHealConfigFromYaml(sertralineId: String, durability: Double, maxDurability: Double): HealConfig? {
-    val yaml = medkitConfigs[sertralineId] ?: return null
-    return HealConfig(
-        durability = durability,
-        maxDurability = maxDurability,
-        preTime = maxOf(yaml.preTime, 0.0),
-        perTime = maxOf(yaml.perTime, 1.0),
-        postTime = maxOf(yaml.postTime, 0.0),
-        maxHeal = yaml.maxheal,
-        healSpeed = yaml.healspeed,
-        healRate = yaml.healrate,
-        iinjurySpeed = yaml.iinjuryspeed,
-        iinjuryRate = yaml.iinjuryrate,
-        einjurySpeed = yaml.einjuryspeed,
-        einjuryRate = yaml.einjuryrate,
-        maxIInjury = yaml.maxiinjury,
-        maxEInjury = yaml.maxeinjury,
-        costFood = yaml.costFood,
-        costSan = yaml.costSan,
-        fractureCost = yaml.fractureCost,
-        slow = 50.0,
-        cancelHeal = DEFAULT_CANCEL_CONDITIONS,
-        soundPre = HealSound.DEFAULT_PRE,
-        soundStart = HealSound.DEFAULT_START,
-        soundHeal = HealSound.DEFAULT_HEAL,
-        soundComplete = HealSound.DEFAULT_COMPLETE,
-        soundCancel = HealSound.DEFAULT_CANCEL,
-        soundExhaust = HealSound.DEFAULT_EXHAUST,
-        soundEnd = HealSound.DEFAULT_END,
-        soundAlreadyFull = HealSound.DEFAULT_ALREADY_FULL,
-        soundCapReached = HealSound.DEFAULT_CAP_REACHED
-    )
-}
+fun getHealConfigFromYaml(sertralineId: String, durability: Double, maxDurability: Double): HealConfig? =
+    medkitConfigs[sertralineId]?.copy(durability = durability, maxDurability = maxDurability)
