@@ -25,8 +25,6 @@ import kotlin.collections.get
 
 private val waterCooldowns = ConcurrentHashMap<String, Long>()
 
-
-
 @SubscribeEvent(priority = EventPriority.HIGHEST)
 fun onPlayerInteractWithDisabledBlocks(event: PlayerInteractEvent) {
 
