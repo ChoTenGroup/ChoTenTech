@@ -1,0 +1,25 @@
+# 手术配置：唯一能从 DESTROYED 状态恢复部位韧性的手段。
+# 物品右键后弹出部位选择，一次只能处理一个部位。
+knife_surgical:
+
+  # 每次有效治疗的固定耐久消耗
+  durabilitycost: 1
+  cost:
+    food: 10
+    san: 0
+    water: 10
+  time:
+    pre: 3
+    per: 10
+    post: 1.5
+
+  # 手术在 per 状态后不可取消、不可移动、不可跳跃
+  cancellable: false
+  moveable: false
+  jumpable: false
+
+  # 每轮恢复损毁部位的韧性。可以写 10，也可以写 "10%"
+  toughness: 10
+
+  # 移除对应部位 debuff 所需的独立耐久（不占用 durabilitycost）
+  removedebuff: {}

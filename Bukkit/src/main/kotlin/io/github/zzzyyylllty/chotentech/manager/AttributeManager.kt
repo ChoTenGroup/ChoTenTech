@@ -159,10 +159,6 @@ object AttributeManager {
             AttributeType("max_darkness", "阴暗上限", null, 100.0, minValue = 0.0, maxValue = 1000.0),
             AttributeType("max_custom_hunger", "饱食度上限", null, 100.0, minValue = 0.0, maxValue = 1000.0),
             AttributeType("max_custom_saturation", "饱和度上限", null, 100.0, minValue = 0.0, maxValue = 1000.0),
-            AttributeType("external_injury", "外伤", null, 100.0, minValue = 0.0, maxValue = 100.0),
-            AttributeType("internal_injury", "内伤", null, 100.0, minValue = 0.0, maxValue = 100.0),
-            AttributeType("external_injury_regen", "外伤恢复", null, 0.0, isPercentage = false),
-            AttributeType("internal_injury_regen", "内伤恢复", null, 0.0, isPercentage = false),
             AttributeType("defense", "综合防御", null, 0.0),
             AttributeType("crit_chance", "暴击率", null, 0.0, isPercentage = true),
             AttributeType("crit_damage", "暴击伤害", null, 0.0, isPercentage = true),
@@ -224,6 +220,11 @@ object AttributeManager {
             AttributeType("decay_damage", "衰退伤害", null, 0.0),
             // 体力上限（用于营养系统和负重系统）
             AttributeType("stamina_max", "体力上限", null, 100.0, minValue = 0.0, maxValue = 10000.0),
+            // ===== 手部体力（枪械 / 出枪 / 瞄准 / 开火消耗，见 data/HandStamina.kt） =====
+            // 上限：PlayerData.maxHandStamina 直接读它，所以吃药 / 装备只要给这个属性加值即可
+            AttributeType("hand_stamina_max", "手部体力上限", null, 100.0, minValue = 0.0, maxValue = 10000.0),
+            // 回复倍率：1.0 = 100%（默认每秒回上限的 5%）；0 = 完全不回复
+            AttributeType("hand_stamina_regen_multiplier", "手部体力回复倍率", null, 1.0, minValue = 0.0),
             // 营养相关属性
             AttributeType("stamina_regen_multiplier", "体力回复倍率", null, 1.0, minValue = 0.0),
             AttributeType("health_regen_multiplier", "生命回复倍率", null, 1.0, minValue = 0.0),
@@ -235,7 +236,10 @@ object AttributeManager {
             // 禁止移动:值 >= 1.0 时拦截 PlayerMoveEvent
             AttributeType("deny_move", "禁止移动", null, 0.0, minValue = 0.0),
         )
-        for (type in builtins) {
+        val bodyAttributes = io.github.zzzyyylllty.chotentech.data.BodyParts.defaults.map { (id, max) ->
+            AttributeType("toughness_${id.lowercase()}_max", "${io.github.zzzyyylllty.chotentech.data.BodyParts.names[id]}最大韧性", null, max, minValue = 0.001)
+        } + AttributeType("water_max", "最大水分", null, 100.0, minValue = 0.001)
+        for (type in builtins + bodyAttributes) {
             registerAttribute(type, RegistrationSource.BUILTIN)
             builtinAttributeIds.add(type.id)
         }
@@ -975,7 +979,7 @@ object AttributeManager {
         )
 
         for ((actualSlot, item) in snapshot) {
-            val chotenatb = readChotenatbTag(item) ?: continue
+            val chotenatb = readChotenatbTag(item ?: continue) ?: continue
             val source = sourceBySlot[actualSlot] ?: ModifierSource.OTHER
             for (entry in chotenatb) {
                 if (!entry.matchesSlot(actualSlot)) continue
@@ -1000,8 +1004,15 @@ object AttributeManager {
         return modifiers
     }
 
-    fun getAttributeValue(player: Player, attributeId: String): Double {
-        val cache = attributeCache[player.uniqueId]
+    /**
+     * 属性是否已注册。
+     *
+     * [getAttributeValue] 对「没注册的属性」和「属性值为 0」都返回 0.0，调用方没法区分；
+     * 需要「没配就按默认值」的地方（例如手部体力回复倍率）用这个先判一下。
+     */
+    fun attributeExists(attributeId: String): Boolean = attributeRegistry.containsKey(attributeId)
+
+    fun getAttributeValue(player: Player, attributeId: String): Double {        val cache = attributeCache[player.uniqueId]
         if (cache != null) {
             val type = attributeRegistry[attributeId]
             return cache[attributeId] ?: type?.clamp(type.defaultValue) ?: 0.0
@@ -1076,7 +1087,7 @@ object AttributeManager {
         }
         // 遍历装备，解析 chotenatb
         for ((actualSlot, item) in slotItems) {
-            val chotenatb = readChotenatbTag(item) ?: continue
+            val chotenatb = readChotenatbTag(item ?: continue) ?: continue
             for (entry in chotenatb) {
                 if (!entry.matchesSlot(actualSlot)) continue
                 if (entry.fixAttackSpeed && actualSlot == "MAIN_HAND") {

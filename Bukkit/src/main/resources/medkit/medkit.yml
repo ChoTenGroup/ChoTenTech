@@ -2,12 +2,7 @@ ice_medkit:
   maxheal: 30
   healspeed: 10
   healrate: 1
-  iinjuryspeed: 0
-  einjuryspeed: 0
-  iinjuryrate: 0
-  einjuryrate: 0
-  maxiinjury: 0
-  maxeinjury: 0
+  hpleast: 85
   time:
     pre: 1
     per: 1
@@ -20,13 +15,7 @@ tianlong_medkit:
   maxheal: 56
   healspeed: 8
   healrate: 1
-  iinjuryspeed: 0
-  einjuryspeed: 5
-  iinjuryrate: 0
-  einjuryrate: 3
-  maxiinjury: 0
-  maxeinjury: 20
-  fracturecost: 0
+  hpleast: 85
   time:
     pre: 1
     per: 1
@@ -39,13 +28,7 @@ pumpkin_medkit:
   maxheal: 72
   healspeed: 8
   healrate: 1
-  iinjuryspeed: 0
-  einjuryspeed: 8
-  iinjuryrate: 0
-  einjuryrate: 2
-  maxiinjury: 0
-  maxeinjury: 40
-  fracturecost: 0
+  hpleast: 85
   time:
     pre: 2
     per: 1
@@ -58,13 +41,7 @@ fanxing_medkit:
   maxheal: 100
   healspeed: 10
   healrate: 1
-  iinjuryspeed: 10
-  einjuryspeed: 10
-  iinjuryrate: 4
-  einjuryrate: 1
-  maxiinjury: 40
-  maxeinjury: 40
-  fracturecost: 0
+  hpleast: 85
   time:
     pre: 3
     per: 1
@@ -77,13 +54,9 @@ onefirst_medkit:
   maxheal: 72
   healspeed: 12
   healrate: 1
-  iinjuryspeed: 5
-  einjuryspeed: 5
-  iinjuryrate: 1
-  einjuryrate: 1
-  maxiinjury: 40
-  maxeinjury: 40
-  fracturecost: 50
+  hpleast: 85
+  removedebuff:
+    fracture: 50
   time:
     pre: 2
     per: 1
@@ -96,13 +69,9 @@ xingchen_medkit:
   maxheal: 105
   healspeed: 15
   healrate: 1
-  iinjuryspeed: 5
-  einjuryspeed: 5
-  iinjuryrate: 2
-  einjuryrate: 2
-  maxiinjury: 40
-  maxeinjury: 40
-  fracturecost: 35
+  hpleast: 85
+  removedebuff:
+    fracture: 35
   time:
     pre: 0.5
     per: 0.5
@@ -115,13 +84,9 @@ mosoon_medkit:
   maxheal: 256
   healspeed: 32
   healrate: 1
-  iinjuryspeed: 8
-  einjuryspeed: 8
-  iinjuryrate: 1
-  einjuryrate: 1
-  maxiinjury: 128
-  maxeinjury: 128
-  fracturecost: 30
+  hpleast: 85
+  removedebuff:
+    fracture: 30
   time:
     pre: 5
     per: 1.5
@@ -134,13 +99,11 @@ akacandy_medkit:
   maxheal: 200
   healspeed: 25
   healrate: 1
-  iinjuryspeed: 10
-  einjuryspeed: 10
-  iinjuryrate: 2
-  einjuryrate: 2
-  maxiinjury: 100
-  maxeinjury: 100
-  fracturecost: 30
+  hpleast: 85
+  removedebuff:
+    minor_bleed: 50
+    major_bleed: 180
+    fracture: 50
   time:
     pre: 3
     per: 1

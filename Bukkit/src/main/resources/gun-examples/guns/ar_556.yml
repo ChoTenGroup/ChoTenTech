@@ -1,0 +1,223 @@
+# AR-556 枪族示例：全自动步枪 + 两种弹匣 + 三种 5.56 弹药 + 五种配件
+# 覆盖点：auto 全自动、addonSlots 五槽、消音器 suppressor、瞄准 zoom、热成像 thermal、配件属性加减法
+
+ar_556_rifle:
+  itemdef:
+    name: "AR-556 突击步枪"
+    desc: |-
+      5.56 口径全自动步枪。
+      左键开火，右键瞄准，Q 换弹，SHIFT+Q 快速换弹，F 打开菜单，SHIFT+F 切换开火模式。
+    material: IRON_HOE
+    unbreakable: true
+    stack: 1
+  model:
+    general: "kangelweapon:ar_556"
+    aiming: "kangelweapon:ar_556_aim"
+    shoot: "kangelweapon:ar_556_fire"
+    reload: "kangelweapon:ar_556_reload"
+    bolt: "kangelweapon:ar_556_reload"
+    jammed: "kangelweapon:ar_556_jammed"
+    blocked: "kangelweapon:ar_556_lower"
+  gun:
+    caliber: 5.56
+    auto: true
+    category: rifle
+    gunType: AR556
+    addonSlots: [MUZZLE, SIGHT, GRIP, STOCK, MAGWELL]
+    usage:
+      reload: 2.6
+      reloadFast: 1.8
+      removeMag: 0.9
+      bolt: 1.0
+      inspectChamber: 1.5
+      inspectMag: 3.5
+      insertAmmo: 0.9
+      removeAmmo: 0.6
+      fix: 4
+      fireMode: 0.2
+      draw: 0.8
+      zoom: 2.5
+    attributes:
+      machineEfficiency: 82
+      accuracy: 82
+      bulletSpeed: 60
+      fireRate: 600
+      barrelLength: 2.6
+      range: 64
+      recoilV: 9
+      recoilH: 7
+      durability: 2500
+    recoil:
+      1: 1
+      4: 2.2
+      8: 3.0
+      15: 2.4
+      30: 1.6
+    shake:
+      0: 0
+      3: 0.8
+      6: -1.4
+      12: 1.8
+      20: -0.6
+      30: 0
+
+mag_ar_556_30:
+  itemdef:
+    name: "AR 5.56 30 发标准弹匣"
+    desc: "标准 30 发弹匣，支持快速换弹。"
+    material: PAPER
+  model:
+    general: "kangelweapon:mag_ar_30"
+  mag:
+    caliber: 5.56
+    capacity: 30
+    machineEfficiency: 0
+    loadingSpeed: 0
+    ammoInspectionAccuracy: 0
+    ammoInspectionTime: 2
+    allowFastReload: 1
+
+mag_ar_556_60:
+  itemdef:
+    name: "AR 5.56 60 发扩容弹匣"
+    desc: "扩容弹匣：更重、换弹更慢，检视时可读出精确余弹。"
+    material: PAPER
+  model:
+    general: "kangelweapon:mag_ar_60"
+  mag:
+    caliber: 5.56
+    capacity: 60
+    machineEfficiency: -6
+    loadingSpeed: -2
+    ammoInspectionAccuracy: 1
+    ammoInspectionTime: 3
+    allowFastReload: 0
+
+ammo_556_fmj:
+  itemdef:
+    name: "5.56 FMJ"
+    desc: "标准全被甲弹，均衡。"
+    material: PAPER
+    stack: 64
+  model:
+    general: "kangelweapon:ammo_556_fmj"
+  ammo:
+    caliber: 5.56
+    penetration: 45
+    damage: 26
+    armorDamage: 18
+    accuracy: 0
+    recoil: 40
+    stuckChance: 3
+    critChance: 8
+
+ammo_556_ap:
+  itemdef:
+    name: "5.56 AP 穿甲弹"
+    desc: "高穿甲、高护甲损耗，单发伤害略低。"
+    material: PAPER
+    stack: 64
+  model:
+    general: "kangelweapon:ammo_556_ap"
+  ammo:
+    caliber: 5.56
+    penetration: 82
+    damage: 22
+    armorDamage: 42
+    accuracy: 1
+    recoil: 55
+    stuckChance: 5
+    critChance: 6
+
+ammo_556_hp:
+  itemdef:
+    name: "5.56 HP 空尖弹"
+    desc: "低穿甲、高肉体伤害，对无甲目标更有效。"
+    material: PAPER
+    stack: 64
+  model:
+    general: "kangelweapon:ammo_556_hp"
+  ammo:
+    caliber: 5.56
+    penetration: 18
+    damage: 38
+    armorDamage: 8
+    accuracy: -2
+    recoil: 45
+    stuckChance: 8
+    critChance: 14
+
+addon_ar_suppressor:
+  itemdef:
+    name: "5.56 消音器"
+    desc: "音量降至 35%，去掉枪口焰；略微增加后坐。"
+    material: PAPER
+  model:
+    general: "kangelweapon:addon_suppressor"
+  addon:
+    slot: MUZZLE
+    gunType: AR556
+    caliber: 5.56
+    suppressor: 0.35
+    attributes:
+      recoilV: 1
+      barrelLength: 0.3
+
+addon_ar_scope4x:
+  itemdef:
+    name: "4 倍光学瞄具"
+    desc: "ADS 散布再除以 4；精度 +4。"
+    material: PAPER
+  model:
+    general: "kangelweapon:addon_scope4x"
+  addon:
+    slot: SIGHT
+    gunType: AR556
+    zoom: 4.0
+    attributes:
+      accuracy: 4
+      machineEfficiency: -3
+
+addon_ar_thermal:
+  itemdef:
+    name: "热成像瞄具"
+    desc: "瞄准时让准星落点附近的生物短暂发光。"
+    material: PAPER
+  model:
+    general: "kangelweapon:addon_thermal"
+  addon:
+    slot: SIGHT
+    gunType: AR556
+    zoom: 2.0
+    thermal: true
+    attributes:
+      machineEfficiency: -5
+
+addon_ar_grip:
+  itemdef:
+    name: "垂直握把"
+    desc: "垂直/水平后坐 -2，移动人机工效 +3。"
+    material: PAPER
+  model:
+    general: "kangelweapon:addon_grip"
+  addon:
+    slot: GRIP
+    gunType: AR556
+    attributes:
+      recoilV: -2
+      recoilH: -2
+      machineEfficiency: 3
+
+addon_ar_stock:
+  itemdef:
+    name: "轻型枪托"
+    desc: "人机工效 +6、精度 -1。"
+    material: PAPER
+  model:
+    general: "kangelweapon:addon_stock"
+  addon:
+    slot: STOCK
+    gunType: AR556
+    attributes:
+      machineEfficiency: 6
+      accuracy: -1

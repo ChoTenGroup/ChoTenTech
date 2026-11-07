@@ -7,6 +7,7 @@ import ink.ptms.chemdah.core.quest.QuestContainer
 import ink.ptms.chemdah.core.quest.Template
 import ink.ptms.chemdah.core.quest.addon.Addon
 import ink.ptms.chemdah.taboolib.module.configuration.ConfigSection
+import io.github.zzzyyylllty.chotentech.util.toBooleanTolerance
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import taboolib.common.LifeCycle
@@ -37,6 +38,8 @@ class ChoTenUI(root: ConfigSection, template: Template) : Addon(root, template) 
     val provider = root.getString("provider")
 
     val npcID = root["npc"]?.asList()?.flatMap { it.lines() }
+
+    val restartOnDeath = root["restart-on-death"]?.toBooleanTolerance() ?: false
 
     companion object {
 

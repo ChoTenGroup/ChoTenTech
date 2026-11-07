@@ -171,8 +171,6 @@ frontroad_grenade:
         formula: linear
       damage:
         physical: 8
-        externalInjury: 1.5
-        internalInjury: 1.5
       sound: { sound: minecraft:entity.item.break, volume: 3.0, pitch: 1.8 }
       particle: { particle: cloud, count: 30, speed: 0.5 }
 
@@ -211,8 +209,6 @@ endroad_grenade:
         formula: exponential
       damage:
         physical: 15
-        externalInjury: 3
-        internalInjury: 3
       sound: { sound: minecraft:entity.item.break, volume: 5.0, pitch: 2.0 }
       particle: { particle: cloud, count: 60, speed: 0.8 }
 
@@ -251,7 +247,6 @@ endroad_grenade:
         formula: linear
       damage:
         physical: 8
-        internalInjury: 2
       sound: { sound: minecraft:entity.item.break, volume: 3.0, pitch: 1.7 }
       particle: { particle: cloud, count: 35, speed: 0.5 }
 
@@ -290,8 +285,6 @@ shakalaka_grenade:
         formula: linear
       damage:
         physical: 10
-        externalInjury: 2
-        internalInjury: 2
       sound: { sound: minecraft:entity.item.break, volume: 4.0, pitch: 1.9 }
       particle: { particle: cloud, count: 40, speed: 0.6 }
 
@@ -330,8 +323,6 @@ b_shakalaka_grenade:
         formula: exponential
       damage:
         physical: 20
-        externalInjury: 4
-        internalInjury: 4
       sound: { sound: minecraft:entity.item.break, volume: 6.0, pitch: 2.0 }
       particle: { particle: cloud, count: 80, speed: 1.0 }
 

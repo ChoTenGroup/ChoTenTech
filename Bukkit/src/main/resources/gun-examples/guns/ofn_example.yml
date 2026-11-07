@@ -1,0 +1,112 @@
+# itemdef / model 段落示例物品（Gun/Weapon system）
+# itemdef: 基础外观定义（name / desc / material / unbreakable / glow / stack）
+# model: 状态模型；general 为主模型，其余状态由运行时按需切换：
+#        aiming（瞄准）/ shoot（开火）/ reload（换弹读条）/ bolt（拉栓）/ jammed（卡壳）/ blocked（前方被挡收枪）
+# 材质说明：枪械基材用普通物品（铁锄），**不要用 CROSSBOW** —— 基材由 itemdef.material 决定，
+#          处理器不会再二次 setType（改了会丢 sertraline_id）。
+ofn_pistol:
+  itemdef:
+    name: "OFN-12手枪"
+    desc: |-
+      OFN-12是一种专用的城市作战武器发射器，
+      该武器的设计考虑到了短距离且快捷的阻击能力。
+    material: IRON_HOE
+    unbreakable: true
+    stack: 1
+  model:
+    general: "kangelweapon:ofn_pistol"
+    aiming: "kangelweapon:ofn_pistol_aim"
+    shoot: "kangelweapon:ofn_pistol_fire"
+    reload: "kangelweapon:ofn_pistol_reload"
+    bolt: "kangelweapon:ofn_pistol_reload"
+    jammed: "kangelweapon:ofn_pistol_jammed"
+    blocked: "kangelweapon:ofn_pistol_lower"
+  gun:
+    caliber: 5x14
+    auto: false
+    category: pistol
+    gunType: OFNPISTOL
+    usage:
+      reload: 2
+      reloadFast: 1.5
+      removeMag: 0.8
+      bolt: 0.9
+      inspectChamber: 1.48
+      inspectMag: 3.73
+      insertAmmo: 1.2
+      removeAmmo: 0.8
+      fix: 3
+      fireMode: 0.2
+      draw: 0.5
+      # 瞄准缩放倍数（FOV / zoom）。1.0 = 不放大；2.5 ≈ 视野压缩到 40%
+      zoom: 2.5
+    attributes:
+      machineEfficiency: 100
+      accuracy: 75
+      bulletSpeed: 32
+      fireRate: 65
+      barrelLength: 1.2
+      range: 32
+      recoilV: 10
+      recoilH: 10
+      durability: 1000
+    recoil:
+      1: 1
+      5: 5
+      10: 2
+    shake:
+      0: 0
+      5: -2.2
+      10: 2.2
+      15: 0
+
+mag_ofn_5x14:
+  itemdef:
+    name: "OFN平台 5x14 8发 手枪弹匣"
+    desc: |-
+      OFN平台 5x14 8发 手枪弹匣。
+    material: PAPER
+  model:
+    general: "kangelweapon:mag_ofn_5x14"
+  mag:
+    caliber: 5x14
+    capacity: 8
+    machineEfficiency: -1
+    loadingSpeed: -1
+    ammoInspectionAccuracy: 0
+    ammoInspectionTime: 2
+    allowFastReload: 1
+
+ammo_5x14_akt:
+  itemdef:
+    name: "5x14 AKT"
+    desc: |-
+      5x14 AKT 子弹。
+    material: PAPER
+    stack: 64
+  model:
+    general: "kangelweapon:ammo_5x14_akt"
+  ammo:
+    caliber: 5x14
+    penetration: 65
+    damage: 55
+    armorDamage: 35
+    accuracy: -3
+    recoil: 50
+    stuckChance: 10
+    critChance: 10
+
+gunaddon_ofn_dominion:
+  itemdef:
+    name: "OFN Dominion 2倍瞄具"
+    desc: "OFN 平台 Dominion 光学瞄具。"
+    material: PAPER
+  model:
+    general: "kangelweapon:gunaddon_ofn_dominion"
+  addon:
+    slot: SIGHT
+    gunType: OFNPISTOL
+    zoom: 2.0
+    attributes:
+      accuracy: 5
+      recoilV: -1

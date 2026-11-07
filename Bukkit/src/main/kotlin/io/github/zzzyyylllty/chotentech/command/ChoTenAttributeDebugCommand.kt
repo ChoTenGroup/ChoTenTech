@@ -113,8 +113,8 @@ object ChoTenAttributeDebugCommand {
         // 身体状态
         add("body",
             "max_sanity", "sanity_regeneration", "max_darkness",
-            "external_injury", "internal_injury", "external_injury_regen",
-            "internal_injury_regen"
+            "toughness_head_max", "toughness_body_max", "toughness_stomach_max",
+            "toughness_larm_max", "toughness_rarm_max", "toughness_lleg_max", "toughness_rleg_max", "water_max"
         )
 
         // 饥饿系统

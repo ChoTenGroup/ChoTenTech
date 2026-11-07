@@ -90,6 +90,10 @@ class ProfileInfoGUI(private val target: Player) {
         lore += loreInfo("阴暗", "<#F2F5FA>${"%.1f".format(data.darkness)} <#A9B4C3>/ <#F2F5FA>${"%.1f".format(data.effectiveMaxDarkness)}")
         lore += loreInfo("体力", "<#F2F5FA>${"%.1f".format(data.stamina)} <#A9B4C3>/ <#F2F5FA>${"%.1f".format(data.maxStamina)}")
         lore += loreInfo("手部体力", "<#F2F5FA>${"%.1f".format(data.handStamina)} <#A9B4C3>/ <#F2F5FA>${"%.1f".format(data.maxHandStamina)}")
+        for (part in data.bodyHealth.parts.values) {
+            lore += loreInfo(io.github.zzzyyylllty.chotentech.data.BodyParts.names[part.id] ?: part.id, "${"%.1f".format(part.toughness)}/${"%.1f".format(part.maxToughness)} ${part.state}")
+        }
+        lore += loreInfo("水分", "${"%.1f".format(data.bodyHealth.water)}/${"%.1f".format(data.bodyHealth.maxWater)}")
         lore += loreInfo("饥饿", "<#F2F5FA>${"%.1f".format(data.customHunger)} <#A9B4C3>/ <#F2F5FA>${"%.1f".format(data.maxCustomHunger)}")
         lore += loreInfo("饱和度", "<#F2F5FA>${"%.1f".format(data.customSaturation)} <#A9B4C3>/ <#F2F5FA>${"%.1f".format(data.maxCustomSaturation)}")
         meta.lore(lore.toComponent())
@@ -101,10 +105,6 @@ class ProfileInfoGUI(private val target: Player) {
         val item = guiItem(XMaterial.SHIELD, "<#E08A98><bold>状态", emptyList())
         val meta = item.itemMeta ?: return item
         val lore = mutableListOf<String>()
-        lore += loreInfo("外伤", "<#F2F5FA>${"%.1f".format(data.externalInjury)} <#A9B4C3>/ <#F2F5FA>${"%.1f".format(data.maxExternalInjury)}")
-        lore += loreInfo("外伤恢复", "<#F2F5FA>${"%.1f".format(data.externalInjuryRegen)}/tick")
-        lore += loreInfo("内伤", "<#F2F5FA>${"%.1f".format(data.internalInjury)} <#A9B4C3>/ <#F2F5FA>${"%.1f".format(data.maxInternalInjury)}")
-        lore += loreInfo("内伤恢复", "<#F2F5FA>${"%.1f".format(data.internalInjuryRegen)}/tick")
         lore += loreSpace()
         lore += loreSection("营养")
         lore += loreDash("<#F2F5FA>谷物: <#8FD4A6>${"%.1f".format(data.grain)}")

@@ -25,12 +25,6 @@ val defMaxCustomHunger by lazy { config.getDouble("default.max-custom-hunger", 1
 val defCustomHunger by lazy { config.getDouble("default.custom-hunger", 100.0) }
 val defMaxCustomSaturation by lazy { config.getDouble("default.max-custom-saturation", 100.0) }
 val defCustomSaturation by lazy { config.getDouble("default.custom-saturation", 100.0) }
-val defMaxExternalInjury by lazy { config.getDouble("default.max-external-injury", 100.0) }
-val defExternalInjury by lazy { config.getDouble("default.external-injury", 100.0) }
-val defMaxInternalInjury by lazy { config.getDouble("default.max-internal-injury", 100.0) }
-val defInternalInjury by lazy { config.getDouble("default.internal-injury", 100.0) }
-val defExternalInjuryRegen by lazy { config.getDouble("default.external-injury-regen", 0.0) }
-val defInternalInjuryRegen by lazy { config.getDouble("default.internal-injury-regen", 0.0) }
 val defSanityRegen by lazy { config.getDouble("default.sanity-regen", 0.0) }
 val defHealthRegen by lazy { config.getDouble("default.health-regen", 0.2) }
 val defNutritionGrain by lazy { config.getDouble("default.nutrition-grain", 50.0) }
@@ -83,6 +77,7 @@ data class PlayerData (
     // 合成站: stationId -> 队列任务
     var stationQueues: MutableMap<String, MutableList<StationQueueItem>> = mutableMapOf(),
     var statusEffects: MutableList<PlayerStatusEffect> = mutableListOf(),
+    var bodyHealth: PlayerBodyHealth = PlayerBodyHealth(),
     // Shared fields — synced from SharedData by ProfileManager
 
     var stamina: Double = defStamina,
@@ -92,8 +87,6 @@ data class PlayerData (
     var customHunger: Double = defCustomHunger,
     var customSaturation: Double = defCustomSaturation,
     var consumption: Double = 0.0,
-    var externalInjury: Double = defExternalInjury,
-    var internalInjury: Double = defInternalInjury,
     // nutrition
     var grain: Double = defNutritionGrain,
     var vitamin: Double = defNutritionVitamin,
@@ -134,7 +127,8 @@ data class PlayerData (
     var point: Long = 0L,
     // Shared fields — synced from SharedData by ProfileManager
     var tape: Long = 0L,
-    var goldentape: Long = 0L,
+    var ltoken: Long = 0L,   // 免费Token
+    var ptoken: Long = 0L,   // 付费Token
 
     var playTime: Long = 0L,        // this profile's accumulated play time (ms)
 
@@ -201,6 +195,8 @@ data class PlayerData (
         if (hideoutData == null) hideoutData = linkedMapOf()
         if (stationQueues == null) stationQueues = linkedMapOf()
         if (statusEffects == null) statusEffects = mutableListOf()
+        if (bodyHealth == null) bodyHealth = PlayerBodyHealth()
+        bodyHealth.normalize()
         if (affection == null) affection = mutableMapOf()
         if (affectionMarks == null) affectionMarks = mutableMapOf()
         if (reputation == null) reputation = mutableMapOf()
@@ -216,6 +212,9 @@ data class PlayerData (
         if (potionEffects == null) potionEffects = mutableListOf()
         return this
     }
+
+    val allStatusEffects: List<PlayerStatusEffect>
+        get() = bodyHealth.parts.values.flatMap { it.effects.values } + statusEffects
 
     val activeLevel: Level?
         get() = levelsList[activeLevelStr]
@@ -239,10 +238,6 @@ data class PlayerData (
     val sanityRegeneration: Double get() = attrMax("sanity_regeneration", defSanityRegen)
     val effectiveSanityRegeneration: Double get() = sanityRegeneration
     val effectiveMaxDarkness: Double get() = attrMax("max_darkness", maxDarkness)
-    val maxExternalInjury: Double get() = attrMax("external_injury", defMaxExternalInjury)
-    val maxInternalInjury: Double get() = attrMax("internal_injury", defMaxInternalInjury)
-    val externalInjuryRegen: Double get() = attrMax("external_injury_regen", defExternalInjuryRegen)
-    val internalInjuryRegen: Double get() = attrMax("internal_injury_regen", defInternalInjuryRegen)
     val healthRegen: Double get() = attrMax("health_regen", defHealthRegen)
     val maxStamina: Double get() = attrMax("stamina_max", defMaxStamina)
     val maxHandStamina: Double get() = attrMax("hand_stamina_max", defMaxHandStamina)

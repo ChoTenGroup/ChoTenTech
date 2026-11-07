@@ -23,7 +23,7 @@ import kotlin.math.abs
  */
 object ChangeTracker {
 
-    private val TRACKED_KEYS = listOf("health", "food", "sanity", "internalinjury", "externalinjury")
+    private val TRACKED_KEYS = listOf("health", "food", "sanity", "toughness", "water")
 
     private class TrackState(
         var record: Double = 0.0,
@@ -40,9 +40,9 @@ object ChangeTracker {
     private fun getValue(player: Player, key: String): Double = when (key) {
         "health" -> player.health
         "food" -> getPercentHunger(player)
+        "toughness" -> player.getData()?.bodyHealth?.toughnessPercentage ?: 0.0
+        "water" -> player.getData()?.bodyHealth?.water ?: 0.0
         "sanity" -> player.getData()?.sanity ?: 0.0
-        "internalinjury" -> player.getData()?.internalInjury ?: 0.0
-        "externalinjury" -> player.getData()?.externalInjury ?: 0.0
         else -> Double.NaN
     }
 

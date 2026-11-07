@@ -72,10 +72,11 @@ object ChatListener {
             return
         }
 
-        // 注册渲染器：玩家查看者显示频道格式组件，控制台查看者显示纯文本控制台格式
+        // 注册渲染器：玩家查看者按视角渲染消息（提及分色），控制台查看者显示纯文本控制台格式
         val consoleComponent = Component.text(prepared.consoleLine)
         event.renderer(ChatRenderer { _, _, _, viewer ->
-            if (viewer is ConsoleCommandSender) consoleComponent else prepared.component
+            if (viewer is ConsoleCommandSender) consoleComponent
+            else prepared.componentFor(viewer as org.bukkit.entity.Player)
         })
 
         // 过滤收件人：控制台始终保留（由渲染器输出控制台格式行）
@@ -85,5 +86,29 @@ object ChatListener {
         viewers.add(Bukkit.getConsoleSender())
 
         devLog("ChatListener: ${player.name} delivered [${channel.key}] recipients=${prepared.recipients.size}")
+    }
+
+    // ---------------------------------------------------------------------
+    // 聊天框 TAB 补全候选维护（Player.Spigot#addAdditionalChatCompletions）
+    // ---------------------------------------------------------------------
+
+    /** 玩家加入：推送当前候选（延迟 1 tick，等客户端就绪） */
+    @SubscribeEvent
+    fun onJoin(event: org.bukkit.event.player.PlayerJoinEvent) {
+        val player = event.player
+        taboolib.common.platform.function.submit(delay = 1) {
+            runCatching { player.addAdditionalChatCompletions(ChatMention.completions()) }
+        }
+        ChatMention.refreshCompletions()
+    }
+
+    /** 玩家退出：候选随在线列表变化刷新（客户端对已离线玩家的补全会自然失效） */
+    @SubscribeEvent
+    fun onQuit(event: org.bukkit.event.player.PlayerQuitEvent) {
+        // 冷却记录对已离线玩家无意义：不清理则每个发言/私聊过的
+        // 玩家都会在静态 map 里留下常驻条目（无界增长）。
+        ChatDispatcher.clearCooldowns(event.player.uniqueId)
+        clearWhisperCooldowns(event.player.uniqueId)
+        ChatMention.refreshCompletions()
     }
 }

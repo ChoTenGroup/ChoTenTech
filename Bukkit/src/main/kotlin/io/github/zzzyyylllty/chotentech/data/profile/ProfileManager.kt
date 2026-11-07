@@ -161,7 +161,8 @@ object ProfileManager {
                 profileId = "1",
                 profileName = "Default",
                 tape = 0L,
-                goldentape = 0L,
+                ltoken = 0L,
+                ptoken = 0L,
                 achievements = linkedMapOf(),
                 cosmetics = mutableMapOf()
             )
@@ -171,7 +172,8 @@ object ProfileManager {
             val sharedData = SharedData(
                 activeProfileId = "1",
                 tape = pData.tape,
-                goldentape = pData.goldentape,
+                ltoken = pData.ltoken,
+                ptoken = pData.ptoken,
                 achievements = pData.achievements,
                 cosmetics = pData.cosmetics,
                 cid = profileData.cid     // 迁移 CID 到共享数据
@@ -390,7 +392,7 @@ object ProfileManager {
             currentData.lastLogoutTime = System.currentTimeMillis()
             captureInventory(player)
             capturePotionEffects(player)
-            // Sync shared fields (tape, goldentape, achievements, cosmetics) before saving
+            // Sync shared fields (tape, ltoken, ptoken, achievements, cosmetics) before saving
             syncToSharedData(uuid, currentData)
             saveSharedData(uuid)
             // Save per-profile attribute modifiers before switching away
@@ -599,7 +601,8 @@ object ProfileManager {
         return data.copy(
             cid = effectiveCid,
             tape = shared.tape,
-            goldentape = shared.goldentape,
+            ltoken = shared.ltoken,
+            ptoken = shared.ptoken,
             achievements = shared.achievements,
             cosmetics = shared.cosmetics,
             // Shared settings
@@ -613,7 +616,8 @@ object ProfileManager {
     fun stripSharedFields(data: PlayerData): PlayerData {
         return data.copy(
             tape = 0L,
-            goldentape = 0L,
+            ltoken = 0L,
+            ptoken = 0L,
             achievements = linkedMapOf(),
             cosmetics = mutableMapOf()
         )
@@ -623,7 +627,8 @@ object ProfileManager {
     fun syncToSharedData(uuid: String, data: PlayerData) {
         val shared = getSharedData(uuid)
         shared.tape = data.tape
-        shared.goldentape = data.goldentape
+        shared.ltoken = data.ltoken
+        shared.ptoken = data.ptoken
         shared.achievements = data.achievements
         shared.cosmetics = data.cosmetics
         shared.settings.values["pvpEnabled"] = data.pvpEnabled.toString()

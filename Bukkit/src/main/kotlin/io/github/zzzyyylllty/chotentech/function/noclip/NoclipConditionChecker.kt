@@ -281,7 +281,8 @@ object NoclipConditionChecker {
             "money" -> { if (data.money >= amount) { data.money -= amount; true } else false }
             "point" -> { if (data.point >= amount) { data.point -= amount; true } else false }
             "tape" -> { if (data.tape >= amount) { data.tape -= amount; true } else false }
-            "goldentape" -> { if (data.goldentape >= amount) { data.goldentape -= amount; true } else false }
+            "ltoken" -> { if (data.ltoken >= amount) { data.ltoken -= amount; true } else false }
+            "ptoken" -> { if (data.ptoken >= amount) { data.ptoken -= amount; true } else false }
             else -> false
         }
     }

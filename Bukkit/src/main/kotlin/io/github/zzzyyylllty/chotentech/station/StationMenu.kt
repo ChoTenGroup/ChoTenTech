@@ -414,7 +414,8 @@ object StationMenu : Listener {
         lore += loreDash("<#84D1CB>${CurrencyManager.displayName("money")}: <#F2F5FA>${CurrencyManager.getBalance(player, "money")}")
         lore += loreDash("<#84D1CB>${CurrencyManager.displayName("point")}: <#F2F5FA>${CurrencyManager.getBalance(player, "point")}")
         lore += loreDash("<#84D1CB>${CurrencyManager.displayName("tape")}: <#F2F5FA>${CurrencyManager.getBalance(player, "tape")}")
-        lore += loreDash("<#84D1CB>${CurrencyManager.displayName("goldentape")}: <#F2F5FA>${CurrencyManager.getBalance(player, "goldentape")}")
+        lore += loreDash("<#84D1CB>${CurrencyManager.displayName("ltoken")}: <#F2F5FA>${CurrencyManager.getBalance(player, "ltoken")}")
+        lore += loreDash("<#84D1CB>${CurrencyManager.displayName("ptoken")}: <#F2F5FA>${CurrencyManager.getBalance(player, "ptoken")}")
 
         meta.lore(lore.map { it.replacePlaceholder(player).toComponent() })
         result.setItemMeta(meta)

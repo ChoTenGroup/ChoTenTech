@@ -100,7 +100,16 @@ data class ConsumableConfig(
             // Random chance skip
             if (ef.chance < 100.0 && kotlin.random.Random.nextDouble() * 100 >= ef.chance) return
             when (ef.effect) {
+                "bandage" -> {
+                    val body = helper.data.bodyHealth
+                    val selected = body.parts.values.filter { !it.destroyed &&
+                        (it.effects.containsKey(MAJOR_BLEED) || it.effects.containsKey(MINOR_BLEED)) }
+                        .maxByOrNull { (if (it.effects.containsKey(MAJOR_BLEED)) 2.0 else 1.0) *
+                            (BodyParts.priorities[it.id] ?: 1.0) }
+                    selected?.let { body.bandage(it.id) }
+                }
                 "health" -> {
+                    if (io.github.zzzyyylllty.chotentech.function.bleedout.BleedoutManager.isDowned(player.uniqueId)) return
                     val hp = player.health
                     val maxHp = player.maxHealth
                     val capHp = if (ef.cap > 0.0) maxHp * (ef.cap / 100.0) else maxHp
@@ -111,7 +120,8 @@ data class ConsumableConfig(
                             player.health = if (ef.value >= 0) {
                                 maxOf(minOf(target, capHp, maxHp), hp)
                             } else {
-                                target.coerceIn(0.0, maxHp)
+                                io.github.zzzyyylllty.chotentech.function.body.BodyHealthManager.trueDamage(player, (hp - target).coerceAtLeast(0.0))
+                                player.health
                             }
                         }
                         "set" -> player.health = ef.value.coerceIn(0.0, minOf(capHp, maxHp))
@@ -120,7 +130,8 @@ data class ConsumableConfig(
                             player.health = if (ef.value >= 0) {
                                 maxOf(minOf(target, capHp, maxHp), hp)
                             } else {
-                                target.coerceIn(0.0, maxHp)
+                                io.github.zzzyyylllty.chotentech.function.body.BodyHealthManager.trueDamage(player, (hp - target).coerceAtLeast(0.0))
+                                player.health
                             }
                         }
                     }
@@ -167,18 +178,11 @@ data class ConsumableConfig(
                         "set" -> helper.setDarkness(ef.value)
                     }
                 }
-                "external_injury", "externalinjury" -> {
+                "water" -> {
                     when (ef.mode) {
-                        "add" -> helper.addExternalInjury(ef.value)
-                        "set" -> helper.setExternalInjury(ef.value)
-                        "percent" -> helper.addExternalInjury(helper.data.maxExternalInjury * (ef.value / 100.0))
-                    }
-                }
-                "internal_injury", "internalinjury" -> {
-                    when (ef.mode) {
-                        "add" -> helper.addInternalInjury(ef.value)
-                        "set" -> helper.setInternalInjury(ef.value)
-                        "percent" -> helper.addInternalInjury(helper.data.maxInternalInjury * (ef.value / 100.0))
+                        "add" -> helper.addWater(ef.value)
+                        "set" -> helper.setWater(ef.value)
+                        "percent" -> helper.addWater(helper.data.bodyHealth.maxWater * ef.value / 100.0)
                     }
                 }
                 "stress" -> {
@@ -312,16 +316,7 @@ data class ConsumableConfig(
                         player.health = player.maxHealth * (targetPercent / 100.0)
                     }
                 }
-                "injury_threshold" -> {
-                    val thresholdPercent = ef.value.coerceIn(0.0, 100.0)
-                    val targetPercent = (ef.amplifier.toDouble().takeIf { it > 0 } ?: thresholdPercent).coerceIn(0.0, 100.0)
-                    if (helper.data.externalInjury / helper.data.maxExternalInjury < thresholdPercent / 100.0) {
-                        helper.setExternalInjury(helper.data.maxExternalInjury * (targetPercent / 100.0))
-                    }
-                    if (helper.data.internalInjury / helper.data.maxInternalInjury < thresholdPercent / 100.0) {
-                        helper.setInternalInjury(helper.data.maxInternalInjury * (targetPercent / 100.0))
-                    }
-                }
+
             }
         }
     }
@@ -493,8 +488,7 @@ private fun parseSingleEffect(map: Map<*, *>): ConsumableEffect? {
             cap = (map["cap"]?.toString()?.toDoubleOrNull()) ?: 0.0,
         )
         "hunger", "saturation", "consumption", "sanity", "darkness",
-        "stress", "stamina", "hand_stamina", "handstamina",
-        "external_injury", "externalinjury", "internal_injury", "internalinjury" ->
+        "stress", "stamina", "hand_stamina", "handstamina", "water" ->
             ConsumableEffect(effect = type, mode = mode, value = value, chance = chance)
         "status_effect" -> ConsumableEffect(
             effect = type, mode = mode, value = value,

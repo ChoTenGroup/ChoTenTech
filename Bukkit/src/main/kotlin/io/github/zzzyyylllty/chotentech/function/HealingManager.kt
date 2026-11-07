@@ -1,19 +1,20 @@
 package io.github.zzzyyylllty.chotentech.function
 
-import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
-import io.github.zzzyyylllty.chotentech.data.AttributeModifier
-import io.github.zzzyyylllty.chotentech.data.AttributeSlot
-import io.github.zzzyyylllty.chotentech.data.ModifierSource
-import io.github.zzzyyylllty.chotentech.data.ModifierType
+import io.github.zzzyyylllty.chotentech.data.*
+import io.github.zzzyyylllty.chotentech.function.body.BodyHealthManager
+import io.github.zzzyyylllty.chotentech.function.bleedout.BleedoutManager
+import io.github.zzzyyylllty.chotentech.function.surgery.SurgeryManager
 import io.github.zzzyyylllty.chotentech.manager.AttributeManager
-import io.github.zzzyyylllty.chotentech.data.HealConfig
-import io.github.zzzyyylllty.chotentech.data.FRACTURE
-import io.github.zzzyyylllty.chotentech.data.PlayerDataManager
 import io.github.zzzyyylllty.chotentech.util.toComponent
 import io.github.zzzyyylllty.sertraline.item.rebuildDisplay
-import io.github.zzzyyylllty.sertraline.item.rebuildName
+import io.papermc.paper.dialog.Dialog
+import io.papermc.paper.registry.data.dialog.ActionButton
+import io.papermc.paper.registry.data.dialog.DialogBase
+import io.papermc.paper.registry.data.dialog.action.DialogAction
+import io.papermc.paper.registry.data.dialog.body.DialogBody
+import io.papermc.paper.registry.data.dialog.type.DialogType
+import net.kyori.adventure.text.event.ClickCallback
 import org.bukkit.Bukkit
-import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import taboolib.common.LifeCycle
@@ -22,579 +23,240 @@ import taboolib.common.platform.function.submit
 import taboolib.common.platform.service.PlatformExecutor
 import taboolib.module.nms.getItemTag
 import java.util.UUID
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ThreadLocalRandom
+import kotlin.math.abs
 import kotlin.math.floor
 
+// Keep the existing listener-facing phase API.
 enum class HealingPhase { PRE, HEALING, POST }
 enum class PostReason { COMPLETE, CANCELLED, ITEM_LOST }
 
 object HealingManager {
-
-    private val states = ConcurrentHashMap<UUID, HealingState>()
-    private var healingTask: PlatformExecutor.PlatformTask? = null
-
     data class HealingState(
         val config: HealConfig,
         val item: ItemStack,
-        var totalHealedHP: Double,
-        var totalHealedII: Double,
-        var totalHealedEI: Double,
-        var hpFullWarned: Boolean,
-        var iiCapWarned: Boolean,
-        var eiCapWarned: Boolean,
-        val speedModifierUuid: UUID?,
+        val slot: Int,
+        val profile: PlayerData,
+        val partId: String?,
+        val healHealth: Boolean,
+        var totalHealed: Double = 0.0,
         var phase: HealingPhase = HealingPhase.PRE,
         var phaseTicks: Int = 0,
         var healInterval: Int = 0,
         var postReason: PostReason = PostReason.COMPLETE
     )
+    private val states = mutableMapOf<UUID, HealingState>()
+    private var task: PlatformExecutor.PlatformTask? = null
+    fun isHealing(uuid: UUID) = states[uuid]?.phase?.let { it != HealingPhase.POST } ?: false
+    fun isInHealingOrPost(uuid: UUID) = uuid in states
+    fun getState(uuid: UUID) = states[uuid]
 
-    fun isHealing(uuid: UUID): Boolean = states[uuid]?.let { it.phase != HealingPhase.POST } ?: false
-
-    fun isInHealingOrPost(uuid: UUID): Boolean = states.containsKey(uuid)
-
-    fun getState(uuid: UUID): HealingState? = states[uuid]
-
-    // --- NBT durability helpers ---
-
-    private fun getNbtDurability(item: ItemStack): Double {
-        val tag = item.getItemTag() ?: return 0.0
-        val raw = tag["sertraline_data"]?.asCompound()?.get("durability") ?: return 0.0
-        return raw.asDouble() ?: raw.asString()?.toDoubleOrNull() ?: 0.0
+    private fun durability(item: ItemStack): Double {
+        val raw = item.getItemTag()["sertraline_data"]?.asCompound()?.get("durability") ?: return 0.0
+        val value = raw.asDouble() ?: raw.asString()?.toDoubleOrNull() ?: 0.0
+        // NBT ints are read back as 3 decimals; healing must spend and keep fractional durability.
+        return if (value == floor(value)) raw.asInt().toDouble() else value
     }
-
-    private fun setNbtDurability(item: ItemStack, value: Double, player: Player) {
-        val tag = item.getItemTag() ?: return
-        tag["sertraline_data"]?.asCompound()?.put("durability", floor(value))
+    private fun setDurability(item: ItemStack, value: Double, player: Player) {
+        if (value <= 0.000001) { item.amount = 0; return }
+        val tag = item.getItemTag()
+        tag["sertraline_data"]?.asCompound()?.put("durability", value)
         tag.saveTo(item)
         item.rebuildDisplay(player)
     }
 
     fun enter(player: Player, config: HealConfig, item: ItemStack) {
-        val uuid = player.uniqueId
-        if (states.containsKey(uuid)) return  // already healing or in post
-        val data = playerDataMap[uuid.toString()] ?: return
-
-        // 检查是否有任何该医疗物品可以治疗的项目
-        val canHealHP = config.maxHeal != 0.0 && config.healSpeed != 0.0
-        val canHealII = config.maxIInjury != 0.0 && config.iinjurySpeed != 0.0
-        val canHealEI = config.maxEInjury != 0.0 && config.einjurySpeed != 0.0
-
-        val needsHP = canHealHP && player.health < (player.getAttribute(org.bukkit.attribute.Attribute.MAX_HEALTH)?.value ?: 20.0)
-        val needsII = canHealII && data.internalInjury < data.maxInternalInjury
-        val needsEI = canHealEI && data.externalInjury < data.maxExternalInjury
-
-        if (!needsHP && !needsII && !needsEI) {
-            // 玩家是否有任何伤势（无论该物品能否治疗）
-            val hasAnyInjury = player.health < (player.getAttribute(org.bukkit.attribute.Attribute.MAX_HEALTH)?.value ?: 20.0)
-                || data.internalInjury < data.maxInternalInjury
-                || data.externalInjury < data.maxExternalInjury
-            if (hasAnyInjury) {
-                player.sendActionBar("<#EFDF8F>无需治疗（或当前物品无法治疗某些伤势）".toComponent())
-            } else {
-                player.sendActionBar("<#EFDF8F>状态已满，无需治疗".toComponent())
+        if (isInHealingOrPost(player.uniqueId) || BleedoutManager.isDowned(player.uniqueId) ||
+            SurgeryManager.isInSurgeryOrPost(player.uniqueId)) return
+        val data = player.getData() ?: return
+        val body = data.bodyHealth
+        BodyHealthManager.syncMaxima(player, body)
+        val slot = player.inventory.heldItemSlot
+        val snapshot = item.clone()
+        fun button(label: String, part: String?, hp: Boolean, quick: Boolean = false): ActionButton =
+            ActionButton.builder(label.toComponent()).width(220).action(DialogAction.customClick({ _, audience ->
+                if (audience == player) submit {
+                    if (!player.isOnline || player.getData() !== data || player.inventory.heldItemSlot != slot ||
+                        player.inventory.itemInMainHand != snapshot || BleedoutManager.isDowned(player.uniqueId)) return@submit
+                    val selected = if (quick) body.quickTreatmentPart()?.id ?: body.parts.values.firstOrNull {
+                        !it.destroyed && it.effects.keys.any { type -> type in config.removeDebuff }
+                    }?.id else part
+                    begin(player, config, player.inventory.itemInMainHand, selected, hp)
+                }
+            }, ClickCallback.Options.builder().uses(1).build())).build()
+        val buttons = mutableListOf<ActionButton>()
+        for (part in body.parts.values) {
+            val effects = part.effects.keys.joinToString("、")
+            val state = if (part.destroyed) "损毁，无法治疗" else effects.ifEmpty { "正常" }
+            val label = "${BodyParts.names[part.id]} ${num(part.toughness)}/${num(part.maxToughness)} $state"
+            // ①②：移除伤势、恢复韧性。
+            buttons += button(label, part.id, false)
+            // ③：同一次治疗里，该部位韧性回满后用当轮剩余额度继续恢复血量。
+            if (config.hpLeast >= 0 && !part.destroyed) {
+                buttons += button("$label ＋血量", part.id, true)
             }
-            config.soundAlreadyFull.play(player)
+        }
+        buttons += button("快速治疗受损部位", null, false, true)
+        if (config.hpLeast >= 0) {
+            buttons += button("快速治疗，随后恢复血量（韧性>${num(config.hpLeast)}%）", null, true, true)
+            // 单独的「仅恢复血量」按钮：不治韧性，只走第三步。门槛不满足时按下会说明原因。
+            buttons += button("仅恢复血量（需全身韧性>${num(config.hpLeast)}%）", null, true)
+        }
+        player.showDialog(Dialog.create { factory -> factory.empty().apply {
+            base(DialogBase.builder("选择医疗部位".toComponent()).pause(false).canCloseWithEscape(true)
+                .afterAction(DialogBase.DialogAfterAction.CLOSE)
+                .body(listOf(
+                    DialogBody.plainMessage("结算顺序：① 移除所选部位伤势 → ② 恢复该部位韧性 → ③ 恢复血量。".toComponent()),
+                    DialogBody.plainMessage("带「＋血量」的按钮在第 ② 步回满后，用当轮剩余额度执行第 ③ 步。".toComponent()),
+                    DialogBody.plainMessage("「仅恢复血量」跳过 ①②，且每轮都重新检查全身韧性需严格大于 ${num(config.hpLeast)}%。".toComponent()),
+                )).build())
+            type(DialogType.multiAction(buttons, null, 2))
+        } })
+    }
+
+    private fun num(value: Double): String =
+        if (value == Math.floor(value) && abs(value) < 1e15) value.toLong().toString() else "%.1f".format(value)
+
+    private fun begin(player: Player, config: HealConfig, item: ItemStack, partId: String?, hp: Boolean) {
+        if (isInHealingOrPost(player.uniqueId) || BleedoutManager.isDowned(player.uniqueId) ||
+            SurgeryManager.isInSurgeryOrPost(player.uniqueId)) return
+        val data = player.getData() ?: return
+        val part = partId?.let { data.bodyHealth.parts[it] }
+        if (part?.destroyed == true) {
+            player.sendActionBar("<#E08A98>损毁肢体不能接受常规治疗".toComponent()); return
+        }
+        val canRemove = part?.effects?.keys?.any { it in config.removeDebuff } == true
+        val canRepair = part != null && part.percentage < 1 && config.maxHeal > 0 && config.healSpeed > 0
+        val canHp = hp && config.hpLeast >= 0 && data.bodyHealth.toughnessPercentage > config.hpLeast &&
+            player.health < (player.getAttribute(org.bukkit.attribute.Attribute.MAX_HEALTH)?.value ?: 20.0)
+        if (!canRemove && !canRepair && !canHp) {
+            // 门槛/血量已满这类拒绝很常见，直接说清楚，别让人以为是物品坏了。
+            val current = data.bodyHealth.toughnessPercentage
+            val maxHp = player.getAttribute(org.bukkit.attribute.Attribute.MAX_HEALTH)?.value ?: 20.0
+            val message = when {
+                hp && config.hpLeast < 0 -> "该医疗包不能恢复血量（hpleast: -1）"
+                hp && current <= config.hpLeast ->
+                    "全身韧性 ${num(current)}% 未超过 ${num(config.hpLeast)}%，暂不能恢复血量"
+                hp && player.health >= maxHp -> "血量已满"
+                else -> "该部位没有可治疗项目"
+            }
+            player.sendActionBar("<#EFDF8F>$message".toComponent())
             return
         }
-
-        // 堆叠物品：拆分一个单独使用，避免共享 NBT 导致整组耐久变化
-        val useItem: ItemStack = if (item.amount > 1) {
-            val single = item.clone()
-            single.amount = 1
-            item.amount -= 1
-            player.inventory.setItem(player.inventory.heldItemSlot, single)
-            single
-        } else {
-            item
+        if (durability(item) <= 0) return
+        val slot = player.inventory.heldItemSlot
+        val useItem = item.clone().apply { amount = 1 }
+        // Exclude the selected slot while returning the rest; addItem would merge it back
+        // into the unit being used and make the whole stack share durability again.
+        if (item.amount > 1) {
+            val remaining = item.clone().apply { amount = item.amount - 1 }
+            for (index in 0 until player.inventory.storageContents.size) {
+                if (index == slot || remaining.amount <= 0) continue
+                val existing = player.inventory.getItem(index) ?: continue
+                if (!existing.isSimilar(remaining)) continue
+                val added = minOf(remaining.amount, (existing.maxStackSize - existing.amount).coerceAtLeast(0))
+                existing.amount += added
+                remaining.amount -= added
+                player.inventory.setItem(index, existing)
+            }
+            for (index in 0 until player.inventory.storageContents.size) {
+                if (index == slot || remaining.amount <= 0) continue
+                if (player.inventory.getItem(index)?.type?.isAir == false) continue
+                val placed = remaining.clone().apply { amount = minOf(remaining.amount, maxStackSize) }
+                player.inventory.setItem(index, placed)
+                remaining.amount -= placed.amount
+            }
+            if (remaining.amount > 0) player.world.dropItemNaturally(player.location, remaining)
         }
-
-        var speedModUuid: UUID? = null
-        if (config.slow > 0) {
-            // 先清除上次残留的治疗减速（防止 UUID 丢失导致修饰符泄漏）
-            AttributeManager.removeModifiersByAttribute(uuid, "movement_speed", ModifierSource.HEALING)
-
-            val modifier = AttributeModifier(
-                attributeId = "movement_speed",
-                value = -(config.slow / 100.0),
-                type = ModifierType.PERCENT,
-                source = ModifierSource.HEALING,
-                slot = AttributeSlot.OTHER
-            )
-            speedModUuid = modifier.uuid
-            AttributeManager.addModifier(uuid, modifier)
-        }
-
-        val state = HealingState(
-            config = config,
-            item = useItem,
-            totalHealedHP = 0.0,
-            totalHealedII = 0.0,
-            totalHealedEI = 0.0,
-            hpFullWarned = false,
-            iiCapWarned = false,
-            eiCapWarned = false,
-            speedModifierUuid = speedModUuid,
-            phase = HealingPhase.PRE,
-            phaseTicks = maxOf((config.preTime * 4).toInt(), 0),
-            healInterval = 0
-        )
-
-        states[uuid] = state
+        player.inventory.setItem(slot, useItem)
+        states[player.uniqueId] = HealingState(config, useItem.clone(), slot, data,
+            partId, hp, phaseTicks = (config.preTime * 4).toInt())
+        if (config.slow > 0) AttributeManager.addModifier(player.uniqueId, AttributeModifier(
+            attributeId = "movement_speed", value = -config.slow / 100,
+            type = ModifierType.PERCENT, source = ModifierSource.HEALING, slot = AttributeSlot.OTHER))
         config.soundPre.play(player)
     }
 
     fun cancel(player: Player, reason: PostReason) {
-        val state = states[player.uniqueId] ?: return
-        if (state.phase == HealingPhase.POST) return
-        enterPost(state, reason, player)
+        states[player.uniqueId]?.takeIf { it.phase != HealingPhase.POST }?.let { post(player, it, reason) }
     }
-
-    private fun enterPost(state: HealingState, reason: PostReason, player: Player? = null) {
+    private fun post(player: Player, state: HealingState, reason: PostReason) {
         state.phase = HealingPhase.POST
-        state.phaseTicks = if (reason == PostReason.ITEM_LOST) 1 else maxOf((state.config.postTime * 4).toInt(), 0)
         state.postReason = reason
-        if (player != null) {
-            when (reason) {
-                PostReason.COMPLETE -> state.config.soundComplete.play(player)
-                PostReason.CANCELLED -> state.config.soundCancel.play(player)
-                PostReason.ITEM_LOST -> state.config.soundExhaust.play(player)
-            }
+        state.phaseTicks = (state.config.postTime * 4).toInt()
+        when (reason) {
+            PostReason.COMPLETE -> state.config.soundComplete.play(player)
+            PostReason.CANCELLED -> state.config.soundCancel.play(player)
+            PostReason.ITEM_LOST -> state.config.soundExhaust.play(player)
         }
-    }
-
-    private fun isItemValid(item: ItemStack): Boolean =
-        item.amount > 0 && item.type != Material.AIR
-
-    // --- 理疗技能：概率不消耗耐久 ---
-
-    private fun shouldPreserveDurability(player: Player): Boolean {
-        if (!player.isOnline) return false
-        val level = try { PlayerDataManager(player).getLevel("physiotherapy") ?: 0L } catch (_: Exception) { 0L }
-        if (level <= 0) return false
-        // 每级 0.25%，满级 100 级 = 25%
-        return ThreadLocalRandom.current().nextDouble() < (level * 0.0025)
-    }
-
-    // --- instant heal helpers ---
-
-    private fun tryInstantHeal(
-        item: ItemStack,
-        dur: Double,
-        cap: Double,
-        rate: Double,
-        player: Player,
-        apply: (actual: Double) -> Unit
-    ): Boolean {
-        if (dur <= 0 || cap <= 0) return false
-        val healed = minOf(cap, dur / rate)
-        val actual = floor(healed * 100) / 100
-        if (actual <= 0) return false
-        apply(actual)
-        // 理疗技能：概率不消耗耐久
-        if (shouldPreserveDurability(player)) return false
-        val consumed = maxOf(1.0, floor(actual * rate))
-        val newDur = dur - consumed
-        if (newDur <= 0) {
-            item.amount -= 1
-            return true
-        }
-        setNbtDurability(item, newDur, player)
-        return false
-    }
-
-    // --- tick-based heal helper ---
-
-    private fun tryHealTick(
-        item: ItemStack,
-        dur: Double,
-        cumulativeCap: Double,
-        rate: Double,
-        player: Player,
-        apply: (actual: Double) -> Unit
-    ): HealResult {
-        val durabilityLimit = dur / rate
-        val toHeal = minOf(cumulativeCap, durabilityLimit)
-        val actual = floor(toHeal * 100) / 100
-        if (actual <= 0) {
-            // 剩余可治疗量过小经舍入后为0，不消耗物品，由 isHealDone 判定是否完成
-            return HealResult(dur, false)
-        }
-        apply(actual)
-        // 理疗技能：概率不消耗耐久
-        if (shouldPreserveDurability(player)) return HealResult(dur, false)
-        val consumed = maxOf(1.0, floor(actual * rate))
-        val newDur = dur - consumed
-        if (newDur <= 0) {
-            item.amount -= 1
-            return HealResult(0.0, true)
-        }
-        setNbtDurability(item, newDur, player)
-        return HealResult(newDur, false)
-    }
-
-    private data class HealResult(val newDur: Double, val itemConsumed: Boolean)
-
-    private fun isAllFull(
-        player: Player,
-        data: io.github.zzzyyylllty.chotentech.data.PlayerData,
-        config: HealConfig
-    ): Boolean {
-        val hpFull = if (config.maxHeal != 0.0 && config.healSpeed != 0.0) {
-            val maxHP = player.getAttribute(org.bukkit.attribute.Attribute.MAX_HEALTH)?.value ?: 20.0
-            player.health >= maxHP - 0.01
-        } else true
-        val iiFull = if (config.maxIInjury != 0.0 && config.iinjurySpeed != 0.0) {
-            data.internalInjury >= data.maxInternalInjury - 0.01
-        } else true
-        val eiFull = if (config.maxEInjury != 0.0 && config.einjurySpeed != 0.0) {
-            data.externalInjury >= data.maxExternalInjury - 0.01
-        } else true
-        return hpFull && iiFull && eiFull
-    }
-
-    private fun isHealDone(
-        player: Player,
-        data: io.github.zzzyyylllty.chotentech.data.PlayerData,
-        state: HealingState
-    ): Boolean {
-        val config = state.config
-        val maxHP = player.getAttribute(org.bukkit.attribute.Attribute.MAX_HEALTH)?.value ?: 20.0
-        val hpDone = if (config.maxHeal != 0.0 && config.healSpeed > 0) {
-            player.health >= maxHP - 0.01 || (config.maxHeal != -1.0 && state.totalHealedHP >= config.maxHeal - 0.01)
-        } else true
-        val iiDone = if (config.maxIInjury != 0.0 && config.iinjurySpeed > 0) {
-            data.internalInjury >= data.maxInternalInjury - 0.01 || state.totalHealedII >= config.maxIInjury - 0.01
-        } else true
-        val eiDone = if (config.maxEInjury != 0.0 && config.einjurySpeed > 0) {
-            data.externalInjury >= data.maxExternalInjury - 0.01 || state.totalHealedEI >= config.maxEInjury - 0.01
-        } else true
-        return hpDone && iiDone && eiDone
     }
 
     @Awake(LifeCycle.ACTIVE)
-    fun startHealingTick() {
-        healingTask = submit(period = 5L) {
-            tick()
-        }
-    }
-
+    fun startHealingTick() { task = submit(period = 5) { tick() } }
     @Awake(LifeCycle.DISABLE)
     fun stopHealingTick() {
-        healingTask?.cancel()
-        // 清理所有残留的减速修饰符
-        for (uuid in states.keys) {
-            AttributeManager.removeModifiersByAttribute(uuid, "movement_speed", ModifierSource.HEALING)
+        task?.cancel()
+        states.keys.toList().forEach { cleanup(it) }
+    }
+    private fun cleanup(uuid: UUID) {
+        states.remove(uuid)
+        AttributeManager.removeModifiersByAttribute(uuid, "movement_speed", ModifierSource.HEALING)
+    }
+    private fun tick() {
+        for ((uuid, state) in states.toMap()) {
+            val player = Bukkit.getPlayer(uuid)
+            if (player == null || player.isDead || player.getData() !== state.profile) { cleanup(uuid); continue }
+            if (state.phase == HealingPhase.POST) {
+                if (--state.phaseTicks <= 0) { cleanup(uuid); state.config.soundEnd.play(player) }
+                continue
+            }
+            if (BleedoutManager.isDowned(uuid)) { post(player, state, PostReason.CANCELLED); continue }
+            val held = player.inventory.itemInMainHand
+            if (player.inventory.heldItemSlot != state.slot || held != state.item || held.amount <= 0) {
+                post(player, state, PostReason.ITEM_LOST); continue
+            }
+            if (state.phase == HealingPhase.PRE) {
+                if (--state.phaseTicks > 0) continue
+                state.phase = HealingPhase.HEALING
+                state.config.soundStart.play(player)
+            }
+            if (--state.healInterval > 0) continue
+            state.healInterval = (state.config.perTime * 4).toInt().coerceAtLeast(1)
+            treat(player, state, held)
+            state.item.itemMeta = held.itemMeta
+            state.item.amount = held.amount
         }
-        states.clear()
     }
 
-    private fun tick() {
-        val toRemove = mutableListOf<UUID>()
-
-        for ((uuid, state) in states) {
-            val player = Bukkit.getPlayer(uuid)
-            if (player == null || !player.isOnline) {
-                toRemove.add(uuid)
-                continue
-            }
-            if (player.isDead) {
-                toRemove.add(uuid)
-                continue
-            }
-
-            val data = playerDataMap[player.uniqueId.toString()] ?: continue
-            val config = state.config
-            val item = state.item
-
-            when (state.phase) {
-
-                HealingPhase.PRE -> {
-                    state.phaseTicks--
-                    if (state.phaseTicks > 0) {
-                        val sec = state.phaseTicks / 4 + 1
-                        player.sendActionBar("<#84D1CB>治疗准备中... <#A9B4C3>${sec}秒".toComponent())
-                        continue
-                    }
-                    // Transition to HEALING
-                    state.phase = HealingPhase.HEALING
-                    state.healInterval = 1  // first heal on next tick immediately
-
-                    // Check item validity
-                    if (!isItemValid(item)) {
-                        enterPost(state, PostReason.ITEM_LOST, player)
-                        continue
-                    }
-
-                    // Check initial durability
-                    val dur = getNbtDurability(item)
-                    if (dur <= 0) {
-                        item.amount -= 1
-                        enterPost(state, PostReason.ITEM_LOST, player)
-                        continue
-                    }
-
-                    // Apply instant heals
-                    var consumed = false
-                    val maxHP = player.getAttribute(org.bukkit.attribute.Attribute.MAX_HEALTH)?.value ?: 20.0
-
-                    if (config.healSpeed == -1.0 && config.maxHeal != 0.0) {
-                        val missing = maxOf(maxHP - player.health, 0.0)
-                        val cap = if (config.maxHeal == -1.0) missing else minOf(config.maxHeal, missing)
-                        val d = getNbtDurability(item)
-                        consumed = tryInstantHeal(item, d, cap, config.healRate, player) { actual ->
-                            player.health = minOf(player.health + actual, maxHP)
-                            state.totalHealedHP += actual
-                        }
-                        if (!consumed) {
-                            val hpFull = maxHP - player.health <= 0
-                            val capReached = config.maxHeal != -1.0 && state.totalHealedHP >= config.maxHeal
-                            if (!state.hpFullWarned && (hpFull || capReached)) {
-                                player.sendMessage("<#EFDF8F>${if (hpFull) "血量已满" else "已达最大治疗量"}，不再回复血量。".toComponent())
-                                config.soundCapReached.play(player)
-                                state.hpFullWarned = true
-                            }
-                        }
-                    }
-                    if (!consumed && config.iinjurySpeed == -1.0 && config.maxIInjury != 0.0) {
-                        val missing = data.maxInternalInjury - data.internalInjury
-                        val cap = minOf(config.maxIInjury, maxOf(missing, 0.0))
-                        val d = getNbtDurability(item)
-                        consumed = tryInstantHeal(item, d, cap, config.iinjuryRate, player) { actual ->
-                            data.internalInjury = minOf(data.internalInjury + actual, data.maxInternalInjury)
-                            state.totalHealedII += actual
-                        }
-                        if (!consumed) {
-                            val iiFull = data.internalInjury >= data.maxInternalInjury
-                            val capReached = state.totalHealedII >= config.maxIInjury
-                            if (!state.iiCapWarned && (iiFull || capReached)) {
-                                player.sendMessage("<#EFDF8F>${if (iiFull) "内伤已满" else "已达最大内伤治疗量"}，不再回复内伤。".toComponent())
-                                config.soundCapReached.play(player)
-                                state.iiCapWarned = true
-                            }
-                        }
-                    }
-                    if (!consumed && config.einjurySpeed == -1.0 && config.maxEInjury != 0.0) {
-                        val missing = data.maxExternalInjury - data.externalInjury
-                        val cap = minOf(config.maxEInjury, maxOf(missing, 0.0))
-                        val d = getNbtDurability(item)
-                        consumed = tryInstantHeal(item, d, cap, config.einjuryRate, player) { actual ->
-                            data.externalInjury = minOf(data.externalInjury + actual, data.maxExternalInjury)
-                            state.totalHealedEI += actual
-                        }
-                        if (!consumed) {
-                            val eiFull = data.externalInjury >= data.maxExternalInjury
-                            val capReached = state.totalHealedEI >= config.maxEInjury
-                            if (!state.eiCapWarned && (eiFull || capReached)) {
-                                player.sendMessage("<#EFDF8F>${if (eiFull) "外伤已满" else "已达最大外伤治疗量"}，不再回复外伤。".toComponent())
-                                config.soundCapReached.play(player)
-                                state.eiCapWarned = true
-                            }
-                        }
-                    }
-
-                    if (consumed) {
-                        enterPost(state, PostReason.ITEM_LOST, player)
-                        continue
-                    }
-
-                    if (isHealDone(player, data, state)) {
-                        enterPost(state, PostReason.COMPLETE, player)
-                        continue
-                    }
-
-                    // Apply cost for instant heals that just fired
-                    if (state.totalHealedHP > 0 || state.totalHealedII > 0 || state.totalHealedEI > 0) {
-                        if (config.costFood > 0) {
-                            data.customHunger = maxOf(data.customHunger - config.costFood, 0.0)
-                        }
-                        if (config.costSan > 0) {
-                            data.sanity = maxOf(data.sanity - config.costSan, 0.0)
-                        }
-                    }
-
-                    config.soundStart.play(player)
-                    player.sendActionBar("<#84D1CB>治疗中... 抬头以退出治疗模式".toComponent())
-                }
-
-                HealingPhase.HEALING -> {
-                    state.healInterval--
-                    if (state.healInterval > 0) continue
-
-                    state.healInterval = maxOf((config.perTime * 4).toInt(), 1)
-
-                    // Check item validity
-                    if (!isItemValid(item)) {
-                        enterPost(state, PostReason.ITEM_LOST, player)
-                        continue
-                    }
-
-                    // Check NBT durability
-                    var dur = getNbtDurability(item)
-                    if (dur <= 0) {
-                        item.amount -= 1
-                        enterPost(state, PostReason.ITEM_LOST, player)
-                        continue
-                    }
-
-                    val maxHP = player.getAttribute(org.bukkit.attribute.Attribute.MAX_HEALTH)?.value ?: 20.0
-                    var itemConsumed = false
-                    var healedSomething = false
-
-                    // --- HP heal ---
-                    if (!itemConsumed && config.healSpeed > 0 && config.maxHeal != 0.0) {
-                        val hpMissing = maxOf(maxHP - player.health, 0.0)
-                        val speedCap = minOf(config.healSpeed, hpMissing)
-                        val cumulativeCap = if (config.maxHeal == -1.0) speedCap
-                            else minOf(speedCap, maxOf(config.maxHeal - state.totalHealedHP, 0.0))
-                        if (cumulativeCap > 0 && hpMissing > 0) {
-                            val result = tryHealTick(item, dur, cumulativeCap, config.healRate, player) { actual ->
-                                player.health = minOf(player.health + actual, maxHP)
-                                state.totalHealedHP += actual
-                            }
-                            dur = result.newDur
-                            itemConsumed = result.itemConsumed
-                            healedSomething = true
-                        }
-                        if (!itemConsumed && !state.hpFullWarned) {
-                            val hpFull = maxHP - player.health <= 0
-                            val capReached = config.maxHeal != -1.0 && state.totalHealedHP >= config.maxHeal
-                            if (hpFull || capReached) {
-                                player.sendMessage("<#EFDF8F>${if (hpFull) "血量已满" else "已达最大治疗量"}，不再回复血量。".toComponent())
-                                config.soundCapReached.play(player)
-                                state.hpFullWarned = true
-                            }
-                        }
-                    }
-
-                    // --- Internal injury heal ---
-                    if (!itemConsumed && config.iinjurySpeed > 0 && config.maxIInjury != 0.0) {
-                        val iiMissing = maxOf(data.maxInternalInjury - data.internalInjury, 0.0)
-                        val speedCap = minOf(config.iinjurySpeed, iiMissing)
-                        val cumulativeCap = minOf(speedCap, maxOf(config.maxIInjury - state.totalHealedII, 0.0))
-                        if (cumulativeCap > 0 && iiMissing > 0) {
-                            val result = tryHealTick(item, dur, cumulativeCap, config.iinjuryRate, player) { actual ->
-                                data.internalInjury = minOf(data.internalInjury + actual, data.maxInternalInjury)
-                                state.totalHealedII += actual
-                            }
-                            dur = result.newDur
-                            itemConsumed = result.itemConsumed
-                            healedSomething = true
-                        }
-                        if (!itemConsumed && !state.iiCapWarned) {
-                            val iiFull = data.internalInjury >= data.maxInternalInjury
-                            val capReached = state.totalHealedII >= config.maxIInjury
-                            if (iiFull || capReached) {
-                                player.sendMessage("<#EFDF8F>${if (iiFull) "内伤已满" else "已达最大内伤治疗量"}，不再回复内伤。".toComponent())
-                                config.soundCapReached.play(player)
-                                state.iiCapWarned = true
-                            }
-                        }
-                    }
-
-                    // --- External injury heal ---
-                    if (!itemConsumed && config.einjurySpeed > 0 && config.maxEInjury != 0.0) {
-                        val eiMissing = maxOf(data.maxExternalInjury - data.externalInjury, 0.0)
-                        val speedCap = minOf(config.einjurySpeed, eiMissing)
-                        val cumulativeCap = minOf(speedCap, maxOf(config.maxEInjury - state.totalHealedEI, 0.0))
-                        if (cumulativeCap > 0 && eiMissing > 0) {
-                            val result = tryHealTick(item, dur, cumulativeCap, config.einjuryRate, player) { actual ->
-                                data.externalInjury = minOf(data.externalInjury + actual, data.maxExternalInjury)
-                                state.totalHealedEI += actual
-                            }
-                            itemConsumed = result.itemConsumed
-                            healedSomething = true
-                        }
-                        if (!itemConsumed && !state.eiCapWarned) {
-                            val eiFull = data.externalInjury >= data.maxExternalInjury
-                            val capReached = state.totalHealedEI >= config.maxEInjury
-                            if (eiFull || capReached) {
-                                player.sendMessage("<#EFDF8F>${if (eiFull) "外伤已满" else "已达最大外伤治疗量"}，不再回复外伤。".toComponent())
-                                config.soundCapReached.play(player)
-                                state.eiCapWarned = true
-                            }
-                        }
-                    }
-
-                    // --- Fracture heal (每轮治疗最后部分，消除1层骨折) ---
-                    if (!itemConsumed && config.fractureCost > 0) {
-                        val fractureEffect = data.statusEffects.firstOrNull { it.type == FRACTURE }
-                        if (fractureEffect != null) {
-                            val currentDur = getNbtDurability(item)
-                            if (currentDur >= config.fractureCost) {
-                                val newLevel = fractureEffect.level - 1
-                                if (newLevel <= 0) {
-                                    data.statusEffects.removeAll { it.type == FRACTURE }
-                                } else {
-                                    val idx = data.statusEffects.indexOf(fractureEffect)
-                                    if (idx >= 0) {
-                                        data.statusEffects[idx] = fractureEffect.copy(level = newLevel)
-                                    }
-                                }
-                                val newDur = currentDur - config.fractureCost
-                                if (newDur <= 0) {
-                                    item.amount -= 1
-                                    itemConsumed = true
-                                } else {
-                                    setNbtDurability(item, newDur, player)
-                                }
-                                healedSomething = true
-                            }
-                        }
-                    }
-
-                    if (itemConsumed) {
-                        enterPost(state, PostReason.ITEM_LOST, player)
-                        continue
-                    }
-
-                    if (isHealDone(player, data, state)) {
-                        enterPost(state, PostReason.COMPLETE, player)
-                        continue
-                    }
-
-                    if (healedSomething) {
-                        config.soundHeal.play(player)
-                        if (config.costFood > 0) {
-                            data.customHunger = maxOf(data.customHunger - config.costFood, 0.0)
-                        }
-                        if (config.costSan > 0) {
-                            data.sanity = maxOf(data.sanity - config.costSan, 0.0)
-                        }
-                    }
-
-                    val curDur = getNbtDurability(item)
-                    val durStr = "${curDur.toInt()}/${config.maxDurability.toInt()}"
-                    player.sendActionBar("<#84D1CB>治疗中... 抬头以退出治疗模式 <#A9B4C3>耐久: $durStr".toComponent())
-                }
-
-                HealingPhase.POST -> {
-                    state.phaseTicks--
-                    if (state.phaseTicks <= 0) {
-                        toRemove.add(uuid)
-                        continue
-                    }
-                    val sec = state.phaseTicks / 4 + 1
-                    val msg = when (state.postReason) {
-                        PostReason.COMPLETE -> "治疗完成"
-                        PostReason.CANCELLED -> "治疗中断"
-                        PostReason.ITEM_LOST -> "医疗物品耗尽"
-                    }
-                    val suffix = if (state.postReason == PostReason.COMPLETE) "低头以结束" else "自动结束中"
-                    player.sendActionBar("<#EFDF8F>$msg <#A9B4C3>$suffix <#F2F5FA>${sec}秒".toComponent())
-                }
-            }
+    private fun treat(player: Player, state: HealingState, held: ItemStack) {
+        val config = state.config
+        val body = state.profile.bodyHealth
+        val part = state.partId?.let { body.parts[it] }
+        if (part?.destroyed == true) { post(player, state, PostReason.CANCELLED); return }
+        val available = durability(held)
+        if (available <= 0) { post(player, state, PostReason.ITEM_LOST); return }
+        val maxHp = player.getAttribute(org.bukkit.attribute.Attribute.MAX_HEALTH)?.value ?: 20.0
+        val result = BodyTreatment.apply(body, state.partId, state.healHealth, maxHp - player.health,
+            available, state.totalHealed, config.maxHeal, config.healSpeed, config.healRate,
+            config.hpLeast, config.removeDebuff)
+        val dur = result.durability
+        val changed = result.changed
+        // treated 是「韧性与血量合计」的额度占用，血量已包含在内，不要再叠加 hpHealed。
+        state.totalHealed += result.treated
+        if (result.hpHealed > 0) player.health = minOf(maxHp, player.health + result.hpHealed)
+        BodyHealthManager.syncPenalties(player, body)
+        val hpEligible = state.healHealth && config.hpLeast >= 0 && body.toughnessPercentage > config.hpLeast
+        if (changed) {
+            setDurability(held, dur, player)
+            state.profile.customHunger = (state.profile.customHunger - config.costFood).coerceAtLeast(0.0)
+            state.profile.sanity = (state.profile.sanity - config.costSan).coerceAtLeast(0.0)
+            config.soundHeal.play(player)
         }
-
-        for (uuid in toRemove) {
-            val state = states.remove(uuid) ?: continue
-            AttributeManager.removeModifiersByAttribute(uuid, "movement_speed", ModifierSource.HEALING)
-            val player = Bukkit.getPlayer(uuid)
-            if (player != null) {
-                player.sendActionBar("<#8FD4A6>已退出治疗模式".toComponent())
-                state.config.soundEnd.play(player)
-            }
+        val done = result.blocked || !changed || state.totalHealed + 1e-9 >= config.maxHeal ||
+            ((part == null || part.percentage >= 1) && (!hpEligible || player.health >= maxHp))
+        when {
+            dur <= 1e-9 -> post(player, state, PostReason.ITEM_LOST)
+            done -> post(player, state, PostReason.COMPLETE)
+            else -> player.sendActionBar("<#84D1CB>治疗中 <#A9B4C3>耐久 ${"%.1f".format(dur)}，已治疗 ${"%.1f".format(state.totalHealed)}/${config.maxHeal}".toComponent())
         }
     }
 }

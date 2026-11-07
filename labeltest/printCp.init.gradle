@@ -1,0 +1,10 @@
+// Print the compile classpath of a project, for out-of-band verification.
+allprojects {
+    afterEvaluate { p ->
+        p.tasks.register("printCp") {
+            doLast {
+                println("CLASSPATH=" + p.configurations.compileClasspath.files.join(';'))
+            }
+        }
+    }
+}

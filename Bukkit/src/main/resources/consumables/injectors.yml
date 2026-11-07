@@ -377,21 +377,6 @@ zako_healer_injector:
       sound: BLOCK_NOTE_BLOCK_CHIME
       volume: 0.3
       pitch: 1.0
-    - effect: modifier
-      modifier: external_injury_regen
-      amount: 2
-      uuid: zako_healer_injector
-      expire: 50s
-      death_mark: true
-    - effect: modifier
-      modifier: internal_injury_regen
-      amount: 2
-      uuid: zako_healer_injector
-      expire: 50s
-      death_mark: true
-    - effect: injury_threshold
-      value: 50
-      amplifier: 50
     - effect: tick_task
       period: 20
       repeats: 40

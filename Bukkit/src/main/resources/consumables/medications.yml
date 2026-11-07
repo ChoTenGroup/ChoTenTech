@@ -88,41 +88,29 @@ almond_bandage:
   id: "almond_bandage"
   medical: true
   effects:
+    - effect: bandage
     - effect: health
       mode: add
       value: 20
       cap: 75
-    - effect: external_injury
-      mode: percent
-      value: 20
-    - effect: internal_injury
-      mode: percent
-      value: 5
-
 sterile_bandage:
   id: "sterile_bandage"
   medical: true
   effects:
+    - effect: bandage
     - effect: health
       mode: add
       value: 12
       cap: 75
-    - effect: external_injury
-      mode: percent
-      value: 15
-
 bandage:
   id: "bandage"
   medical: true
   effects:
+    - effect: bandage
     - effect: health
       mode: add
       value: 5
       cap: 75
-    - effect: external_injury
-      mode: percent
-      value: 10
-
 sanity_salt:
   id: "sanity_salt"
   effects:

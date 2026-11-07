@@ -111,8 +111,6 @@ fun foodTimer() {
                 data.customHunger = data.maxCustomHunger
                 data.customSaturation = minOf(data.maxCustomSaturation, data.customHunger)
                 data.consumption = 0.0
-                data.externalInjury = minOf(data.externalInjury + data.externalInjuryRegen, data.maxExternalInjury)
-                data.internalInjury = minOf(data.internalInjury + data.internalInjuryRegen, data.maxInternalInjury)
                 player.foodLevel = 20
                 player.saturation = 5f
                 player.exhaustion = 0f
@@ -128,8 +126,6 @@ fun foodTimer() {
             updateSprintLock(player, data, uuid)
 
             // === Injury regen (from attribute system) ===
-            data.externalInjury = minOf(data.externalInjury + data.externalInjuryRegen, data.maxExternalInjury)
-            data.internalInjury = minOf(data.internalInjury + data.internalInjuryRegen, data.maxInternalInjury)
 
             // === 自然生命恢复:每秒恢复 health_regen × health_regen_multiplier,每次消耗 0.02 饱食/饥饿(优先扣饱和) ===
             // (原版回复要求食物≥18,而本系统强制饥饿值为16/5,原版回复永不触发)
@@ -232,7 +228,10 @@ private fun applyStaminaTick(player: Player, data: PlayerData, uuid: String) {
     lastLocations[uuid] = currentLoc.clone()
 
     // === Hand Stamina ===
-    data.handStamina = minOf(data.handStamina + 1.0, data.maxHandStamina)
+    // 统一走 data/HandStamina：最后一次消耗满 stamina.regen-delay-seconds（默认 5 秒）之后，
+    // 每秒回复上限的 stamina.regen-percent-per-second（默认 5%），再乘属性 hand_stamina_regen_multiplier。
+    // 以前这里是「无条件每 tick +1.0（= 20 点/秒）」，扣完立刻被补回来，消耗完全没有存在感。
+    io.github.zzzyyylllty.chotentech.data.HandStamina.tickRegen(player, data)
 
     // === Stamina (with nutrition regen multiplier) ===
     val staminaRegenMult = io.github.zzzyyylllty.chotentech.manager.AttributeManager.getAttributeValue(player, "stamina_regen_multiplier")

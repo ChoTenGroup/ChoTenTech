@@ -36,12 +36,6 @@ default:
   max-custom-hunger: 100.0
   custom-saturation: 100.0
   max-custom-saturation: 100.0
-  external-injury: 100.0
-  max-external-injury: 100.0
-  internal-injury: 100.0
-  max-internal-injury: 100.0
-  external-injury-regen: 0
-  internal-injury-regen: 0
   sanity-regen: 0.0
   health-regen: 0.2
   nutrition-grain: 50.0
@@ -192,6 +186,8 @@ bleedout:
   enabled: true
   # 倒地后最大存活时间（秒）
   duration: 60
+  # 休克后自动死亡倒计时（秒）
+  shock-duration: 120
   # 救援所需时间（秒）
   revival-time: 5
   # 被救起后的生命值比例 (0.0-1.0)

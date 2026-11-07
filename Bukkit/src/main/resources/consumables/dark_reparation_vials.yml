@@ -17,10 +17,6 @@ dark_reparation_vials_navy:
 dark_reparation_vials_amethyst:
   id: "dark_reparation_vials_amethyst"
   effects:
-    - effect: internal_injury
-      mode: set
-      value: 0
-
 dark_reparation_vials_ruby:
   id: "dark_reparation_vials_ruby"
   effects:

@@ -18,12 +18,37 @@ object ChatDispatcher {
     /** player UUID -> (channel key -> 上次发送毫秒时间戳) */
     private val cooldowns = ConcurrentHashMap<UUID, ConcurrentHashMap<String, Long>>()
 
+    /**
+     * 玩家退出时清掉其冷却记录。
+     * cooldowns 此前无任何清理路径：每个进过服务器并说过话的玩家
+     * 都会在这里留下一个内层 map（常驻内存）。服务器长期运行 +
+     * 大量玩家流动时是无界增长。冷却时间戳对已离线玩家毫无意义
+     * （重新登录不需要延续之前的冷却），整体移除即可。
+     * 由 ChoTenTech 的玩家退出监听调用。
+     */
+    fun clearCooldowns(playerUuid: UUID) {
+        cooldowns.remove(playerUuid)
+    }
+
     data class Prepared(
+        val sender: Player,
+        val channel: ChatChannel,
+        /** 提及已替换为 [@token] 标记的消息文本（渲染消息段用） */
+        val messageText: String,
         val component: Component,
         val consoleLine: String,
         val recipients: List<Player>,
         val teamName: String?,
-    )
+        /** @ 提及解析结果（无提及则 tokens 为空） */
+        val mentions: ChatMention.Result?,
+    ) {
+        /** 按查看者渲染消息（提及分色：被提及者黄色高亮，其余蓝色） */
+        fun componentFor(viewer: Player): Component {
+            val mentions = mentions ?: return component
+            if (mentions.tokens.isEmpty()) return component
+            return ChatFormatter.buildForViewer(viewer, this)
+        }
+    }
 
     /**
      * 执行发送前的全部校验与渲染。
@@ -63,20 +88,33 @@ object ChatDispatcher {
         // 占位符替换（如 [item] → 主手物品名），结果为 MiniMessage 字符串随消息渲染
         val resolved = ChatPlaceholder.resolve(player, filtered)
 
+        // @ 提及解析：命中处替换为 [@token] 标记，渲染阶段按查看者分色
+        val mentions = ChatMention.parse(player, resolved)
+
         val teamName = team?.let { Bukkit.getOfflinePlayer(it.leader).name ?: "未知" }
-        val (component, consoleLine) = ChatFormatter.build(player, channel, resolved, teamName)
+        val (component, consoleLine) = ChatFormatter.build(player, channel, mentions.text, teamName, mentions)
 
         val recipients = Bukkit.getOnlinePlayers().filter { canReceive(it, player, channel, team) }
 
         cooldowns.getOrPut(player.uniqueId) { ConcurrentHashMap() }[channel.key] = System.currentTimeMillis()
-        return Prepared(component, consoleLine, recipients, teamName)
+        return Prepared(
+            sender = player,
+            channel = channel,
+            messageText = mentions.text,
+            component = component,
+            consoleLine = consoleLine,
+            recipients = recipients,
+            teamName = teamName,
+            mentions = mentions,
+        )
     }
 
-    /** 直接发送（命令路径）：渲染后向收件人发送组件并输出控制台行。 */
+    /** 直接发送（命令路径）：按查看者渲染后发送并输出控制台行，同时提醒被提及玩家 */
     fun send(player: Player, channel: ChatChannel, text: String): Boolean {
         val prepared = prepare(player, channel, text) ?: return false
-        prepared.recipients.forEach { it.sendMessage(prepared.component) }
+        prepared.recipients.forEach { it.sendMessage(prepared.componentFor(it)) }
         Bukkit.getConsoleSender().sendMessage(prepared.consoleLine)
+        prepared.mentions?.let { ChatMention.notify(player, it) }
         return true
     }
 

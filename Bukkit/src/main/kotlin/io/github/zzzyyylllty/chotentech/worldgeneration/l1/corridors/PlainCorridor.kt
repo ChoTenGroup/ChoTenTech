@@ -933,7 +933,7 @@ class GL1PlainCorridor(
     private fun setChain(chunkData: ChunkData, x: Int, y: Int, z: Int, axis: Axis): Boolean {
         if (x !in 1..14 || z !in 1..14) return false
         if (!isAirAt(chunkData, x, y, z)) return false
-        val data = Material.CHAIN.createBlockData() as Orientable
+        val data = Material.IRON_CHAIN.createBlockData() as Orientable
         data.axis = axis
         chunkData.setBlock(x, y, z, data)
         return true

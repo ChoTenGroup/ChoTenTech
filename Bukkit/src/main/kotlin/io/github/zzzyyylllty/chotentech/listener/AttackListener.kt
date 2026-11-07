@@ -1,6 +1,7 @@
 package io.github.zzzyyylllty.chotentech.listener
 
 import io.github.zzzyyylllty.chotentech.ChoTenTech
+import io.github.zzzyyylllty.chotentech.data.getData
 import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
 import io.github.zzzyyylllty.chotentech.feature.crossbow.CrossbowManager
 import io.github.zzzyyylllty.chotentech.damage.DamageCategory
@@ -185,6 +186,18 @@ object AttackListener {
 
 @SubscribeEvent(priority = EventPriority.HIGH)
     fun onEntityDamageByEntity(event: EntityDamageByEntityEvent) {
+        // 枪械子弹的命中已经由 GunDamage.applyHit 结算过（伤害类型/减免/衰减都在那边做完），
+        // 这里直接放行，避免二次加成/减免把伤害打两遍。
+        // 标记由 GunDamage 在 damage() 前后挂/摘，只在这一次事件里可见。
+        if (event.entity.hasMetadata("chotentech_gun_hit") ||
+            event.entity.hasMetadata("chotentech_gun_broken_melee")) {
+            return
+        }
+
+        // 已被更早的监听器取消的伤害（例如损坏枪械的原版挥击在 LOWEST 被 GunListener 取消、
+        // 或队伍插件取消友伤）不再参与本系统的结算：否则会白扣护甲耐久、触发着火/闪避提示。
+        if (event.isCancelled) return
+
         val damager = event.damager
         val victim = event.entity
 
@@ -193,7 +206,7 @@ object AttackListener {
         if (attacker == null || victim.isDead) return
 
         // 倒地者对玩家攻击免疫:跳过全部伤害计算与效果应用
-        if (victim is Player && BleedoutManager.isDowned(victim.uniqueId)) return
+        if (victim is Player && BleedoutManager.isShocked(victim.uniqueId)) return
 
         val originalDamage = event.damage
         var modifiedDamage = originalDamage
@@ -230,27 +243,8 @@ object AttackListener {
             modifiedDamage = calculateDamageReduction(victim, attackTypes, modifiedDamage)
         }
 
-        // 4.5 伤势效果：内伤增加承受伤害，外伤增加对方暴击概率
-        if (victim is Player) {
-            val victimData = playerDataMap[victim.uniqueId.toString()]
-            if (victimData != null) {
-                // 内伤：0%时对方攻击伤害+100%，线性插值
-                val internalInjuryRatio = 1.0 - (victimData.internalInjury / victimData.maxInternalInjury).coerceIn(0.0, 1.0)
-                if (internalInjuryRatio > 0) {
-                    modifiedDamage *= (1.0 + internalInjuryRatio)
-                }
-                // 外伤：0%时对方暴击率+100%，线性插值
-                val externalInjuryRatio = 1.0 - (victimData.externalInjury / victimData.maxExternalInjury).coerceIn(0.0, 1.0)
-                if (externalInjuryRatio > 0) {
-                    val baseCritChance = AttributeManager.getAttributeValue(attacker, "crit_chance")
-                    val totalCritChance = (baseCritChance + externalInjuryRatio).coerceAtMost(1.0)
-                    if (totalCritChance > 0 && Random.nextDouble() < totalCritChance) {
-                        val critDamage = AttributeManager.getAttributeValue(attacker, "crit_damage")
-                        val effectiveCritDmg = if (critDamage > 0) critDamage else 0.5
-                        modifiedDamage *= (1.0 + effectiveCritDmg)
-                    }
-                }
-            }
+        if (attackTypes.contains(AttackType.MELEE)) {
+            modifiedDamage *= 1.0 - (attacker.getData()?.bodyHealth?.armPenalties()?.melee ?: 0.0)
         }
 
         // 5. 火焰攻击几率逻辑（现有逻辑保持不变）
