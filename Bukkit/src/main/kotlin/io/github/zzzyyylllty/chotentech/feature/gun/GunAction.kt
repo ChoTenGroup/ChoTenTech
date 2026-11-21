@@ -113,31 +113,6 @@ object GunAction {
         GUI("打开了其它界面"),
     }
 
-    /**
-     * 背包里「能放弹匣」的槽位：快捷栏 + 主背包 0..35。
-     *
-     * `PlayerInventory.getSize()` 返回 41（36 存储 + 4 护甲 + 1 副手），
-     * 直接 `0 until size` 会把**护甲槽和副手槽**也当成候选 ——
-     * 护甲槽里的弹匣会被从装备栏里「换」走，与文档写的「0..35」也不一致。
-     */
-    /** 玩家背包存储槽：0..8 快捷栏 + 9..35 主背包。 */
-    private val STORAGE_SLOTS: IntRange = 0..35
-
-    /** 副手槽。`PlayerInventory` 的 41 格里，36..39 是护甲、40 是副手。 */
-    private const val OFFHAND_SLOT = 40
-
-    /**
-     * 换弹候选要扫描的槽位：存储槽 + 副手槽，**单独排除护甲槽**。
-     *
-     * 早期版本直接扫 `0 until inventory.size`（41 格），会把塞进护甲槽的弹匣也当候选，
-     * 相当于从装备栏里把东西「换」走 —— 那确实是隐患。但一刀切成 `0..35` 又把
-     * 「副手放弹匣、主手换弹」这个正常玩法砍掉了。所以这里显式列出存储槽与副手槽，
-     * 只排除 36..39 的护甲槽。
-     *
-     * 槽位读走 `getItem` / `setItem`（40 号走的是副手），与改动前的行为一致。
-     */
-    private val RELOAD_SCAN_SLOTS: List<Int> = STORAGE_SLOTS.toList() + OFFHAND_SLOT
-
     private class ActiveAction(
         val type: ActionType,
         val startLocation: Location,
@@ -481,12 +456,12 @@ object GunAction {
      * 而这正是最常见的玩家操作习惯。排序依次为：
      * 是否在快捷栏 → 子弹数降序 → `machineEfficiency` 降序（惩罚小者优先）→ 槽位靠前。
      *
-     * 护甲槽（36..39）不在扫描范围内，见 [RELOAD_SCAN_SLOTS]。
+     * 护甲槽（36..39）与副手槽（40）不在扫描范围内，见 [GunInventorySlots.storageSlots]。
      */
     fun findReloadCandidate(player: Player, gun: GunData): MagCandidate? {
         val handSlot = player.inventory.heldItemSlot
-        val candidates = ArrayList<MagCandidate>(37)
-        for (slot in RELOAD_SCAN_SLOTS) {
+        val candidates = ArrayList<MagCandidate>(GunInventorySlots.STORAGE_SIZE)
+        for (slot in GunInventorySlots.storageSlots(player.inventory.size)) {
             if (slot == handSlot) continue
             val item = try {
                 player.inventory.getItem(slot)
@@ -498,7 +473,7 @@ object GunAction {
             if (!mag.caliber.equals(gun.caliber, ignoreCase = true)) continue
             val ammoSnapshot = MagazineCore.readAmmo(item).toList()
             // 扫描只读身份：`instanceId()` 会为没有身份的弹匣生成并落盘，
-            // 而这段代码在菜单开着时每 10 tick 就会跑一遍（41 格全扫）。
+            // 而这段代码在菜单开着时每 10 tick 就会跑一遍（36 格全扫）。
             val instanceId = MagazineCore.instanceIdOrNull(item).orEmpty()
             candidates += MagCandidate(
                 slot = slot,
@@ -521,12 +496,12 @@ object GunAction {
     /**
      * 换弹失败时给玩家的**具体**原因（Q 没反应时最容易一头雾水）。
      *
-     * 扫描范围必须与 [findReloadCandidate] 一致（见 [RELOAD_SCAN_SLOTS]）：否则弹匣
+     * 扫描范围必须与 [findReloadCandidate] 一致（见 [GunInventorySlots.storageSlots]）：否则弹匣
      * 只放在护甲槽时会提示「背包里有 XX 口径弹匣」，而换弹实际上永远不会用它。
      */
     fun reloadBlockReason(player: Player, gun: GunData): String {
         val calibers = HashSet<String>()
-        for (slot in RELOAD_SCAN_SLOTS) {
+        for (slot in GunInventorySlots.storageSlots(player.inventory.size)) {
             val item = try {
                 player.inventory.getItem(slot)
             } catch (_: Exception) {
@@ -1598,7 +1573,7 @@ object GunAction {
     fun countAmmo(player: Player, ammoId: String): Int {
         var total = 0
         val inv = player.inventory
-        for (i in 0 until inv.size) {
+        for (i in GunInventorySlots.storageSlots(inv.size)) {
             val stack = try {
                 inv.getItem(i)
             } catch (_: Exception) {
@@ -1616,7 +1591,7 @@ object GunAction {
         var need = amount
         if (need <= 0) return true
         val inv = player.inventory
-        for (i in 0 until inv.size) {
+        for (i in GunInventorySlots.storageSlots(inv.size)) {
             if (need <= 0) break
             val stack = try {
                 inv.getItem(i)
@@ -1640,7 +1615,7 @@ object GunAction {
     /** 背包里第一种匹配该弹匣口径的子弹 ID。 */
     fun firstMatchingAmmo(player: Player, mag: MagData): String? {
         val inv = player.inventory
-        for (i in 0 until inv.size) {
+        for (i in GunInventorySlots.storageSlots(inv.size)) {
             val stack = try {
                 inv.getItem(i)
             } catch (_: Exception) {
@@ -1671,7 +1646,7 @@ object GunAction {
         val type = materialOf(name) ?: return 0
         var total = 0
         val inv = player.inventory
-        for (i in 0 until inv.size) {
+        for (i in GunInventorySlots.storageSlots(inv.size)) {
             val stack = try {
                 inv.getItem(i)
             } catch (_: Exception) {
@@ -1688,7 +1663,7 @@ object GunAction {
         for ((name, count) in need) {
             val type = materialOf(name) ?: continue
             var left = count
-            for (i in 0 until inv.size) {
+            for (i in GunInventorySlots.storageSlots(inv.size)) {
                 if (left <= 0) break
                 val stack = try {
                     inv.getItem(i)

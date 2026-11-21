@@ -210,3 +210,11 @@
 # magic_attack_damage: 魔法攻击伤害加成 (百分比)
 # fire_attack_damage: 火焰攻击伤害加成 (百分比)
 # fire_attack_chance: 火焰攻击几率 (百分比，使攻击有一定几率附加火焰效果)
+
+# ===== 长矛冲锋属性 (内置，代码注册，无需在此定义) =====
+# 属性 ID 大小写不敏感，物品 NBT / 命令 / 占位符里写 Spear_charge_level 或
+# spear_charge_level 等价。
+# spear_charge_level: 长矛穿刺强度。长矛冲锋攻击（伤害类型 minecraft:spear）命中后
+#                     最终伤害的独立乘区，默认 1.0（100%）。公式：伤害 * 该值
+# spear_charge_speed: 长矛冲锋速度。手持长矛进入冲锋（按住使用键）时增加的移动速度，
+#                     按小数存百分比，默认 0.0（0%）→ 0.25 表示 +25%

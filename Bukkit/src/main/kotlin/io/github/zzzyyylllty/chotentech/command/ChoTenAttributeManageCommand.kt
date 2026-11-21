@@ -87,13 +87,14 @@ object ChoTenAttributeManageCommand {
                     dynamic("value") {
                         execute<CommandSender> { sender, context, _ ->
                             val player = Bukkit.getOfflinePlayer(context["player"])
-                            val attrId = context["attrId"]
+                            // 属性 ID 大小写不敏感：统一按规范 ID 存储/比较
+                            val attrId = AttributeManager.canonicalAttributeId(context["attrId"])
                             val type = runCatching { ModifierType.valueOf(context["type"].uppercase()) }.getOrNull() ?: return@execute sender.sendStringAsComponent(sender.asLangText("Command_Error_Invalid_Type", context["type"]))
                             val value = context["value"].toDoubleOrNull() ?: return@execute sender.sendStringAsComponent(sender.asLangText("Command_Error_Invalid_Value", context["value"]))
 
                             val data = AttributeManager.getPlayerPersistentData(player.uniqueId)
                             val mods = data.modifiers.toMutableList()
-                            mods.removeIf { it.attributeId == attrId && it.source == ModifierSource.OTHER }
+                            mods.removeIf { AttributeManager.canonicalAttributeId(it.attributeId) == attrId && it.source == ModifierSource.OTHER }
 
                             val modifier = AttributeModifier(
                                 attributeId = attrId,

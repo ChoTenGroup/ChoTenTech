@@ -41,7 +41,7 @@
 - **执行者要求**：**仅玩家**（`execute<Player>` 且使用 `player` 本身作为目标；控制台执行会因 sender 转换失败而无法执行）。
 - **行为说明**：
   - 等价于 `showGrouped(player, player, null)`。
-  - `category` 为 `null` 或 `"all"` 时：把 `getAllAttributes(target)` 的结果按 `getCategory(key)` 分组，然后**按 `CATEGORY_NAMES` 的声明顺序**逐类输出（顺序：`basic` → `combat` → `defense` → `block` → `ranged` → `magic` → `fire` → `element` → `body` → `hunger` → `regen`，最后不含在该表中的属性归入 `other`）；没有属性的分类跳过。
+  - `category` 为 `null` 或 `"all"` 时：把 `getAllAttributes(target)` 的结果按 `getCategory(key)` 分组，然后**按 `CATEGORY_NAMES` 的声明顺序**逐类输出（顺序：`basic` → `combat` → `spear` → `defense` → `block` → `ranged` → `magic` → `fire` → `element` → `body` → `hunger` → `regen`，最后不含在该表中的属性归入 `other`）；没有属性的分类跳过。
   - 每个分类先输出表头 `Command_Debug_Show_Category_Header`（"--- {0} ({1}) ---"，`{0}` = 中文分类名，`{1}` = 该分类条数），随后按属性 ID 字典序（`entries.toSortedMap()`）逐条输出 `<#A9B4C3>  {显示名}<#A9B4C3>: <#F2F5FA>{值}</#F2F5FA>`。显示名由 `AttributeManager.getAttributeDisplayName(sender, id)` 取语言键 `Attribute_<id>_Name`，未注册时回退为原始 ID。
   - 若 `getAllAttributes` 返回空（或抛异常被捕获为空 map），输出 `Command_Debug_Show_EmptyAll`（"该玩家无任何属性数据"）。
 - **示例**：`/atbdebug show`
@@ -51,11 +51,11 @@
 - **参数**：
   | 参数 | 类型/含义 | 是否必填 | 可选值/自动补全 |
   |---|---|---|---|
-  | `category` | 属性分类 key（`dynamic("category")`） | 可选 | `basic`, `combat`, `defense`, `block`, `ranged`, `magic`, `fire`, `element`, `body`, `hunger`, `regen`, `other`, `all`（补全声明为 `suggestion<CommandSender>(uncheck = true) { allCategoryKeys + listOf("all") }`，`uncheck = true` 表示补全时不做参数合法性校验） |
+  | `category` | 属性分类 key（`dynamic("category")`） | 可选 | `basic`, `combat`, `spear`, `defense`, `block`, `ranged`, `magic`, `fire`, `element`, `body`, `hunger`, `regen`, `other`, `all`（补全声明为 `suggestion<CommandSender>(uncheck = true) { allCategoryKeys + listOf("all") }`，`uncheck = true` 表示补全时不做参数合法性校验） |
 - **权限**：`chotenattribute.command.debug`（默认 OP）。
 - **执行者要求**：**仅玩家**（`execute<Player>`，目标固定为执行者本人）。
 - **行为说明**：
-  - 若 `category` 命中 `CATEGORY_NAMES`（上表除 `all` 之外的 12 个 key）：取该分类的 ID 集合，过滤出玩家身上属于该分类的属性，按 ID 字典序输出，表头同样为 `Command_Debug_Show_Category_Header`；若过滤后为空，输出 `Command_Debug_Show_Empty`（"该分类下无属性或分类不存在"）。
+  - 若 `category` 命中 `CATEGORY_NAMES`（上表除 `all` 之外的 13 个 key）：取该分类的 ID 集合，过滤出玩家身上属于该分类的属性，按 ID 字典序输出，表头同样为 `Command_Debug_Show_Category_Header`；若过滤后为空，输出 `Command_Debug_Show_Empty`（"该分类下无属性或分类不存在"）。
   - `category == "all"` 走与无参 `show` 相同的"全部分类"分支。
   - 其它无法识别的值：输出 `Command_Debug_Show_Empty`。
   - 注意 `other` 是合法分类 key，但它对应的 ID 集合**恒为空**（`CATEGORY_NAMES` 里有 `"other" to "其他"`，`CATEGORY_IDS` 初始化时也为它建了空集合，但从未 `add` 过任何 ID），因此 `show other` 只会输出"该分类下无属性或分类不存在"。
@@ -82,7 +82,7 @@
 - **执行者要求**：玩家 / 控制台均可。
 - **行为说明**：
   - 先输出表头 `Command_Debug_Categories_Header`（"===== 属性分类 ====="）。
-  - 遍历 `allCategoryKeys`（即 `CATEGORY_NAMES.keys`，顺序 `basic, combat, defense, block, ranged, magic, fire, element, body, hunger, regen, other`），对每类统计 `CATEGORY_IDS[catKey]` 中**同时存在于 `AttributeManager.attributeRegistry`** 的 ID 数量，输出 `Command_Debug_Categories_Item`（"{0} — {1} ({2} 个属性)"，参数为 中文分类名 / `§f/<catKey>` / 数量）。
+  - 遍历 `allCategoryKeys`（即 `CATEGORY_NAMES.keys`，顺序 `basic, combat, spear, defense, block, ranged, magic, fire, element, body, hunger, regen, other`），对每类统计 `CATEGORY_IDS[catKey]` 中**同时存在于 `AttributeManager.attributeRegistry`** 的 ID 数量，输出 `Command_Debug_Categories_Item`（"{0} — {1} ({2} 个属性)"，参数为 中文分类名 / `§f/<catKey>` / 数量）。
   - 最后额外输出一行特殊项：`"全部"` / `§f/all` / `attributeRegistry.keys.size`。
   - 因此 `basic` 一类的计数会受 `attributeRegistry` 影响（例如注册表里没有的分类 ID 不计入）；`other` 由于 ID 集合为空恒为 0，`all` 反映注册表总数。
 - **示例**：`/atbdebug categories`
@@ -93,6 +93,7 @@
 |---|---|---|
 | `basic` | 基础属性 | `max_health`, `max_absorption`, `movement_speed`, `attack_damage`, `attack_speed`, `armor`, `armor_toughness`, `attack_knockback`, `knockback_resistance`, `luck`, `fall_damage_multiplier`, `burning_time`, `explosion_knockback_resistance`, `mining_efficiency`, `movement_efficiency`, `oxygen_bonus`, `player_block_break_speed`, `player_block_interaction_range`, `player_entity_interaction_range`, `player_submerged_mining_speed`, `player_mining_speed`, `gravity`, `safe_fall_distance`, `scale`, `step_height`, `spawn_reinforcements` |
 | `combat` | 战斗 | `crit_chance`, `crit_damage`, `lifesteal`, `dodge_chance`, `defense`, `defense_toughness`, `attack_damage` |
+| `spear` | 长矛 | `spear_charge_level`, `spear_charge_speed` |
 | `defense` | 防御 | `armor`, `armor_toughness`, `all_damage_reduction`, `physical_damage_reduction` |
 | `block` | 格挡 | `block_chance`, `block_defense`, `block_defense_percent` |
 | `ranged` | 远程 | `ranged_damage`, `ranged_extra_damage`, `ranged_damage_reduction`, `bow_extra_damage`, `crossbow_extra_damage`, `bow_damage_reduction`, `crossbow_damage_reduction` |

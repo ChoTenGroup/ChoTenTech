@@ -141,6 +141,8 @@ Attribute_decay_damage_Name: 衰退伤害
 Attribute_stamina_regen_multiplier_Name: 体力回复倍率
 Attribute_health_regen_multiplier_Name: 生命回复倍率
 Attribute_deny_move_Name: 禁止移动
+Attribute_spear_charge_level_Name: 长矛穿刺强度
+Attribute_spear_charge_speed_Name: 长矛冲锋速度
 
 # : : : : :  属性描述 : : : : :
 Attribute_max_health_Description: 最大生命值
@@ -223,3 +225,5 @@ Attribute_decay_damage_Description: 衰退伤害
 Attribute_stamina_regen_multiplier_Description: 体力回复倍率
 Attribute_health_regen_multiplier_Description: 生命回复倍率
 Attribute_deny_move_Description: 值为 1 及以上时禁止玩家移动
+Attribute_spear_charge_level_Description: 长矛冲锋攻击命中时应用的独立伤害乘区（1.0 = 100%，默认 1.0）
+Attribute_spear_charge_speed_Description: 手持长矛进行冲锋时增加的移动速度（百分比，默认 0%）

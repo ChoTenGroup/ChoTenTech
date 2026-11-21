@@ -114,7 +114,8 @@ class KAngelAttributesExpansion : PlaceholderExpansion() {
     }
 
     private fun formatValue(attributeId: String, value: Double): String {
-        val attribute = AttributeManager.getRegisteredAttributes().find { it.id == attributeId }
+        // 属性 ID 大小写不敏感：占位符里写 %kangelattributes_Spear_charge_level_formatted% 也能命中
+        val attribute = AttributeManager.getAttributeType(attributeId)
         return if (attribute?.isPercentage == true) {
             String.format("%.2f%%", value * 100)
         } else {

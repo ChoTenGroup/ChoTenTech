@@ -138,6 +138,15 @@ object GunAim {
         return data.handStamina + 1e-6 >= cost
     }
 
+    /**
+     * 确保本次持枪周期已执行出枪读条与体力扣除。
+     * 防止玩家状态刚被清理、而 1 tick 管理循环尚未补起出枪时直接开火/瞄准。
+     */
+    fun ensureDrawStarted(player: Player, gun: GunData): Boolean {
+        val state = GunStateManager.state(player)
+        return state.drawApplied || beginDraw(player, gun)
+    }
+
     /** 出枪是否完成（`drawTicks <= 0` 才能开火 / 瞄准）。 */
     fun isReady(player: Player): Boolean = GunStateManager.state(player).drawTicks <= 0
 
@@ -154,6 +163,10 @@ object GunAim {
     fun pressAds(player: Player) {
         val held = player.inventory.itemInMainHand
         val gun = GunRegistry.gunOf(held) ?: return
+        if (!ensureDrawStarted(player, gun)) {
+            notifyDrawBlockedFor(player)
+            return
+        }
         val state = GunStateManager.state(player)
         if (state.drawTicks > 0) {
             sendActionBar(player, "<#E08A98>正在出枪，无法瞄准")

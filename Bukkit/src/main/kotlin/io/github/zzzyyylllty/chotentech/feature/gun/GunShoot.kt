@@ -242,6 +242,11 @@ object GunShoot {
             return ShotResult.BLOCKED
         }
 
+        if (!GunAim.ensureDrawStarted(player, gun)) {
+            GunAim.notifyDrawBlockedFor(player)
+            return deny(player, "draw-stamina")
+        }
+
         // 出枪读条没走完 → 不能开火。必须给一句反馈：
         // 这是「有时候能打、有时候打不出来」最常见的原因（切枪后前 0.5 秒），
         // 之前这里静默返回，玩家只会觉得左键时灵时不灵。
@@ -252,6 +257,13 @@ object GunShoot {
 
         // 换弹/拉栓/检视/压弹等读条期间禁止开火（塔科夫手感：读条中枪不能打）
         if (GunAction.isBusy(player)) return deny(player, "busy")
+
+        // 枪口被实体方块挡住时必须先收枪：模型层已经显示 blocked，但开火层若不再拦截，
+        // 子弹会从眼前 0.6 格处生成，近墙时可能从方块内部生成并穿墙。
+        if (GunModel.isMuzzleBlocked(player)) {
+            sendActionBar(player, "<#DFBD7C>枪口被遮挡，无法开火")
+            return deny(player, "muzzle-blocked")
+        }
 
         val nowMs = System.currentTimeMillis()
         // 严重过热强制停火（P1 就有的字段，P3 接线：`heat.severe-stop-ms` 毫秒）

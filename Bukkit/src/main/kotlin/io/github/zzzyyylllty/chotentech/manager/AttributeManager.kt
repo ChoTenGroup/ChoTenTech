@@ -116,8 +116,20 @@ object AttributeManager {
     // 基础值属性 ID 集合（从 basic-attributes 配置加载）
     private val basicAttributeIds = mutableSetOf<String>()
 
-    // ID 合法性校验：仅允许小写字母、数字、下划线
+    // ID 合法性校验：仅允许小写字母、数字、下划线。注册与查询都会先经 [canonicalAttributeId]
+    // 归一化，所以外部可以写 "Spear_charge_level" 这类大小写混合的 ID（会落到 spear_charge_level）
     private val VALID_ID_PATTERN = Regex("^[a-z0-9_]+$")
+
+    /**
+     * 属性 ID 的规范形式：去掉首尾空白并转小写。
+     *
+     * 属性注册表、玩家属性缓存、物品 `chotenatb` 键、修饰符比较统一使用规范形式，
+     * 这样命令 / NBT / 占位符里写成 `Spear_charge_level` 或 `spear_charge_level` 都能命中同一属性。
+     */
+    fun canonicalAttributeId(id: String): String = id.trim().lowercase()
+
+    /** 按（大小写不敏感的）ID 取属性定义，未注册时返回 null */
+    fun getAttributeType(id: String): AttributeType? = attributeRegistry[canonicalAttributeId(id)]
 
     /**
      * 注册内置属性，插件启动时调用一次
@@ -235,13 +247,25 @@ object AttributeManager {
             AttributeType("weight_limit_multiplier", "负重限制", null, 1.0, minValue = 0.0),
             // 禁止移动:值 >= 1.0 时拦截 PlayerMoveEvent
             AttributeType("deny_move", "禁止移动", null, 0.0, minValue = 0.0),
+            // ===== 长矛冲锋 =====
+            // 独立乘区:仅作用于长矛冲锋攻击（damage_type = minecraft:spear）命中后的最终伤害,
+            // 1.0 = 100%（不改变伤害）。见 feature/spear/SpearChargeManager
+            AttributeType(
+                "spear_charge_level", "长矛穿刺强度", null, 1.0,
+                minValue = 0.0, description = "长矛冲锋命中时的独立伤害乘区（1.0 = 100%）"
+            ),
+            // 手持长矛进入冲锋（蓄力）状态时增加移动速度,按百分比存储（0.25 = +25%）
+            AttributeType(
+                "spear_charge_speed", "长矛冲锋速度", null, 0.0,
+                minValue = 0.0, isPercentage = true, description = "手持长矛冲锋时的移动速度提升百分比"
+            ),
         )
         val bodyAttributes = io.github.zzzyyylllty.chotentech.data.BodyParts.defaults.map { (id, max) ->
             AttributeType("toughness_${id.lowercase()}_max", "${io.github.zzzyyylllty.chotentech.data.BodyParts.names[id]}最大韧性", null, max, minValue = 0.001)
         } + AttributeType("water_max", "最大水分", null, 100.0, minValue = 0.001)
         for (type in builtins + bodyAttributes) {
             registerAttribute(type, RegistrationSource.BUILTIN)
-            builtinAttributeIds.add(type.id)
+            builtinAttributeIds.add(canonicalAttributeId(type.id))
         }
     }
 
@@ -250,39 +274,42 @@ object AttributeManager {
      * @return true 注册成功, false 已存在或验证失败
      */
     fun registerAttribute(type: AttributeType, source: RegistrationSource = RegistrationSource.API): Boolean {
+        // ID 统一成小写规范形式注册（大小写不敏感）
+        val canonicalId = canonicalAttributeId(type.id)
+        val canonicalType = if (canonicalId == type.id) type else type.copy(id = canonicalId)
         // 验证 id 非空且合法
-        if (type.id.isBlank() || !VALID_ID_PATTERN.matches(type.id)) {
-            warningS("AttributeManager: invalid attribute id '${type.id}' (only [a-z0-9_] allowed)")
+        if (canonicalId.isBlank() || !VALID_ID_PATTERN.matches(canonicalId)) {
+            warningS("AttributeManager: invalid attribute id '${type.id}' (only [a-z0-9_] allowed, case-insensitive)")
             return false
         }
         // 检查是否已存在
-        if (attributeRegistry.containsKey(type.id)) {
+        if (attributeRegistry.containsKey(canonicalId)) {
             return false
         }
         // 验证 vanillaName（若非 null）
-        if (type.vanillaName != null) {
+        if (canonicalType.vanillaName != null) {
             try {
-                var key = NamespacedKey.minecraft(type.vanillaName)
+                var key = NamespacedKey.minecraft(canonicalType.vanillaName)
                 var attr = Registry.ATTRIBUTE.get(key)
                 // 如果原始名称未找到且不包含点号，尝试添加 generic. 前缀
-                if (attr == null && !type.vanillaName.contains('.')) {
-                    key = NamespacedKey.minecraft("generic.${type.vanillaName}")
+                if (attr == null && !canonicalType.vanillaName.contains('.')) {
+                    key = NamespacedKey.minecraft("generic.${canonicalType.vanillaName}")
                     attr = Registry.ATTRIBUTE.get(key)
                 }
                 if (attr == null) {
-                    warningS("AttributeManager: vanillaName '${type.vanillaName}' not found in Registry.ATTRIBUTE (tried '${type.vanillaName}' and 'generic.${type.vanillaName}')")
+                    warningS("AttributeManager: vanillaName '${canonicalType.vanillaName}' not found in Registry.ATTRIBUTE (tried '${canonicalType.vanillaName}' and 'generic.${canonicalType.vanillaName}')")
                     return false
                 }
                 // 验证成功，将找到的属性实例存入缓存，避免后续重复查找
-                vanillaAttributeCache[type.vanillaName] = attr
+                vanillaAttributeCache[canonicalType.vanillaName] = attr
             } catch (e: Exception) {
-                warningS("AttributeManager: invalid vanillaName '${type.vanillaName}': ${e.message}")
+                warningS("AttributeManager: invalid vanillaName '${canonicalType.vanillaName}': ${e.message}")
                 return false
             }
         }
-        attributeRegistry[type.id] = type
+        attributeRegistry[canonicalId] = canonicalType
         // 事件
-        ChoTenAttributeRegisterEvent(type, source).call()
+        ChoTenAttributeRegisterEvent(canonicalType, source).call()
         return true
     }
 
@@ -291,16 +318,17 @@ object AttributeManager {
      * @return true 移除成功, false 不存在或是内置属性
      */
     fun unregisterAttribute(id: String): Boolean {
-        if (id in builtinAttributeIds) {
-            warningS("AttributeManager: cannot unregister builtin attribute '$id'")
+        val canonicalId = canonicalAttributeId(id)
+        if (canonicalId in builtinAttributeIds) {
+            warningS("AttributeManager: cannot unregister builtin attribute '$canonicalId'")
             return false
         }
-        val removed = attributeRegistry.remove(id) != null
+        val removed = attributeRegistry.remove(canonicalId) != null
         if (removed) {
             // 清理所有在线玩家缓存中该属性的值
             for (uuid in attributeCache.keys) {
                 attributeCache.computeIfPresent(uuid) { _, cache ->
-                    cache.toMutableMap().apply { remove(id) }
+                    cache.toMutableMap().apply { remove(canonicalId) }
                 }
             }
         }
@@ -311,7 +339,7 @@ object AttributeManager {
      * 查询属性是否已注册
      */
     fun isRegistered(id: String): Boolean {
-        return attributeRegistry.containsKey(id)
+        return attributeRegistry.containsKey(canonicalAttributeId(id))
     }
 
     /**
@@ -327,9 +355,10 @@ object AttributeManager {
      * @param attributeId 属性 ID
      */
     fun getAttributeDisplayName(sender: CommandSender?, attributeId: String): String {
-        val type = attributeRegistry[attributeId] ?: return attributeId
+        val canonicalId = canonicalAttributeId(attributeId)
+        val type = attributeRegistry[canonicalId] ?: return attributeId
         if (sender == null) return type.name
-        val key = "Attribute_${attributeId}_Name"
+        val key = "Attribute_${canonicalId}_Name"
         val localized = sender.asLangText(key)
         return localized
     }
@@ -340,9 +369,10 @@ object AttributeManager {
      * @param attributeId 属性 ID
      */
     fun getAttributeDescription(sender: CommandSender?, attributeId: String): String {
-        val type = attributeRegistry[attributeId] ?: return ""
+        val canonicalId = canonicalAttributeId(attributeId)
+        val type = attributeRegistry[canonicalId] ?: return ""
         if (sender == null) return type.description
-        val key = "Attribute_${attributeId}_Description"
+        val key = "Attribute_${canonicalId}_Description"
         val localized = sender.asLangText(key)
         return localized
     }
@@ -775,8 +805,10 @@ object AttributeManager {
     /** 按注册的属性类型汇总修饰符并计算最终值(纯计算,可异步线程调用) */
     private fun calculateFinalValues(allModifiers: List<AttributeModifier>): Map<String, Double> {
         val finalValues = mutableMapOf<String, Double>()
+        // 修饰符的 attributeId 可能是外部写进来的任意大小写,先按规范 ID 分组,注册表键均为小写
+        val modifiersByAttribute = allModifiers.groupBy { canonicalAttributeId(it.attributeId) }
         attributeRegistry.values.forEach { type ->
-            val modsForAttr = allModifiers.filter { it.attributeId == type.id }
+            val modsForAttr = modifiersByAttribute[type.id].orEmpty()
             if (modsForAttr.isNotEmpty() || type.defaultValue != 0.0) {
                 val calculated = calculateFinal(type.defaultValue, modsForAttr)
                 val clamped = type.clamp(calculated)
@@ -893,10 +925,13 @@ object AttributeManager {
      * 为玩家添加持久化修饰符
      */
     fun addModifier(uuid: UUID, modifier: AttributeModifier) {
-        taboolib.common.platform.function.debug("AttributeManager: adding modifier for $uuid: ${modifier.attributeId}=${modifier.value} ${modifier.type}")
+        // 外部（命令 / API / 脚本 / 消耗品配置）传入的 ID 可能大小写混写，落库前统一规范化
+        val canonicalId = canonicalAttributeId(modifier.attributeId)
+        val normalized = if (canonicalId == modifier.attributeId) modifier else modifier.copy(attributeId = canonicalId)
+        taboolib.common.platform.function.debug("AttributeManager: adding modifier for $uuid: ${normalized.attributeId}=${normalized.value} ${normalized.type}")
         val data = getPlayerPersistentData(uuid)
         val mods = data.modifiers.toMutableList()
-        mods.add(modifier)
+        mods.add(normalized)
         data.modifiers = mods
         savePlayerData(data)
 
@@ -935,10 +970,11 @@ object AttributeManager {
     fun removeModifiersByAttribute(uuid: UUID, attributeId: String, source: ModifierSource? = null) {
         val data = getPlayerPersistentData(uuid)
         val mods = data.modifiers.toMutableList()
+        val canonicalId = canonicalAttributeId(attributeId)
         val removed = if (source != null) {
-            mods.removeAll { it.attributeId == attributeId && it.source == source }
+            mods.removeAll { canonicalAttributeId(it.attributeId) == canonicalId && it.source == source }
         } else {
-            mods.removeAll { it.attributeId == attributeId }
+            mods.removeAll { canonicalAttributeId(it.attributeId) == canonicalId }
         }
         if (removed) {
             data.modifiers = mods
@@ -1010,14 +1046,15 @@ object AttributeManager {
      * [getAttributeValue] 对「没注册的属性」和「属性值为 0」都返回 0.0，调用方没法区分；
      * 需要「没配就按默认值」的地方（例如手部体力回复倍率）用这个先判一下。
      */
-    fun attributeExists(attributeId: String): Boolean = attributeRegistry.containsKey(attributeId)
+    fun attributeExists(attributeId: String): Boolean = attributeRegistry.containsKey(canonicalAttributeId(attributeId))
 
-    fun getAttributeValue(player: Player, attributeId: String): Double {        val cache = attributeCache[player.uniqueId]
+    fun getAttributeValue(player: Player, attributeId: String): Double {
+        val key = canonicalAttributeId(attributeId)
+        val cache = attributeCache[player.uniqueId]
+        val type = attributeRegistry[key]
         if (cache != null) {
-            val type = attributeRegistry[attributeId]
-            return cache[attributeId] ?: type?.clamp(type.defaultValue) ?: 0.0
+            return cache[key] ?: type?.clamp(type.defaultValue) ?: 0.0
         }
-        val type = attributeRegistry[attributeId]
         return type?.clamp(type.defaultValue) ?: 0.0
     }
 
@@ -1030,6 +1067,7 @@ object AttributeManager {
         if (entity is Player) {
             return getAttributeValue(entity as Player, attributeId)
         }
+        val key = canonicalAttributeId(attributeId)
         val uuid = entity.uniqueId
         val now = System.currentTimeMillis()
         val lastUpdate = entityCacheTimestamps[uuid] ?: 0L
@@ -1038,10 +1076,10 @@ object AttributeManager {
         }
         val cache = entityCache[uuid]
         if (cache != null) {
-            val type = attributeRegistry[attributeId]
-            return cache[attributeId] ?: type?.clamp(type.defaultValue) ?: 0.0
+            val type = attributeRegistry[key]
+            return cache[key] ?: type?.clamp(type.defaultValue) ?: 0.0
         }
-        val type = attributeRegistry[attributeId]
+        val type = attributeRegistry[key]
         return type?.clamp(type.defaultValue) ?: 0.0
     }
 
@@ -1170,7 +1208,8 @@ object AttributeManager {
                 val attrs = mutableMapOf<String, Double>()
                 var fixAttackSpeed = false
                 for (entry in compound.entries) {
-                    val key = entry.key
+                    // 属性键大小写不敏感：统一按规范 ID 存储，物品里写 Spear_charge_level 也能生效
+                    val key = entry.key.trim().lowercase()
                     if (key == "slot" || key == "allowed") continue
                     if (key == "fix_attack_speed") {
                         fixAttackSpeed = true
