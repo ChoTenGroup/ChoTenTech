@@ -1,0 +1,85 @@
+# ════════════════════════════════════════════════════════════════════
+# 仓库根 .gitignore  (E:\ChoTenTechbk)
+# 仓库已公开：构建产物 / IDE 缓存 / 日志与崩溃转储 / 本地运行目录 /
+# 密钥凭据 一律不入库。正式工程只有 Bukkit/，其余为本地临时工作区。
+# 规则均为“路径相对仓库根”，与 Bukkit/.gitignore 叠加生效。
+# ════════════════════════════════════════════════════════════════════
+
+# ── 构建产物 ───────────────────────────────────────────────────────
+.gradle/
+build/
+out/
+bin/
+target/
+*.class
+*.hprof
+
+# ── Kotlin / Gradle 缓存与本地配置 ─────────────────────────────────
+.kotlin/
+.gradletaskhistory
+local.properties
+
+# ── IDE / 编辑器 ───────────────────────────────────────────────────
+.idea/
+*.iml
+.vscode/
+.fleet/
+*.swp
+*.swo
+*~
+.settings/
+.project
+.classpath
+
+# ── Python ─────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ── 日志与 JVM 崩溃转储（体积大且含本机环境信息）───────────────────
+*.log
+logs/
+hs_err_pid*
+replay_pid*
+*.dump
+
+# ── 根目录随手记的临时文本（构建输出 / 调试记录）───────────────────
+/build_err.txt
+/build_log.txt
+/build_out.txt
+/c.txt
+/e.txt
+
+# ── 本地服务端运行目录（TabooLib fileLibs、测试服）──────────────────
+run/
+libraries/
+assets/
+
+# ── 密钥 / 本机凭据（公开仓库务必不要提交）─────────────────────────
+.env
+.env.*
+*.env
+secrets/
+*.jks
+*.keystore
+*.p12
+*.pfx
+/.npmrc
+
+# ── 本地临时工程（未入库；若打算发布，删除对应行即可）──────────────
+/Bungee/
+
+# ── 计划 / 草稿 / 审计报告（本地留存，不随仓库公开）─────────────────
+/plan/
+draft/
+*audit*.md
+*审计*.md
+*报告*.md
+audit_out.txt
+fix_preview.txt
+/shop_tools/out/
