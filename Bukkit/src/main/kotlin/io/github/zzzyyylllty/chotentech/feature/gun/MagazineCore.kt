@@ -47,19 +47,37 @@ object MagazineCore {
     /** 当前数据版本（与枪械的 `sertraline_data.gun.v` 对齐，均为 1）。 */
     const val DATA_VERSION = 1
 
+    /**
+     * 只读地取弹匣实例身份，没有则返回 null（**不生成、不写盘**）。
+     *
+     * 背包遍历 / 菜单渲染这类「扫描」必须用这个：`instanceId()` 会为没有身份的弹匣
+     * 生成并落盘，扫描时逐槽调用等于每次渲染给全身每个弹匣 `saveTo` 一遍。
+     */
+    fun instanceIdOrNull(magItem: ItemStack): String? = try {
+        (magItem.getItemTag().getDeep(ROOT) as? ItemTag)
+            ?.get("instanceId")?.asString()?.trim()?.takeIf { it.isNotEmpty() }
+    } catch (_: Exception) {
+        null
+    }
+
     /** Stable identifier for one physical magazine, used to bind timed operations. */
     fun instanceId(magItem: ItemStack): String = try {
         val tag = magItem.getItemTag()
-        val id = ensureInstanceId(tag)
+        val existed = (tag.getDeep(ROOT) as? ItemTag)
+            ?.get("instanceId")?.asString()?.trim()?.takeIf { it.isNotEmpty() }
+        if (existed != null) return existed
+        // 只有「刚刚生成」这一条路径才写盘；已有身份时是纯读。
+        val created = ensureInstanceId(tag)
         tag.saveTo(magItem)
-        id
+        created
     } catch (_: Exception) {
         "${magItem.type}:${magItem.amount}:${readAmmo(magItem).hashCode()}"
     }
 
+    /** 取或就地生成身份（只改内存 tag，不 save；由调用方决定何时落盘）。 */
     private fun ensureInstanceId(tag: ItemTag): String {
         val compound = tag.getDeep(ROOT) as? ItemTag
-        val existing = compound?.get("instanceId")?.asString()?.takeIf { it.isNotBlank() }
+        val existing = compound?.get("instanceId")?.asString()?.trim()?.takeIf { it.isNotEmpty() }
         if (existing != null) return existing
         val created = java.util.UUID.randomUUID().toString()
         ensureVersion(tag)

@@ -6,9 +6,13 @@ import io.github.zzzyyylllty.chotentech.util.minimessage.legacyToMiniMessage
 import io.github.zzzyyylllty.chotentech.util.minimessage.mmLegacyAmpersandUtil
 import io.github.zzzyyylllty.chotentech.util.minimessage.mmLegacySectionUtil
 import io.github.zzzyyylllty.chotentech.util.toComponent
+import me.clip.placeholderapi.PlaceholderAPI
+import me.clip.placeholderapi.expansion.PlaceholderExpansion
+import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
-import taboolib.platform.compat.PlaceholderExpansion
+import taboolib.common.platform.function.pluginVersion
+import io.github.zzzyyylllty.chotentech.util.DependencyHelper
 import kotlin.let
 import kotlin.text.lowercase
 import kotlin.text.replace
@@ -17,14 +21,52 @@ import kotlin.toString
 
 val quetiapineVaildOptions = listOf("ampersand", "adventure", "section")
 
-object QuetiapinePapiHook : PlaceholderExpansion {
+object QuetiapinePapiHook : PlaceholderExpansion() {
 
-    override val identifier: String = "quetiapine"
+    override fun getIdentifier(): String = "quetiapine"
 
-    // 处理在线玩家请求
-    override fun onPlaceholderRequest(player: Player?, args: String): String {
+    override fun getAuthor(): String = "zzzyyylllty"
 
-        val split = args.split(":")
+    override fun getVersion(): String = pluginVersion
+
+    override fun persist(): Boolean = true
+
+    override fun canRegister(): Boolean = DependencyHelper.papi
+
+    /**
+     * 手动注册（由 `@Awake(LifeCycle.ACTIVE)` 调用）。
+     *
+     * 与 [CTTPapiHook.registerSafely] 同理：先摘旧实例再注册，支持 `/ctt reload` 后
+     * 占位符仍然可用，不需要重启服务器。
+     */
+    fun registerSafely(): Boolean {
+        if (!DependencyHelper.papi) return false
+        return try {
+            if (PlaceholderAPI.isRegistered(identifier)) unregister()
+            val ok = register()
+            if (!ok) {
+                unregister()
+                register()
+            } else {
+                ok
+            }
+        } catch (e: Throwable) {
+            Bukkit.getLogger().warning("[ChoTenTech] 注册 quetiapine 占位符失败: ${e.message}")
+            false
+        }
+    }
+
+    fun unregisterSafely() {
+        if (!DependencyHelper.papi) return
+        try {
+            if (PlaceholderAPI.isRegistered(identifier)) unregister()
+        } catch (_: Throwable) {
+        }
+    }
+
+    // 处理玩家请求（在线/离线统一走 onRequest，由 PAPI 负责下发）
+    override fun onRequest(player: OfflinePlayer?, params: String): String? {
+        val split = params.split(":")
 
         var option: String? = null
 
@@ -32,9 +74,9 @@ object QuetiapinePapiHook : PlaceholderExpansion {
             option = split.last()
         }
 
-        val parsed = if (option != null) args.removeSuffix(":$option") else args
+        val parsed = if (option != null) params.removeSuffix(":$option") else params
 
-        val str = quetiapinePlaceholder(player, parsed)
+        val str = quetiapinePlaceholder(player?.player, parsed)
 
         return when (option) {
             null -> str
@@ -43,11 +85,6 @@ object QuetiapinePapiHook : PlaceholderExpansion {
             "section" -> mmLegacySectionUtil.serialize(str.replace("§", "&").toComponent())
             else -> str
         }
-    }
-
-    // 处理离线玩家请求
-    override fun onPlaceholderRequest(player: OfflinePlayer?, args: String): String {
-        return onPlaceholderRequest(player?.player, args)
     }
 
 }

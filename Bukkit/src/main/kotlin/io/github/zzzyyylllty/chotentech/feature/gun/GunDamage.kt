@@ -1,4 +1,4 @@
-﻿package io.github.zzzyyylllty.chotentech.feature.gun
+package io.github.zzzyyylllty.chotentech.feature.gun
 
 import io.github.zzzyyylllty.chotentech.data.getData
 import io.github.zzzyyylllty.chotentech.util.devLog
@@ -119,9 +119,9 @@ object GunDamage {
         val raw = damage
         val mitigation = ArmorManager.mitigate(raw, bullet.ammo, target, hitPoint, crit)
         val part = ArmorManager.hitPart(target, hitPoint)
-        val covered = ArmorManager.pieces(target).filter {
-            ArmorManager.covers(it, part) && it.durability > 0.0
-        }
+        // 直接复用 mitigate 内部的护甲件：再调一次 pieces(target) 等于每发子弹多扫一遍
+        // 装备槽 + NBT（霰弹 8 颗弹丸就是 16 次），两次结果还可能不一致。
+        val covered = mitigation.pieces
 
         if (GunSettings.armor.replacesAttributeDefense) {
             // 新链：距离/暴击 → 护甲减伤 → damage；不再走 defense 属性，避免二次减伤。
@@ -138,7 +138,7 @@ object GunDamage {
         if (!damage.isFinite() || damage <= 0.0) {
             droppedZero++
             devLog(
-                "[Gun] 命中结算被丢弃：伤害=$damage（原始=$raw，衰减后=$raw " +
+                "[Gun] 命中结算被丢弃：伤害=$damage（原始=$raw，衰减后=${"%.2f".format(damage)} " +
                     "护甲减伤=${mitigation.damage}，替换防御=${GunSettings.armor.replacesAttributeDefense}）",
             )
             return
@@ -157,16 +157,38 @@ object GunDamage {
 
         // 施加伤害（打标记 → 结算 → 摘标记），以当前这一次同步 damage() 调用确认事件是否取消。
         // Bukkit 的生命值不是可靠的“命中结果”：吸收心、无敌帧和其它伤害插件
-        // 都可能让生命值不下降，但伤害调用本身仍已被处理。只以调用是否抛异常判断。
+        // 都可能让生命值不下降，但伤害调用本身仍已被处理。
+        //
+        // 但 `damage()` 的**布尔返回值**必须用上：它返回 false 只有两种情况 ——
+        // 目标处于创造模式 / 无敌（`invulnerable`），或本次调用被 `EntityDamageEvent` 取消。
+        // 前者根本不会派发事件，`observeDamage` 也就永远看不到，于是原先这套逻辑会把
+        // 「对着创造模式玩家开枪」当成命中生效：扣护甲耐久、推击退、播命中音效。
+        // 目标不可伤害时整体作废：原版对创造模式玩家 / `invulnerable` 实体根本不会派发
+        // `EntityDamageEvent`，`observeDamage` 收不到取消信号，于是后面的护甲损耗、
+        // 击退、命中音效都会错误发生。
+        //
+        // 为什么在调用前判断而不是看 `damage()` 的返回值：这个 API 版本里
+        // `damage(double, Entity)` 返回 `Unit`（只有 `damage(double)` 返回 Boolean），
+        // 带着射手调用时拿不到结果，所以必须提前判定。
+        if (target.isInvulnerable || (target is Player && target.gameMode.isInvulnerable)) {
+            devLog("[Gun] 命中目标不可伤害，跳过结算 target=${target.type} 伤害=$damage")
+            return
+        }
+
         val context = HitContext(target.uniqueId)
         settlements++
         val contexts = hitContexts.get()
         contexts.addLast(context)
-        val applied = try {
+        val outcome = try {
             if (plugin != null) {
                 target.setMetadata(HIT_METADATA, FixedMetadataValue(plugin, true))
                 target.setMetadata("chotentech_body_hit", FixedMetadataValue(plugin, hitPoint.clone()))
             }
+            // 同 tick 的多颗弹丸（霰弹）会撞上原版无敌帧：LivingEntity.hurt() 在
+            // noDamageTicks > invulnerableDuration/2 且 amount <= lastDamage 时直接返回、且
+            // 不触发 EntityDamageEvent，于是第 2..N 颗弹丸完全无效（鹿弹 8×9 实际只结算 9）。
+            // 每颗弹丸结算前清零无敌帧，让多弹丸按颗数叠加。
+            if (target.noDamageTicks > 0) target.noDamageTicks = 0
             if (shooter != null) {
                 target.damage(damage, shooter)
             } else {
@@ -190,7 +212,8 @@ object GunDamage {
             } catch (_: Exception) {
             }
         }
-        if (!applied) {
+        // 此前已在调用前判定目标可伤害，所以这里只需看事件是否被取消。
+        if (!outcome) {
             devLog(
                 "[Gun] 命中结算被打断 target=${target.type} 伤害=$damage " +
                     "cancelled=${context.cancelled}（事件被其它监听器取消，或 damage() 抛异常）",

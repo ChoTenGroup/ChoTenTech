@@ -1,7 +1,7 @@
-package io.github.zzzyyylllty.chotentech.feature.gun.item
+﻿package io.github.zzzyyylllty.chotentech.feature.gun.item
 
 import io.github.zzzyyylllty.chotentech.util.devLog
-import io.github.zzzyyylllty.sertraline.data.ModernSItem
+import io.github.zzzyyylllty.sertraline.data.AbstractSItem
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import taboolib.module.nms.getItemTag
@@ -22,9 +22,9 @@ private const val DEFAULT_AMMO_STACK = 64
  *   stack: 64         # 可选：本物品自己的最大堆叠
  * ```
  *
- * 本段不属于任何模块的 `data`，只能从 [ModernSItem.config] 读取原始 YAML。
+ * 本段不属于任何模块的 `data`，只能从 [AbstractSItem.config] 读取原始 YAML。
  */
-fun ammoAdapter(item: ItemStack, sItem: ModernSItem, player: Player?): ItemStack {
+fun ammoAdapter(item: ItemStack, sItem: AbstractSItem, player: Player?): ItemStack {
     val map = (sItem.config["ammo"] as? Map<*, *>) ?: run {
         devLog("ammo: section is missing or not a map, skipped.")
         return item
@@ -45,11 +45,13 @@ fun ammoAdapter(item: ItemStack, sItem: ModernSItem, player: Player?): ItemStack
     }
 
     // ── NBT：合并写入 sertraline_data.ammo，绝不整段覆盖 sertraline_data ────────
+    // 只保留 `caliber` 这一个「运行时能校验配置与物品是否一致」的锚点。
+    // `v` 没有任何读取点（运行时一律以 GunRegistry 的 YAML 为准），删掉避免制造
+    // 「改 NBT 就能改弹道」的错觉。
     val tag = item.getItemTag(true)
     val dataTag = tag.compoundOrNew("sertraline_data")
     val ammoTag = dataTag.compoundOrNew("ammo")
 
-    ammoTag["v"] = 1
     ammoTag["caliber"] = caliber
 
     dataTag["ammo"] = ammoTag
@@ -59,7 +61,6 @@ fun ammoAdapter(item: ItemStack, sItem: ModernSItem, player: Player?): ItemStack
     // ── 物品本体：优先 ammo.stack，其次 itemdef.stack（已由 itemdef 处理），最后 64 ──
     val stackSize = resolveStackSize(map, sItem)
     if (stackSize != null) {
-        devLog("ammo: applying max stack size $stackSize (caliber=$caliber).")
         result.applyMaxStackSize(stackSize, "ammo")
     }
 
@@ -72,7 +73,7 @@ fun ammoAdapter(item: ItemStack, sItem: ModernSItem, player: Player?): ItemStack
  * 返回 null 表示「不要动」——即 `ammo.stack` 没写而 `itemdef.stack` 写了：
  * 那种情况 itemdef 处理器已经设过最大堆叠，这里再覆盖只会打架。
  */
-private fun resolveStackSize(map: Map<*, *>, sItem: ModernSItem): Int? {
+private fun resolveStackSize(map: Map<*, *>, sItem: AbstractSItem): Int? {
     val ammoStack = (map["stack"] as? Number)?.toInt()
     if (ammoStack != null) {
         if (ammoStack > 0) return ammoStack

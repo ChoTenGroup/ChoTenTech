@@ -262,7 +262,14 @@ object GunListener {
         dropEvents++
         val player = event.player
         val dropped = droppedStack(event)
-        val gun = GunRegistry.gunOf(dropped) ?: GunRegistry.gunOf(player.inventory.itemInMainHand)
+        // 只以「被丢出去的那个物品」为准。
+        //
+        // 这里以前还有一层「主手兜底」（`?: gunOf(player.inventory.itemInMainHand)`），
+        // 本意是应对 Q 键时主手已被摘空的情况 —— 但那种情况下被丢物本身就是那把枪，
+        // 第一判据已经命中，兜底根本用不上。它唯一真正能生效的场景反而变成了
+        // **「在背包界面里把别的物品拖到窗口外丢弃」**（原版同样走 player.drop 并发本事件）：
+        // 结果是那张纸丢不掉，还平白起一次换弹读条。
+        val gun = dropped?.let { GunRegistry.gunOf(it) }
         // 进门就记：能分清「事件没到」「丢的不是枪」「主手已被摘空但掉的是枪」三种情况。
         devLog(
             "[Gun] drop-in player=${player.name} cancelled=${event.isCancelled} " +
@@ -505,6 +512,10 @@ object GunListener {
         lastInteractTrace.remove(player.uniqueId)
         // 手部体力的「最后一次消耗时间」也是按 UUID 记的，下线一起清
         io.github.zzzyyylllty.chotentech.data.HandStamina.forget(player)
+        // 开火拒绝日志 / 射速提示的节流表同样按 UUID 记，之前漏清会无限增长
+        GunShoot.forget(player)
+        // 数据包限流的滑动窗口也是按 UUID 记，同样必须随下线清理
+        GunPacketInput.forget(player)
     }
 
     @SubscribeEvent

@@ -1,8 +1,8 @@
-package io.github.zzzyyylllty.chotentech.feature.gun.item
+﻿package io.github.zzzyyylllty.chotentech.feature.gun.item
 
 import io.github.zzzyyylllty.chotentech.util.devLog
 import io.github.zzzyyylllty.sertraline.compat.PlatformCompat
-import io.github.zzzyyylllty.sertraline.data.ModernSItem
+import io.github.zzzyyylllty.sertraline.data.AbstractSItem
 import io.github.zzzyyylllty.sertraline.impl.setComponentNMS
 import io.github.zzzyyylllty.sertraline.util.VersionHelper
 import org.bukkit.entity.Player
@@ -28,7 +28,7 @@ import kotlin.math.abs
  * 主模型写到物品本身（1.20.5+ 写 `item_model` 组件，低版本写 CustomModelData），
  * **全部**状态写到 NBT `sertraline_data.model`，具体切换逻辑由运行时（其他插件/脚本）负责。
  */
-fun modelAdapter(item: ItemStack, sItem: ModernSItem, player: Player?): ItemStack {
+fun modelAdapter(item: ItemStack, sItem: AbstractSItem, player: Player?): ItemStack {
     val map = (sItem.config["model"] as? Map<*, *>) ?: return item
     if (map.isEmpty()) return item
 

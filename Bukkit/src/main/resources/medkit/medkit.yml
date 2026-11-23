@@ -111,3 +111,19 @@ akacandy_medkit:
   cost:
     food: 0
     san: 0
+
+# ===== 每个医疗包还可以选配下面两项（不写就用默认值）=====
+#
+# slow:   治疗期间降低的移动速度百分比（0~100），默认 50，即 -50% 移速。
+#         写 0 表示治疗期间不减速。
+#
+# cancel: 治疗期间哪些行为会打断治疗，默认 [walk, sprint, jump, attack, fall]。
+#         可选值只有 walk / sprint / jump / attack / fall；
+#         写成 cancel: [] 表示治疗期间不做任何打断判定。
+#         注意副作用：按 F 切换主手物品永远会中断治疗，这一条不受 cancel 控制。
+#
+# 示例（取消掉「走路」打断、并把减速降到 30%）：
+#
+#   akacandy_medkit:
+#     slow: 30
+#     cancel: [sprint, jump, attack, fall]

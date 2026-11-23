@@ -138,6 +138,14 @@ data class ArmorData(
     val material: String = "IRON",
     val part: List<String> = listOf("BODY"),
     val durability: Double = 500.0,
+    /**
+     * `part` 是否在配置里**显式写过**。
+     *
+     * [part] 的缺省值也是 `[BODY]`，所以单看值无法区分「玩家没写」与「玩家写了 part: [BODY]」；
+     * 后者必须按显式声明生效（比如给头盔写 `part: [BODY]` 就是当护胸用），
+     * 前者才回落到「按装备槽判定覆盖」。[ArmorManager.covers] 依赖这个标志。
+     */
+    val partConfigured: Boolean = false,
 )
 
 /**
@@ -215,10 +223,13 @@ object GunConfigParser {
                 burst = int(map, "burst", 3).coerceAtLeast(1),
                 modes = modesOf(map, auto),
                 addonSlots = addonSlotsOf(map, category),
-                heatCapacity = dbl(map, "heatCapacity", 100.0),
-                heatPerShot = dbl(map, "heatPerShot", 5.0),
-                heatCoolPerTick = dbl(map, "heatCoolPerTick", 0.06),
-                jamChance = dbl(map, "jamChance", 1.5),
+                // 文档 §2.3 承诺「非正值回退全局值」：这里必须真的做，否则
+                // `heatPerShot: 0` 就是一把永不升温的免热枪，`coolPerTick: 0`
+                // 会让热量永久卡死（配合 heatLocked 直接锁死开火），负 jamChance 永不卡壳。
+                heatCapacity = positiveOr(dbl(map, "heatCapacity", 100.0), GunSettings.heat.capacity),
+                heatPerShot = positiveOr(dbl(map, "heatPerShot", 5.0), GunSettings.heat.perShot),
+                heatCoolPerTick = positiveOr(dbl(map, "heatCoolPerTick", 0.06), GunSettings.heat.coolPerTick),
+                jamChance = dbl(map, "jamChance", 1.5).coerceIn(0.0, 100.0),
             )
         } catch (e: Exception) {
             devLog("[Gun] 解析 gun 段失败 (id=$id): ${e.message}")
@@ -313,7 +324,8 @@ object GunConfigParser {
     fun parseArmor(id: String, raw: Map<*, *>?): ArmorData? {
         return try {
             val map = unwrap(raw, "armor") ?: return fail("armor", id, "配置段为空")
-            val parts = strList(map, "part")
+            val declaredParts = strList(map, "part")
+            val parts = declaredParts
                 ?.map { it.trim().uppercase() }
                 ?.filter { it.isNotEmpty() }
                 ?.ifEmpty { null }
@@ -328,6 +340,7 @@ object GunConfigParser {
                 material = str(map, "material", "IRON").trim().ifEmpty { "IRON" },
                 part = parts,
                 durability = dbl(map, "durability", 500.0),
+                partConfigured = !declaredParts.isNullOrEmpty(),
             )
         } catch (e: Exception) {
             devLog("[Gun] 解析 armor 段失败 (id=$id): ${e.message}")
@@ -340,13 +353,29 @@ object GunConfigParser {
     /**
      * 兼容「传入整段 ModernSItem.config」的调用方式：
      * 若 raw 里还有一层同名子段（如 config["gun"]），且 raw 自身不像该段，则下钻一层。
+     *
+     * ⚠️ 这里只认**该段自己的**「识别字段」，不能用 `caliber` 统一判：
+     * 旧实现是 `!raw.containsKey("caliber")`，于是只要写了 caliber，即使真的多套了一层
+     * `gun: { gun: {...} }` 也永不下钻；而没写 caliber 时又会把非法段误判成「嵌套」。
+     * 现在缺识别字段一律由各 parse 函数自己 `fail(...)` 报错（进 GunRegistry 的失败计数），
+     * 不再靠下钻去「救」一份写错的配置。
      */
     private fun unwrap(raw: Map<*, *>?, key: String): Map<*, *>? {
         if (raw == null) return null
-        val nested = sub(raw, key)
-        // 只有当 raw 自身「不像」该段（顶层没有 caliber）时才下钻，
-        // 避免把已经是段内容、只是恰好也叫 gun/ammo 的配置二次包装。
-        return if (nested != null && !raw.containsKey("caliber")) nested else raw
+        val nested = sub(raw, key) ?: return raw
+        // 已经是段内容（自身带了该段的任何一个识别字段）就不再下钻
+        if (raw.keys.mapNotNull { it?.toString() }.any { it in markerKeysOf(key) }) return raw
+        return nested
+    }
+
+    /** 各段的「识别字段」：出现任意一个就说明 raw 已经是段内容本身。 */
+    private fun markerKeysOf(key: String): Set<String> = when (key) {
+        "gun" -> setOf("caliber", "usage", "attributes", "modes", "addonSlots", "category", "gunType")
+        "mag" -> setOf("caliber", "capacity", "allowFastReload")
+        "ammo" -> setOf("caliber", "damage", "penetration", "armorDamage", "gunType")
+        "addon" -> setOf("slot", "gunType", "attributes")
+        "armor" -> setOf("defense", "defenseLevel", "material", "part", "durability")
+        else -> emptySet()
     }
 
     /**
@@ -459,4 +488,8 @@ object GunConfigParser {
         }
         return parsed
     }
+
+    /** 「必须是正数」的配置项：非正 / 非有限一律回退到全局缺省值（文档 §2.3 的承诺）。 */
+    private fun positiveOr(value: Double, fallback: Double): Double =
+        if (value.isFinite() && value > 0.0) value else fallback
 }

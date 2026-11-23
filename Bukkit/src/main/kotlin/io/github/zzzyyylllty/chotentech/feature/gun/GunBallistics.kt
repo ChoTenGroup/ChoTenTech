@@ -56,6 +56,9 @@ data class Bullet(
  */
 object GunBallistics {
 
+    /** Spend one penetration allowance after a block/entity hit; zero means the bullet expires. */
+    internal fun consumePierce(pierceLeft: Int): Int = (pierceLeft - 1).coerceAtLeast(0)
+
     // ==================== 诊断计数 ====================
     //
     // 「打不中实体 / 打了没伤害」这种问题靠猜没用：这里按链路分段计数，
@@ -246,7 +249,7 @@ object GunBallistics {
                         "伤害基数=${"%.2f".format(bullet.damage)} 穿甲=${bullet.ammo.penetration}",
                 )
                 GunDamage.applyHit(bullet, target.second, hitPoint, hitDistance)
-                bullet.pierceLeft--
+                bullet.pierceLeft = consumePierce(bullet.pierceLeft)
                 if (bullet.pierceLeft <= 0) return true
                 // 推进到实体碰撞箱出口，避免下一 tick 从目标内部开始，
                 // 把目标身后的墙误判为当前线段的直接命中。
@@ -262,14 +265,17 @@ object GunBallistics {
                 val thickness = thicknessOf(block, from.toVector(), dir, segmentLength)
                 val canPierce = canPierce(block, thickness)
                 if (canPierce && bullet.pierceLeft > 0) {
-                    bullet.pierceLeft--
+                    bullet.pierceLeft = consumePierce(bullet.pierceLeft)
                     bullet.velocity = bullet.velocity.multiply(1.0 - bullet.speedLoss)
                     bullet.damage *= (1.0 - bullet.damageLoss)
-                    // 挪到方块另一侧，避免下一子步又打在同一面墙上
+                    // 挪到方块另一侧，完成这次穿透，避免下一子步又打在同一面墙上。
                     val exit = hitPos.clone().add(dir.clone().multiply(thickness + 0.05))
-                    if (from.toVector().distance(exit) > remainingRange) return true
-                    bullet.traveled += from.toVector().distance(exit)
+                    val exitDistance = from.toVector().distance(exit)
+                    if (exitDistance > remainingRange) return true
+                    bullet.traveled += exitDistance
                     bullet.pos = exit.toLocation(world)
+                    // 本次穿透已用尽次数：穿过方块后回收，不再命中墙后目标/继续穿透。
+                    if (bullet.pierceLeft <= 0) return true
                     // 穿透后本 tick 不再推进（避免一 tick 连穿多堵墙）
                     break
                 }

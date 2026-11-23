@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     java
-    id("io.izzel.taboolib") version "2.0.38"
+    id("io.izzel.taboolib") version "2.0.40"
     kotlin("jvm") version "2.4.21"
 }
 
@@ -64,7 +64,7 @@ taboolib {
         install(DatabasePlayer)
     }
     version {
-        taboolib = "6.3.0-75b18a2"
+        taboolib = "6.3.0-8f586e4"
         coroutines = "1.8.1"
 
     }
@@ -152,10 +152,18 @@ repositories {
 }
 
 dependencies {
-    // 枪械系统需要 ModernSItem.config / ItemProcessorManager 注册能力（3.13 起提供）。
-    // 3.13.0.0 未发布到公共仓库，改为使用本地构建产物（由 Sertraline 仓库 `gradlew :project:common:jar` 生成）。
-    // implementation("io.github.zzzyyylllty.sertraline:common:3.9.0.3")
-    compileOnly(files("$rootDir/libs/common-3.13.0.0.jar"))
+    // 枪械系统需要 `AbstractSItem.config` / `ItemProcessorManager` 注册能力（3.13 起提供）。
+    //
+    // ⚠️ 这个 jar 的版本**必须与服务器上跑的 Sertraline 完全一致**。
+    // `ItemProcessor.process(...)` 的参数类型在 3.13.x 内变过：
+    //   3.13.0.0 → process(ModernSItem, ItemStack, Player?)
+    //   3.13.2.2 → process(AbstractSItem, ItemStack, Player?)
+    // 用旧 jar 编译出的 lambda 实现的是旧抽象方法，运行时接口找不到它 →
+    // 每次构建物品都抛 AbstractMethodError，被 ItemProcessorManager.processItem 吞掉后
+    // **只警告一次**。表现是「/ctt gun processors 显示段落全部注册成功，但构建出来的
+    // 枪械/弹匣/子弹全都没有名称、描述、模型」—— 六个适配器整体静默失效。
+    // 换版本时请同步更新这里和 libs/ 下的文件。
+    compileOnly(files("$rootDir/libs/common-3.13.2.2.jar"))
     compileOnly(files("$rootDir/libs/sertraline-platform-compat.jar"))
     compileOnly("org.geysermc.floodgate:api:2.2.4-SNAPSHOT")
     compileOnly("com.github.retrooper:packetevents-spigot:2.14.0")
@@ -173,7 +181,10 @@ dependencies {
     implementation("net.kyori:adventure-text-serializer-plain:5.2.0")
     implementation("net.kyori:adventure-text-minimessage:5.2.0")
     compileOnly("com.google.code.gson:gson:2.10.1")
-    implementation("me.clip:placeholderapi:2.11.6")
+    // PlaceholderAPI：扩展改用原生 PlaceholderExpansion 后只需编译期可见。
+    // 用 compileOnly 避免把整个 PAPI 打进 jar —— 打进会造成与服上 PAPI 插件
+    // 的类重复（me.clip.placeholderapi.* 双方各一份，注册与查找不在同一 ClassLoader）。
+    compileOnly("me.clip:placeholderapi:2.12.3")
     taboo("ink.ptms:um:1.2.1")
     // ItemBridge (optional)
     taboo("cn.gtemc:itembridge:1.0.31")

@@ -1,24 +1,42 @@
-.gradle
-.idea
-build
-
-# 运行目录与本地库（TabooLib fileLibs）
-run/
-libraries/
-
-# JVM 崩溃转储与诊断记录（体积大、含环境信息，不入库）
-hs_err_pid*.log
-replay_pid*.log
+# ── Gradle / Kotlin 构建产物与缓存 ────────────────────────────────
+.gradle/
+build/
+.kotlin/
+bin/
+*.class
 *.hprof
 
-# Kotlin 编译器/daemon 错误报告
-.kotlin/
+# ── 运行目录与本地库（TabooLib fileLibs）──────────────────────────
+run/
+libraries/
+assets/
 
-# 日志
+# ── 构建/测试日志（体积大、一次性产物，一律不入库）────────────────
 *.log
 logs/
+build_*.txt
 
-# IDE 杂项
+# ── JVM 崩溃转储与诊断记录（体积大、含本机环境信息，不入库）────────
+hs_err_pid*
+replay_pid*
+*.dump
+
+# ── IDE / 工具本地配置 ───────────────────────────────────────────
 *.iml
 .idea/
 .vscode/
+.claude/settings.local.json
+
+# ── 本地临时输出 ──────────────────────────────────────────────────
+out/
+*.tmp
+*.bak
+
+# ── 计划 / 草稿 / 审计报告（本地留存，不随仓库公开）─────────────────
+plan/
+draft/
+*audit*.md
+*审计*.md
+*报告*.md
+audit_out.txt
+fix_preview.txt

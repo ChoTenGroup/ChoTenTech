@@ -40,9 +40,15 @@ object GunHud {
 
         val magazineSize = state.magAmmo.size
         val hasMag = state.mag.isNotEmpty()
-        val capacity = GunRegistry.mag(state.mag)?.capacity ?: magazineSize
+        val configuredCapacity = GunRegistry.mag(state.mag)?.capacity
+        // 弹匣配置丢了（弹匣 id 还在、配置被删）时不要把容量回落到「当前弹数」：
+        // 那会把 3 发显示成满弹 3/3，把「配置缺失」伪装成「弹匣是满的」。
+        val capacity = configuredCapacity ?: magazineSize
+        val capacityMissing = hasMag && (configuredCapacity == null || configuredCapacity <= 0)
         val chamber = if (state.chamber > 0) 1 else 0
-        val tier = GunSettings.heatTier(state.heat)
+        // 用内存镜像算档位：镜像里有「已冷却到但还没落盘」的进度，
+        // 直接读 NBT 会让 HUD 落后一档（枪已经凉了，界面还显示危险）。
+        val tier = GunSettings.heatTier(GunStateManager.currentHeat(player, gun, state))
         val stamina = player.getData()?.handStamina ?: 0.0
         val action = GunAction.snapshot(player)
 
@@ -51,6 +57,7 @@ object GunHud {
         // 每种颜色都用同名闭合标签，避免 MiniMessage 标签不匹配
         val ammoText = when {
             !hasMag -> "<#6E7A8C>无弹匣</#6E7A8C>"
+            capacityMissing -> "<#DFBD7C>弹匣配置缺失</#DFBD7C>"
             capacity > 0 && magazineSize * 4 <= capacity -> "<#E08A98>$magazineSize/$capacity</#E08A98>"
             capacity > 0 && magazineSize * 2 <= capacity -> "<#DFBD7C>$magazineSize/$capacity</#DFBD7C>"
             else -> "<#EFDF8F>$magazineSize/$capacity</#EFDF8F>"

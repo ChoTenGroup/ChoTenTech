@@ -38,8 +38,14 @@ class MagMenuHolder : CTGunMenuHolder {
     /** 进入模式时的位置（移动超过 `magazine.interrupt-distance` 就退出模式）。 */
     var modeStart: Location? = null
 
-    /** 打开菜单时绑定具体物品内容，防止同槽换成同 ID 弹匣后继续操作。 */
-    var boundItem: ItemStack? = null
+    /**
+     * 打开菜单时绑定具体物品**身份**，防止同槽换成同 ID 弹匣后继续操作。
+     *
+     * 不能用 `ItemStack#isSimilar`：压/退弹会写 `sertraline_data.mag.ammo`，而该 tag 落在原版
+     * `custom_data` 组件里 —— 组件一变 `isSimilar` 就是 false，于是**压第一发就把菜单关掉**。
+     * （见 [GunAction] 里 `ActiveAction.startIdentity` 的同款注释。）
+     */
+    var boundIdentity: String? = null
 
     fun attach(inventory: Inventory) {
         backing = inventory
@@ -106,7 +112,7 @@ object MagMenu {
     /** 箱子版菜单（老服务端的回退路径，也是对话框不可用时的唯一实现）。 */
     private fun openChest(player: Player, held: ItemStack) {
         val holder = MagMenuHolder()
-        holder.boundItem = held.clone()
+        holder.boundIdentity = identityOf(held)
         val inventory = Bukkit.createInventory(
             holder,
             SIZE,
@@ -125,7 +131,7 @@ object MagMenu {
 
         val held = player.inventory.itemInMainHand
         val mag = GunRegistry.magOf(held)
-        if (mag == null || (holder?.boundItem?.isSimilar(held) == false)) {
+        if (mag == null || holder?.boundIdentity != identityOf(held)) {
             try {
                 player.closeInventory()
             } catch (_: Exception) {
@@ -292,7 +298,7 @@ object MagMenu {
     fun handleClick(player: Player, holder: MagMenuHolder, slot: Int) {
         val held = player.inventory.itemInMainHand
         val mag = GunRegistry.magOf(held)
-        if (mag == null || holder.boundItem?.isSimilar(held) == false) {
+        if (mag == null || holder.boundIdentity != identityOf(held)) {
             player.closeInventory()
             return
         }
@@ -338,7 +344,7 @@ object MagMenu {
 
         val held = player.inventory.itemInMainHand
         val mag = GunRegistry.magOf(held)
-        if (mag == null || holder.boundItem?.isSimilar(held) == false) {
+        if (mag == null || holder.boundIdentity != identityOf(held)) {
             exitMode(holder)
             return
         }
@@ -400,7 +406,7 @@ object MagMenu {
     private fun toggleMode(player: Player, holder: MagMenuHolder, mode: MagMenuMode) {
         val held = player.inventory.itemInMainHand
         val mag = GunRegistry.magOf(held) ?: return
-        if (holder.boundItem?.isSimilar(held) == false) return
+        if (holder.boundIdentity != identityOf(held)) return
         if (holder.mode == mode) {
             exitMode(holder)
             val label = if (mode == MagMenuMode.INSERT) "压弹" else "退弹"
@@ -436,6 +442,18 @@ object MagMenu {
         holder.mode = mode
         holder.modeStart = player.location.clone()
         refresh(player, holder)
+    }
+
+    /**
+     * 物品身份串：`m:<弹匣ID>:<instanceId>`。
+     *
+     * 老弹匣可能还没有 `instanceId`（[MagazineCore.writeAmmo] 首次写入时才补），
+     * 此时退化成只比弹匣 ID —— 没办法区分两把同 ID 弹匣，但也绝不会因为「压了一发」而误判。
+     */
+    private fun identityOf(held: ItemStack): String {
+        val mag = GunRegistry.magOf(held) ?: return ""
+        val instance = MagazineCore.instanceId(held)
+        return if (instance.isBlank()) "m:${mag.id}" else "m:${mag.id}:$instance"
     }
 
     private fun refresh(player: Player, holder: MagMenuHolder) {

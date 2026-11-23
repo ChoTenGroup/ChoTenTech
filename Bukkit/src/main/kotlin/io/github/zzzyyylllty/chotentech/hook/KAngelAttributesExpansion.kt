@@ -3,7 +3,9 @@ package io.github.zzzyyylllty.chotentech.hook
 import io.github.zzzyyylllty.chotentech.ChoTenTech
 import io.github.zzzyyylllty.chotentech.manager.AttributeManager
 import io.github.zzzyyylllty.chotentech.util.DependencyHelper
+import me.clip.placeholderapi.PlaceholderAPI
 import me.clip.placeholderapi.expansion.PlaceholderExpansion
+import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import taboolib.common.platform.function.pluginVersion
@@ -28,6 +30,38 @@ class KAngelAttributesExpansion : PlaceholderExpansion() {
 
     override fun canRegister(): Boolean {
         return DependencyHelper.papi
+    }
+
+    /**
+     * 手动注册（由 `@Awake(LifeCycle.ACTIVE)` 调用）。
+     *
+     * 先摘旧实例再注册，使 `/ctt reload` 后占位符继续可用。
+     * 注意：本扩展是 `class`（非 object），重载时会构造新实例，
+     * 旧实例必须显式 unregister，否则 PAPI 会因 identifier 冲突拒绝注册。
+     */
+    fun registerSafely(): Boolean {
+        if (!DependencyHelper.papi) return false
+        return try {
+            if (PlaceholderAPI.isRegistered(identifier)) unregister()
+            val ok = register()
+            if (!ok) {
+                unregister()
+                register()
+            } else {
+                ok
+            }
+        } catch (e: Throwable) {
+            Bukkit.getLogger().warning("[ChoTenTech] 注册 kangelattributes 占位符失败: ${e.message}")
+            false
+        }
+    }
+
+    fun unregisterSafely() {
+        if (!DependencyHelper.papi) return
+        try {
+            if (PlaceholderAPI.isRegistered(identifier)) unregister()
+        } catch (_: Throwable) {
+        }
     }
 
     override fun onPlaceholderRequest(player: Player, params: String): String? {
@@ -80,7 +114,8 @@ class KAngelAttributesExpansion : PlaceholderExpansion() {
     }
 
     private fun formatValue(attributeId: String, value: Double): String {
-        val attribute = AttributeManager.getRegisteredAttributes().find { it.id == attributeId }
+        // 属性 ID 大小写不敏感：占位符里写 %kangelattributes_Spear_charge_level_formatted% 也能命中
+        val attribute = AttributeManager.getAttributeType(attributeId)
         return if (attribute?.isPercentage == true) {
             String.format("%.2f%%", value * 100)
         } else {

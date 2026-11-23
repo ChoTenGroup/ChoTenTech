@@ -120,7 +120,7 @@ object ModMenu {
         }
         if (!success) {
             menuActionBar(player, "<#E08A98>改装失败，配件未消耗")
-            render(player, player.openInventory.topInventory)
+            rerender(player)
             return
         }
         // 改装会改变模型/瞄具状态；ADS 中直接退出，热成像也随之立即清理。
@@ -132,7 +132,27 @@ object ModMenu {
             menuActionBar(player, "<#8FD4A6>配件已变更")
         }
         GunHud.update(player)
-        render(player, player.openInventory.topInventory)
+        rerender(player)
+    }
+
+    /**
+     * 重渲染：只认「当前顶层界面确实是本菜单」的情况。
+     *
+     * 旧写法是 `render(player, player.openInventory.topInventory)` —— 玩家在点击包里先按了
+     * ESC、或被别的插件顶掉界面时，`topInventory` 变成玩家的合成视图（size 5），
+     * 而 `render` 会无脑写 27 格：既可能越界抛异常，也会把灰色玻璃板写进玩家自己的合成格。
+     */
+    private fun rerender(player: Player) {
+        val top = try {
+            player.openInventory.topInventory
+        } catch (_: Exception) {
+            null
+        }
+        if (top == null || top.holder !is Holder || top.size != SIZE) {
+            player.closeInventory()
+            return
+        }
+        render(player, top)
     }
 
     private fun findCandidate(player: Player, gun: GunData, slot: String): Pair<Int, ItemStack>? {

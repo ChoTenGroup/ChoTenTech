@@ -1,4 +1,4 @@
-package io.github.zzzyyylllty.chotentech.feature.gun.item
+﻿package io.github.zzzyyylllty.chotentech.feature.gun.item
 
 import io.github.zzzyyylllty.chotentech.util.devLog
 import io.github.zzzyyylllty.sertraline.Sertraline
@@ -19,7 +19,7 @@ import io.github.zzzyyylllty.sertraline.Sertraline
 object GunItemProcessors {
 
     /** 段落名 → 适配器，集中在这里，避免注册与实现两处漂移。 */
-    private fun processors(): Map<String, (org.bukkit.inventory.ItemStack, io.github.zzzyyylllty.sertraline.data.ModernSItem, org.bukkit.entity.Player?) -> org.bukkit.inventory.ItemStack> =
+    private fun processors(): Map<String, (org.bukkit.inventory.ItemStack, io.github.zzzyyylllty.sertraline.data.AbstractSItem, org.bukkit.entity.Player?) -> org.bukkit.inventory.ItemStack> =
         linkedMapOf(
             "itemdef" to ::itemdefAdapter,
             "model" to ::modelAdapter,

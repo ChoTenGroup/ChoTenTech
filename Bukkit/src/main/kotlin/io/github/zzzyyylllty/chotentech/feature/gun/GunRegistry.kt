@@ -72,6 +72,7 @@ object GunRegistry {
             armors = armors.toMap(),
         )
         snapshot = loaded
+        validateReferences(loaded)
         val total = loaded.guns.size + loaded.mags.size + loaded.ammos.size + loaded.addons.size + loaded.armors.size
         devLog(
             "[Gun] 枪械注册表已加载: gun=${loaded.guns.size} mag=${loaded.mags.size} ammo=${loaded.ammos.size} " +
@@ -115,6 +116,44 @@ object GunRegistry {
     }
 
     private fun section(config: Map<*, *>, key: String): Map<*, *>? = config[key] as? Map<*, *>
+
+    /**
+     * 跨段引用一致性检查：只告警，不阻断加载。
+     *
+     * 以前这些错配完全静默：口径没有对应弹药要等开火才失败，配件 gunType 写错只表现为
+     * 「不匹配」，护甲材质写错会静默回落 IRON（减伤系数直接错一档）。现在重载日志会点名。
+     */
+    private fun validateReferences(snapshot: RegistrySnapshot) {
+        val calibers = snapshot.ammos.values.map { it.caliber.lowercase() }.toSet()
+        val magCalibers = snapshot.mags.values.map { it.caliber.lowercase() }.toSet()
+        val gunTypes = snapshot.guns.values.map { it.gunType }.toSet()
+        val materials = GunSettings.armor.materials.keys.map { it.uppercase() }.toSet()
+
+        val noAmmo = snapshot.guns.values
+            .filter { it.caliber.isNotBlank() && it.caliber.lowercase() !in calibers }
+            .map { "${it.id}(${it.caliber})" }
+        if (noAmmo.isNotEmpty()) devLog("[Gun] 以下枪械的口径没有任何 ammo 定义，将永远打不响: $noAmmo")
+
+        val noMag = snapshot.guns.values
+            .filter { it.caliber.isNotBlank() && it.caliber.lowercase() !in magCalibers }
+            .map { "${it.id}(${it.caliber})" }
+        if (noMag.isNotEmpty()) devLog("[Gun] 以下枪械的口径没有任何 mag 定义，换弹永远找不到弹匣: $noMag")
+
+        val badAddons = snapshot.addons.values
+            .filter { addon ->
+                addon.gunType.isNotEmpty() &&
+                    addon.gunType.none { it == "*" || it in gunTypes }
+            }
+            .map { "${it.id}(${it.gunType})" }
+        if (badAddons.isNotEmpty()) devLog("[Gun] 以下配件的 gunType 没有任何枪械匹配: $badAddons")
+
+        val badMaterials = snapshot.armors.values
+            .filter { it.material.uppercase() !in materials }
+            .map { "${it.id}(${it.material})" }
+        if (badMaterials.isNotEmpty()) {
+            devLog("[Gun] 以下护甲使用了未定义的 material，将按 IRON 静默结算: $badMaterials")
+        }
+    }
 
     private fun guard(section: String, id: String, block: () -> Unit) {
         try {

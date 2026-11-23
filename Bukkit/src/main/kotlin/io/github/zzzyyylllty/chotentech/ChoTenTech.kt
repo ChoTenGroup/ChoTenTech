@@ -62,6 +62,7 @@ import io.github.zzzyyylllty.chotentech.util.QuetiapineLocalDependencyHelper
 import io.github.zzzyyylllty.chotentech.util.dependencies
 import io.github.zzzyyylllty.chotentech.worldgeneration.Level0Generator
 import io.github.zzzyyylllty.chotentech.worldgeneration.Level1Generator
+import io.github.zzzyyylllty.chotentech.worldgeneration.Level2Generator
 import io.github.zzzyyylllty.sertraline.Sertraline
 import net.momirealms.craftengine.core.world.ChunkPos
 import org.bukkit.Bukkit
@@ -436,13 +437,29 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
             io.github.zzzyyylllty.chotentech.feature.gun.GunRegistry.reload()
             // 处理器可能在 Sertraline 重载时被清空，这里再确认一次（幂等）
             GunItemProcessors.register()
+            // 包驱动输入也一样：首次注册可能因为 packetevents 尚未加载而失败，重载时补注册
+            io.github.zzzyyylllty.chotentech.feature.gun.GunPacketInput.register()
             // 枪械机制配置（独立文件 gun-mechanism.yml）跟着一起重载
             io.github.zzzyyylllty.chotentech.feature.gun.GunSettings.load()
+            // 运行时状态跨代存活会把旧 GunData / 旧容量 / 旧读条带进新配置：
+            // 清状态（含读条动作、对话框登记、热量镜像）并关掉所有还开着的枪械界面。
+            io.github.zzzyyylllty.chotentech.feature.gun.GunStateManager.clearAll()
+            io.github.zzzyyylllty.chotentech.feature.gun.GunMenuListener.shutdown()
+            // 限流窗口也属于运行时状态，重载时一并清掉
+            io.github.zzzyyylllty.chotentech.feature.gun.GunPacketInput.forgetAll()
+            // PAPI 扩展在重载时重新注册：旧实例按 identifier 摘掉再注册，
+            // 否则重载后占位符会静默失效（外部拿到原样的 %chotentech_xxx%）。
+            io.github.zzzyyylllty.chotentech.hook.registerPapiExpansions()
             SteamPipeManager.loadConfig()
             KeyDoorManager.loadConfig()
             io.github.zzzyyylllty.chotentech.feature.keydoor.KeyDoorSertralineManager.loadConfig()
             SignPassManager.loadConfig()
             io.github.zzzyyylllty.chotentech.feature.trap.TrapManager.loadConfig()
+            // 医疗包 / 手术配置必须自己把资源释放出来：其它系统都有 releaseResourceFolder，
+            // 唯独 medkit 目录从来没被写过 —— 全新安装时 loadMedkitConfig / loadSurgeryConfig
+            // 找不到文件就直接 return，医疗包与手术刀会完全静默失效。
+            val medkitDir = File(getDataFolder(), "medkit")
+            if (!medkitDir.exists()) releaseResourceFolder("medkit")
             loadMedkitConfig()
             loadSurgeryConfig()
             loadConsumableConfigs()
@@ -461,6 +478,7 @@ object ChoTenTech : Plugin(), BukkitWorldGenerator {
         return when (worldName) {
             "level0inf" -> Level0Generator()
             "level1inf" -> Level1Generator()
+            "level2inf" -> Level2Generator()
             else -> null
         }
     }

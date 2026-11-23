@@ -82,6 +82,15 @@ object GunAction {
     /** 进行中的动作（uuid → 动作），同一玩家最多一个。 */
     private val actions = ConcurrentHashMap<UUID, ActiveAction>()
 
+    /**
+     * 「下一个动作来自菜单按钮」的标记（[closeThen] 打、[timedAction] 消费）。
+     *
+     * 关菜单时要回收菜单自己发起的读条，但不能连带杀掉 Q 键换弹这种与菜单无关的动作。
+     */
+    private val menuOriginated = java.util.Collections.newSetFromMap(
+        java.util.concurrent.ConcurrentHashMap<UUID, Boolean>(),
+    )
+
     /** 批量压弹 / 退弹的「代次」，代次失配即停止链式循环。 */
     private val bulkTokens = ConcurrentHashMap<UUID, Long>()
 
@@ -119,6 +128,8 @@ object GunAction {
          */
         val startIdentity: String,
         val totalTicks: Int,
+        /** 是否由菜单按钮发起（[closeThen] 打标记）：只有这类动作会在关菜单时被回收。 */
+        val fromMenu: Boolean = false,
     ) {
         var elapsed: Int = 0
         var task: PlatformExecutor.PlatformTask? = null
@@ -132,7 +143,8 @@ object GunAction {
     private fun identityOf(item: ItemStack): String {
         if (item.type.isAir) return ""
         GunInstance.read(item)?.instanceId?.takeIf { it.isNotEmpty() }?.let { return "g:$it" }
-        MagazineCore.instanceId(item).takeIf { it.isNotEmpty() }?.let { return "m:$it" }
+        // 纯读：换弹起读条 / 每 tick 中断判定都会调这里，不能顺手给弹匣生成并落盘身份
+        MagazineCore.instanceIdOrNull(item)?.let { return "m:$it" }
         return ""
     }
 
@@ -175,6 +187,7 @@ object GunAction {
             startItem = startItem,
             startIdentity = identityOf(startItem),
             totalTicks = totalTicks,
+            fromMenu = menuOriginated.remove(player.uniqueId) != null,
         )
         actions[player.uniqueId] = action
         action.task = submit(period = 1, async = false) {
@@ -201,8 +214,15 @@ object GunAction {
      */
     fun cancelUnlessJustStarted(player: Player, graceTicks: Int = MENU_CLOSE_GRACE_TICKS) {
         val action = actions[player.uniqueId] ?: return
+        // 只回收「菜单按钮发起」的动作：Q 键换弹与菜单毫无关系，关菜单不该把它静默掐掉。
+        if (!action.fromMenu) return
         if (action.elapsed <= graceTicks) return
         cancel(player)
+    }
+
+    /** 标记「接下来这个动作是菜单按钮发起的」（由 [closeThen] 调用，[timedAction] 消费后立即清除）。 */
+    fun markMenuOriginated(player: Player) {
+        menuOriginated.add(player.uniqueId)
     }
 
     /** 打断全部玩家的动作（关服 / 卸载插件）。 */
@@ -430,17 +450,18 @@ object GunAction {
     )
 
     /**
-     * 在**整个背包**里找匹配弹匣（背包 0..35，快捷栏 0..8 优先）。
+     * 在**整个背包**里找匹配弹匣（快捷栏 0..8 优先，其次主背包 9..35，最后副手 40）。
      *
      * P7 修正：早期版本只搜快捷栏 9 格，弹匣放在主背包时 Q 会表现为「完全没反应」，
      * 而这正是最常见的玩家操作习惯。排序依次为：
      * 是否在快捷栏 → 子弹数降序 → `machineEfficiency` 降序（惩罚小者优先）→ 槽位靠前。
+     *
+     * 护甲槽（36..39）与副手槽（40）不在扫描范围内，见 [GunInventorySlots.storageSlots]。
      */
     fun findReloadCandidate(player: Player, gun: GunData): MagCandidate? {
         val handSlot = player.inventory.heldItemSlot
-        val candidates = ArrayList<MagCandidate>(36)
-        val total = player.inventory.size
-        for (slot in 0 until total) {
+        val candidates = ArrayList<MagCandidate>(GunInventorySlots.STORAGE_SIZE)
+        for (slot in GunInventorySlots.storageSlots(player.inventory.size)) {
             if (slot == handSlot) continue
             val item = try {
                 player.inventory.getItem(slot)
@@ -451,7 +472,9 @@ object GunAction {
             val mag = GunRegistry.magOf(item) ?: continue
             if (!mag.caliber.equals(gun.caliber, ignoreCase = true)) continue
             val ammoSnapshot = MagazineCore.readAmmo(item).toList()
-            val instanceId = MagazineCore.instanceId(item)
+            // 扫描只读身份：`instanceId()` 会为没有身份的弹匣生成并落盘，
+            // 而这段代码在菜单开着时每 10 tick 就会跑一遍（36 格全扫）。
+            val instanceId = MagazineCore.instanceIdOrNull(item).orEmpty()
             candidates += MagCandidate(
                 slot = slot,
                 item = item,
@@ -472,11 +495,13 @@ object GunAction {
 
     /**
      * 换弹失败时给玩家的**具体**原因（Q 没反应时最容易一头雾水）。
+     *
+     * 扫描范围必须与 [findReloadCandidate] 一致（见 [GunInventorySlots.storageSlots]）：否则弹匣
+     * 只放在护甲槽时会提示「背包里有 XX 口径弹匣」，而换弹实际上永远不会用它。
      */
     fun reloadBlockReason(player: Player, gun: GunData): String {
         val calibers = HashSet<String>()
-        val total = player.inventory.size
-        for (slot in 0 until total) {
+        for (slot in GunInventorySlots.storageSlots(player.inventory.size)) {
             val item = try {
                 player.inventory.getItem(slot)
             } catch (_: Exception) {
@@ -500,7 +525,8 @@ object GunAction {
 
     private fun meRatio(player: Player, gun: GunData?, mag: MagData): Double {
         val effectiveMe = gun?.let {
-            AddonManager.effectiveAttributes(it, player.inventory.itemInMainHand).machineEfficiency
+            // 带 player：层级环境会改人机功效，换弹/拉栓耗时应当跟着环境走。
+            AddonManager.effectiveAttributes(it, player.inventory.itemInMainHand, player).machineEfficiency
         } ?: 100.0
         val gunMe = (effectiveMe + ArmorManager.totalMachineEfficiencyModifier(player)).coerceIn(0.0, 100.0)
         return ((gunMe + mag.machineEfficiency) / 100.0).coerceIn(0.0, 1.5)
@@ -718,20 +744,26 @@ object GunAction {
         }
 
         if (oldItem != null) {
-            val delivered = if (fast) dropAtFeet(player, oldItem, withCooldown = true) else giveBack(player, oldItem)
-            if (!delivered) {
-                // 此时新枪状态和候选弹匣已经提交，不能再盲目回滚：
-                // 回滚可能与已经发生的背包/掉落副作用叠加，造成弹匣复制。
-                // 采用掉落兜底，确保旧弹匣仍然有唯一归属。
+            val handBack = if (fast) {
+                // 快速换弹：旧弹匣直接掉在脚下（带冷却），不占背包。
+                if (dropAtFeet(player, oldItem, withCooldown = true)) HandBack.OVERFLOWED else HandBack.FAILED
+            } else {
+                giveBack(player, oldItem)
+            }
+            if (handBack == HandBack.FAILED) {
+                // 只有「一点都没交出去」才走兜底。此时新枪状态和候选弹匣已经提交，
+                // 不能再盲目回滚：回滚可能与已经发生的背包/掉落副作用叠加，造成弹匣复制。
                 val recovered = dropAtFeet(player, oldItem, withCooldown = fast)
                 if (!recovered) {
                     sendActionBar(player, "<#E08A98>旧弹匣交付失败，请立即检查物品栏")
                     devLog("[Gun] 换弹后旧弹匣无法交付 (gun=${gun.id}, mag=$oldMagId)")
                 }
+            } else if (handBack == HandBack.OVERFLOWED && !fast) {
+                sendActionBar(player, "<#DFBD7C>背包已满，旧弹匣掉在了脚下")
             }
         }
         for (item in oldOverflowItems.filterNotNull() + overflowItems.filterNotNull()) {
-            if (!giveBack(player, item)) {
+            if (giveBack(player, item) == HandBack.FAILED) {
                 // 不回滚已经提交的枪械状态；再次尝试掉落，避免溢出弹药静默丢失。
                 val recovered = try {
                     player.world.dropItemNaturally(player.location, item)
@@ -823,8 +855,17 @@ object GunAction {
             return
         }
 
-        giveBack(player, item)
-        sendActionBar(player, "<#8FD4A6>已卸下弹匣 <#EFDF8F>$magId")
+        when (giveBack(player, item)) {
+            HandBack.BAGGED -> sendActionBar(player, "<#8FD4A6>已卸下弹匣 <#EFDF8F>$magId")
+            // 溢出部分已经掉在脚下：弹匣有归宿，只是没全进背包。
+            HandBack.OVERFLOWED -> sendActionBar(player, "<#DFBD7C>背包已满，弹匣 <#EFDF8F>$magId</#EFDF8F><#DFBD7C> 掉在了脚下")
+            // 枪上的 mag/magAmmo 已经在上面清空了：归还与掉落兜底双失败时弹匣是真的没了，
+            // 不能还报「已卸下」。另两处归还（换上弹匣 / 退弹）都有失败分支，这里漏了。
+            HandBack.FAILED -> {
+                devLog("[Gun] 卸匣归还失败，弹匣丢失 id=$magId")
+                sendActionBar(player, "<#E08A98>背包已满且掉落失败，弹匣 <#EFDF8F>$magId</#EFDF8F><#E08A98> 已丢失")
+            }
+        }
         GunHud.update(player)
     }
 
@@ -1132,24 +1173,44 @@ object GunAction {
         }
 
         val seconds = ammoMoveDuration(player, mag, insert = true)
+        val boundIdentity = MagazineCore.instanceIdOrNull(magItem).orEmpty()
         timedAction(
             player = player,
             seconds = seconds,
             onFinish = {
-                if (finishInsertRound(player, mag.id, ammoId, capacity)) onDone?.invoke()
+                if (finishInsertRound(player, mag.id, boundIdentity, ammoId, capacity)) onDone?.invoke()
             },
             type = ActionType.INSERT_AMMO,
         )
         return true
     }
 
-    private fun finishInsertRound(player: Player, magId: String, ammoId: String, capacity: Int): Boolean {
+    /**
+     * 压弹结算。
+     *
+     * @param magInstanceId 起读条时那个弹匣的实例身份。只比 `mag.id` 是不够的：
+     *   玩家有两个同型号弹匣时，读条期间把主手换成另一个也会通过校验，子弹就这么进了别的弹匣。
+     *   退弹 / 批量链路（[finishRemoveRound]、[stepBulkRemove]）一直是双重校验，这里对齐。
+     */
+    private fun finishInsertRound(
+        player: Player,
+        magId: String,
+        magInstanceId: String,
+        ammoId: String,
+        capacity: Int,
+    ): Boolean {
         val target = resolveHeldMag(player)
         if (target == null) {
             sendActionBar(player, "<#E08A98>弹匣已经不在主手了")
             return false
         }
         if (GunRegistry.magOf(target)?.id != magId) return false
+        if (magInstanceId.isNotEmpty() &&
+            MagazineCore.instanceIdOrNull(target).orEmpty() != magInstanceId
+        ) {
+            sendActionBar(player, "<#E08A98>弹匣已被替换，压弹已取消")
+            return false
+        }
         if (MagazineCore.readAmmo(target).size >= capacity) return false
 
         if (!MagazineCore.push(target, ammoId, capacity)) {
@@ -1240,20 +1301,22 @@ object GunAction {
             }
             return false
         }
-        if (!giveBack(player, item)) {
-            // 交付异常时把同一 ID 压回弹匣，避免吞掉已经 pop 的子弹。
-            if (!MagazineCore.push(target, popped, MagazineCore.capacity(target)) ||
-                MagazineCore.readAmmo(target) != before
-            ) {
-                devLog("[Gun] 退弹交付失败后回补子弹失败 (id=$popped)")
-            }
+        val handBack = giveBack(player, item)
+        if (handBack != HandBack.BAGGED) {
+            // 注意：子弹此时**已经有归属**（要么溢出掉了、要么彻底丢失），
+            // 绝不能压回弹匣，否则就是「地上一个 + 弹匣里一个」的复制。
             try {
                 player.inventory.setItemInMainHand(target)
             } catch (_: Exception) {
             }
             GunHud.update(player)
-            sendActionBar(player, "<#E08A98>子弹交付失败，已尝试放回弹匣")
-            return false
+            sendActionBar(
+                player,
+                if (handBack == HandBack.OVERFLOWED)
+                    "<#DFBD7C>背包已满，这发 <#EFDF8F>$ammoId</#EFDF8F><#DFBD7C> 掉在了脚下"
+                else "<#E08A98>这发 <#EFDF8F>$ammoId</#EFDF8F><#E08A98> 交付失败，请检查物品栏"
+            )
+            return true
         }
         try {
             player.inventory.setItemInMainHand(target)
@@ -1435,22 +1498,52 @@ object GunAction {
         null
     }
 
-    /** 进背包，满了用 `dropItemNaturally` 掉在脚下（**不加**拾取冷却）。 */
-    private fun giveBack(player: Player, item: ItemStack): Boolean {
+    /**
+     * 归还物品的三种结果。
+     *
+     * 用枚举而不是 Boolean，是因为「全进背包」「进一部分、其余掉在脚下」「彻底失败」
+     * 这三种情况调用方要给不同反馈，而旧的 Boolean 让调用方无法区分后两者 ——
+     * 于是出现过「函数内部已经掉落、调用方又整件掉一次」的复制漏洞。
+     */
+    private enum class HandBack {
+        /** 全部进了背包。 */
+        BAGGED,
+
+        /** 进了一部分，其余已经带拾取冷却掉在脚下（物品已有唯一归属，不要再交付）。 */
+        OVERFLOWED,
+
+        /** 一点都没交出去，调用方可以再尝试一次掉落兜底。 */
+        FAILED,
+    }
+
+    /**
+     * 进背包，装不下的带拾取冷却掉在脚下。
+     *
+     * 返回值语义见 [HandBack]：只有 [HandBack.FAILED] 才代表这件物品还没被安置、
+     * 调用方可以再掉一次；其余两种情况都**不能**再交付，否则就是复制。
+     */
+    private fun giveBack(player: Player, item: ItemStack): HandBack {
         return try {
             val leftover = player.inventory.addItem(item)
+            if (leftover.isEmpty()) return HandBack.BAGGED
+            var droppedAll = true
             for (rest in leftover.values) {
-                player.world.dropItemNaturally(player.location, rest)
+                if (!dropAtFeet(player, rest, withCooldown = true)) droppedAll = false
             }
-            true
+            devLog(
+                "[Gun] 背包已满，溢出的 ${item.type} ×${leftover.values.sumOf { it.amount }} " +
+                    if (droppedAll) "已掉在脚下" else "掉落失败，需管理员检查"
+            )
+            // 掉落也失败说明溢出部分没有归属，交给调用方兜底；否则视为已安置。
+            if (droppedAll) HandBack.OVERFLOWED else HandBack.FAILED
         } catch (e: Exception) {
             devLog("[Gun] 归还物品失败: ${e.message}")
             try {
                 player.world.dropItemNaturally(player.location, item)
-                true
+                HandBack.OVERFLOWED
             } catch (dropError: Exception) {
                 devLog("[Gun] 归还物品且掉落兜底均失败: ${dropError.message}")
-                false
+                HandBack.FAILED
             }
         }
     }
@@ -1480,7 +1573,7 @@ object GunAction {
     fun countAmmo(player: Player, ammoId: String): Int {
         var total = 0
         val inv = player.inventory
-        for (i in 0 until inv.size) {
+        for (i in GunInventorySlots.storageSlots(inv.size)) {
             val stack = try {
                 inv.getItem(i)
             } catch (_: Exception) {
@@ -1498,7 +1591,7 @@ object GunAction {
         var need = amount
         if (need <= 0) return true
         val inv = player.inventory
-        for (i in 0 until inv.size) {
+        for (i in GunInventorySlots.storageSlots(inv.size)) {
             if (need <= 0) break
             val stack = try {
                 inv.getItem(i)
@@ -1522,7 +1615,7 @@ object GunAction {
     /** 背包里第一种匹配该弹匣口径的子弹 ID。 */
     fun firstMatchingAmmo(player: Player, mag: MagData): String? {
         val inv = player.inventory
-        for (i in 0 until inv.size) {
+        for (i in GunInventorySlots.storageSlots(inv.size)) {
             val stack = try {
                 inv.getItem(i)
             } catch (_: Exception) {
@@ -1553,7 +1646,7 @@ object GunAction {
         val type = materialOf(name) ?: return 0
         var total = 0
         val inv = player.inventory
-        for (i in 0 until inv.size) {
+        for (i in GunInventorySlots.storageSlots(inv.size)) {
             val stack = try {
                 inv.getItem(i)
             } catch (_: Exception) {
@@ -1570,7 +1663,7 @@ object GunAction {
         for ((name, count) in need) {
             val type = materialOf(name) ?: continue
             var left = count
-            for (i in 0 until inv.size) {
+            for (i in GunInventorySlots.storageSlots(inv.size)) {
                 if (left <= 0) break
                 val stack = try {
                     inv.getItem(i)

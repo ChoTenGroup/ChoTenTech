@@ -108,26 +108,33 @@ object GunMenuListener {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     fun onInventoryClick(event: InventoryClickEvent) {
-        val holder = event.inventory.holder as? CTGunMenuHolder ?: return
+        // ⚠️ holder 必须从「视图顶层」取。
+        // `event.inventory` 是**被点击的那一张**背包：玩家点自己背包时它的 holder 是 Player，
+        // 拿它判菜单会直接 return —— event.isCancelled 从未置位，shift 点击就能把背包物品
+        // 塞进上方锁定的菜单里，关界面后随 Inventory 一起消失（净丢失）。
+        val top: Inventory = try {
+            event.view.topInventory
+        } catch (_: Exception) {
+            return
+        }
+        val holder = top.holder as? CTGunMenuHolder ?: return
 
         // 菜单里的一切交互都不允许改变物品（含预览里那把真枪）
         event.isCancelled = true
 
-        // 所有按钮与压弹/退弹只接受普通左键；数字键、副手交换、双击、Shift、
-        // 中键等仍保持取消以锁住物品，但绝不能进入业务派发。
-        if (event.click != ClickType.LEFT || event.isShiftClick) return
+        // 能跨容器搬运的操作（Shift / 数字键 / 副手交换 / 双击 / 丢弃键）一律只取消、不进业务派发。
+        if (event.isShiftClick) return
+        // 只接受普通左键（按钮区与玩家背包区统一）。
+        // `MagMenu.handleInventoryClick` 对点击类型不做区分：INSERT / REMOVE 都固定处理一发，
+        // 所以放开右键不会多出任何能力，反而会让「右键 = 分堆」的肌肉记忆意外压弹 /
+        // 退弹，并与上方按钮只认左键的策略自相矛盾。
+        if (event.click != ClickType.LEFT) return
 
         val player = event.whoClicked as? Player ?: return
         val raw = event.rawSlot
         if (raw < 0) return
 
-        val topSize = try {
-            event.view.topInventory.size
-        } catch (_: Exception) {
-            0
-        }
-
-        if (raw < topSize) {
+        if (raw < top.size) {
             when (holder) {
                 is GunMenu.Holder -> GunMenu.handleClick(player, raw)
                 is MagMenuHolder -> MagMenu.handleClick(player, holder, raw)
@@ -135,8 +142,9 @@ object GunMenuListener {
                 else -> Unit
             }
         } else {
-            // 玩家背包区域：只有弹匣菜单的压弹 / 退弹模式才放行
-            if (holder is MagMenuHolder) {
+            // 玩家背包区域：只有弹匣菜单的压弹 / 退弹模式才放行。
+            // 取消已置位，物品搬运由 MagMenu 自己完成（不会真的把物品放进菜单）。
+            if (holder is MagMenuHolder && event.click == ClickType.LEFT) {
                 MagMenu.handleInventoryClick(player, holder, event)
             }
         }

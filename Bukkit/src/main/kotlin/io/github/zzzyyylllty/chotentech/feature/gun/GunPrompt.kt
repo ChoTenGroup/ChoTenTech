@@ -55,12 +55,15 @@ object GunPrompt {
 
         try {
             val subtitle = mmUtil.deserialize(message.legacyToMiniMessage())
+            // 只发 subtitle：`showTitle` 会连主标题与 times 一起下发，
+            // 抢占成就 / 公告等其它插件的 title 通道，并让淡入淡出反复重播。
+            // 空主标题 + 0 淡入是「只借副标题用一下」的最小写法。
             player.showTitle(
                 Title.title(
                     Component.empty(),
                     subtitle,
                     Title.Times.times(
-                        Duration.ofMillis(FADE_IN_MS),
+                        Duration.ZERO,
                         Duration.ofMillis(STAY_MS),
                         Duration.ofMillis(FADE_OUT_MS),
                     ),

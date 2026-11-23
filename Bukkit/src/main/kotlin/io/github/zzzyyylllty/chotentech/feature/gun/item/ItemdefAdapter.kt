@@ -3,7 +3,7 @@ package io.github.zzzyyylllty.chotentech.feature.gun.item
 import io.github.zzzyyylllty.chotentech.util.devLog
 import io.github.zzzyyylllty.sertraline.compat.PlatformCompat
 import io.github.zzzyyylllty.sertraline.config.asListEnhanced
-import io.github.zzzyyylllty.sertraline.data.ModernSItem
+import io.github.zzzyyylllty.sertraline.data.AbstractSItem
 import io.github.zzzyyylllty.sertraline.util.VersionHelper
 import io.github.zzzyyylllty.sertraline.util.loreformat.performPlaceholders
 import io.github.zzzyyylllty.sertraline.util.minimessage.toComponent
@@ -19,10 +19,10 @@ import java.lang.reflect.Method
  * itemdef 段落处理器：把一段简化的物品定义（name / desc / material / unbreakable / glow / stack）
  * 直接写到 ItemStack 上。
  *
- * 这一段不属于任何模块的 `data`，所以只能从 [ModernSItem.config] 读取原始 YAML。
+ * 这一段不属于任何模块的 `data`，所以只能从 [AbstractSItem.config] 读取原始 YAML。
  * 与 xbuilder 的差别：itemdef 只做“最基础的物品外观定义”，不参与 XItemStack 反序列化。
  */
-fun itemdefAdapter(item: ItemStack, sItem: ModernSItem, player: Player?): ItemStack {
+fun itemdefAdapter(item: ItemStack, sItem: AbstractSItem, player: Player?): ItemStack {
     val map = (sItem.config["itemdef"] as? Map<*, *>) ?: return item
     if (map.isEmpty()) return item
 
@@ -53,16 +53,28 @@ fun itemdefAdapter(item: ItemStack, sItem: ModernSItem, player: Player?): ItemSt
     // ── unbreakable ─────────────────────────────────────────────────────────
     map["unbreakable"]?.let { meta.isUnbreakable = it.toBooleanTolerance() }
 
-    // ── glow：耐久 I + HIDE_ENCHANTS（与 xbuilder glow 的做法保持一致）──────────
+    // ── glow：附魔光效 ─────────────────────────────────────────────────────
     if (map["glow"]?.toBooleanTolerance() == true) {
-        // 1.20.5 起 Bukkit 附魔名改为 UNBREAKING，1.12.2 时代是 DURABILITY，两个都试一遍
-        val unbreaking = Enchantment.getByName("UNBREAKING") ?: Enchantment.getByName("DURABILITY")
-        if (unbreaking != null) {
-            meta.addEnchant(unbreaking, 1, true)
-        } else {
-            devLog("itemdef: unbreaking enchantment not found, glow skipped.")
+        // 优先用 1.20.5+ 的 `enchantment_glint_override` 组件：它只改光效，
+        // 不会真的给物品挂一个「耐久 I」—— 后者会让物品在附魔台/铁砧里
+        // 显示为已附魔、能被砂轮剥出经验，而且 HIDE_ENCHANTS 只是藏起来不是没有。
+        if (!applyGlintOverride(meta)) {
+            // 旧版本回退：塞一个隐藏的耐久附魔。
+            //
+            // ⚠️ `Enchantment.getByName` 的匹配表用的是**小写** key（`unbreaking`），
+            // 原来传的是大写 "UNBREAKING"/"DURABILITY"，永远查不到 → 返回 null
+            // → glow 静默失效、什么都没发生。这里两个大小写都试。
+            val unbreaking = Enchantment.getByName("unbreaking")
+                ?: Enchantment.getByName("UNBREAKING")
+                ?: Enchantment.getByName("durability")
+                ?: Enchantment.getByName("DURABILITY")
+            if (unbreaking != null) {
+                meta.addEnchant(unbreaking, 1, true)
+                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
+            } else {
+                devLog("itemdef: unbreaking enchantment not found, glow skipped.")
+            }
         }
-        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
     }
 
     // ── stack：1.20.5+ 才有最大堆叠数量，低版本忽略 ───────────────────────────
@@ -78,6 +90,31 @@ fun itemdefAdapter(item: ItemStack, sItem: ModernSItem, player: Player?): ItemSt
 
     item.itemMeta = meta
     return item
+}
+
+/**
+ * `ItemMeta#setEnchantmentGlintOverride` 是 1.20.5+ 的 API，在 legacy12（MC 1.12.2 编译面）
+ * 上不存在，因此与 [applyMaxStackSize] 一样走反射，方法缺失时返回 false 由调用方回退。
+ *
+ * @return true = 光效已经设置成功，调用方不必再塞假附魔
+ */
+private val glintOverrideSetter: Method? by lazy<Method?> {
+    try {
+        ItemMeta::class.java.getMethod("setEnchantmentGlintOverride", java.lang.Boolean::class.java)
+    } catch (_: Throwable) {
+        null
+    }
+}
+
+private fun applyGlintOverride(meta: ItemMeta): Boolean {
+    val setter = glintOverrideSetter ?: return false
+    return try {
+        setter.invoke(meta, true)
+        true
+    } catch (e: Exception) {
+        devLog("itemdef: failed to apply enchantment glint override: ${e.message}")
+        false
+    }
 }
 
 /**

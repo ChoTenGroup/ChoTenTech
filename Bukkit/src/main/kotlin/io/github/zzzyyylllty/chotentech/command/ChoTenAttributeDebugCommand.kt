@@ -32,6 +32,7 @@ object ChoTenAttributeDebugCommand {
     private val CATEGORY_NAMES = mapOf(
         "basic" to "基础属性",
         "combat" to "战斗",
+        "spear" to "长矛",
         "defense" to "防御",
         "block" to "格挡",
         "ranged" to "远程",
@@ -68,6 +69,11 @@ object ChoTenAttributeDebugCommand {
         add("combat",
             "crit_chance", "crit_damage", "lifesteal", "dodge_chance", "defense",
             "defense_toughness", "attack_damage"
+        )
+
+        // 长矛（冲锋攻击）
+        add("spear",
+            "spear_charge_level", "spear_charge_speed"
         )
 
         // 防御

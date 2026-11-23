@@ -77,9 +77,14 @@ object HealingManager {
                 if (audience == player) submit {
                     if (!player.isOnline || player.getData() !== data || player.inventory.heldItemSlot != slot ||
                         player.inventory.itemInMainHand != snapshot || BleedoutManager.isDowned(player.uniqueId)) return@submit
-                    val selected = if (quick) body.quickTreatmentPart()?.id ?: body.parts.values.firstOrNull {
-                        !it.destroyed && it.effects.keys.any { type -> type in config.removeDebuff }
-                    }?.id else part
+                    // 快速治疗优先选「这份医疗包能移除伤势」的部位：quickTreatmentPart 只看韧性
+                    // 缺口与部位权重，不关心能否移除伤势，先选它会在唯一可治疗部位只有骨折时
+                    // 报出「该部位没有可治疗项目」这种误导性提示。
+                    val selected = if (quick) {
+                        (body.parts.values.firstOrNull {
+                            !it.destroyed && it.effects.keys.any { type -> type in config.removeDebuff }
+                        } ?: body.quickTreatmentPart())?.id
+                    } else part
                     begin(player, config, player.inventory.itemInMainHand, selected, hp)
                 }
             }, ClickCallback.Options.builder().uses(1).build())).build()
@@ -116,6 +121,19 @@ object HealingManager {
     private fun num(value: Double): String =
         if (value == Math.floor(value) && abs(value) < 1e15) value.toLong().toString() else "%.1f".format(value)
 
+    /**
+     * 治疗减速的兜底过期时间（毫秒）。
+     *
+     * 理论治疗时长 = pre + per × 轮数 + post，再留 20 秒余量。轮数按 maxHeal / healSpeed
+     * 估算，并夹在 1..200 之间：maxHeal 配得极大（例如 9999）时不会算出几十分钟的减速残留。
+     */
+    private fun slowExpireMillis(config: HealConfig): Long {
+        val rounds = if (config.healSpeed > 0.0 && config.perTime > 0.0)
+            (config.maxHeal / config.healSpeed).coerceIn(1.0, 200.0) * config.perTime
+        else 60.0
+        return ((config.preTime + rounds + config.postTime + 20.0) * 1000.0).toLong()
+    }
+
     private fun begin(player: Player, config: HealConfig, item: ItemStack, partId: String?, hp: Boolean) {
         if (isInHealingOrPost(player.uniqueId) || BleedoutManager.isDowned(player.uniqueId) ||
             SurgeryManager.isInSurgeryOrPost(player.uniqueId)) return
@@ -142,7 +160,12 @@ object HealingManager {
             player.sendActionBar("<#EFDF8F>$message".toComponent())
             return
         }
-        if (durability(item) <= 0) return
+        val remaining = durability(item)
+        if (remaining <= 0) {
+            // 之前这里是静默 return：玩家已经开过弹窗、选过部位，点完什么都不会发生。
+            player.sendActionBar("<#E08A98>医疗包耐久已耗尽，无法使用".toComponent())
+            return
+        }
         val slot = player.inventory.heldItemSlot
         val useItem = item.clone().apply { amount = 1 }
         // Exclude the selected slot while returning the rest; addItem would merge it back
@@ -170,9 +193,17 @@ object HealingManager {
         player.inventory.setItem(slot, useItem)
         states[player.uniqueId] = HealingState(config, useItem.clone(), slot, data,
             partId, hp, phaseTicks = (config.preTime * 4).toInt())
+        // 理疗经验：SkillManager 里那套按物品分类给经验的实现原本没有任何调用点，
+        // 注释还写着「由 HealingManager.enter 调用」。放在 begin 而不是 enter，
+        // 是为了避免玩家反复开关弹窗刷经验。
+        SkillManager.givePhysiotherapyXp(player, useItem)
         if (config.slow > 0) AttributeManager.addModifier(player.uniqueId, AttributeModifier(
             attributeId = "movement_speed", value = -config.slow / 100,
-            type = ModifierType.PERCENT, source = ModifierSource.HEALING, slot = AttributeSlot.OTHER))
+            type = ModifierType.PERCENT, source = ModifierSource.HEALING, slot = AttributeSlot.OTHER,
+            // 治疗减速是临时效果，但修饰符和别的属性修饰符一样会落库：进程崩溃 / 玩家被踢 /
+            // cleanup 漏跑时，这条减速会永久留在玩家数据里。给一个有界的兜底过期时间，
+            // 即使泄漏也会自己消失，不用等管理员手工清。
+            expireOn = System.currentTimeMillis() + slowExpireMillis(config)))
         config.soundPre.play(player)
     }
 
@@ -203,27 +234,33 @@ object HealingManager {
     }
     private fun tick() {
         for ((uuid, state) in states.toMap()) {
-            val player = Bukkit.getPlayer(uuid)
-            if (player == null || player.isDead || player.getData() !== state.profile) { cleanup(uuid); continue }
-            if (state.phase == HealingPhase.POST) {
-                if (--state.phaseTicks <= 0) { cleanup(uuid); state.config.soundEnd.play(player) }
-                continue
+            // 单个玩家出错不能打断整轮：treat 里会碰 NBT / 属性同步 / 音效，
+            // 一次异常会让当轮剩余玩家的治疗全部漏结算，而且 5 tick 后重复同一处异常。
+            try {
+                val player = Bukkit.getPlayer(uuid)
+                if (player == null || player.isDead || player.getData() !== state.profile) { cleanup(uuid); continue }
+                if (state.phase == HealingPhase.POST) {
+                    if (--state.phaseTicks <= 0) { cleanup(uuid); state.config.soundEnd.play(player) }
+                    continue
+                }
+                if (BleedoutManager.isDowned(uuid)) { post(player, state, PostReason.CANCELLED); continue }
+                val held = player.inventory.itemInMainHand
+                if (player.inventory.heldItemSlot != state.slot || held != state.item || held.amount <= 0) {
+                    post(player, state, PostReason.ITEM_LOST); continue
+                }
+                if (state.phase == HealingPhase.PRE) {
+                    if (--state.phaseTicks > 0) continue
+                    state.phase = HealingPhase.HEALING
+                    state.config.soundStart.play(player)
+                }
+                if (--state.healInterval > 0) continue
+                state.healInterval = (state.config.perTime * 4).toInt().coerceAtLeast(1)
+                treat(player, state, held)
+                state.item.itemMeta = held.itemMeta
+                state.item.amount = held.amount
+            } catch (e: Exception) {
+                io.github.zzzyyylllty.chotentech.util.devLog("[Medkit] 治疗 tick 异常（$uuid）: ${e.message}")
             }
-            if (BleedoutManager.isDowned(uuid)) { post(player, state, PostReason.CANCELLED); continue }
-            val held = player.inventory.itemInMainHand
-            if (player.inventory.heldItemSlot != state.slot || held != state.item || held.amount <= 0) {
-                post(player, state, PostReason.ITEM_LOST); continue
-            }
-            if (state.phase == HealingPhase.PRE) {
-                if (--state.phaseTicks > 0) continue
-                state.phase = HealingPhase.HEALING
-                state.config.soundStart.play(player)
-            }
-            if (--state.healInterval > 0) continue
-            state.healInterval = (state.config.perTime * 4).toInt().coerceAtLeast(1)
-            treat(player, state, held)
-            state.item.itemMeta = held.itemMeta
-            state.item.amount = held.amount
         }
     }
 
@@ -242,7 +279,15 @@ object HealingManager {
         val changed = result.changed
         // treated 是「韧性与血量合计」的额度占用，血量已包含在内，不要再叠加 hpHealed。
         state.totalHealed += result.treated
-        if (result.hpHealed > 0) player.health = minOf(maxHp, player.health + result.hpHealed)
+        // 走 EntityRegainHealthEvent，让「生命」技能经验（SkillManager.onEntityRegainHealth）
+        // 与其它监听恢复的插件能观察到这次治疗。直接写 player.health 会静默绕过它们。
+        if (result.hpHealed > 0) {
+            val regain = org.bukkit.event.entity.EntityRegainHealthEvent(
+                player, result.hpHealed, org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason.CUSTOM
+            )
+            Bukkit.getPluginManager().callEvent(regain)
+            if (!regain.isCancelled) player.health = minOf(maxHp, player.health + regain.amount)
+        }
         BodyHealthManager.syncPenalties(player, body)
         val hpEligible = state.healHealth && config.hpLeast >= 0 && body.toughnessPercentage > config.hpLeast
         if (changed) {
@@ -255,6 +300,11 @@ object HealingManager {
             ((part == null || part.percentage >= 1) && (!hpEligible || player.health >= maxHp))
         when {
             dur <= 1e-9 -> post(player, state, PostReason.ITEM_LOST)
+            // blocked 只可能来自「想移除的伤势付不起耐久」，不能当成正常完成悄悄收尾。
+            result.blocked -> {
+                player.sendActionBar("<#E08A98>耐久不足，未能移除该伤势".toComponent())
+                post(player, state, PostReason.COMPLETE)
+            }
             done -> post(player, state, PostReason.COMPLETE)
             else -> player.sendActionBar("<#84D1CB>治疗中 <#A9B4C3>耐久 ${"%.1f".format(dur)}，已治疗 ${"%.1f".format(state.totalHealed)}/${config.maxHeal}".toComponent())
         }

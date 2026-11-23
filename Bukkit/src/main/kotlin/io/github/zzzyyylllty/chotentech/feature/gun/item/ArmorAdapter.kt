@@ -1,20 +1,21 @@
-package io.github.zzzyyylllty.chotentech.feature.gun.item
+﻿package io.github.zzzyyylllty.chotentech.feature.gun.item
 
-import io.github.zzzyyylllty.sertraline.data.ModernSItem
+import io.github.zzzyyylllty.sertraline.data.AbstractSItem
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import taboolib.module.nms.getItemTag
 import taboolib.module.nms.setItemTag
 
-/** armor 段处理器：合并写入静态防御值，并只在首次构建时初始化动态耐久。 */
-fun armorAdapter(item: ItemStack, sItem: ModernSItem, player: Player?): ItemStack {
+/**
+ * armor 段处理器：只负责初始化**动态耐久**。
+ *
+ * 早期版本还会写 `armor.v = 1` 与 `armor.defense`，但 `ArmorManager` 从头到尾都只读
+ * `armor.durability` —— 防御值/等级/速度全部来自 `gun` 段（YAML 才是唯一真相）。
+ * 这些「写了没人读」的键会让人误以为改 NBT 就能改防御，故删除。
+ */
+fun armorAdapter(item: ItemStack, sItem: AbstractSItem, player: Player?): ItemStack {
     val map = sItem.config["armor"] as? Map<*, *> ?: return item
     val tag = item.getItemTag(true)
-    tag.putDeep("sertraline_data.armor.v", 1)
-    tag.putDeep(
-        "sertraline_data.armor.defense",
-        map["defense"]?.toString()?.trim()?.toDoubleOrNull() ?: 0.0,
-    )
     if (tag.getDeep("sertraline_data.armor.durability") == null) {
         tag.putDeep(
             "sertraline_data.armor.durability",

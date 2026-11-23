@@ -80,9 +80,41 @@ fun loadMedkitConfig() {
             costFood = sec.getDouble("cost.food", 0.0).coerceAtLeast(0.0),
             costSan = sec.getDouble("cost.san", 0.0).coerceAtLeast(0.0),
             hpLeast = sec.getDouble("hpleast", -1.0),
+            slow = sec.getDouble("slow", 50.0).coerceIn(0.0, 100.0),
+            cancelHeal = parseCancelConditions(sec),
             removeDebuff = removals?.getKeys(false)?.associateWith { removals.getDouble(it).coerceAtLeast(0.0) } ?: emptyMap()
         )
     }
+}
+
+/** 只有这些键真的被 [io.github.zzzyyylllty.chotentech.listener] 的取消逻辑读取。 */
+val KNOWN_CANCEL_CONDITIONS = setOf("walk", "sprint", "jump", "attack", "fall")
+
+/**
+ * 解析 `cancel:`。
+ *
+ * 未配置该键时用默认集合；显式写成空列表（`cancel: []`）表示治疗期间不做任何取消判定。
+ * 未知键会被丢弃并记一条日志，避免玩家写了 `cancel: [walking]` 却以为生效。
+ */
+/**
+ * 把配置里写的 `cancel:` 列表规范化成运行时认识的集合（纯函数，便于单测）。
+ *
+ * 去掉空串、统一小写、丢弃未知键 —— 玩家写了 `cancel: [walking]` 不能静默生效。
+ */
+internal fun normalizeCancelConditions(raw: List<String>): Set<String> =
+    raw.map { it.trim().lowercase() }.filter { it.isNotEmpty() }.toSet() intersect KNOWN_CANCEL_CONDITIONS
+
+internal fun parseCancelConditions(sec: taboolib.library.configuration.ConfigurationSection): Set<String> {
+    if (!sec.contains("cancel")) return DEFAULT_CANCEL_CONDITIONS
+    val raw = sec.getStringList("cancel")
+    val unknown = normalizeCancelConditions(raw)
+    val dropped = raw.map { it.trim().lowercase() }.filter { it.isNotEmpty() }.toSet() - unknown
+    if (dropped.isNotEmpty()) {
+        taboolib.common.platform.function.warning(
+            "[Medkit] ${sec.name}: 未知的 cancel 条件 $dropped，已忽略（可用：$KNOWN_CANCEL_CONDITIONS）",
+        )
+    }
+    return unknown
 }
 
 fun getHealConfigFromYaml(sertralineId: String, durability: Double, maxDurability: Double): HealConfig? =
