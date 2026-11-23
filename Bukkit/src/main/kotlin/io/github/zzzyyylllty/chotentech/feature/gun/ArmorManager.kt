@@ -30,6 +30,14 @@ object ArmorManager {
         val penRatio: Double,
         val armorDurabilityLoss: Double,
         val covered: Boolean,
+        /**
+         * 本次减伤实际用到的护甲件（含本部位、耐久 > 0 的那些）。
+         *
+         * 由 [mitigate] 一并返回，调用方**不要**再自己 `pieces(target)` 一遍：
+         * 那等于每发子弹多做一轮装备扫描 + NBT 解析（霰弹一次 8 颗弹丸就是 16 次），
+         * 而且两次扫描之间护甲可能被换下，导致「减伤用 A 套、耐久扣 B 套」。
+         */
+        val pieces: List<ArmorPiece> = emptyList(),
     )
 
     data class ArmorMaterial(
@@ -82,28 +90,46 @@ object ArmorManager {
     }
 
     fun hitPart(target: LivingEntity, hitPoint: Location): String {
-        val height = target.height.takeIf { it.isFinite() && it > 0.0 } ?: 1.0
-        val h = ((hitPoint.y - target.location.y) / height).coerceIn(0.0, 1.0)
-        return when {
-            h >= 0.85 -> "HEAD"
-            h >= 0.55 -> "BODY"
-            h >= 0.35 -> "STOMACH"
-            else -> "LEGS"
+        // 与韧性系统共用同一套判定：此前这里用 0.85/0.55/0.35 且只返回 HEAD/BODY/STOMACH/LEGS，
+        // 与 BodyHealthManager 的 0.80/0.58/0.40 + 左右侧向判定不一致，导致
+        // 「韧性结算头部、护甲结算胸甲」，且手臂/单腿护甲永远匹配不上。
+        return io.github.zzzyyylllty.chotentech.function.body.BodyHealthManager.hitPart(target, hitPoint)
+    }
+
+    /** 把 `LEGS` / `ARMS` 这类旧别名展开成具体肢，避免配置与判定两侧用词不一致。 */
+    internal fun expandPart(part: String): Set<String> = when (val id = part.trim().uppercase()) {
+        "LEGS" -> setOf("LLEG", "RLEG")
+        "ARMS" -> setOf("LARM", "RARM")
+        "" -> emptySet()
+        else -> setOf(id)
+    }
+
+    /**
+     * 槽位在**未显式配置 `part`** 时的默认覆盖范围。
+     *
+     * 抽成纯函数是为了能单测：`covers` 需要真实 `ItemStack`，单测里构造不出来。
+     */
+    internal fun slotCovers(slot: String, part: String): Boolean {
+        val wanted = expandPart(part)
+        if (wanted.isEmpty()) return false
+        return when (slot.uppercase()) {
+            "HEAD" -> wanted.any { it == "HEAD" }
+            "BODY" -> wanted.any { it in setOf("BODY", "STOMACH", "LARM", "RARM") }
+            "LEGS" -> wanted.any { it in setOf("LLEG", "RLEG", "STOMACH") }
+            "FEET" -> wanted.any { it in setOf("LLEG", "RLEG") }
+            else -> false
         }
     }
 
     fun covers(piece: ArmorPiece, part: String): Boolean {
-        val wanted = part.uppercase()
-        val declared = piece.data.part.map { it.uppercase() }
-        // ArmorData 无法区分“未配置 part”和显式只写 [BODY]；二者均使用槽位默认覆盖。
-        if (declared != listOf("BODY")) return wanted in declared
-        return when (piece.slot) {
-            "HEAD" -> wanted == "HEAD"
-            "BODY" -> wanted in setOf("BODY", "STOMACH", "ARMS")
-            "LEGS" -> wanted in setOf("LEGS", "STOMACH")
-            "FEET" -> wanted == "LEGS"
-            else -> false
-        }
+        val wanted = expandPart(part)
+        if (wanted.isEmpty()) return false
+        // 现在由 `ArmorData.partConfigured` 明确区分「没写 part」与「显式写了 part: [BODY]」，
+        // 不再靠「值恰好等于 [BODY]」来猜：那种猜测会让显式 `part: [BODY]`（想当护胸用）
+        // 被静默当成「未配置」而按装备槽判定。
+        if (!piece.data.partConfigured) return slotCovers(piece.slot, part)
+        val declared = piece.data.part.flatMap { expandPart(it.uppercase()) }.toSet()
+        return wanted.any { it in declared }
     }
 
     fun material(name: String): ArmorMaterial {
@@ -128,7 +154,7 @@ object ArmorManager {
         val part = hitPart(target, hitPoint)
         val covered = pieces(target).filter { covers(it, part) && it.durability > 0.0 }
         if (covered.isEmpty()) {
-            return Mitigation(raw, true, Double.POSITIVE_INFINITY, 0.0, false)
+            return Mitigation(raw, true, Double.POSITIVE_INFINITY, 0.0, false, emptyList())
         }
 
         val armorDef = covered.sumOf { it.data.defense }
@@ -153,7 +179,8 @@ object ArmorManager {
             damage = raw * 0.2
         }
         if (crit) loss *= 1.1
-        return Mitigation(damage, pierced, penRatio, loss, true)
+        // 把用过的护甲件一并交回去，调用方不必再扫描一遍装备槽
+        return Mitigation(damage, pierced, penRatio, loss, true, covered)
     }
 
     /** 按 defense 占比分摊；零防御护甲均摊，并在跨 0 的那次提示破碎。 */

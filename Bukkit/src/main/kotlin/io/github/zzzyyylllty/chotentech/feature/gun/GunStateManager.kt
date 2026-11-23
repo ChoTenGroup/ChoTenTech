@@ -14,7 +14,6 @@ import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.abs
-import kotlin.math.floor
 
 /**
  * 单个玩家的枪械运行时状态（只在内存里，不落盘）。
@@ -109,8 +108,21 @@ object GunStateManager {
     private data class HeldGunIdentity(val gunId: String, val instanceId: String)
     private val heldGunIdentity = ConcurrentHashMap<UUID, HeldGunIdentity>()
 
-    /** 热量镜像绑定物品实例；同槽换成同 ID 的另一把枪也不能继承。 */
-    private data class HeatMirror(val gunId: String, val instanceId: String, val heat: Double)
+    /**
+     * 热量镜像绑定物品实例；同槽换成同 ID 的另一把枪也不能继承。
+     *
+     * [heat] 是「已冷却到」的最新值（含尚未落盘的亚整数进度）；
+     * [persisted] 是**最近一次真正写进物品 NBT** 的数值。判断「热量是否被外部改动」
+     * 必须拿 [persisted] 与 NBT 比 —— 拿 [heat] 比会把每个未跨整数的冷却 tick 误判成外部改动。
+     */
+    private data class HeatMirror(
+        val gunId: String,
+        val instanceId: String,
+        val heat: Double,
+        val persisted: Double,
+        /** 距离上次落盘过了多少 tick（用来限制高频 NBT 写）。 */
+        val ticksSincePersist: Int = Int.MAX_VALUE,
+    )
 
     /** 内存里的热量镜像（uuid → 已冷却但可能尚未落盘的热量）。 */
     private val heatMirror = ConcurrentHashMap<UUID, HeatMirror>()
@@ -123,6 +135,18 @@ object GunStateManager {
      * 所以档位镜像集中放在这里，两条路径都调 [applyHeatSnapshot]。
      */
     private val heatTierMirror = ConcurrentHashMap<UUID, Int>()
+
+    /**
+     * 上一次观察到的**枪种 id**（uuid → gunId）。
+     *
+     * 只用来判断「是不是换了另一把枪」，从而决定要不要清掉玩家级的过热惩罚
+     * （[PlayerGunState.forcedStopUntil] / [PlayerGunState.heatLocked]）。
+     *
+     * 为什么不能用 [heatMirror] 兼职：镜像在「主手不是枪」（例如切到副手）时会被删掉，
+     * 再切回同一把枪就是 null，若拿 null 当「换了枪」，那把枪切到副手绕一圈就能
+     * 把强制停火和上限锁定清掉。这个字段与镜像是否存活无关。
+     */
+    private val lastHeatGunId = ConcurrentHashMap<UUID, String>()
 
     private var task: PlatformExecutor.PlatformTask? = null
 
@@ -168,6 +192,7 @@ object GunStateManager {
         heldGunIdentity.clear()
         heatMirror.clear()
         heatTierMirror.clear()
+        lastHeatGunId.clear()
         ThermalManager.clearAll()
         // 读条动作（换弹 / 压弹 / 检视……）也必须一起停，否则关服时还在往物品写 NBT
         GunAction.cancelAll()
@@ -199,6 +224,9 @@ object GunStateManager {
         heldGunIdentity.remove(player.uniqueId)
         heatMirror.remove(player.uniqueId)
         heatTierMirror.remove(player.uniqueId)
+        lastHeatGunId.remove(player.uniqueId)
+        GunNameplate.forget(player)
+        GunModel.forget(player)
         try {
             if (player.isOnline) {
                 if (state != null) {
@@ -216,11 +244,22 @@ object GunStateManager {
             val player = Bukkit.getPlayer(uuid)
             if (player != null) clear(player) else states.remove(uuid)
         }
+        // 还挂在线上、但这次没进 states 的玩家也得走一遍 clear：
+        // 读条动作 / 对话框登记 / 名称缓存 / 热量镜像都不在 states 里，
+        // 只清 states 会漏掉它们（重载后会出现「假对话框开着」和旧读条）。
+        for (player in Bukkit.getOnlinePlayers()) {
+            clear(player)
+        }
         states.clear()
         heldGunCache.clear()
         heldGunIdentity.clear()
         heatMirror.clear()
         heatTierMirror.clear()
+        lastHeatGunId.clear()
+        GunDialogSessions.clear()
+        GunNameplate.clear()
+        GunModel.clear()
+        GunPrompt.clearAll()
         ThermalManager.clearAll()
     }
 
@@ -263,13 +302,26 @@ object GunStateManager {
             heatMirror.remove(uuid)
         } else {
             val mirror = heatMirror[uuid]
-            if (mirror?.gunId != gun.id || mirror.instanceId != instanceId) {
+            // 只有**换成另一把枪**才重置过热惩罚，且必须靠 gunId 判断。
+            //
+            // `forcedStopUntil` / `heatLocked` 是玩家级状态。原本这里用
+            // `gunId != gun.id || instanceId != instanceId` 判断，于是「同一把枪切到副手再切回来」
+            // （instanceId 变化、gunId 不变）也会清空 —— 打满热量后左右手互换一下就能
+            // 立刻跳过强制停火与上限锁定，等于把过热机制整个绕掉。
+            //
+            // ⚠️ 不能用 `mirror == null` 当判据：切到副手时上面的分支已经把镜像删掉了
+            // （副手不是主手枪 → gun == null），再切回来必然是 null，那样漏洞会原样复现。
+            // 所以这里改成记住「上一次观察到的枪 id」，与镜像是否存活解耦。
+            val lastGunId = lastHeatGunId[uuid]
+            if (lastGunId != null && lastGunId != gun.id) {
                 val state = state(player)
                 state.forcedStopUntil = 0L
                 state.heatLocked = false
                 heatTierMirror.remove(uuid)
             }
-            heatMirror[uuid] = HeatMirror(gun.id, instanceId, heat)
+            lastHeatGunId[uuid] = gun.id
+            // 开火路径是「先 GunInstance.write 写 heat，再 noteHeat」，所以此刻 NBT 里就是这个值。
+            heatMirror[uuid] = HeatMirror(gun.id, instanceId, heat, heat, 0)
         }
         val capacity = if (gun != null && gun.heatCapacity > 0.0) {
             gun.heatCapacity
@@ -342,6 +394,28 @@ object GunStateManager {
 
     // ==================== 1 tick 循环 ====================
 
+    /**
+     * 入水打湿：把主手与副手的枪各打上 [GunState.wetJam] 标记。
+     *
+     * 副手本身不参与开火（`GunListener` 直接忽略 `OFF_HAND`），但同样会被打湿：
+     * 之后把副手那把换到主手，第一枪照样卡壳。
+     */
+    private fun wetHeldGuns(player: Player) {
+        val busy = GunAction.isBusy(player)
+        // 读条中不动主手：GunAction 的读条收尾会拿自己的快照写回物品，
+        // 这里插一手 NBT 会和它抢同一个物品。下一轮（或读条结束后）再打。
+        if (!busy) wetGun(player, player.inventory.itemInMainHand)?.let { player.inventory.setItemInMainHand(it) }
+        wetGun(player, player.inventory.itemInOffHand)?.let { player.inventory.setItemInOffHand(it) }
+    }
+
+    /** 给单个物品打标记；不是枪 / 已经打过 / 写入失败都返回 null（调用方据此跳过写回）。 */
+    private fun wetGun(player: Player, item: ItemStack): ItemStack? {
+        val gun = GunRegistry.gunOf(item) ?: return null
+        val state = GunInstance.readEnsured(item, gun) ?: return null
+        if (state.wetJam) return null
+        return if (GunInstance.write(item, state.copy(wetJam = true))) item else null
+    }
+
     private fun tick() {
         tickCounter++
 
@@ -375,6 +449,9 @@ object GunStateManager {
                 // ADS 与护甲移速共用 GunAim 的唯一写入口；每秒刷新以跟随穿脱和耐久变化。
                 if (tickCounter % 20L == 0L) {
                     GunAim.refreshWalkSpeed(player)
+                    // 入水打湿：完全浸没时每秒给主手 / 副手的枪打一次标记。
+                    // 只在「已浸没且层级允许」时写 NBT，且标记已存在就跳过，正常不会反复写。
+                    if (GunEnvironment.shouldWet(player)) wetHeldGuns(player)
                     // 基地 / 安全世界 / 创造观察者里手部体力恒满：每秒兜一次底，
                     // 不依赖 1 秒一次的体力 tick（它也跳过创造/观察者），进基地立刻显示满值。
                     io.github.zzzyyylllty.chotentech.data.HandStamina.refillIfUnlimited(player)
@@ -548,7 +625,8 @@ object GunStateManager {
         val mirror = heatMirror[uuid]
         val storedState = GunInstance.readEnsured(held, gun) ?: return
         val sameInstance = mirror?.gunId == gun.id && mirror.instanceId == storedState.instanceId
-        val externalHeatChanged = mirror != null && kotlin.math.abs(storedState.heat - mirror.heat) > 1e-6
+        // 只和「上次真正落盘的数值」比：镜像里的亚整数冷却本来就没写进 NBT，拿它比会永远判成外部改动。
+        val externalHeatChanged = mirror != null && heatChangedExternally(storedState.heat, mirror.persisted)
         val current = if (sameInstance && !externalHeatChanged) {
             mirror.heat
         } else {
@@ -562,7 +640,18 @@ object GunStateManager {
             storedState.heat
         }
         if (current <= 0.0) {
-            heatMirror[uuid] = HeatMirror(gun.id, storedState.instanceId, 0.0)
+            // 冷到位：NBT 里可能还留着未归零的亚整数余量，顺手写一次 0，避免下次被当成外部改动。
+            if (sameInstance && !externalHeatChanged && storedState.heat > 0.0) {
+                if (!GunInstance.write(held, storedState.copy(heat = 0.0))) {
+                    heatMirror.remove(uuid)
+                    return
+                }
+                try {
+                    player.inventory.setItemInMainHand(held)
+                } catch (_: Exception) {
+                }
+            }
+            heatMirror[uuid] = HeatMirror(gun.id, storedState.instanceId, 0.0, 0.0, 0)
             // 冷到位：复位锁定闩与档位镜像，避免「档位停在 0 但闩还锁着」
             applyHeatSnapshot(player, state, 0.0, capacity)
             return
@@ -573,14 +662,25 @@ object GunStateManager {
 
         val tierBefore = GunSettings.heatTier(current)
         val next = (current - cool).coerceAtLeast(0.0)
-        heatMirror[uuid] = HeatMirror(gun.id, storedState.instanceId, next)
+        // 还没落盘，persisted 保持不变。
+        val persistedBefore = if (sameInstance && !externalHeatChanged) mirror!!.persisted else storedState.heat
+        val sincePersist = if (sameInstance && mirror != null) {
+            (mirror.ticksSincePersist + 1).coerceAtMost(Int.MAX_VALUE / 2)
+        } else {
+            Int.MAX_VALUE
+        }
+        heatMirror[uuid] = HeatMirror(gun.id, storedState.instanceId, next, persistedBefore, sincePersist)
 
         // P3：档位跳变（降温方向）/ 锁定闩复位都在这里处理
         applyHeatSnapshot(player, state, next, capacity)
 
-        val crossInteger = floor(next) != floor(current)
-        val crossTier = GunSettings.heatTier(next) != tierBefore
-        if (!crossInteger && !crossTier) return
+        if (!heatNeedsPersist(
+                current, next, tierBefore, GunSettings.heatTier(next),
+                sincePersist, heatPersistInterval(cool),
+            )
+        ) {
+            return
+        }
 
         val stored = GunInstance.read(held) ?: return
         if (!GunInstance.write(held, stored.copy(heat = next))) {
@@ -588,6 +688,8 @@ object GunStateManager {
             heatMirror.remove(uuid)
             return
         }
+        // 落盘成功：persisted 跟上 next，下 tick 才不会把这次冷却误判成外部改动。
+        heatMirror[uuid] = HeatMirror(gun.id, storedState.instanceId, next, next, 0)
         try {
             player.inventory.setItemInMainHand(held)
         } catch (_: Exception) {

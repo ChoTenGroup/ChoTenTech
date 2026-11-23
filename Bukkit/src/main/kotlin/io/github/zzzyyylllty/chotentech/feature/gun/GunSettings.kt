@@ -152,7 +152,7 @@ class GunBrokenMeleeSettings(
  */
 class GunSoundSettings(
     var fire: String = "item.crossbow.shoot",
-    var empty: String = "item.crossbow.dry_fire",
+    var empty: String = "block.lever.click",
     var hit: String = "entity.arrow.hit",
     var hitBlock: String = "entity.arrow.hit_player",
 )
@@ -184,15 +184,10 @@ class GunArmorSettings(
  *
  * @param pickupLockTicks 快速换弹丢出的弹匣多少 tick 内任何人都不许拾取（默认 100 = 5 秒）
  * @param interruptDistance 读条动作允许的最大位移（格），超过即中断
- * @param repairMaterials `排障` 需要的维修材料（`材质名:数量`），全部满足才会扣材料并清故障
  */
 class GunMagazineSettings(
     var pickupLockTicks: Int = 100,
     var interruptDistance: Double = 2.0,
-    var repairMaterials: LinkedHashMap<String, Int> = linkedMapOf(
-        "IRON_INGOT" to 2,
-        "GUNPOWDER" to 1,
-    ),
 )
 
 /**
@@ -229,46 +224,87 @@ class GunNameplateSettings(
  */
 object GunSettings {
 
+    @Volatile
     var spread: GunSpreadSettings = GunSpreadSettings()
         private set
+    @Volatile
     var recoil: GunRecoilSettings = GunRecoilSettings()
         private set
+    @Volatile
     var ballistics: GunBallisticsSettings = GunBallisticsSettings()
         private set
+    @Volatile
     var penetration: GunPenetrationSettings = GunPenetrationSettings()
         private set
+    @Volatile
     var heat: GunHeatSettings = GunHeatSettings()
         private set
+    @Volatile
     var stamina: GunStaminaSettings = GunStaminaSettings()
         private set
+    @Volatile
     var brokenMelee: GunBrokenMeleeSettings = GunBrokenMeleeSettings()
         private set
+    @Volatile
     var sounds: GunSoundSettings = GunSoundSettings()
         private set
+    @Volatile
     var damage: GunDamageSettings = GunDamageSettings()
         private set
+    @Volatile
     var magazine: GunMagazineSettings = GunMagazineSettings()
         private set
     /** P3：每次开火的耐久磨损。 */
+    @Volatile
     var wear: GunWearSettings = GunWearSettings()
         private set
     /** P3：瞄准开关（只影响 ADS 散布，不做 FOV / 热成像）。 */
+    @Volatile
     var scope: GunScopeSettings = GunScopeSettings()
         private set
     /** 把耐久写进枪械物品名称。 */
+    @Volatile
     var nameplate: GunNameplateSettings = GunNameplateSettings()
         private set
+    @Volatile
     var thermal: GunThermalSettings = GunThermalSettings()
         private set
+    @Volatile
     var armor: GunArmorSettings = GunArmorSettings()
         private set
 
     /** 上次加载成功与否（调试命令 / 日志用）。 */
+    @Volatile
     var loaded: Boolean = false
         private set
 
     /** 配置文件名（与 `src/main/resources/gun-mechanism.yml` 对应）。 */
     const val FILE_NAME = "gun-mechanism.yml"
+
+    /**
+     * 材质表 = 内置 4 种 + `armor.materials.<NAME>` 里新增的键。
+     *
+     * 旧实现只遍历 [GunArmorSettings.defaultMaterials] 的键，服务器自己加的
+     * `armor.materials.KEVLAR` 永远读不到，[ArmorManager.material] 会静默回落 IRON（系数全错）。
+     */
+    private fun buildArmorMaterials(config: Configuration): Map<String, ArmorManager.ArmorMaterial> {
+        val defaults = GunArmorSettings.defaultMaterials()
+        // UPPER 键 -> 配置里真实写法的键（YAML 允许小写，热路径按大写查表）。
+        val entries = LinkedHashMap<String, String>()
+        defaults.keys.forEach { entries[it] = it }
+        config.getConfigurationSection("armor.materials")?.getKeys(false)?.forEach {
+            entries[it.uppercase()] = it
+        }
+        return entries.mapValues { (upper, raw) ->
+            val fallback = defaults[upper] ?: ArmorManager.ArmorMaterial(upper, 1.0, "IRON_INGOT", 0.0)
+            ArmorManager.ArmorMaterial(
+                name = upper,
+                durabilityMult = config.dbl("armor.materials.$raw.durability-mult", fallback.durabilityMult),
+                repairMaterial = config.str("armor.materials.$raw.repair-material", fallback.repairMaterial),
+                levelBonus = config.dbl("armor.materials.$raw.level-bonus", fallback.levelBonus),
+            )
+        }
+    }
 
     /**
      * 加载（或重新加载）`gun-mechanism.yml`。
@@ -363,7 +399,10 @@ object GunSettings {
         )
         sounds = GunSoundSettings(
             fire = config.str("sounds.fire", "item.crossbow.shoot"),
-            empty = config.str("sounds.empty", "item.crossbow.dry_fire"),
+            // 注意：默认值必须是**真实存在**的音效键。
+            // 曾用 item.crossbow.dry_fire，该键在 Minecraft 里不存在，会刷
+            // 「Unable to play unknown soundEvent」；block.lever.click 是原版空扳机感最接近的。
+            empty = config.str("sounds.empty", "block.lever.click"),
             hit = config.str("sounds.hit", "entity.arrow.hit"),
             hitBlock = config.str("sounds.hit-block", "entity.arrow.hit_player"),
         )
@@ -373,7 +412,6 @@ object GunSettings {
         magazine = GunMagazineSettings(
             pickupLockTicks = config.integer("magazine.pickup-lock-ticks", 100).coerceAtLeast(0),
             interruptDistance = config.dbl("magazine.interrupt-distance", 2.0).coerceAtLeast(0.0),
-            repairMaterials = config.materialMap("magazine.repair-materials"),
         )
         wear = GunWearSettings(
             perShot = config.dbl("wear.per-shot", 0.06).coerceAtLeast(0.0),
@@ -403,15 +441,11 @@ object GunSettings {
         )
         armor = GunArmorSettings(
             replacesAttributeDefense = config.bool("armor.replaces-attribute-defense", true),
-            materials = GunArmorSettings.defaultMaterials().mapValues { (name, fallback) ->
-                ArmorManager.ArmorMaterial(
-                    name = name,
-                    durabilityMult = config.dbl("armor.materials.$name.durability-mult", fallback.durabilityMult),
-                    repairMaterial = config.str("armor.materials.$name.repair-material", fallback.repairMaterial),
-                    levelBonus = config.dbl("armor.materials.$name.level-bonus", fallback.levelBonus),
-                )
-            },
+            materials = buildArmorMaterials(config),
         )
+
+        // 文档漂移的兜底告警：写在这里的键如果代码不读，启动日志会直接点名。
+        config.warnUnknownKeys("armor", setOf("replaces-attribute-defense", "materials"), listOf("materials"))
 
         loaded = true
         devLog("[Gun] 枪械机制配置已加载: $FILE_NAME")
@@ -538,30 +572,50 @@ object GunSettings {
     }
 
     /**
-     * 读取「`材质名:数量`」形式的字符串列表（`magazine.repair-materials`）。
+     * 一次性把「看起来像本段、但代码从不读取」的键报出来。
      *
-     * 格式不对的条目直接跳过；整段缺失 / 全部无效时回落到 [GunMagazineSettings] 的默认材料表，
-     * 保证排障功能永远有材料可用（否则写错一个字母就会让「排障」变成永久灰按钮）。
+     * 这是防文档漂移的最后一道闸：`armor.trauma` / `armor.materials.X.内外伤` 这类
+     * 写在文档里却从未实现（或已被删除）的键，以前改完完全没反应、也没有任何提示。
      */
-    private fun Configuration.materialMap(path: String): LinkedHashMap<String, Int> {
-        val fallback = GunMagazineSettings().repairMaterials
-        return try {
-            val raw = getStringList(path)
-            if (raw.isNullOrEmpty()) return fallback
-            val parsed = LinkedHashMap<String, Int>()
-            for (entry in raw) {
-                val text = entry.trim()
-                if (text.isEmpty()) continue
-                val index = text.lastIndexOf(':')
-                val name = if (index < 0) text else text.substring(0, index).trim()
-                val count = if (index < 0) "1" else text.substring(index + 1).trim()
-                val amount = count.toDoubleOrNull()?.toInt() ?: continue
-                if (name.isEmpty() || amount <= 0) continue
-                parsed[name.uppercase()] = amount
-            }
-            if (parsed.isEmpty()) fallback else parsed
+    private fun Configuration.warnUnknownKeys(
+        section: String,
+        known: Collection<String>,
+        nestedAllowed: Collection<String> = emptyList(),
+    ) {
+        val root = try {
+            getConfigurationSection(section) ?: return
         } catch (_: Exception) {
-            fallback
+            return
+        }
+        val unknown = try {
+            root.getKeys(false).filter { it !in known }
+        } catch (_: Exception) {
+            emptyList()
+        }
+        if (unknown.isNotEmpty()) {
+            devLog("[Gun] gun-mechanism.yml 的 `$section` 段里有代码不会读取的键: $unknown（已忽略）")
+        }
+        for (nested in nestedAllowed) {
+            val children = try {
+                root.getConfigurationSection(nested)?.getKeys(false) ?: continue
+            } catch (_: Exception) {
+                continue
+            }
+            // 材质的子键是「材质名 → 其属性」，只校验每个材质内部的键
+            for (material in children) {
+                val inner = try {
+                    root.getConfigurationSection("$nested.$material")?.getKeys(false) ?: continue
+                } catch (_: Exception) {
+                    continue
+                }
+                val bad = inner.filter { it !in ArmorMaterialKeys }
+                if (bad.isNotEmpty()) {
+                    devLog("[Gun] `$section.$nested.$material` 里有代码不会读取的键: $bad（已忽略）")
+                }
+            }
         }
     }
+
+    /** `armor.materials.<NAME>` 下真正被读取的三个键。 */
+    private val ArmorMaterialKeys = setOf("durability-mult", "repair-material", "level-bonus")
 }

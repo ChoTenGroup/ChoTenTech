@@ -61,6 +61,16 @@ object GunShoot {
     private val lastRateNoticeAt = java.util.concurrent.ConcurrentHashMap<UUID, Long>()
 
     /**
+     * 清掉某个玩家的节流记录（下线时调用）。
+     *
+     * 两张表都是按 UUID 记的，之前全工程没有任何 remove，会随「历史上见过的玩家数」无限增长。
+     */
+    fun forget(player: Player) {
+        lastDenyLogAt.remove(player.uniqueId)
+        lastRateNoticeAt.remove(player.uniqueId)
+    }
+
+    /**
      * 记录「这次开火被拒」的原因并返回 `BLOCKED`。
      *
      * 所有闸门都走这里：原因同时写进 [PlayerGunState.lastShotResult]（`/ctt gun state` 会打印）
@@ -220,8 +230,8 @@ object GunShoot {
      */
     fun tryShoot(player: Player, held: ItemStack): ShotResult {
         val baseGun = GunRegistry.gunOf(held) ?: return deny(player, "not-gun")
-        // 以下所有计算统一使用“基础属性 + 配件加法”的快照；弹道也会保存这份快照。
-        val gun = baseGun.copy(attributes = AddonManager.effectiveAttributes(baseGun, held))
+        // 以下所有计算统一使用「基础属性 + 配件加法 + 层级环境修正」的快照；弹道也会保存这份快照。
+        val gun = baseGun.copy(attributes = AddonManager.effectiveAttributes(baseGun, held, player))
         val state = GunStateManager.state(player)
 
         // 耐久归零 → 纯近战分支（用户拍板的设计：枪坏了就是一根钝器）。
@@ -382,9 +392,13 @@ object GunShoot {
         )
 
         // 卡壳 roll（P3：命中后 5% 概率升级为严重故障 jam=2）
+        // 入水标记（GunState.wetJam）：完全浸没时被打上的枪，下一次开火必定卡壳。
+        // 只强制 jam=1（可拉栓解除的普通卡壳），不走严重故障升级；开完这一枪就清标记。
         val jamChance = computeJamChance(gun, ammo, working.durability, heatTier)
         var jammedFatal = false
-        if (Random.nextDouble() * 100.0 < jamChance) {
+        if (working.wetJam) {
+            working = working.copy(jam = 1, wetJam = false)
+        } else if (Random.nextDouble() * 100.0 < jamChance) {
             jammedFatal = Random.nextDouble() < SEVERE_JAM_RATIO
             working = working.copy(jam = if (jammedFatal) 2 else 1)
         }
@@ -463,12 +477,13 @@ object GunShoot {
      */
     fun brokenMelee(player: Player) {
         val state = GunStateManager.state(player)
-        val now = player.world.fullTime
-        // 冷却同样用墙钟：世界 tick 被冻住时用 tick 做冷却会永远解不开。
+        // 冷却与去重都用墙钟：世界 tick 被 `/tick freeze` 冻住时，用 tick 会永远解不开。
         val nowMs = System.currentTimeMillis()
         // 同一 tick 内可能既收到 PlayerInteractEvent 又收到 EntityDamageByEntityEvent：
         // 已经在本 tick 命中过就静默返回，不重复结算也不刷「冷却」提示。
-        if (state.meleeLastTick == now && now > 0L) return
+        // 去重键按 50ms 分桶（≈1 tick）—— 之前用 world.fullTime，冻结时第二次挥击起直接失效。
+        val bucket = nowMs / 50L
+        if (state.meleeLastTick == bucket && bucket > 0L) return
 
         val cooldown = GunSettings.brokenMelee.cooldownTicks.coerceAtLeast(0)
         val cooldownMs = cooldown * 50L
@@ -501,7 +516,7 @@ object GunShoot {
 
         // 冷却绑定“成功找到目标并发起挥击”，不绑定生命值变化。
         // 目标无敌帧或其它插件取消事件时，也不能让玩家每 tick 重复触发 damage()。
-        state.meleeLastTick = now
+        state.meleeLastTick = bucket
         state.meleeLastMs = nowMs
         val plugin = try {
             BukkitPlugin.getInstance()

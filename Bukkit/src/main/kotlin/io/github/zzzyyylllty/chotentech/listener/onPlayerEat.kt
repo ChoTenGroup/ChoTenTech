@@ -1,5 +1,7 @@
 package io.github.zzzyyylllty.chotentech.listener
 
+import io.github.zzzyyylllty.chotentech.data.ChoTenDataHelper
+import io.github.zzzyyylllty.chotentech.data.ConsumableVals
 import io.github.zzzyyylllty.chotentech.data.NutritionManager
 import io.github.zzzyyylllty.chotentech.data.getConsumableConfig
 import io.github.zzzyyylllty.chotentech.data.getData
@@ -27,17 +29,18 @@ fun onPlayerEat(event: PlayerItemConsumeEvent) {
     val item = event.item
 
 
-    val tag = item.getItemTag()
+    val api = Sertraline.api()
+    val sertralineId = api.getId(item)
+    val vals = if (sertralineId != null) {
+        ConsumableVals.read { key -> api.getValItemStack(item, key, player) }
+    } else null
+    var valsApplied = false
 
-    var restoreApplied = false
-
-    // ===== Check for "restore" compound in ItemTag =====
-    val restoreTag = tag?.get("restore")?.asCompound()
-    if (restoreTag != null) {
+    // 食用数值统一读取 sertraline.vals，不再读取 restore NBT。
+    if (vals != null && vals.configured) {
         // 倒地状态禁止使用医疗物品（按 ID 前缀兜底识别医疗物品）
-        val restoreSertralineId = Sertraline.api().getId(item)?.lowercase()
-        val isMedical = restoreSertralineId != null &&
-            io.github.zzzyyylllty.chotentech.function.SkillManager.medicalItemPrefixes.any { restoreSertralineId.contains(it) }
+        val isMedical = sertralineId != null &&
+            io.github.zzzyyylllty.chotentech.function.SkillManager.medicalItemPrefixes.any { sertralineId.lowercase().contains(it) }
         if (isMedical && BleedoutManager.isDowned(player.uniqueId)) {
             event.isCancelled = true
             player.sendActionBar("<#E08A98>倒地状态无法使用医疗物品".toComponent())
@@ -50,16 +53,17 @@ fun onPlayerEat(event: PlayerItemConsumeEvent) {
         var nutritionChanged = false
 
         // hunger
-        restoreTag["hunger"]?.asDouble()?.let { h ->
-            data.customHunger = minOf(data.customHunger + h, data.maxCustomHunger)
+        vals.hunger?.let { h ->
+            data.customHunger = (data.customHunger + h).coerceIn(0.0, data.maxCustomHunger)
         }
         // saturation
-        restoreTag["saturation"]?.asDouble()?.let { s ->
-            data.customSaturation = minOf(data.customSaturation + s, data.maxCustomHunger, data.customHunger)
+        vals.saturation?.let { s ->
+            data.customSaturation = (data.customSaturation + s).coerceIn(0.0, minOf(data.maxCustomHunger, data.customHunger))
         }
-        // san (sanity, can be negative)
+        // water: 正数补水、负数扣水；复用水分边界及脱水状态清理。
+        vals.water?.takeIf { it != 0.0 }?.let { ChoTenDataHelper(player).addWater(it) }
         // health (can be negative — damages player)
-        restoreTag["health"]?.asDouble()?.let { h ->
+        vals.health?.let { h ->
             if (h >= 0) {
                 player.health = minOf(player.health + h, player.maxHealth)
             } else {
@@ -67,32 +71,27 @@ fun onPlayerEat(event: PlayerItemConsumeEvent) {
             }
         }
         // san (sanity, can be negative)
-        restoreTag["san"]?.asDouble()?.let { san ->
+        vals.san?.let { san ->
             data.sanity = (data.sanity + san).coerceIn(0.0, data.effectiveMaxSanity)
         }
-        // nutrition compound
-        restoreTag["nutrition"]?.asCompound()?.let { n ->
-            n["grain"]?.asDouble()?.let { data.grain = (data.grain + it).coerceIn(0.0, 100.0); nutritionChanged = true }
-            n["vitamin"]?.asDouble()?.let { data.vitamin = (data.vitamin + it).coerceIn(0.0, 100.0); nutritionChanged = true }
-            n["protein"]?.asDouble()?.let { data.protein = (data.protein + it).coerceIn(0.0, 100.0); nutritionChanged = true }
-            n["fat"]?.asDouble()?.let { data.fat = (data.fat + it).coerceIn(0.0, 100.0); nutritionChanged = true }
+        // nutrition map
+        vals.nutrition.let { n ->
+            n["grain"]?.let { data.grain = (data.grain + it).coerceIn(0.0, 100.0); nutritionChanged = true }
+            n["vitamin"]?.let { data.vitamin = (data.vitamin + it).coerceIn(0.0, 100.0); nutritionChanged = true }
+            n["protein"]?.let { data.protein = (data.protein + it).coerceIn(0.0, 100.0); nutritionChanged = true }
+            n["fat"]?.let { data.fat = (data.fat + it).coerceIn(0.0, 100.0); nutritionChanged = true }
         }
         // potion effects
-        restoreTag["effects"]?.asList()?.forEach { entry ->
-            val compound = entry.asCompound() ?: return@forEach
-            val effectId = compound["effect"]?.asString() ?: return@forEach
-            val tick = compound["tick"]?.asInt() ?: 40
-            val level = (compound["level"]?.asInt() ?: 1) - 1
-            val type = PotionEffectType.getByName(effectId) ?: return@forEach
-            player.addPotionEffect(PotionEffect(type, tick, level, true, true, true))
+        vals.effects.forEach { effect ->
+            val type = PotionEffectType.getByName(effect.id) ?: return@forEach
+            player.addPotionEffect(PotionEffect(type, effect.ticks, effect.amplifier, true, true, true))
         }
 
         if (nutritionChanged) NutritionManager.sync(player)
-        restoreApplied = true
+        valsApplied = true
     }
 
     // ===== Check consumable config by sertraline_id =====
-    val sertralineId = Sertraline.api().getId(item)
     if (sertralineId != null) {
         val consumable = getConsumableConfig(sertralineId)
         if (consumable != null) {
@@ -104,20 +103,21 @@ fun onPlayerEat(event: PlayerItemConsumeEvent) {
             }
             consumable.apply(player)
 
-            // restore 分支已经处理过耐久,这里不重复扣减
-            if (!restoreApplied) {
+            // vals 分支已经处理过耐久,这里不重复扣减
+            if (!valsApplied) {
                 event.replacement = applyDurability(item, player)
             }
             return
         }
     }
 
-    // restore 物品到此结束:不再落到原版食物回退,避免饥饿/饱食被重复计算
-    if (restoreApplied) return
+    // vals 物品到此结束:不再落到原版食物回退,避免饥饿/饱食被重复计算
+    if (valsApplied) return
 
     val data = player.getData() ?: return
 
     // Check NBT for custom hunger/saturation/health values
+    val tag = item.getItemTag()
     val customHunger = tag?.get("hunger")?.asDouble()
     val customSaturation = tag?.get("saturation")?.asDouble()
     val customHealth = tag?.get("health")?.asDouble()

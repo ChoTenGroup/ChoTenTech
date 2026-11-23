@@ -1,0 +1,65 @@
+# ============================================================
+#  层级环境对枪械属性的影响
+# ============================================================
+#
+# 层级键名与 levels/*.yml 的顶层键一致（level-0、level-1 ……）。
+# 玩家当前层级由 Player.getPlayerLevel() 解析（WorldGuard 区域 → Level）。
+# 不在任何已知层级里（例如主城 / 无区域）时只吃 default 段。
+#
+# 生效顺序：
+#   基础属性 + 配件加法  →  这里 multiply  →  这里 add
+#
+# 只对「射击相关」属性生效，可用的键：
+#   machineEfficiency  人机功效（影响换弹 / 拉栓 / 排障等操作耗时）
+#   accuracy           精度
+#   bulletSpeed        弹速
+#   fireRate           射速（发/分钟）
+#   range              射程
+#   recoilV            垂直后坐
+#   recoilH            水平后坐
+#
+# durability（最大耐久）**永远不吃环境修正**：它会被写进物品 NBT
+# （GunInstance.readEnsured），让同一把枪在不同层级的最大耐久来回跳会导致
+# 实例数据前后不一致。barrelLength 涉及弹道几何，同理不动。
+#
+# 层级段与 default 段按 key 合并：层级段写了哪一项就覆盖 default 的同名项，
+# 没写的继续沿用 default。
+#
+# water-jam: 「泡水打湿」开关。
+#   玩家**完全浸没**（眼睛所在方块是水 / 气泡柱）时，主手与副手的枪都会被
+#   打上一个 wetJam 标记（存在物品 NBT 里）。带标记的枪**下一次开火必定卡壳**
+#   （jam=1，右键拉栓即可解除）——注意判定看的是标记而不是当时是否在水里，
+#   所以泡完水上岸、换手、甚至把枪放进箱子再拿出来，第一枪照样会卡。
+#   开枪一次即消耗标记。
+
+default:
+  add: {}
+  multiply: {}
+  water-jam: true
+
+# ------------------------------------------------------------
+# 示例：某个潮湿 / 狭窄层级让枪明显变难用（取消注释即生效）
+# ------------------------------------------------------------
+#level-4:
+#  add:
+#    machineEfficiency: -25
+#    accuracy: -10
+#    range: -8
+#  multiply:
+#    recoilV: 1.35
+#    recoilH: 1.35
+#  water-jam: true
+
+# 示例：某层级空气稀薄 / 无重力，射速与弹速提升，但人机功效下降
+#level-9:
+#  add:
+#    machineEfficiency: -15
+#  multiply:
+#    fireRate: 1.15
+#    bulletSpeed: 1.20
+
+# 示例：安全层（DMZ）里枪械手感被削，鼓励不交火
+#level-1:
+#  add:
+#    machineEfficiency: -10
+#  water-jam: false

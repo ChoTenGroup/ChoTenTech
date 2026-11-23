@@ -54,7 +54,13 @@ fun onUseMedicalItem(event: PlayerInteractEvent) {
     val maxDurability = sData["maxdurability"]?.let {
         it.asDouble() ?: it.asString()?.toDoubleOrNull()
     } ?: durability
-    val config = getHealConfigFromYaml(sertralineId, durability, maxDurability) ?: return
+    // 缺配置时以前是静默 return：物品有耐久、玩家也点了，却什么都不发生。
+    // 典型来源是 itemoutputnames / itemoutputtiers 里有、medkit.yml 里没有的孤儿条目。
+    val config = getHealConfigFromYaml(sertralineId, durability, maxDurability) ?: run {
+        player.sendActionBar("<#E08A98>该医疗物品缺少 medkit.yml 配置：<#EFDF8F>$sertralineId".toComponent())
+        io.github.zzzyyylllty.chotentech.util.devLog("[Medkit] 物品 $sertralineId 没有 medkit.yml 条目，已拒绝使用")
+        return
+    }
 
     event.isCancelled = true
 
@@ -124,7 +130,9 @@ fun onHealingAttacked(event: EntityDamageByEntityEvent) {
     if (state.phase == HealingPhase.POST) return
     if (!state.config.cancelHeal.contains("attack")) return
 
-    if (event.damager is LivingEntity) {
+    // 箭 / 投掷物 / 烟花是 Projectile 而不是 LivingEntity：只判 LivingEntity 会让弓弩命中
+    // 不打断治疗，与「被攻击就中断」的语义不符。
+    if (event.damager is LivingEntity || event.damager is org.bukkit.entity.Projectile) {
         HealingManager.cancel(player, PostReason.CANCELLED)
     }
 }

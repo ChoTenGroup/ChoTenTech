@@ -571,6 +571,8 @@ internal fun closeThen(player: Player, action: () -> Unit) {
     }
     submit(delay = 1, async = false) {
         if (!player.isOnline) return@submit
+        // 打上「菜单来源」标记：关菜单时只回收这类动作，不会误杀 Q 键起的换弹。
+        GunAction.markMenuOriginated(player)
         try {
             action()
         } catch (_: Exception) {

@@ -113,8 +113,20 @@ object SurgeryManager {
 
     /** 右键手术刀：弹出部位选择。一次只能选一个部位。 */
     fun open(player: Player, config: SurgeryConfig, item: ItemStack) {
-        if (isInSurgeryOrPost(player.uniqueId) || BleedoutManager.isDowned(player.uniqueId) ||
-            HealingManager.isInHealingOrPost(player.uniqueId)) return
+        // 以前这里是静默 return，玩家点手术刀什么都不发生，也没法判断是自己状态不对
+        // 还是物品坏了。按分支给出原因。
+        if (isInSurgeryOrPost(player.uniqueId)) {
+            player.sendActionBar("<#E08A98>手术进行中，无法重复开始".toComponent())
+            return
+        }
+        if (HealingManager.isInHealingOrPost(player.uniqueId)) {
+            player.sendActionBar("<#E08A98>治疗中，无法开始手术".toComponent())
+            return
+        }
+        if (BleedoutManager.isDowned(player.uniqueId)) {
+            player.sendActionBar("<#E08A98>倒地状态无法进行手术".toComponent())
+            return
+        }
         val data = player.getData() ?: return
         if (!config.operable) {
             player.sendActionBar("<#E08A98>该手术配置没有可执行的恢复内容（toughness / removedebuff 均为空）".toComponent())
@@ -269,41 +281,47 @@ object SurgeryManager {
 
     private fun tick() {
         for ((uuid, state) in states.toMap()) {
-            val player = Bukkit.getPlayer(uuid)
-            if (player == null || player.isDead || player.getData() !== state.profile) {
-                states.remove(uuid)
-                continue
-            }
-            if (state.phase == HealingPhase.POST) {
-                if (--state.phaseTicks <= 0) {
+            // 单个玩家出错不能打断整轮：这里会碰属性同步 / 音效 / 发包，一次异常会让
+            // 当轮剩余玩家的手术全部漏结算，而且 5 tick 后重复同一处异常。
+            try {
+                val player = Bukkit.getPlayer(uuid)
+                if (player == null || player.isDead || player.getData() !== state.profile) {
                     states.remove(uuid)
-                    state.config.soundEnd.playFor(player)
-                    player.sendActionBar("<#8FD4A6>手术结束".toComponent())
-                }
-                continue
-            }
-            if (BleedoutManager.isDowned(uuid)) {
-                forceStop(player, PostReason.CANCELLED)
-                continue
-            }
-            val held = player.inventory.itemInMainHand
-            if (player.inventory.heldItemSlot != state.slot || held != state.item || held.amount <= 0) {
-                forceStop(player, PostReason.ITEM_LOST)
-                continue
-            }
-            if (state.phase == HealingPhase.PRE) {
-                if (--state.phaseTicks > 0) {
                     continue
                 }
-                state.phase = HealingPhase.HEALING
-                state.config.soundStart.playFor(player)
-                player.sendActionBar("<#84D1CB>手术开始".toComponent())
+                if (state.phase == HealingPhase.POST) {
+                    if (--state.phaseTicks <= 0) {
+                        states.remove(uuid)
+                        state.config.soundEnd.playFor(player)
+                        player.sendActionBar("<#8FD4A6>手术结束".toComponent())
+                    }
+                    continue
+                }
+                if (BleedoutManager.isDowned(uuid)) {
+                    forceStop(player, PostReason.CANCELLED)
+                    continue
+                }
+                val held = player.inventory.itemInMainHand
+                if (player.inventory.heldItemSlot != state.slot || held != state.item || held.amount <= 0) {
+                    forceStop(player, PostReason.ITEM_LOST)
+                    continue
+                }
+                if (state.phase == HealingPhase.PRE) {
+                    if (--state.phaseTicks > 0) {
+                        continue
+                    }
+                    state.phase = HealingPhase.HEALING
+                    state.config.soundStart.playFor(player)
+                    player.sendActionBar("<#84D1CB>手术开始".toComponent())
+                }
+                if (--state.perInterval > 0) continue
+                state.perInterval = ticks(state.config.perTime).coerceAtLeast(1)
+                treat(player, state, held)
+                state.item.itemMeta = held.itemMeta
+                state.item.amount = held.amount
+            } catch (e: Exception) {
+                io.github.zzzyyylllty.chotentech.util.devLog("[Surgery] 手术 tick 异常（$uuid）: ${e.message}")
             }
-            if (--state.perInterval > 0) continue
-            state.perInterval = ticks(state.config.perTime).coerceAtLeast(1)
-            treat(player, state, held)
-            state.item.itemMeta = held.itemMeta
-            state.item.amount = held.amount
         }
     }
 
@@ -373,13 +391,21 @@ object SurgeryManager {
 
     // ==================== 阶段限制 ====================
 
-    /** `moveable: false` → `per` 阶段锁定水平位移，但仍允许抬头/低头。 */
+    /** `moveable: false` → `per` 阶段锁定水平位移，但仍允许抬头/低头与下落。 */
     @SubscribeEvent(ignoreCancelled = true)
     fun onMove(event: PlayerMoveEvent) {
         val state = states[event.player.uniqueId] ?: return
         if (state.phase != HealingPhase.HEALING || state.config.moveable) return
-        if (event.from.x == event.to.x && event.from.y == event.to.y && event.from.z == event.to.z) return
-        event.to = event.from
+        val from = event.from
+        val to = event.to
+        if (from.x == to.x && from.y == to.y && from.z == to.z) return
+        // 只锁 x/z。原先直接 `event.to = event.from` 会把 yaw/pitch 一起回滚，导致手术中
+        // 完全无法转头（每次移动事件都被打回原朝向，与反作弊高频对撞）；同时它连 y 也锁死，
+        // 在空中的玩家会悬停不落地。保留 y 与朝向，只抹掉水平位移。
+        event.to = to.clone().apply {
+            x = from.x
+            z = from.z
+        }
     }
 
     /** `jumpable: false` → `per` 阶段拦截跳跃。 */

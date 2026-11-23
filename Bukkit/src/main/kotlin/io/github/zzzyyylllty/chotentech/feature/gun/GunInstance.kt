@@ -37,6 +37,13 @@ data class GunState(
     val chamberAmmoId: String? = null,
     /** 每把枪独立实例 ID，用于区分同槽、同配置的不同物品。 */
     val instanceId: String = "",
+    /**
+     * 入水标记：为 true 时这把枪的下一次开火必定卡壳（jam=1），开火后自动清除。
+     *
+     * 标记跟着**物品**走而不是玩家：完全浸没时主手与副手的枪都会被打上标记，
+     * 之后离开水面、换手、交易、放进箱子再拿出来都还在，直到这把枪真的开过一枪。
+     */
+    val wetJam: Boolean = false,
 )
 
 /**
@@ -110,6 +117,10 @@ object GunInstance {
             }
             if (missing("jam")) {
                 tag.putDeep("$ROOT.jam", 0)
+                changed = true
+            }
+            if (missing("wetJam")) {
+                tag.putDeep("$ROOT.wetJam", 0)
                 changed = true
             }
             if (missing("chamber")) {
@@ -189,6 +200,7 @@ object GunInstance {
                 compound.str("chamberAmmoId", "").trim().takeIf { it.isNotEmpty() }
             } else null,
             instanceId = compound.str("instanceId", ""),
+            wetJam = compound.int("wetJam", 0) == 1,
         )
     }
 
@@ -214,9 +226,14 @@ object GunInstance {
      * 一次性写回全部字段并回读校验。调用方必须检查返回值后再交付子弹或扣除物品。
      */
     fun write(item: ItemStack, state: GunState): Boolean {
+        // 膛内状态必须自洽：`chamber` 由 `chamberAmmoId` 单向决定。
+        // 旧实现只清「chamber=0 而 id 残留」这一侧，反向（chamber=1 而 id 为空）
+        // 会落成「幽灵膛内弹」—— GunShoot 会一直按「膛内弹种缺失」拒绝开火，
+        // 而 performReload 又会原样保留这个空 id，玩家只有拉一次栓才能脱困。
+        val chamberAmmoId = state.chamberAmmoId?.trim()?.takeIf { it.isNotEmpty() }
         val normalized = state.copy(
-            chamber = state.chamber.coerceIn(0, 1),
-            chamberAmmoId = if (state.chamber > 0) state.chamberAmmoId else null,
+            chamber = if (chamberAmmoId != null) 1 else 0,
+            chamberAmmoId = chamberAmmoId,
             instanceId = state.instanceId.ifEmpty { UUID.randomUUID().toString() },
         )
         return try {
@@ -231,6 +248,7 @@ object GunInstance {
             tag.putDeep("$ROOT.fireMode", normalized.fireMode)
             tag.putDeep("$ROOT.worn", normalized.worn)
             tag.putDeep("$ROOT.instanceId", normalized.instanceId)
+            tag.putDeep("$ROOT.wetJam", if (normalized.wetJam) 1 else 0)
             tag.saveTo(item)
             val verified = read(item) == normalized
             if (!verified) devLog("[Gun] 枪械 NBT 回读校验失败")
@@ -298,6 +316,9 @@ object GunInstance {
         val raw = data.asString().trim()
         if (raw.isEmpty()) return emptyList()
         if (raw == "[]") return emptyList()
+        // 旧版把列表拼成「a,b,c」。只在看起来确实是旧格式时才按逗号拆：
+        // Sertraline 的物品 ID 本身可以含逗号，否则会把一发子弹切成两发无效 ID。
+        if (raw.startsWith("[") || raw.startsWith("{")) return emptyList()
         return raw.split(",").mapNotNull { it.trim().takeIf { text -> text.isNotEmpty() } }
     }
 }

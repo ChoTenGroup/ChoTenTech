@@ -1,7 +1,7 @@
-package io.github.zzzyyylllty.chotentech.feature.gun.item
+﻿package io.github.zzzyyylllty.chotentech.feature.gun.item
 
 import io.github.zzzyyylllty.chotentech.util.devLog
-import io.github.zzzyyylllty.sertraline.data.ModernSItem
+import io.github.zzzyyylllty.sertraline.data.AbstractSItem
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import taboolib.module.nms.getItemTag
@@ -21,11 +21,11 @@ import taboolib.module.nms.setItemTag
  *   ...
  * ```
  *
- * 本段不属于任何模块的 `data`，只能从 [ModernSItem.config] 读取原始 YAML。
+ * 本段不属于任何模块的 `data`，只能从 [AbstractSItem.config] 读取原始 YAML。
  * 只写运行时真正需要的两个键（`v` 与 `ammo`）：其余字段留给运行时按配置读取，
  * 避免 rebuild 时把玩家状态（已装填的子弹）覆盖掉。
  */
-fun magAdapter(item: ItemStack, sItem: ModernSItem, player: Player?): ItemStack {
+fun magAdapter(item: ItemStack, sItem: AbstractSItem, player: Player?): ItemStack {
     val map = (sItem.config["mag"] as? Map<*, *>) ?: run {
         devLog("mag: section is missing or not a map, skipped.")
         return item
@@ -63,11 +63,10 @@ fun magAdapter(item: ItemStack, sItem: ModernSItem, player: Player?): ItemStack 
     val magTag = dataTag.compoundOrNew("mag")
 
     magTag["v"] = 1
-    // 只在不存在时初始化 ammo：已存在说明弹匣里可能装着子弹，rebuild 不能清空
+    // 只在不存在时初始化 ammo：已存在说明弹匣里可能装着子弹，rebuild 不能清空。
+    // （这里以前会 devLog「kept」—— 每构建一次弹匣就刷一条日志，正常情况反而成了噪音。）
     if (magTag["ammo"] == null) {
         magTag["ammo"] = emptyList<String>()
-    } else {
-        devLog("mag: existing NBT 'sertraline_data.mag.ammo' kept.")
     }
 
     dataTag["mag"] = magTag
@@ -75,7 +74,6 @@ fun magAdapter(item: ItemStack, sItem: ModernSItem, player: Player?): ItemStack 
     var result = item.setItemTag(tag, true)
 
     // ── 物品本体：弹匣不可堆叠（只改最大堆叠，amount 保持原样） ────────────────
-    devLog("mag: applying max stack size 1 (caliber=$caliber, capacity=${capacity ?: "?"}).")
     result.applyMaxStackSize(1, "mag")
 
     return result

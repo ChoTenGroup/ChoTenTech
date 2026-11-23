@@ -4,6 +4,7 @@ import io.github.zzzyyylllty.chotentech.ChoTenTech.playerDataMap
 import io.github.zzzyyylllty.chotentech.data.*
 import io.github.zzzyyylllty.chotentech.function.bleedout.BleedoutManager
 import io.github.zzzyyylllty.chotentech.manager.AttributeManager
+import io.github.zzzyyylllty.chotentech.util.devLog
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Location
@@ -145,11 +146,11 @@ object BodyHealthManager {
     }
 
     /** Height normalized to the current pose; lateral sides follow the victim's yaw. */
-    fun hitPart(player: Player, point: Location): String {
-        val box = player.boundingBox
+    fun hitPart(target: LivingEntity, point: Location): String {
+        val box = target.boundingBox
         val height = (point.y - box.minY) / box.height.coerceAtLeast(.1)
-        val delta = point.toVector().subtract(player.location.toVector())
-        val yaw = Math.toRadians(player.location.yaw.toDouble())
+        val delta = point.toVector().subtract(target.location.toVector())
+        val yaw = Math.toRadians(target.location.yaw.toDouble())
         val side = delta.x * cos(yaw) + delta.z * kotlin.math.sin(yaw)
         return when {
             height >= .80 -> "HEAD"
@@ -191,11 +192,21 @@ object BodyHealthManager {
     fun jump(event: com.destroystokyo.paper.event.player.PlayerJumpEvent) {
         val body = event.player.getData()?.bodyHealth ?: return
         if (BleedoutManager.isShocked(event.player.uniqueId)) return
-        legStrain(body, true)
+        legStrain(event.player, body, true)
         woundBleed(body, "wound.jump-bleed-chance", .1)
     }
 
-    private fun legStrain(body: PlayerBodyHealth, jump: Boolean) {
+    /**
+     * 骨折 / 损毁腿部的「用力」代价。
+     *
+     * 韧性：每跳 0.5（骨折+损毁 1.0）；奔跑每秒 0.2（骨折+损毁 0.4）。
+     * 血量：**直接扣**，每跳每腿 -1，奔跑每腿每秒 -0.5；骨折+损毁**不**额外翻倍。
+     *
+     * 两条扣减互相独立：扣掉的韧性不会再折算成血量（韧性本身从不直伤），
+     * 血量这部分也不走护甲 / 韧性减伤公式，就是干净的直伤。
+     * 左右腿各自结算，所以两条腿都有伤时数值叠加。
+     */
+    private fun legStrain(player: Player, body: PlayerBodyHealth, jump: Boolean) {
         for (id in listOf("LLEG", "RLEG")) {
             val part = body.parts.getValue(id)
             val fracture = part.effects.containsKey(FRACTURE)
@@ -206,6 +217,7 @@ object BodyHealthManager {
             val fracturedAndDestroyed = part.destroyed && fracture
             val cost = if (jump) .5 else .2
             body.damageToughness(id, if (fracturedAndDestroyed) cost * 2 else cost)
+            trueDamage(player, if (jump) 1.0 else .5)
         }
     }
 
@@ -218,70 +230,80 @@ object BodyHealthManager {
 
     private fun tick() {
         for (player in Bukkit.getOnlinePlayers()) {
-            if (player.isDead || player.gameMode in setOf(GameMode.CREATIVE, GameMode.SPECTATOR)) continue
-            val data = playerDataMap[player.uniqueId.toString()] ?: continue
-            val body = data.bodyHealth
-            body.normalize()
-            // Existing non-localized effects become head effects; legacy fractures are mapped to legs.
-            if (data.statusEffects.isNotEmpty()) {
-                data.statusEffects.toList().forEach { effect ->
-                    val ids = if (effect.type == FRACTURE) listOf("LLEG", "RLEG") else listOf("HEAD")
-                    ids.forEach { body.applyEffect(it, effect.type, effect.level, effect.remainingDuration) }
-                }
-                data.statusEffects.clear()
+            // 单个玩家出错不能打断整轮：tickPlayer 里会碰传送 / 音效 / 假光源 / 属性读写，
+            // 一次异常会让该轮剩余玩家的韧性、水分与惩罚全部漏同步，且 5 tick 后重复。
+            try {
+                tickPlayer(player)
+            } catch (e: Exception) {
+                devLog("[Body] 肢体韧性 tick 异常（${player.name}）: ${e.message}")
             }
-            syncMaxima(player, body)
-            if (BleedoutManager.isShocked(player.uniqueId)) {
-                restoreLights(player)
-                continue
-            }
-            body.onlineTicks += 5
-            val second = body.onlineTicks % 20 == 0L
-            val fiveSeconds = body.onlineTicks % 100 == 0L
-            val helper = ChoTenDataHelper(player)
-            for (part in body.parts.values) {
-                part.effects.values.forEach { if (it.remainingDuration != Long.MAX_VALUE) it.remainingDuration -= 250 }
-                part.effects.values.removeAll { it.remainingDuration <= 0 }
-                // Bleeding only drains the part that already carries it; the effect is never
-                // re-applied here, so a bleed-out tick cannot spread itself across the body.
-                if (fiveSeconds) {
-                    if (part.effects.containsKey(MINOR_BLEED)) body.damageToughness(part.id, .6)
-                    if (part.effects.containsKey(MAJOR_BLEED)) body.damageToughness(part.id, 1.0)
-                }
-            }
-            if (second) {
-                for (effect in body.parts.getValue("HEAD").effects.values.toList()) {
-                    when (effect.type) {
-                        SANITY_REGEN -> helper.addSanity(effect.level * .2)
-                        SANITY_DRAIN -> helper.removeSanity(effect.level * .5)
-                        STAMINA_REGEN -> helper.addStamina(effect.level.toDouble())
-                        STRESS_RESISTANCE -> helper.removeStress(effect.level.toDouble())
-                        STRESS_IMMUNITY -> helper.setStress(0.0)
-                        HOUND_VIRUS -> if (body.onlineTicks % 200 == 0L && !body.hasEffect(IMMUNITY))
-                            trueDamage(player, effect.level.toDouble() * effect.level)
-                        MUSCLE_WEAKNESS -> player.addPotionEffect(PotionEffect(PotionEffectType.WEAKNESS, 30, (effect.level - 1).coerceAtLeast(0)))
-                    }
-                }
-                if (sprintBlocked(body)) player.isSprinting = false
-                if (player.isSprinting) {
-                    legStrain(body, false)
-                    woundBleed(body, "wound.sprint-bleed-chance", .05)
-                }
-            }
-            if (fiveSeconds) {
-                if (moved.remove(player.uniqueId)) {
-                    body.water = (body.water - if (sprinted.remove(player.uniqueId))
-                        settings.getDouble("water.sprint-consumption", 1.0) else settings.getDouble("water.walk-consumption", .5)).coerceAtLeast(0.0)
-                }
-                if (body.parts.getValue("STOMACH").destroyed) {
-                    data.customHunger = (data.customHunger - 2.5).coerceAtLeast(0.0)
-                    body.water = (body.water - 1.0).coerceAtLeast(0.0)
-                }
-            }
-            dehydration(player, body)
-            syncPenalties(player, body, 5)
-            visuals(player, body)
         }
+    }
+
+    private fun tickPlayer(player: Player) {
+        if (player.isDead || player.gameMode in setOf(GameMode.CREATIVE, GameMode.SPECTATOR)) return
+        val data = playerDataMap[player.uniqueId.toString()] ?: return
+        val body = data.bodyHealth
+        body.normalize()
+        // Existing non-localized effects become head effects; legacy fractures are mapped to legs.
+        if (data.statusEffects.isNotEmpty()) {
+            data.statusEffects.toList().forEach { effect ->
+                val ids = if (effect.type == FRACTURE) listOf("LLEG", "RLEG") else listOf("HEAD")
+                ids.forEach { body.applyEffect(it, effect.type, effect.level, effect.remainingDuration) }
+            }
+            data.statusEffects.clear()
+        }
+        syncMaxima(player, body)
+        if (BleedoutManager.isShocked(player.uniqueId)) {
+            restoreLights(player)
+            return
+        }
+        body.onlineTicks += 5
+        val second = body.onlineTicks % 20 == 0L
+        val fiveSeconds = body.onlineTicks % 100 == 0L
+        val helper = ChoTenDataHelper(player)
+        for (part in body.parts.values) {
+            part.effects.values.forEach { if (it.remainingDuration != Long.MAX_VALUE) it.remainingDuration -= 250 }
+            part.effects.values.removeAll { it.remainingDuration <= 0 }
+            // Bleeding only drains the part that already carries it; the effect is never
+            // re-applied here, so a bleed-out tick cannot spread itself across the body.
+            if (fiveSeconds) {
+                if (part.effects.containsKey(MINOR_BLEED)) body.damageToughness(part.id, .6)
+                if (part.effects.containsKey(MAJOR_BLEED)) body.damageToughness(part.id, 1.0)
+            }
+        }
+        if (second) {
+            for (effect in body.parts.getValue("HEAD").effects.values.toList()) {
+                when (effect.type) {
+                    SANITY_REGEN -> helper.addSanity(effect.level * .2)
+                    SANITY_DRAIN -> helper.removeSanity(effect.level * .5)
+                    STAMINA_REGEN -> helper.addStamina(effect.level.toDouble())
+                    STRESS_RESISTANCE -> helper.removeStress(effect.level.toDouble())
+                    STRESS_IMMUNITY -> helper.setStress(0.0)
+                    HOUND_VIRUS -> if (body.onlineTicks % 200 == 0L && !body.hasEffect(IMMUNITY))
+                        trueDamage(player, effect.level.toDouble() * effect.level)
+                    MUSCLE_WEAKNESS -> player.addPotionEffect(PotionEffect(PotionEffectType.WEAKNESS, 30, (effect.level - 1).coerceAtLeast(0)))
+                }
+            }
+            if (sprintBlocked(body)) player.isSprinting = false
+            if (player.isSprinting) {
+                legStrain(player, body, false)
+                woundBleed(body, "wound.sprint-bleed-chance", .05)
+            }
+        }
+        if (fiveSeconds) {
+            if (moved.remove(player.uniqueId)) {
+                body.water = (body.water - if (sprinted.remove(player.uniqueId))
+                    settings.getDouble("water.sprint-consumption", 1.0) else settings.getDouble("water.walk-consumption", .5)).coerceAtLeast(0.0)
+            }
+            if (body.parts.getValue("STOMACH").destroyed) {
+                data.customHunger = (data.customHunger - 2.5).coerceAtLeast(0.0)
+                body.water = (body.water - 1.0).coerceAtLeast(0.0)
+            }
+        }
+        dehydration(player, body)
+        syncPenalties(player, body, 5)
+        visuals(player, body)
     }
 
     private fun dehydration(player: Player, body: PlayerBodyHealth) {
@@ -294,7 +316,10 @@ object BodyHealthManager {
         body.dehydrationTicks += 5
         val severe = body.dehydrationTicks > 3600
         head.effects.remove(if (severe) DEHYDRATION else SEVERE_DEHYDRATION)
-        body.applyEffect("HEAD", if (severe) SEVERE_DEHYDRATION else DEHYDRATION)
+        val type = if (severe) SEVERE_DEHYDRATION else DEHYDRATION
+        // applyEffect 每次都会 new PlayerStatusEffect 并写 map，而这里是每 5 tick 一次。
+        // 效果已经在身上时不必重复构造（原实现是无条件重写一遍）。
+        if (head.effects[type] == null) body.applyEffect("HEAD", type)
         if (severe && (head.destroyed || body.parts.getValue("BODY").destroyed)) {
             BleedoutManager.forceDeath(player)
         } else if (severe && (body.dehydrationTicks - 3600) % 100 == 0) trueDamage(player, 4.0)
@@ -377,10 +402,12 @@ object BodyHealthManager {
         }
         if (body.hasEffect(TREMOR) && Random.nextDouble() < settings.getDouble("tremor.chance", .25)) {
             val amplitude = settings.getDouble("tremor.degrees", .6).coerceAtLeast(0.0)
-            player.teleport(player.location.apply {
-                yaw = (yaw + Random.nextDouble(-1.0, 1.0) * amplitude).toFloat()
-                pitch = (pitch + Random.nextDouble(-1.0, 1.0) * amplitude).toFloat().coerceIn(-90f, 90f)
-            })
+            // 只改朝向：teleport 到原地会触发 PlayerTeleportEvent（可能被领地/反作弊取消），
+            // 还会重置坠落距离与速度、把玩家踢下载具。setRotation 只发朝向包，副作用最小。
+            player.setRotation(
+                (player.location.yaw + Random.nextDouble(-1.0, 1.0) * amplitude).toFloat(),
+                (player.location.pitch + Random.nextDouble(-1.0, 1.0) * amplitude).toFloat().coerceIn(-90f, 90f)
+            )
         }
         restoreLights(player)
         if (head.effects.containsKey(DIZZINESS)) {

@@ -51,6 +51,9 @@ object GunNameplate {
     /** uuid → (instanceId → 上次渲染出的名称)，用来做变更检测。 */
     private val rendered = ConcurrentHashMap<UUID, MutableMap<String, String>>()
 
+    /** 每个玩家最多记住最近几个枪械实例（防止长期在线时二级 map 无限增长）。 */
+    private const val MAX_RENDER_KEYS = 4
+
     // ==================== 对外 ====================
 
     /**
@@ -79,6 +82,11 @@ object GunNameplate {
         rendered.remove(player.uniqueId)
     }
 
+    /** 全局清空（重载 / 关服）。 */
+    fun clear() {
+        rendered.clear()
+    }
+
     // ==================== 渲染 ====================
 
     private fun render(player: Player, item: ItemStack, state: GunState, maxDurability: Double): Boolean {
@@ -94,11 +102,17 @@ object GunNameplate {
         }
 
         val base = baseName(item, meta) ?: return false
-        val suffix = if (settings.hideWhenFull && ratio >= 0.999) "" else buildSuffix(settings, current, max, ratio, state)
+        // 「满耐久就不显示」= 一点都没掉。用 0.999 会让 999/1000 这种只掉 0.1%
+        // 的情况也把后缀吞掉，玩家看起来像「这枪根本没有耐久系统」。
+        val suffix = if (settings.hideWhenFull && ratio >= 1.0) "" else buildSuffix(settings, current, max, ratio, state)
         val target = base + suffix
 
         val key = state.instanceId.ifEmpty { "shared" }
         val previous = rendered.getOrPut(player.uniqueId) { ConcurrentHashMap() }
+        // 只保留最近 4 个实例（换枪 / 换实例不会无限累积二级 map）
+        if (previous.size > MAX_RENDER_KEYS && !previous.containsKey(key)) {
+            previous.keys.firstOrNull { it != key }?.let(previous::remove)
+        }
         if (previous[key] == target) return false
 
         return try {
@@ -217,6 +231,8 @@ object GunNameplate {
 
     /** 耐久数字：整数不显示小数点（1000 而不是 1000.0）。 */
     private fun num(value: Double): String {
+        // 非有限值（NaN / ∞）来自损坏的 NBT：直接显示 `?`，别渲染成 0 或 9223372036854775807
+        if (!value.isFinite()) return "?"
         val rounded = Math.round(value * 10.0) / 10.0
         return if (rounded == rounded.toLong().toDouble()) {
             rounded.toLong().toString()

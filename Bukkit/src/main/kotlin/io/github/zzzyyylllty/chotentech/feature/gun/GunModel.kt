@@ -83,18 +83,24 @@ object GunModel {
      * 按当前输入/环境算出目标状态（顺序即优先级）。
      */
     private fun desiredState(player: Player, gunState: GunState): State {
+        // 出枪读条期间用 draw 模型（enemy 一眼能看出还在掏枪）。
+        // `State.DRAW` 以前只在枚举与 fallback 里存在、永远没人返回，属于死状态。
+        val runtimeBefore = GunStateManager.existing(player)
+        if (runtimeBefore != null && runtimeBefore.drawTicks > 0) return State.DRAW
+
         val action = GunAction.snapshot(player)
         if (action != null) {
             return when (action.type) {
                 GunAction.ActionType.BOLT -> State.BOLT
                 GunAction.ActionType.RELOAD, GunAction.ActionType.RELOAD_FAST -> State.RELOAD
+                // 检视类动作按「举枪细看」表现，不要再和换弹混用同一个模型：
+                // 切模式只有 0.2 秒，套 reload 模型会让枪每切一次模式都抖一下。
+                GunAction.ActionType.INSPECT_MAG, GunAction.ActionType.INSPECT_CHAMBER -> State.AIMING
                 GunAction.ActionType.FIX,
                 GunAction.ActionType.INSERT_AMMO,
                 GunAction.ActionType.REMOVE_AMMO,
                 GunAction.ActionType.REMOVE_MAG,
-                GunAction.ActionType.INSPECT_MAG,
-                GunAction.ActionType.INSPECT_CHAMBER,
-                GunAction.ActionType.FIRE_MODE -> State.RELOAD
+                GunAction.ActionType.FIRE_MODE -> State.GENERAL
             }
         }
         if (gunState.jam >= 1) return State.JAMMED
@@ -161,12 +167,20 @@ object GunModel {
         return null
     }
 
-    /** 写模型：纯数字走 CustomModelData，其余走 item_model 组件。 */
+    /** 写模型：纯数字走 CustomModelData，其余走 item_model 组件（两条通道必须互斥）。 */
     private fun writeModel(item: ItemStack, raw: String): Boolean {
         val meta = item.itemMeta ?: return false
         val numeric = raw.toIntOrNull()
         if (numeric != null) {
+            // ⚠️ 必须同时清掉 item_model：1.20.5+ 客户端优先用 item_model 组件，
+            // 只写 custom_model_data 的话，物品上残留的 item_model（= general 那个）
+            // 会一直覆盖数字模型，表现为「数字状态模型永远不生效」。
             meta.setCustomModelData(numeric)
+            try {
+                meta.setItemModel(null)
+            } catch (_: Throwable) {
+                // 旧版本没有 item_model 组件，无需清理
+            }
         } else {
             val key = NamespacedKey.fromString(raw.lowercase()) ?: return false
             try {
@@ -175,6 +189,8 @@ object GunModel {
                 // 旧版本没有 item_model 组件：保持原样
                 return false
             }
+            // 同理：item_model 生效时把 custom_model_data 清干净，避免切回 general 时残留
+            meta.setCustomModelData(null)
         }
         item.itemMeta = meta
         return true

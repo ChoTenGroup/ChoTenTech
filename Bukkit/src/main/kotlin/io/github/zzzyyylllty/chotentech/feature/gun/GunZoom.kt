@@ -61,6 +61,15 @@ object GunZoom : PacketListener {
     /** uuid → 当前缩放倍数（>1 才生效）。 */
     private val zooming = ConcurrentHashMap<UUID, Double>()
 
+    /**
+     * uuid → 最近一次在主线程读到的 `MOVEMENT_SPEED`（FOV 公式的输入）。
+     *
+     * [onPacketSend] 跑在 netty 线程，**不能**在那里调 `Bukkit.getPlayer` / 读属性：
+     * 属性随时可能被其它插件并发改写，跨线程读取会抛异常（又被空 catch 吞掉，表现为
+     * 「这个包没生效、缩放被打回原状」）。改为主线程算好缓存、包线程只做算术。
+     */
+    private val cachedSpeed = ConcurrentHashMap<UUID, Double>()
+
     private var registeredListener: PacketListenerCommon? = null
 
     /** packetevents 是否可用；不可用时缩放降级为「不缩放」，其余枪械功能不受影响。 */
@@ -127,6 +136,7 @@ object GunZoom : PacketListener {
 
     /** 退出缩放（把 `fovModifier` 写回 0 = 原版视野）。 */
     fun clear(player: Player) {
+        cachedSpeed.remove(player.uniqueId)
         if (zooming.remove(player.uniqueId) == null) return
         // 退出必须强制发一次 0，不能被「值没变」的去重挡掉
         lastSent.remove(player.uniqueId)
@@ -159,6 +169,14 @@ object GunZoom : PacketListener {
         } catch (_: Throwable) {
             0.1
         }
+        val speed = if (movementSpeed > 1e-6) movementSpeed else 0.1
+        // 主线程顺手把移速缓存下来，供包线程使用（见 [cachedSpeed]）。
+        cachedSpeed[player.uniqueId] = speed
+        return modifierOf(speed, zoom)
+    }
+
+    /** 纯算术：`zoom` → `fovModifier`。包线程只允许调这个。 */
+    private fun modifierOf(movementSpeed: Double, zoom: Double): Float {
         val speed = if (movementSpeed > 1e-6) movementSpeed else 0.1
         val divisor = 2.0 / zoom - 1.0
         val modifier = if (divisor == 0.0) Double.POSITIVE_INFINITY else speed / divisor
@@ -196,10 +214,11 @@ object GunZoom : PacketListener {
         if (event.packetType != PacketType.Play.Server.PLAYER_ABILITIES) return
         val uuid = event.user.uuid ?: return
         val zoom = zooming[uuid] ?: return
-        val player = Bukkit.getPlayer(uuid) ?: return
+        // 包线程：只用缓存值做算术，不碰 Bukkit / 属性 / 玩家对象。
+        val speed = cachedSpeed[uuid] ?: return
         try {
             val wrapper = WrapperPlayServerPlayerAbilities(event)
-            wrapper.fovModifier = modifierFor(player, zoom)
+            wrapper.fovModifier = modifierOf(speed, zoom)
             wrapper.write()
         } catch (_: Throwable) {
         }

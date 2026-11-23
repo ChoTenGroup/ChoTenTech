@@ -13,8 +13,8 @@ object BodyParts {
     const val RLEG = "RLEG"
     val defaults = linkedMapOf(HEAD to 45.0, BODY to 75.0, STOMACH to 40.0,
         LARM to 50.0, RARM to 50.0, LLEG to 50.0, RLEG to 50.0)
-    val names = mapOf(HEAD to "澶撮儴", BODY to "韬綋", STOMACH to "鑳冮儴",
-        LARM to "宸﹁噦", RARM to "鍙宠噦", LLEG to "宸﹁吙", RLEG to "鍙宠吙")
+    val names = mapOf(HEAD to "头部", BODY to "身体", STOMACH to "胃部",
+        LARM to "左臂", RARM to "右臂", LLEG to "左腿", RLEG to "右腿")
     val limbs = setOf(LARM, RARM, LLEG, RLEG)
     val multipliers = mapOf(HEAD to 2.0, STOMACH to 1.4, BODY to 1.0,
         LARM to 1.0, RARM to 1.0, LLEG to 0.6, RLEG to 0.6)

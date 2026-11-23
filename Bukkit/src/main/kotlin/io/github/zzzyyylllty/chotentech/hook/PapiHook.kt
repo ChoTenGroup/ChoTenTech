@@ -10,10 +10,15 @@ import ink.ptms.chemdah.core.quest.addon.AddonTrack.Companion.trackQuest
 import ink.ptms.chemdah.core.quest.meta.MetaName
 import io.github.zzzyyylllty.chotentech.chemdah.addon.AddonGameTimeout
 import io.github.zzzyyylllty.chotentech.listener.GameTimeManager
+import me.clip.placeholderapi.PlaceholderAPI
+import me.clip.placeholderapi.expansion.PlaceholderExpansion
+import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
 import org.bukkit.potion.PotionEffectType
+import taboolib.common.platform.function.pluginVersion
+import io.github.zzzyyylllty.chotentech.util.DependencyHelper
 import io.github.zzzyyylllty.chotentech.data.profile.ProfileManager
 import io.github.zzzyyylllty.chotentech.data.profile.SettingRegistry
 import io.github.zzzyyylllty.chotentech.function.AchievementManager
@@ -24,19 +29,71 @@ import io.github.zzzyyylllty.chotentech.function.MetaManager
 import io.github.zzzyyylllty.chotentech.function.RankManager
 import io.github.zzzyyylllty.chotentech.function.WeightManager
 import io.github.zzzyyylllty.chotentech.data.PlayerDataManager
-import taboolib.platform.compat.PlaceholderExpansion
 import taboolib.platform.compat.replacePlaceholder
 import kotlin.math.floor
 import kotlin.math.round
 import kotlin.math.roundToInt
 
-object ExamplePapiHook : PlaceholderExpansion {
+object CTTPapiHook : PlaceholderExpansion() {
 
-    override val identifier: String = "chotentech"
+    override fun getIdentifier(): String = "chotentech"
+
+    override fun getAuthor(): String = "zzzyyylllty"
+
+    override fun getVersion(): String = pluginVersion
+
+    /** 服重启 / PAPI 重载后由 PAPI 自动重新注册，避免占位符在 /papi reload 后消失。 */
+    override fun persist(): Boolean = true
+
+    /** PAPI 在注册前会调这个；没装 PAPI 时直接放弃，不会抛 NoClassDefFoundError。 */
+    override fun canRegister(): Boolean = DependencyHelper.papi
+
+    /**
+     * 手动注册（由 [CTTPapiHookRegistrar] 在 `@Awake(LifeCycle.ACTIVE)` 里调用）。
+     *
+     * PAPI 的 `register()` 遇到同 identifier 已注册会返回 false 并打警告，
+     * 这里先 `unregister()` 保证重载时能干净替换，不用重启服。
+     */
+    fun registerSafely(): Boolean {
+        if (!DependencyHelper.papi) return false
+        return try {
+            if (PlaceholderAPI.isRegistered(identifier)) {
+                PlaceholderAPI.unregisterExpansion(this)
+            }
+            val ok = register()
+            if (!ok) {
+                // register() 失败通常是同 identifier 已被占用（例如热重载残留了旧实例）。
+                // 原生 API 没有「按 identifier 取实例」的方法，只能本次先 unregister 自己
+                // 再重试；仍失败就交给上层记日志，不抛异常污染主线程。
+                unregister()
+                register()
+            } else {
+                ok
+            }
+        } catch (e: Throwable) {
+            Bukkit.getLogger().warning("[ChoTenTech] 注册 chotentech 占位符失败: ${e.message}")
+            false
+        }
+    }
+
+    fun unregisterSafely() {
+        if (!DependencyHelper.papi) return
+        try {
+            if (PlaceholderAPI.isRegistered(identifier)) PlaceholderAPI.unregisterExpansion(this)
+        } catch (_: Throwable) {
+        }
+    }
 
     // 处理在线玩家请求 (占位符输出已统一为 HEX 色,外部消费方可直接解析)
-    override fun onPlaceholderRequest(player: Player?, args: String): String {
-        return resolvePlaceholder(player, args)
+    override fun onRequest(player: OfflinePlayer?, params: String): String? {
+        return try {
+            resolvePlaceholder(player?.player, params)
+        } catch (e: Throwable) {
+            // 原生扩展返回 null 会让 PAPI 原样输出 %chotentech_xxx%；
+            // 这里返回空串更接近旧行为，同时记日志便于排查。
+            Bukkit.getLogger().fine("[ChoTenTech] 解析占位符失败 $params: ${e.message}")
+            ""
+        }
     }
 
     private fun resolvePlaceholder(player: Player?, args: String): String {
@@ -572,11 +629,6 @@ object ExamplePapiHook : PlaceholderExpansion {
             }
         }
         return "Error"
-    }
-
-    // 处理离线玩家请求
-    override fun onPlaceholderRequest(player: OfflinePlayer?, args: String): String {
-        return onPlaceholderRequest(player?.player, args)
     }
 
     fun requestDataByUUID(uuid: String): PlayerData? {

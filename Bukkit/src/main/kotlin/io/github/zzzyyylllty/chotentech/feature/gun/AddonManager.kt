@@ -111,11 +111,17 @@ object AddonManager {
             (addon.gunType.isEmpty() || addon.gunType.any { it.equals(gun.gunType, true) }) &&
             (addon.caliber == null || addon.caliber.equals(gun.caliber, true))
 
-    fun effectiveAttributes(gun: GunData, held: ItemStack): GunAttributes {
+    /**
+     * 「基础 + 配件」之后的属性快照。
+     *
+     * @param player 传了人则再叠加 [GunEnvironment] 的层级环境修正。**durability 不受环境
+     *   影响**，因此无论传不传 player，[GunInstance.readEnsured] 拿到的最大耐久都一致。
+     */
+    fun effectiveAttributes(gun: GunData, held: ItemStack, player: Player? = null): GunAttributes {
         val base = gun.attributes
         val addons = installed(held)
         fun sum(key: String): Double = addons.sumOf { it.attributes[key] ?: 0.0 }
-        return GunAttributes(
+        val attributes = GunAttributes(
             machineEfficiency = (base.machineEfficiency + sum("machineEfficiency")).coerceIn(0.0, 100.0),
             accuracy = (base.accuracy + sum("accuracy")).coerceIn(0.0, 100.0),
             bulletSpeed = (base.bulletSpeed + sum("bulletSpeed")).coerceAtLeast(1.0),
@@ -126,6 +132,7 @@ object AddonManager {
             recoilH = (base.recoilH + sum("recoilH")).coerceAtLeast(0.0),
             durability = (base.durability + sum("durability")).coerceAtLeast(1.0),
         )
+        return if (player == null) attributes else GunEnvironment.apply(player, attributes)
     }
 
     fun suppressor(held: ItemStack): Double =

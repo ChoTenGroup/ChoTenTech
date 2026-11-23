@@ -168,7 +168,11 @@ broken-melee:
 # ---------------------------------------------------------------------
 sounds:
   fire: "item.crossbow.shoot"
-  empty: "item.crossbow.dry_fire"
+  # 空膛 / 无弹时扳机落空的「咔哒」声。
+  # 这里曾经写的是 item.crossbow.dry_fire —— 该音效在 Minecraft 里**不存在**
+  # （26.2 的弩音效只有 hit / loading_start|middle|end / quick_charge_1|2|3 / shoot），
+  # 结果是控制台刷「Unable to play unknown soundEvent」且空膛完全没声音。
+  empty: "block.lever.click"
   hit: "entity.arrow.hit"
   hit-block: "entity.arrow.hit_player"
 
@@ -216,8 +220,5 @@ armor:
 magazine:
   pickup-lock-ticks: 100  # 快速换弹丢出的弹匣多少 tick 内任何人都不许拾取（100 tick = 5 秒）
   interrupt-distance: 2.0 # 读条动作允许的最大**水平**位移（格），超过即中断；0 = 不因移动中断
-  # 「排障」（jam=2 或耐久归零时修复）需要的维修材料，格式「材质名:数量」。
-  # 全部满足才会扣材料并清故障；留空或写错会回落到内置默认表。
-  repair-materials:
-    - "IRON_INGOT:2"
-    - "GUNPOWDER:1"
+  # 注意：`repair-materials` 已下线 —— 「排障」不再消耗任何材料，材料表也不再被代码读取。
+  # 旧配置里留着这一节不会报错，但也不会生效（启动时若发现未读键会打一条 devLog）。

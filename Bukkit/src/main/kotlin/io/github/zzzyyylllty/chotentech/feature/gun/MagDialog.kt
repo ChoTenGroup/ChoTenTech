@@ -84,7 +84,7 @@ private object MagDialogImpl {
     private const val BODY_WIDTH = 220
 
     /** 同一个按钮允许点的次数（点完会重开一次对话框，回调随之刷新）。 */
-    private const val CLICK_USES = 8
+    private const val CLICK_USES = Int.MAX_VALUE
 
     fun open(player: Player): Boolean {
         val held = player.inventory.itemInMainHand
@@ -364,15 +364,22 @@ private object MagDialogImpl {
     private fun reshow(player: Player) {
         if (!player.isOnline) return
         try {
-            if (GunRegistry.magOf(player.inventory.itemInMainHand) == null) return
+            if (GunRegistry.magOf(player.inventory.itemInMainHand) == null) {
+                // 主手已经不是弹匣：把还开着的界面关掉，别留一个点不动的死界面。
+                closeQuietly(player)
+                GunPrompt.show(player, "<#DFBD7C>主手已不是弹匣，装填界面已关闭")
+                return
+            }
             open(player)
         } catch (_: Throwable) {
         }
     }
 
     private fun options(): ClickCallback.Options = ClickCallback.Options.builder()
-        .uses(CLICK_USES)
-        .lifetime(Duration.ofMinutes(2))
+        // 每次点击后都会 reshow 重建回调，这里的上限只是防御：
+        // 取一个不可能达到的值，避免玩家对着失活的旧按钮点 8 次之后「完全没反应」。
+        .uses(Int.MAX_VALUE)
+        .lifetime(Duration.ofMinutes(10))
         .build()
 
     private fun displayName(player: Player, mag: MagData): String {

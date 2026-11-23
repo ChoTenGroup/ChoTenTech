@@ -10,6 +10,17 @@ damage-distribution:
   FIRE_TICK: {HEAD: 1, BODY: 1, STOMACH: 1, LARM: 1, RARM: 1, LLEG: 1, RLEG: 1}
   LAVA: {BODY: 2, STOMACH: 1, LARM: 1, RARM: 1, LLEG: 2, RLEG: 2}
   FREEZE: {HEAD: 1, BODY: 1, STOMACH: 1, LARM: 1, RARM: 1, LLEG: 1, RLEG: 1}
+#
+# 以下均为注释，不改变任何现有行为，只是把判定语义写清楚：
+# 1) 权重会自动归一化：写 {LLEG: 1, RLEG: 1} 表示两腿各吃 50%；写 7 个部位等权表示
+#    每个部位各吃 1/7。总韧性伤害守恒，不会因为多写几个部位而放大伤害。
+# 2) ENTITY_ATTACK / PROJECTILE 故意不在此处出现：这两类走「瞄哪打哪」的判定
+#    （枪械读 chotentech_body_hit 元数据；近战用攻击者视线与受击者碰撞箱求交；
+#    弹射物用命中位置）。一旦在此显式配置，就会覆盖按准星分部位的逻辑，
+#    近战将永远只打这里写死的部位。
+# 3) 下列 cause 目前没有条目，等价于 {BODY: 1}（永远只打身体）；需要分部位时补上即可：
+#    CRAMMING / CONTACT / THORNS / DRAGON_BREATH / SONIC_BOOM / ENTITY_SWEEP_ATTACK
+#    （MAGIC 已在 bypass-causes 里，通常不需要）
 bypass-causes: [VOID, WORLD_BORDER, KILL, SUICIDE, STARVATION, POISON, WITHER, MAGIC]
 water:
   walk-consumption: 0.5
